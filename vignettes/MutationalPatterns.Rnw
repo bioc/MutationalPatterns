@@ -201,13 +201,13 @@ type_context(vcfs[[1]], ref_genome)
 @
 
 Using \Rfunction{mut\_type\_occurrences}, you can count mutation type
-occurences for the loaded samples in a list of VCF objects:
+occurrences for the loaded samples in a list of VCF objects:
 
 <<mut_type_occurrences>>=
 # We will use the output of this function later to make plots a little
 # bit later.
-type_occurences <- mut_type_occurences(vcfs, ref_genome)
-type_occurences
+type_occurrences <- mut_type_occurrences(vcfs, ref_genome)
+type_occurrences
 @
 
 \subsection{Mutation spectrum}
@@ -223,19 +223,19 @@ deviation over all samples.  The $n$ indicates the total number of mutations in
 the set.
 
 <<plot_spectrum>>=
-p1 <- plot_spectrum(type_occurences)
+p1 <- plot_spectrum(type_occurrences)
 @
 
 Using the same function, you can plot the mutation spectrum with distinction
 between C>T at CpG sites:
 
 <<plot_spectrum_2>>=
-p2 <- plot_spectrum(type_occurences, CT = TRUE)
+p2 <- plot_spectrum(type_occurrences, CT = TRUE)
 @
 
 Plot spectrum without legend:
 <<plot_spectrum_3>>=
-p3 <- plot_spectrum(type_occurences, CT = TRUE, legend = FALSE)
+p3 <- plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 @
 
 <<combine_plot_spectrum, fig=TRUE, width=9, height=4>>=
@@ -246,13 +246,13 @@ grid.arrange(p1, p2, p3, ncol=3, widths=c(3,3,1.8))
 Plot spectrum for each tissue separately:
 <<plot_spectrum_4>>=
 tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
-p4 <- plot_spectrum(type_occurences, by = tissue, CT = TRUE, legend = FALSE)
+p4 <- plot_spectrum(type_occurrences, by = tissue, CT = TRUE, legend = FALSE)
 @
 
 Specify 7 colors for spectrum plotting:
 <<plot_spectrum_5>>=
 my_colors <- c("pink", "orange", "blue", "lightblue", "green", "red", "purple")
-p5 <- plot_spectrum(type_occurences, CT = TRUE, legend = TRUE, 
+p5 <- plot_spectrum(type_occurrences, CT = TRUE, legend = TRUE, 
                     colors = my_colors)
 @
 
@@ -455,7 +455,7 @@ head(mut_mat_s, 10)
 Perform strand bias analysis:
 
 <<strand_occurrences>>=
-strand_counts <- strand_occurences(mut_mat_s, by=tissue)
+strand_counts <- strand_occurrences(mut_mat_s, by=tissue)
 @ 
 
 \begin{figure}[H]

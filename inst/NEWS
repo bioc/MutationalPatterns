@@ -1,3 +1,11 @@
+MutationalPatterns v0.99.6 (Release date: 2016-10-14)
+=====================================================
+
+Changes:
+
+* Renamed functions: 'mut_type_occurences' to 'mut_type_occurrences',
+    'strand_occurences' to 'strand_occurrences'.
+
 MutationalPatterns v0.99.5 (Release date: 2016-10-06)
 =====================================================
 
@@ -28,6 +36,7 @@ Changes:
 * Added an explanation for the difference between
     SomaticSignatures and MutationalPatterns in the vignette.
 
+
 MutationalPatterns v0.99.2 (Release date: 2016-09-23)
 =====================================================
 
@@ -35,6 +44,7 @@ Changes:
 
 * Renamed functions: 'vcf_to_granges' to 'read_vcfs_as_granges',
     'get_types' to 'mutation_types'.
+
 
 MutationalPatterns v0.99.1 (Release date: 2016-09-13)
 =====================================================
@@ -44,6 +54,7 @@ Changes:
 * Renamed functions: 'read_vcf' to 'vcf_to_granges'.
 * Removed functions: 'bed_to_granges', 'estimate_rank', 'rename_chrom'.
 * Parameter changes: 'plot_rainfall', 'vcf_to_granges'
+
 
 MutationalPatterns v0.99.0 (Release date: 2016-09-12)
 =====================================================

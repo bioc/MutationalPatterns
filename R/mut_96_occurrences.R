@@ -1,9 +1,9 @@
-#' Count 96 trinucleotide mutation occurences
+#' Count 96 trinucleotide mutation occurrences
 #'  
 #' @param type_context result from type_context function
-#' @return vector with 96 trinucleotide mutation occurences
+#' @return vector with 96 trinucleotide mutation occurrences
 
-mut_96_occurences = function(type_context)
+mut_96_occurrences = function(type_context)
 {
     vector = rep(0,96)
     names(vector) = TRIPLETS_96
@@ -25,4 +25,11 @@ mut_96_occurences = function(type_context)
     }
 
     return(vector)
+}
+
+mut_96_occurences = function (type_context, strand)
+{
+    .Defunct("mut_96_occurence", package="MutationalPatterns",
+            msg=paste("This function has been renamed to",
+                        "'mut_96_occurrences'."))
 }

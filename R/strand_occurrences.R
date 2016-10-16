@@ -1,4 +1,4 @@
-#' Count occurences per base substitution type and transcriptional strand
+#' Count occurrences per base substitution type and transcriptional strand
 #' 
 #' For each base substitution type and transcriptional strand the total number
 #' of mutations and the relative contribution within a group is returned.
@@ -29,7 +29,7 @@
 #'             "intestine", "intestine", "intestine",
 #'             "liver", "liver", "liver")
 #'
-#' strand_counts = strand_occurences(mut_mat_s, by=tissue)
+#' strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 #' 
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
@@ -38,7 +38,7 @@
 #'
 #' @export
 
-strand_occurences = function(mut_mat_s, by)
+strand_occurrences = function(mut_mat_s, by)
 {
     df = t(mut_mat_s)
 
@@ -70,4 +70,11 @@ strand_occurences = function(mut_mat_s, by)
     y = y[order(y$group, y$type),]
 
     return(y)
+}
+
+strand_occurences = function (type_context, strand)
+{
+    .Defunct("strand_occurences", package="MutationalPatterns",
+            msg=paste("This function has been renamed to",
+                        "'strand_occurrences'."))
 }

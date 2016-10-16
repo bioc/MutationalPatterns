@@ -57,7 +57,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, genes)
     {
         type_context = type_context(vcf, ref_genome)
         strand = strand_from_vcf(vcf, genes)
-        row = mut_192_occurences(type_context, strand)
+        row = mut_192_occurrences(type_context, strand)
         df = rbind(df, row)
     }
 

@@ -35,7 +35,7 @@ tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
             "liver", "liver", "liver")
 
-strand_counts = strand_occurences(mut_mat_s, by=tissue)
+strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 
 #' ## Plot the strand in relative mode.
 strand_plot = plot_strand(strand_counts)
@@ -46,7 +46,7 @@ strand_plot = plot_strand(strand_counts, mode = "absolute")
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},
-\code{\link{strand_occurences}},
+\code{\link{strand_occurrences}},
 \code{\link{plot_strand_bias}}
 }
 

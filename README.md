@@ -6,6 +6,24 @@ substitution catalogues.
 
 ## ChangeLog
 
+### v0.99.6
+
+#### Renamed functions
+
+  * `mut_type_occurences` to `mut_type_occurrences`
+  * `strand_occurences` to `strand_occurrences`
+
+### v0.99.5
+
+  * Added deprecation and defunct messages to functions that have
+    changed since the `v0.99.0`.
+  * Various small vignette and reference manual updates.
+
+### v0.99.4
+
+  * Internal package loading changes.
+  * Removed files that do not belong to the package.
+
 ### v0.99.3
 
 #### Renamed functions
@@ -219,16 +237,16 @@ returned.
   type_context(vcfs[[1]], ref_genome)
   ```
 
-Count mutation type occurences for one vcf object
+Count mutation type occurrences for one vcf object
 
   ```{r}
-  type_occurences = mut_type_occurences(vcfs[1], ref_genome)
+  type_occurrences = mut_type_occurrences(vcfs[1], ref_genome)
   ```
 
-Count mutation type occurences for all samples in a list of vcf objects
+Count mutation type occurrences for all samples in a list of vcf objects
 
   ```{r}
-  type_occurences = mut_type_occurences(vcfs, ref_genome)
+  type_occurrences = mut_type_occurrences(vcfs, ref_genome)
   ```
 
 ## Mutation spectrum
@@ -239,19 +257,19 @@ deviation over all samples. The n indicates the total number of mutations in
 the set.
 
   ```{r}
-  plot_spectrum(type_occurences)
+  plot_spectrum(type_occurrences)
   ```
 
 Plot mutation spectrum with distinction between C>T at CpG sites
 
   ```{r}
-  plot_spectrum(type_occurences, CT = TRUE)
+  plot_spectrum(type_occurrences, CT = TRUE)
   ```
 
 Plot spectrum without legend
 
   ```{r}
-  plot_spectrum(type_occurences, CT = TRUE, legend = FALSE)
+  plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
   ```
 
   ![spectra1](https://github.com/CuppenResearch/MutationalPatterns/blob/develop/images/spectra1.png)
@@ -259,13 +277,13 @@ Plot spectrum without legend
 
 Plot spectrum for each tissue separately
   ```{r}
-  plot_spectrum(type_occurences, by = tissue, CT = TRUE)
+  plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
   ```
 
 Specify 7 colors for spectrum plotting
   ```{r}
   my_colors = c("pink", "orange", "blue", "lightblue", "green", "red", "purple")
-  plot_spectrum(type_occurences, CT = T, legend = T, colors = my_colors)
+  plot_spectrum(type_occurrences, CT = T, legend = T, colors = my_colors)
   ```
   
   ![spectra2](https://github.com/CuppenResearch/MutationalPatterns/blob/develop/images/spectra2.png)
@@ -417,7 +435,7 @@ Make mutation count matrix with transcriptional strand information (96 trinucleo
 Perform strand bias analysis
 
   ```{r}
-  strand_counts = strand_occurences(mut_mat_s, by=tissue)
+  strand_counts = strand_occurrences(mut_mat_s, by=tissue)
   strand_plot = plot_strand(strand_counts, mode = "relative")
   ```
 

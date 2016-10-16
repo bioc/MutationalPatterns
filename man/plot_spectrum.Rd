@@ -4,10 +4,10 @@
 \alias{plot_spectrum}
 \title{Plot point mutation spectrum}
 \usage{
-plot_spectrum(type_occurences, CT = FALSE, by, colors, legend = TRUE)
+plot_spectrum(type_occurrences, CT = FALSE, by, colors, legend = TRUE)
 }
 \arguments{
-\item{type_occurences}{Type occurences matrix}
+\item{type_occurrences}{Type occurrences matrix}
 
 \item{CT}{Distinction between C>T at CpG and C>T at other
 sites, default = FALSE}
@@ -42,29 +42,29 @@ ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Get the type occurrences for all VCF objects.
-type_occurences = mut_type_occurences(vcfs, ref_genome)
+type_occurrences = mut_type_occurrences(vcfs, ref_genome)
 
 ## Plot the point mutation spectrum over all samples
-plot_spectrum(type_occurences)
+plot_spectrum(type_occurrences)
 
 ## Or with distinction of C>T at CpG sites
-plot_spectrum(type_occurences, CT = TRUE)
+plot_spectrum(type_occurrences, CT = TRUE)
 
 ## Or without legend
-plot_spectrum(type_occurences, CT = TRUE, legend = FALSE)
+plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 
 ## Or plot spectrum per tissue
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
             "liver", "liver", "liver")
-plot_spectrum(type_occurences, by = tissue, CT = TRUE)
+plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 
 ## You can also set custom colors.
 my_colors = c("pink", "orange", "blue", "lightblue",
                 "green", "red", "purple")
 
 ## And use them in a plot.
-plot_spectrum(type_occurences,
+plot_spectrum(type_occurrences,
                 CT = TRUE,
                 legend = TRUE,
                 colors = my_colors)
@@ -72,6 +72,6 @@ plot_spectrum(type_occurences,
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},
-\code{\link{mut_type_occurences}}
+\code{\link{mut_type_occurrences}}
 }
 

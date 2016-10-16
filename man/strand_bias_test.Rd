@@ -4,11 +4,11 @@
 \alias{strand_bias_test}
 \title{Significance test for transcriptional strand asymmetry}
 \usage{
-strand_bias_test(strand_occurences)
+strand_bias_test(strand_occurrences)
 }
 \arguments{
-\item{strand_occurences}{Dataframe with mutation count per strand, result
-from strand_occurences()}
+\item{strand_occurrences}{Dataframe with mutation count per strand, result
+from strand_occurrences()}
 }
 \value{
 Dataframe with poisson test P value for the ratio between the
@@ -33,13 +33,13 @@ tissue <- c("colon", "colon", "colon",
             "liver", "liver", "liver")
 
 ## Perform the strand bias test.
-strand_counts = strand_occurences(mut_mat_s, by=tissue)
+strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 strand_bias = strand_bias_test(strand_counts)
 
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},
-\code{\link{strand_occurences}},
+\code{\link{strand_occurrences}},
 \code{\link{plot_strand_bias}}
 }
 

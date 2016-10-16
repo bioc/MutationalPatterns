@@ -2,8 +2,8 @@
 #'
 #' This function performs a Poisson test for the ratio between mutations on the
 #' transcribed and untranscribed strand
-#' @param strand_occurences Dataframe with mutation count per strand, result
-#' from strand_occurences()
+#' @param strand_occurrences Dataframe with mutation count per strand, result
+#' from strand_occurrences()
 #' @return Dataframe with poisson test P value for the ratio between the
 #' transcribed and untrascribed strand per group per base substitution type.
 #' @importFrom reshape2 dcast
@@ -27,17 +27,17 @@
 #'             "liver", "liver", "liver")
 #'
 #' ## Perform the strand bias test.
-#' strand_counts = strand_occurences(mut_mat_s, by=tissue)
+#' strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 #' strand_bias = strand_bias_test(strand_counts)
 #'
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
-#' \code{\link{strand_occurences}},
+#' \code{\link{strand_occurrences}},
 #' \code{\link{plot_strand_bias}}
 #'
 #' @export
 
-strand_bias_test = function(strand_occurences)
+strand_bias_test = function(strand_occurrences)
 {
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
@@ -47,7 +47,7 @@ strand_bias_test = function(strand_occurences)
 
     # statistical test for strand ratio
     # poisson test
-    df_strand = reshape2::dcast(melt(strand_occurences),
+    df_strand = reshape2::dcast(melt(strand_occurrences),
                                 type + group ~ strand,
                                 sum,
                                 subset = plyr::.(variable == "no_mutations"))

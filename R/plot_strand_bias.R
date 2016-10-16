@@ -25,7 +25,7 @@
 #'             "liver", "liver", "liver")
 #'
 #' ## Perform the strand bias test.
-#' strand_counts = strand_occurences(mut_mat_s, by=tissue)
+#' strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 #' strand_bias = strand_bias_test(strand_counts)
 #'
 #' ## Plot the strand bias.
@@ -33,7 +33,7 @@
 #'
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
-#' \code{\link{strand_occurences}},
+#' \code{\link{strand_occurrences}},
 #' \code{\link{strand_bias_test}}
 #' \code{\link{plot_strand}}
 #'

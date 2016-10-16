@@ -1,6 +1,6 @@
 #' Plot point mutation spectrum
 #'    
-#' @param type_occurences Type occurences matrix
+#' @param type_occurrences Type occurrences matrix
 #' @param CT Distinction between C>T at CpG and C>T at other
 #' sites, default = FALSE
 #' @param by Optional grouping variable
@@ -32,41 +32,41 @@
 #' library(ref_genome, character.only = TRUE)
 #'
 #' ## Get the type occurrences for all VCF objects.
-#' type_occurences = mut_type_occurences(vcfs, ref_genome)
+#' type_occurrences = mut_type_occurrences(vcfs, ref_genome)
 #' 
 #' ## Plot the point mutation spectrum over all samples
-#' plot_spectrum(type_occurences)
+#' plot_spectrum(type_occurrences)
 #'
 #' ## Or with distinction of C>T at CpG sites
-#' plot_spectrum(type_occurences, CT = TRUE)
+#' plot_spectrum(type_occurrences, CT = TRUE)
 #'
 #' ## Or without legend
-#' plot_spectrum(type_occurences, CT = TRUE, legend = FALSE)
+#' plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 #'
 #' ## Or plot spectrum per tissue
 #' tissue <- c("colon", "colon", "colon",
 #'             "intestine", "intestine", "intestine",
 #'             "liver", "liver", "liver")
 #;
-#' plot_spectrum(type_occurences, by = tissue, CT = TRUE)
+#' plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 #'
 #' ## You can also set custom colors.
 #' my_colors = c("pink", "orange", "blue", "lightblue",
 #'                 "green", "red", "purple")
 #'
 #' ## And use them in a plot.
-#' plot_spectrum(type_occurences,
+#' plot_spectrum(type_occurrences,
 #'                 CT = TRUE,
 #'                 legend = TRUE,
 #'                 colors = my_colors)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
-#' \code{\link{mut_type_occurences}}
+#' \code{\link{mut_type_occurrences}}
 #'
 #' @export
 
-plot_spectrum = function(type_occurences, CT=FALSE, by, colors, legend=TRUE)
+plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
 {
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
@@ -87,12 +87,12 @@ plot_spectrum = function(type_occurences, CT=FALSE, by, colors, legend=TRUE)
 
     # Distinction between C>T at CpG or not
     if (CT == FALSE)
-        type_occurences = type_occurences[,1:6] 
+        type_occurrences = type_occurrences[,1:6] 
     else
-        type_occurences = type_occurences[,c(1:2,8,7,4:6)]
+        type_occurrences = type_occurrences[,c(1:2,8,7,4:6)]
 
     # Relative contribution per sample
-    df2 = type_occurences / rowSums(type_occurences)
+    df2 = type_occurrences / rowSums(type_occurrences)
 
     # If grouping variable not provided, set to "all"
     if (missing(by))
@@ -105,7 +105,7 @@ plot_spectrum = function(type_occurences, CT=FALSE, by, colors, legend=TRUE)
     df3 = melt(df2, id.vars = "by")
 
     # Count number of mutations per mutation type
-    counts = melt(type_occurences, measure.vars = colnames(type_occurences))
+    counts = melt(type_occurrences, measure.vars = colnames(type_occurrences))
     df4 = cbind(df3, counts$value)
     colnames(df4)[4] = "nmuts" 
 

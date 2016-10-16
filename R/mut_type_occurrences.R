@@ -1,4 +1,4 @@
-#' Count the occurences of each base substitution type
+#' Count the occurrences of each base substitution type
 #' 
 #' @param vcf_list A list of CollapsedVCF object
 #' @param ref_genome Reference genome
@@ -25,14 +25,14 @@
 #' library(ref_genome, character.only = TRUE)
 #'
 #' ## Get the type occurrences for all VCF objects.
-#' type_occurences = mut_type_occurences(vcfs, ref_genome)
+#' type_occurrences = mut_type_occurrences(vcfs, ref_genome)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
 #' @export
 
-mut_type_occurences = function(vcf_list, ref_genome)
+mut_type_occurrences = function(vcf_list, ref_genome)
 {  
     n_samples = length(vcf_list)
     df = data.frame()
@@ -61,4 +61,11 @@ mut_type_occurences = function(vcf_list, ref_genome)
     row.names(df) = names(vcf_list)
     colnames(df) = names(full_table)
     return(df)
+}
+
+mut_type_occurences = function (type_context, strand)
+{
+    .Defunct("mut_type_occurences", package="MutationalPatterns",
+            msg=paste("This function has been renamed to",
+                        "'mut_type_occurrences'."))
 }

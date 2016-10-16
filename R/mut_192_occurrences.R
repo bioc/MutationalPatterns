@@ -1,14 +1,14 @@
-#' Count 96 trinucleotide mutation occurences with transcriptional strand
+#' Count 96 trinucleotide mutation occurrences with transcriptional strand
 #' information
 #'  
 #' @param type_context result from type_context function
 #' @param strand character vector with strand information for each
 #' position, "U" for untranscribed, "T" for transcribed, "-" for
 #' unknown or positions outside gene bodies
-#' @return A vector with 192 mutation occurences and 96 trinucleotides
+#' @return A vector with 192 mutation occurrences and 96 trinucleotides
 #' for both transcribed and untranscribed strand
 
-mut_192_occurences = function(type_context, strand)
+mut_192_occurrences = function(type_context, strand)
 {
     U_idx = which(strand == "U")
     T_idx = which(strand == "T")
@@ -18,8 +18,8 @@ mut_192_occurences = function(type_context, strand)
     type_context_T = lapply(type_context, function(x) x[T_idx])
 
     # make 96-trinucleotide count vector per set
-    U_vector = mut_96_occurences(type_context_U)
-    T_vector = mut_96_occurences(type_context_T)
+    U_vector = mut_96_occurrences(type_context_U)
+    T_vector = mut_96_occurrences(type_context_T)
 
     # add names
     names_U = paste(TRIPLETS_96, "-u", sep = "")
@@ -31,4 +31,11 @@ mut_192_occurences = function(type_context, strand)
     names(vector) = names
 
     return(vector)
+}
+
+mut_192_occurences = function (type_context, strand)
+{
+    .Defunct("mut_192_occurence", package="MutationalPatterns",
+            msg=paste("This function has been renamed to",
+                        "'mut_192_occurrences'."))
 }
