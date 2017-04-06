@@ -4,33 +4,50 @@
 \alias{read_vcfs_as_granges}
 \title{Read VCF files into a GRangesList}
 \usage{
-read_vcfs_as_granges(vcf_files, sample_names, genome = "-", style = "UCSC")
+read_vcfs_as_granges(vcf_files, sample_names, genome = "-",
+  group = "auto+sex", check_alleles = TRUE)
 }
 \arguments{
-\item{vcf_files}{Character vector of vcf file names}
+\item{vcf_files}{Character vector of VCF file names}
 
 \item{sample_names}{Character vector of sample names}
 
-\item{genome}{A character or Seqinfo object}
+\item{genome}{A string matching the name of a BSgenome library
+corresponding to the reference genome of your VCFs}
 
-\item{style}{The naming standard to use for the GRanges. (default = "UCSC")}
+\item{group}{Selector for a seqlevel group.  All seqlevels outside
+of this group will be removed.  Possible values:
+* 'all' for all chromosomes;
+* 'auto' for autosomal chromosomes;
+* 'sex' for sex chromosomes;
+* 'auto+sex' for autosomal + sex chromosomes (default);
+* 'circular' for circular chromosomes;
+* 'none' for no filtering, which results in keeping all
+  seqlevels from the VCF file.}
+
+\item{check_alleles}{logical. If TRUE (default) positions with insertions,
+deletions and/or multiple alternative alleles are excluded
+from the vcf object, since these positions cannot be analysed
+with this package.  This setting can be set to FALSE to speed
+up processing time only if the input vcf does not contain any
+of such positions, as these will cause obscure errors.}
 }
 \value{
-A GRangesList containing the GRanges obtained from vcf_files
+A GRangesList containing the GRanges obtained from 'vcf_files'
 }
 \description{
 This function reads Variant Call Format (VCF) files into a GRanges object
 and combines them in a GRangesList.  In addition to loading the files, this
-function applies a seqlevel style to the GRanges objects.  The default
-seqlevel style is "UCSC".
+function applies the same seqlevel style to the GRanges objects as the
+reference genome passed in the 'genome' parameter.
 }
 \examples{
 # The example data set consists of three colon samples, three intestine
 # samples and three liver samples.  So, to map each file to its appropriate
 # sample name, we create a vector containing the sample names:
-sample_names <- c("colon1", "colon2", "colon3",
+sample_names <- c ( "colon1", "colon2", "colon3",
                     "intestine1", "intestine2", "intestine3",
-                    "liver1", "liver2", "liver3")
+                    "liver1", "liver2", "liver3" )
 
 # We assemble a list of files we want to load.  These files match the
 # sample names defined above.
@@ -38,8 +55,13 @@ vcf_files <- list.files(system.file("extdata",
                                     package="MutationalPatterns"),
                                     pattern = ".vcf", full.names = TRUE)
 
+# Get a reference genome BSgenome object.
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+library("BSgenome")
+library(ref_genome, character.only = TRUE)
+
 # This function loads the files as GRanges objects
-vcfs <- read_vcfs_as_granges(vcf_files, sample_names, genome = "hg19")
+vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
 
 }
 

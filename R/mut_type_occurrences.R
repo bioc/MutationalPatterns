@@ -1,6 +1,6 @@
 #' Count the occurrences of each base substitution type
 #' 
-#' @param vcf_list A list of CollapsedVCF object
+#' @param vcf_list A GRangesList
 #' @param ref_genome Reference genome
 #' @return data.frame with counts of each base substitution type for
 #' each sample in vcf_list
@@ -46,10 +46,17 @@ mut_type_occurrences = function(vcf_list, ref_genome)
     {
         vcf = vcf_list[[i]]
         types = mutation_types(vcf)
+
+        CT_context = 0
+        CT_at_CpG = 0
+        CT_at_other = 0
+
         CT_muts = which(types == "C>T")
-        CT_context = type_context(vcf[CT_muts], ref_genome)[[2]]
-        CT_at_CpG = sum(!(is.na(BiocGenerics::match(CT_context,CpG))))
-        CT_at_other = length(CT_muts) - CT_at_CpG
+        if (length(CT_muts) > 0) {
+            CT_context = type_context(vcf[CT_muts], ref_genome)[[2]]
+            CT_at_CpG = sum(!(is.na(BiocGenerics::match(CT_context,CpG))))
+            CT_at_other = length(CT_muts) - CT_at_CpG
+        }
 
         # Construct a table and handle missing mutation types.
         full_table = table(factor(types, levels = column_names))

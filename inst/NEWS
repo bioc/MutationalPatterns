@@ -1,3 +1,44 @@
+MutationalPatterns v1.1.0 (Release date: 2017-04-06)
+=====================================================
+
+Preparations for Bioconductor release 3.5.
+
+Interface changes:
+* 'read_vcfs_as_granges':  The 'genome' parameter
+  must now be the name of a BSgenome library, to prevent
+  problems with seqlevels style.
+
+  The function now accepts an optional 'group' parameter to
+  use a subset of chromosomes.
+
+  It also accepts  the new optional 'check_alleles'
+  parameter to significantly speed up the reading of VCF files.
+
+* 'plot_contribution': This function now accepts an
+  optional parameter 'palette' to specify custom colors.
+
+Performance updates:
+* Implement parallel execution in 'read_vcfs_as_granges',
+  'mut_matrix' and 'mut_matrix_stranded'.
+
+Bugfixes:
+* Fix 'mut_type_occurences' to handle missing types.
+* Fix 'mut_matrix' and 'mut_matrix_stranded' to emit warnings
+  when processing empty GRanges.
+* Fix inconsistencies in the README and the vignette.
+
+Other changes:
+* Various vignette updates.
+* Added unit tests for 'read_vcfs_as_granges', 'mut_matrix',
+  and 'mut_matrix_stranded'.
+
+
+MutationalPatterns v1.0.0 (Release date: 2016-10-19)
+=====================================================
+
+Bioconductor release 3.4.
+
+
 MutationalPatterns v0.99.6 (Release date: 2016-10-14)
 =====================================================
 

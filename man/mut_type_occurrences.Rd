@@ -7,7 +7,7 @@
 mut_type_occurrences(vcf_list, ref_genome)
 }
 \arguments{
-\item{vcf_list}{A list of CollapsedVCF object}
+\item{vcf_list}{A GRangesList}
 
 \item{ref_genome}{Reference genome}
 }

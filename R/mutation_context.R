@@ -6,6 +6,7 @@
 #' @param ref_genome Reference genome
 #' @return Character vector with the context of the base substitutions
 #' @importFrom GenomeInfoDb seqlevels
+#' @importFrom GenomeInfoDb seqnames
 #' @importFrom Biostrings getSeq
 #'
 #' @examples

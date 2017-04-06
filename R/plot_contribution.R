@@ -8,6 +8,9 @@
 #' @param coord_flip Flip X and Y coordinates, default = FALSE
 #' @param mode "relative" or "absolute"; to plot the relative contribution or
 #' absolute number of mutations, default = "relative"
+#' @param palette A color palette like c("#FF0000", "#00FF00", "9999CC") that
+#' will be used as colors in the plot.  By default, ggplot2's colors are used
+#' to generate a palette.
 #'
 #' @return Stacked barplot with contribution of each signatures for each sample
 #'
@@ -16,7 +19,7 @@
 #'
 #' @usage
 #' plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
-#'     mode="relative")
+#'     mode="relative", palette=c())
 #'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following
@@ -64,7 +67,8 @@ plot_contribution = function(contribution,
                                 signatures,
                                 index=c(),
                                 coord_flip=FALSE,
-                                mode="relative")
+                                mode="relative",
+                                palette=c())
 {
     # check mode parameter
     if(!(mode == "relative" | mode == "absolute"))
@@ -91,11 +95,8 @@ plot_contribution = function(contribution,
                             fill = factor(Signature),
                             order = Sample)) +
             geom_bar(position = "fill", stat="identity", colour="black")  +
-            # make sure sample ordering is correct
-            xlim(rev(levels(factor(m_contribution$Sample)))) +
             # ylabel
             labs(x = "", y = "Relative contribution") +
-            scale_fill_discrete(name="Signature") +
             # white background
             theme_bw() +
             # no gridlines
@@ -127,17 +128,10 @@ plot_contribution = function(contribution,
                                             fill = factor(Signature),
                                             order = Sample)) + 
             geom_bar(stat="identity", colour = "black")  +  
-
-            # make sure sample ordering is correct
-            xlim(rev(levels(factor(m_contribution$Sample)))) +
-
             # ylabel
             labs(x = "", y = "Absolute contribution \n (no. mutations)") +  
-            scale_fill_discrete(name="Signature") +
-
             # white background
             theme_bw() +
-
             # no gridlines
             theme(panel.grid.minor.x=element_blank(),
                     panel.grid.major.x=element_blank()) +
@@ -145,8 +139,17 @@ plot_contribution = function(contribution,
                     panel.grid.major.y=element_blank())
     }
 
-    if (coord_flip == TRUE)
-        plot = plot + coord_flip()
+    # Allow custom color palettes.
+    if (length(palette) > 0)
+        plot = plot + scale_fill_manual(name="Signature", values=palette)
+    else
+        plot = plot + scale_fill_discrete(name="Signature")
 
+    # Handle coord_flip.
+    if (coord_flip)
+        plot = plot + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
+    else
+        plot = plot + xlim(levels(factor(m_contribution$Sample)))
+                
     return(plot)
 }

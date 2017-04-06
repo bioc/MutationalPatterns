@@ -7,6 +7,7 @@
 #' @param surveyed GRanges object with regions of the genome that were surveyed
 #' @param region GRanges object with genomic region(s)
 #' @importFrom GenomeInfoDb seqlevelsStyle
+#' @noRd
 #' @return A data.frame containing the overlapping mutations for a
 #' genomic region.
 

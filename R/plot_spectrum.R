@@ -13,6 +13,7 @@
 #' @importFrom BiocGenerics cbind
 #' @importFrom plyr ddply
 #' @importFrom plyr summarise
+#' @importFrom stats sd
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the

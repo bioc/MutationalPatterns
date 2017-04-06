@@ -5,7 +5,7 @@
 \title{Plot signature contribution}
 \usage{
 plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
-    mode="relative")
+    mode="relative", palette=c())
 }
 \arguments{
 \item{contribution}{Signature contribution matrix}
@@ -18,6 +18,10 @@ plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
 
 \item{mode}{"relative" or "absolute"; to plot the relative contribution or
 absolute number of mutations, default = "relative"}
+
+\item{palette}{A color palette like c("#FF0000", "#00FF00", "9999CC") that
+will be used as colors in the plot.  By default, ggplot2's colors are used
+to generate a palette.}
 }
 \value{
 Stacked barplot with contribution of each signatures for each sample

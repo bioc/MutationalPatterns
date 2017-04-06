@@ -5,6 +5,8 @@
 #' @param ref_genome BSGenome reference genome object 
 #' @return 96 mutation count matrix
 #' @import GenomicRanges
+#' @importFrom parallel detectCores
+#' @importFrom parallel mclapply
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -38,12 +40,20 @@
 mut_matrix = function(vcf_list, ref_genome)
 {
     df = data.frame()
-    for(vcf in vcf_list)
+
+    num_cores <- detectCores()
+    if (is.na(num_cores)) num_cores = 2
+
+    rows <- mclapply (as.list(vcf_list), function (vcf)
     {
         type_context = type_context(vcf, ref_genome)
         row = mut_96_occurrences(type_context)
-        df = rbind(df, row)
-    }
+        return(row)
+    }, mc.cores = (num_cores - 1))
+
+    # Merge the rows into a dataframe.
+    for (row in rows)
+        df = rbind (df, row)
 
     names(df) = names(row)
     row.names(df) = names(vcf_list)

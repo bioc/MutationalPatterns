@@ -22,7 +22,18 @@ mutations_from_vcf = function(vcf)
 {
     ref = as.character(vcf$REF)
     alt = as.character(unlist(vcf$ALT))
+
+    # Allow both uppercase and lowercase column names.
+    if (length(ref) == 0)
+        ref = as.character(vcf$ref)
+
+    if (length(alt) == 0)
+        alt = as.character(vcf$alt)
+
+    # If these columns are still missing, there's nothing we can do.
+    if (length(ref) == 0 || length(alt) == 0)
+        warning("Some of your data is missing an ALT and/or a REF column.")
+
     muts = paste(ref, alt, sep=">")
     return(muts)
 }
-

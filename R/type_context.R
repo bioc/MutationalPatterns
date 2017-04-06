@@ -36,6 +36,15 @@
 
 type_context = function(vcf, ref_genome)
 {
+    # Deal with empty GRanges objects.
+    if (length (vcf) == 0)
+    {
+        warning("Detected empty GRanges object.")
+        res = list(c(), c())
+        names(res) = c("types", "context")
+        return(res)
+    }
+
     mut_context = mutation_context(vcf, ref_genome)
     muts = mutations_from_vcf(vcf)
     types = mutation_types(vcf)

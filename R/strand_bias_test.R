@@ -11,6 +11,7 @@
 #' @importFrom plyr .
 #' @importFrom plyr ddply
 #' @importFrom plyr summarise
+#' @importFrom stats "poisson.test"
 #'
 #' @examples
 #' ## See the 'mut_matrix_stranded()' example for how we obtained the
