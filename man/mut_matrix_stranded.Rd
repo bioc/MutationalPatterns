@@ -31,13 +31,6 @@ Mutations outside gene bodies are not counted.
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
-## Exclude mitochondrial and allosomal chromosomes.
-autosomal <- extractSeqlevelsByGroup(species="Homo_sapiens",
-                                    style="UCSC",
-                                    group="auto")
-
-vcfs = lapply(vcfs, function(x) keepSeqlevels(x, autosomal))
-
 ## Load the corresponding reference genome.
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)

@@ -29,13 +29,6 @@ takes surveyed area of genome into account.
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
-## Exclude mitochondrial and allosomal chromosomes.
-autosomal = extractSeqlevelsByGroup(species="Homo_sapiens",
-                                    style="UCSC",
-                                    group="auto")
-
-vcfs <- lapply(vcfs, function(x) keepSeqlevels(x, autosomal))
-
 ## Use biomaRt to obtain data.
 ## We can query the BioMart database, but this may take a long time
 ## though, so we take some shortcuts by loading the results from our

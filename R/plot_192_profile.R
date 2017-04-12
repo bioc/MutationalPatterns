@@ -16,7 +16,11 @@
 #'                                     package="MutationalPatterns"))
 #'
 #' ## Extract the signatures.
-#' nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
+#' ## This is a computational intensive task, so we load a precomputed
+#' ## version instead.
+#' # nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
+#' nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
+#'                                     package="MutationalPatterns"))
 #'
 #' ## Optionally, provide signature names
 #' colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
