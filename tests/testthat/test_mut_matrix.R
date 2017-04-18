@@ -15,7 +15,8 @@ vcfs <- list.files (system.file("extdata", package="MutationalPatterns"),
 input <- read_vcfs_as_granges(vcfs, sample_names,
                               "BSgenome.Hsapiens.UCSC.hg19")
 
-expected <- readRDS("mut_matrix.rds")
+expected <- readRDS(system.file("states/mut_mat_data.rds",
+                                package="MutationalPatterns"))
 
 test_that("transforms correctly", {
     actual <- mut_matrix(input, ref_genome)

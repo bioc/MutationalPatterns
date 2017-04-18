@@ -34,8 +34,11 @@ mut_matrix = function(vcf_list, ref_genome)
 {
     df = data.frame()
 
-    num_cores <- detectCores()
-    if (is.na(num_cores)) num_cores = 2
+    num_cores = detectCores()
+    if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
+        num_cores <- detectCores()
+    else
+        num_cores = 1
 
     rows <- mclapply (as.list(vcf_list), function (vcf)
     {

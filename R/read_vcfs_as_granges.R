@@ -87,12 +87,14 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
     if (!(class(ref_genome) == "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
 
-    num_cores <- detectCores()
-
-    # On confined OS environments, this value can be NA.
-    # One core will be substracted from the total, so we
-    # set this to 2.
-    if (is.na(num_cores))
+    # Detect the number of available cores.  Windows does not support forking,
+    # only threading, so unfortunately, we have to set it to 1.
+    # On confined OS environments, this value can be NA, and in such
+    # situations  we need to fallback to 1 core.
+    num_cores = detectCores()
+    if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
+        num_cores <- detectCores()
+    else
         num_cores = 1
 
     # To be able to print warnings from within the mclapply call,

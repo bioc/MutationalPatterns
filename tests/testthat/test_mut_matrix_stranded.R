@@ -14,7 +14,8 @@ ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
 
-expected <- readRDS("mut_matrix_stranded.rds")
+expected <- readRDS(system.file("states/mut_mat_s_data.rds",
+                                package="MutationalPatterns"))
 
 test_that("transforms correctly", {
     actual <- mut_matrix_stranded(vcfs, ref_genome, genes_hg19)
