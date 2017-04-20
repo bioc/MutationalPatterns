@@ -61,7 +61,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, genes)
         strand = strand_from_vcf(vcf, genes)
         row = mut_192_occurrences(type_context, strand)
         return(row)
-    }, mc.cores = (num_cores - 1))
+    }, mc.cores = num_cores)
 
     # Merge the rows into a dataframe.
     for (row in rows)

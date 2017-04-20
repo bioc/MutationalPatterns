@@ -45,7 +45,7 @@ mut_matrix = function(vcf_list, ref_genome)
         type_context = type_context(vcf, ref_genome)
         row = mut_96_occurrences(type_context)
         return(row)
-    }, mc.cores = (num_cores - 1))
+    }, mc.cores = num_cores)
 
     # Merge the rows into a dataframe.
     for (row in rows)

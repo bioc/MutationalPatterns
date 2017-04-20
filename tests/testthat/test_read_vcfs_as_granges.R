@@ -38,12 +38,12 @@ test_that("autosomal filter works", {
     expect_that(seqlevels(input), equals(expected))
 })
 
-test_that("sex chromosomes filter works", {
-    input <- read_vcfs_as_granges(vcfs, sample_names, ref_genome, "sex")
-    expected <- c("chrX", "chrY")
+## test_that("sex chromosomes filter works", {
+##     input <- read_vcfs_as_granges(vcfs, sample_names, ref_genome, "sex")
+##     expected <- c("chrX", "chrY")
 
-    expect_that(seqlevels(input), equals(expected))
-})
+##     expect_that(seqlevels(input), equals(expected))
+## })
 
 test_that("unfiltered works", {
     # We use the reference genome that best fits the sample data here

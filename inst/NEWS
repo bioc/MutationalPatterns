@@ -1,3 +1,12 @@
+MutationalPatterns v1.1.3 (Release date: 2017-04-20)
+=====================================================
+
+Third preparation release for Bioconductor 3.5.
+
+Bugfixes:
+* Fix running of a unit test.
+* Fix another build problem for Windows.
+
 MutationalPatterns v1.1.2 (Release date: 2017-04-18)
 =====================================================
 

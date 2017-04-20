@@ -3,8 +3,8 @@ Type: Package
 Title: Studying patterns in base substitution catalogues
 Description: An extensive toolset for the characterization and visualization
     of a wide range of mutational patterns in base substitution data.
-Version: 1.1.2
-Date: 2017-04-18
+Version: 1.1.3
+Date: 2017-04-20
 Author: Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
 Maintainer: Francis Blokzijl <F.Blokzijl@umcutrecht.nl>,
     Roel Janssen <R.R.E.Janssen-10@umcutrecht.nl>
