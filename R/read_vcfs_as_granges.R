@@ -161,6 +161,12 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
                 groups <- unique(as.vector(t(groups)))
             }
 
+            # The provided VCF files may not contain all chromosomes that are
+            # available in the reference genome.  Therefore, we only take the
+            # chromosomes that are actually available in the VCF file,
+            # belonging to the filter group.
+            groups <- intersect(groups, seqlevels(vcf))
+
             vcf <- keepSeqlevels(vcf, groups)
         }
 
