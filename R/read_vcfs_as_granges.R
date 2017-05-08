@@ -167,7 +167,10 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
             # belonging to the filter group.
             groups <- intersect(groups, seqlevels(vcf))
 
-            vcf <- keepSeqlevels(vcf, groups)
+            # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
+            # on variants, yet, remove all variants that aren't in the filter
+            # group.  By default, keepSeqlevels would produce an error.
+            vcf <- keepSeqlevels(vcf, groups, pruning.mode = "tidy")
         }
 
         if (check_alleles)
