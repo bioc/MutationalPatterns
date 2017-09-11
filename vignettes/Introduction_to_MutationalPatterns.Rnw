@@ -9,10 +9,11 @@ BiocStyle::latex(use.unsrturl=FALSE)
 @
 
 \title{Introduction to \Biocpkg{MutationalPatterns}}
-\author{Francis Blokzijl 
-    \and Roel Janssen 
-    \and Ruben van Boxtel 
-    \and Edwin Cuppen}
+\author{Francis Blokzijl}
+\author{Roel Janssen}
+\author{Ruben van Boxtel}
+\author{Edwin Cuppen}
+\affil{University Medical Center, Utrecht, Netherlands}
 \date{\today}
 
 \begin{document} 
