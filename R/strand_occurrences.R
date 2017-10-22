@@ -1,6 +1,6 @@
-#' Count occurrences per base substitution type and transcriptional strand
+#' Count occurrences per base substitution type and strand
 #' 
-#' For each base substitution type and transcriptional strand the total number
+#' For each base substitution type and strand the total number
 #' of mutations and the relative contribution within a group is returned.
 #'
 #' @param mut_mat_s 192 feature mutation count matrix, result from
@@ -8,9 +8,7 @@
 #' @param by Character vector with grouping info, optional
 #'
 #' @return A data.frame with the total number of mutations and relative
-#' contribution within group per base substitution type and
-#' transcriptional strand (T = transcribed strand,
-#' U = untranscribed strand).
+#' contribution within group per base substitution type and strand 
 #'
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
@@ -53,12 +51,16 @@ strand_occurrences = function(mut_mat_s, by)
     x = x[,-1]
 
     # calculate relative contribution within group
-    x_r = x/ rowSums(x)
+    x_r = x / rowSums(x)
 
+    # get strand from rownames
+    strand = unlist(lapply( strsplit(rownames(mut_mat_s), "-") , function(x) x[2]))
+    # get substitutions from rownames
+    substitutions = substring(rownames(mut_mat_s), 3, 5)
+    
     # sum per substition per strand
-    substitutions = rep(SUBSTITUTIONS, each=32)
-    x2 = melt(aggregate(t(x), by = list(substitutions, STRAND), FUN=sum))
-    x2_r = melt(aggregate(t(x_r), by = list(substitutions, STRAND), FUN=sum))
+    x2 = melt(aggregate(t(x), by = list(substitutions, strand), FUN=sum))
+    x2_r = melt(aggregate(t(x_r), by = list(substitutions, strand), FUN=sum))
     colnames(x2) = c("type", "strand", "group", "no_mutations")
     colnames(x2_r) = c("type", "strand", "group", "relative_contribution")
 
@@ -72,9 +74,15 @@ strand_occurrences = function(mut_mat_s, by)
     return(y)
 }
 
+#'
+#' This function has been renamed to 'strand_occurrences'.
+#'
+#' @noRd
+#' @export
+
 strand_occurences = function (type_context, strand)
 {
-    .Defunct("strand_occurences", package="MutationalPatterns",
+    .Defunct("strand_occurrences", package="MutationalPatterns",
             msg=paste("This function has been renamed to",
                         "'strand_occurrences'."))
 }

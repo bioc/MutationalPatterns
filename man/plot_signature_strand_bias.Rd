@@ -38,4 +38,3 @@ plot_signature_strand_bias(nmf_res_strand$signatures)
 \code{link{extract_signatures}},
 \code{link{mut_matrix()}}
 }
-

@@ -21,12 +21,6 @@
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #' 
-#' ## Exclude mitochondrial and allosomal chromosomes.
-#' autosomal = extractSeqlevelsByGroup(species="Homo_sapiens",
-#'                                     style="UCSC",
-#'                                     group="auto")
-#'
-#' vcfs <- lapply(vcfs, function(x) keepSeqlevels(x, autosomal))
 #'
 #' ## Load a reference genome.
 #' ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
@@ -158,9 +152,6 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
                                 fill=variable,
                                 group=sub_type)) +
         geom_bar(stat="identity") +
-        geom_errorbar(aes(ymin=error_pos-stdev,
-                            ymax=error_pos+stdev),
-                        width=0.2) +
         scale_fill_manual(values=colors, name="Point mutation type") +
         theme_bw() +
         xlab("") +
@@ -168,7 +159,15 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
         theme(axis.ticks = element_blank(),
                 axis.text.x = element_blank(),
                 panel.grid.major.x = element_blank())
-
+    
+    # check if standard deviation error bars can be plotted
+    if(sum(is.na(x$stdev)) > 0)
+      warning("No standard deviation error bars can be plotted, because there is only one sample per mutation spectrum")
+    else
+      plot = plot + geom_errorbar(aes(ymin=error_pos-stdev, 
+                                      ymax=error_pos+stdev), width=0.2)
+    
+      
     # Facetting
     if (length(by) == 1)
         plot = plot + facet_wrap( ~ total_mutations)

@@ -49,4 +49,3 @@ strand_plot = plot_strand(strand_counts, mode = "absolute")
 \code{\link{strand_occurrences}},
 \code{\link{plot_strand_bias}}
 }
-

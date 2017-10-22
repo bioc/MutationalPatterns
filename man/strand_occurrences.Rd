@@ -2,7 +2,7 @@
 % Please edit documentation in R/strand_occurrences.R
 \name{strand_occurrences}
 \alias{strand_occurrences}
-\title{Count occurrences per base substitution type and transcriptional strand}
+\title{Count occurrences per base substitution type and strand}
 \usage{
 strand_occurrences(mut_mat_s, by)
 }
@@ -14,12 +14,10 @@ strand_occurrences(mut_mat_s, by)
 }
 \value{
 A data.frame with the total number of mutations and relative
-contribution within group per base substitution type and
-transcriptional strand (T = transcribed strand,
-U = untranscribed strand).
+contribution within group per base substitution type and strand
 }
 \description{
-For each base substitution type and transcriptional strand the total number
+For each base substitution type and strand the total number
 of mutations and the relative contribution within a group is returned.
 }
 \examples{
@@ -44,4 +42,3 @@ strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 \code{\link{plot_strand}},
 \code{\link{plot_strand_bias}}
 }
-

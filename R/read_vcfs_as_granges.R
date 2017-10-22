@@ -62,18 +62,12 @@
 #'
 #' @export
 
-read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
-                                 group = "auto+sex", check_alleles = TRUE)
+read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
+                                    group = "auto+sex", check_alleles = TRUE)
 {
     # Check sample names
     if (length(vcf_files) != length(sample_names))
         stop("Please provide the same number of sample names as VCF files")
-
-    # Check whether the user has adapted to the new behavior of the function.
-    if (genome == "-")
-        stop(paste("Please pass a reference genome string in the 'genome'",
-                   "parameter.  This string can be obtained using",
-                   "available.genomes() from the BSgenome package."))
 
     ref_genome <- base::get(genome)
     ref_organism <- GenomeInfoDb::organism(ref_genome)
@@ -86,6 +80,13 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
     # Check the class of the reference genome
     if (!(class(ref_genome) == "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
+
+    # Using the parallel version of 'apply' effectively disables proper
+    # error-reporting.  A common error turns out to be non-existent input
+    # files.  So, this check provides the right error reporting.
+    if (!all(sapply (vcf_files, file.exists)))
+        stop(paste("Not all VCF files exist.  Please verify the location of",
+                   "your input files."))
 
     # Detect the number of available cores.  Windows does not support forking,
     # only threading, so unfortunately, we have to set it to 1.
@@ -147,7 +148,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
                     # creating a data frame will work as expected.
                     unique_names <- unique(groups_names)
                     groups <- llply(unique_names, function(x) groups[groups_names == x])
-                    groups <- llply(groups, unlist, recursive = F)
+                    groups <- llply(groups, unlist, recursive = FALSE)
 
                     # In case there are multiple styles applied, we only use the first.
                     groups <- unique(as.vector(groups[[1]]))
@@ -161,7 +162,16 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
                 groups <- unique(as.vector(t(groups)))
             }
 
-            vcf <- keepSeqlevels(vcf, groups)
+            # The provided VCF files may not contain all chromosomes that are
+            # available in the reference genome.  Therefore, we only take the
+            # chromosomes that are actually available in the VCF file,
+            # belonging to the filter group.
+            groups <- intersect(groups, seqlevels(vcf))
+
+            # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
+            # on variants, yet, remove all variants that aren't in the filter
+            # group.  By default, keepSeqlevels would produce an error.
+            vcf <- keepSeqlevels(vcf, groups, pruning.mode = "tidy")
         }
 
         if (check_alleles)
@@ -197,6 +207,14 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome = "-",
 ## Deprecated variants
 ##
 
+#'
+#' This function has been removed.  Use 'read_vcfs_as_granges' instead.  The
+#' new function automatically renames the seqlevel style for you, so you no
+#' longer need to run 'rename_chrom' either.
+#'
+#' @noRd
+#' @export
+
 read_vcf <- function(vcf_files, sample_names, genome="-", style="UCSC")
 {
     .Defunct("read_vcfs_as_granges", package="MutationalPatterns",
@@ -206,11 +224,25 @@ read_vcf <- function(vcf_files, sample_names, genome="-", style="UCSC")
                         "so you no longer need to run 'rename_chrom' either."))
 }
 
+#'
+#' This function has been removed.  Use 'read_vcfs_as_granges' instead.  The
+#' new function automatically renames the seqlevel style for you, so you no
+#' longer need to run 'rename_chrom' either.
+#'
+#' @noRd
+#' @export
+
 vcf_to_granges <- function(vcf_files, sample_names, genome="-", style="UCSC")
 {
     # Show the same error message as 'read_vcf()'.
     read_vcf()
 }
+
+#'
+#' This function has been removed.
+#'
+#' @noRd
+#' @export
 
 rename_chrom <- function(granges, style = "UCSC")
 {

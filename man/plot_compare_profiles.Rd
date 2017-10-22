@@ -16,12 +16,14 @@ plot_compare_profiles(profile1, profile2, profile_names = c("profile 1",
 used for plotting, default = c("profile 1", "profile 2")}
 
 \item{profile_ymax}{Maximum value of y-axis (relative contribution) for
-profile plotting, default = 0.15}
+profile plotting, default = 0.2}
 
 \item{diff_ylim}{Y-axis limits for profile difference plot,
 default = c(-0.02, 0.02)}
 
 \item{colors}{6 value color vector}
+
+\item{condensed}{More condensed plotting format. Default = F.}
 }
 \value{
 96 spectrum plot of profile 1, profile 2 and their difference
@@ -53,4 +55,3 @@ plot_compare_profiles(mut_mat[,1],
 \code{\link{mut_matrix}},
 \code{\link{extract_signatures}}
 }
-

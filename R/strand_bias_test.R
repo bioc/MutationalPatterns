@@ -1,11 +1,12 @@
-#' Significance test for transcriptional strand asymmetry
+#' Significance test for strand asymmetry
 #'
-#' This function performs a Poisson test for the ratio between mutations on the
-#' transcribed and untranscribed strand
+#' This function performs a Poisson test for the ratio between mutations on 
+#' each strand
+#' 
 #' @param strand_occurrences Dataframe with mutation count per strand, result
 #' from strand_occurrences()
 #' @return Dataframe with poisson test P value for the ratio between the
-#' transcribed and untrascribed strand per group per base substitution type.
+#' two strands per group per base substitution type.
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #' @importFrom plyr .
@@ -42,30 +43,20 @@ strand_bias_test = function(strand_occurrences)
 {
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
-    variable = NULL
-    transcribed = NULL
-    untranscribed = NULL
+    group = NULL
+    type = NULL
+    strand = NULL
 
     # statistical test for strand ratio
     # poisson test
     df_strand = reshape2::dcast(melt(strand_occurrences),
-                                type + group ~ strand,
+                                group + type ~ strand,
                                 sum,
                                 subset = plyr::.(variable == "no_mutations"))
-
-    ## Prevent using 'T' as a variable name to avoid confusion with TRUE.
-    ## Rename the columns 'T' and 'U' to 'Ts' and 'Us'.
-    colnames(df_strand) <- c("type", "group", "transcribed", "untranscribed")
-
-    df_strand = plyr::ddply(df_strand,
-                            c("group", "type", "transcribed", "untranscribed"),
-                            plyr::summarise,
-                            total = transcribed+untranscribed,
-                            ratio = transcribed/untranscribed,
-                            p_poisson = poisson.test(c(untranscribed,
-                                                        transcribed),
-                                                    r=1)$p.value)
-
+    
+    df_strand$total = df_strand[,3] + df_strand[,4]
+    df_strand$ratio = df_strand[,3] / df_strand[,4]
+    df_strand$p_poisson = apply(df_strand, 1, function(x) poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value)
     df_strand$significant[df_strand$p_poisson < 0.05] = "*"
     df_strand$significant[df_strand$p_poisson >= 0.05] = " "
 

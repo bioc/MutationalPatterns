@@ -2,7 +2,7 @@
 % Please edit documentation in R/strand_bias_test.R
 \name{strand_bias_test}
 \alias{strand_bias_test}
-\title{Significance test for transcriptional strand asymmetry}
+\title{Significance test for strand asymmetry}
 \usage{
 strand_bias_test(strand_occurrences)
 }
@@ -12,11 +12,11 @@ from strand_occurrences()}
 }
 \value{
 Dataframe with poisson test P value for the ratio between the
-transcribed and untrascribed strand per group per base substitution type.
+two strands per group per base substitution type.
 }
 \description{
-This function performs a Poisson test for the ratio between mutations on the
-transcribed and untranscribed strand
+This function performs a Poisson test for the ratio between mutations on 
+each strand
 }
 \examples{
 ## See the 'mut_matrix_stranded()' example for how we obtained the
@@ -42,4 +42,3 @@ strand_bias = strand_bias_test(strand_counts)
 \code{\link{strand_occurrences}},
 \code{\link{plot_strand_bias}}
 }
-

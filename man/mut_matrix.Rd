@@ -31,11 +31,7 @@ library(ref_genome, character.only = TRUE)
 ## ref_genome.
 mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome)
 
-## Et voila.
-mut_mat
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},
 }
-

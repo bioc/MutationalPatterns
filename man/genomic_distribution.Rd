@@ -7,13 +7,13 @@
 genomic_distribution(vcf_list, surveyed_list, region_list)
 }
 \arguments{
-\item{vcf_list}{A list with VCF GRanges objects}
+\item{vcf_list}{A GRangesList or a list with VCF GRanges objects.}
 
-\item{surveyed_list}{A list with Granges of regions of the genome that have
-been surveyed (e.g. determined using GATK CallableLoci)}
+\item{surveyed_list}{A GRangesList or a list with GRanges of regions of
+the genome that have been surveyed (e.g. determined using GATK CallableLoci).}
 
-\item{region_list}{List with GRanges objects containing locations of
-genomic regions}
+\item{region_list}{A GRangesList or a list with GRanges objects containing
+locations of genomic regions.}
 }
 \value{
 A data.frame containing the number observed and number of expected
@@ -30,9 +30,9 @@ vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
 ## Use biomaRt to obtain data.
-## We can query the BioMart database, but this may take a long time
-## though, so we take some shortcuts by loading the results from our
-## examples.  The corresponding code for downloading data can be
+## We can query the BioMart database, but this may take a long time,
+## so we take some shortcuts by loading the results from our
+## examples. The corresponding code for downloading the data can be
 ## found above the command we run.
 
 # mart="ensemble"
@@ -144,4 +144,3 @@ distr <- genomic_distribution(vcfs, surveyed_list, regions)
 \seealso{
 \code{\link{read_vcfs_as_granges}}
 }
-

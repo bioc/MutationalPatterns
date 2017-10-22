@@ -26,7 +26,10 @@ T_TRIPLETS = c(
     "GTA", "GTC", "GTG", "GTT",
     "TTA", "TTC", "TTG", "TTT")
 
-TRIPLETS_96 = c(rep(C_TRIPLETS, 3), rep(T_TRIPLETS, 3))
+CONTEXTS_96 = c(rep(C_TRIPLETS, 3), rep(T_TRIPLETS, 3))
+
+# combine substitutions and context in one 
+TRIPLETS_96 = paste(substr(CONTEXTS_96,1,1), "[", SUBSTITUTIONS_96, "]", substr(CONTEXTS_96,3,3), sep = "")
 
 STRAND = rep(c("U","T"), 96)
 DNA_BASES = c("A", "C", "G", "T")

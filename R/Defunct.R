@@ -2,6 +2,14 @@
 ## Removed functions
 ##
 
+
+#'
+#' This function has been removed. Use 'import' from package 'rtracklayer'
+#' instead.
+#'
+#' @noRd
+#' @export
+
 bed_to_granges <- function(bed_files, region_names)
 {
     .Defunct("import", package="rtracklayer",
@@ -12,6 +20,12 @@ bed_to_granges <- function(bed_files, region_names)
                         "\n    bed <- import(<your file>)",
                         "\n    seqlevelsStyle(bed) <- \"UCSC\"\n"))
 }
+
+#'
+#' This function has been removed.  Use 'nmf' from package 'NMF' instead.
+#'
+#' @noRd
+#' @export
 
 estimate_rank <- function(mut_matrix, rank_range, nrun=100)
 {

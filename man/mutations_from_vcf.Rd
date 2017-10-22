@@ -27,4 +27,3 @@ muts = mutations_from_vcf(vcfs[[1]])
 \seealso{
 \code{\link{read_vcfs_as_granges}}
 }
-

@@ -1,4 +1,4 @@
-#' Plot signature contribution
+#' Plot signature contribution barplot
 #' 
 #' Plot contribution of signatures
 #' 
@@ -12,7 +12,7 @@
 #' will be used as colors in the plot.  By default, ggplot2's colors are used
 #' to generate a palette.
 #'
-#' @return Stacked barplot with contribution of each signatures for each sample
+#' @return Stacked barplot with contribution of each signature for each sample
 #'
 #' @import ggplot2
 #' @importFrom reshape2 melt

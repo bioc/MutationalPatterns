@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_contribution.R
 \name{plot_contribution}
 \alias{plot_contribution}
-\title{Plot signature contribution}
+\title{Plot signature contribution barplot}
 \usage{
 plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
     mode="relative", palette=c())
@@ -24,7 +24,7 @@ will be used as colors in the plot.  By default, ggplot2's colors are used
 to generate a palette.}
 }
 \value{
-Stacked barplot with contribution of each signatures for each sample
+Stacked barplot with contribution of each signature for each sample
 }
 \description{
 Plot contribution of signatures
@@ -70,4 +70,3 @@ plot_contribution(nmf_res$contribution,
 \code{\link{extract_signatures}},
 \code{\link{mut_matrix}}
 }
-

@@ -1,3 +1,42 @@
+MutationalPatterns v1.3.0 (Release date: 2017-10-22)
+=====================================================
+
+Bugfixes:
+* To determine the transcriptional strand of mutations in genes, 
+  all mutations that overlap with multiple genes were excluded. 
+  When these genes are on different strands, it can indeed not
+  be determined whether a mutation is on the transcribed or
+  untransribed strand. However, if these overlapping genes are all
+  on the same strand, the transcriptional strand can be determined,
+  but these were unneccesarily removed from the analysis.
+  This bug is now fixed, and as a result more mutations are now
+  included in the analysis.
+  This bugfix influences the results of:
+  'mut_strand' (previously 'strand_from_vcf') and 'mut_matrix_stranded'
+
+Renamed functions:
+* 'strand_from_vcf' to 'mut_strand'
+* 'mutation_types' to 'mut_type'
+* 'mutation_context' to 'mut_context'
+
+New features & parameter changes:
+* Replicative strand bias analyses
+    - 'mut_strand' and 'mut_matrix_stranded' can now be executed in two modes:
+    'transcription' (default) or 'replication'
+    - All downstream analyses can be performed for both modes with
+    'strand_occurrences', 'strand_bias_test' and 'plot_strand_bias'
+* Condensed plotting option for 'plot_96_profile' and 'plot_192_profile'
+  condensed = F (default), or condensed = T
+
+New functions:
+* 'plot_contribution_heatmap': to visualize the relative contribution of
+  mutational signatures in a heatmap. Samples can be hierarchically clustered.
+* 'cos_sim': to calculate the cosine similarity between two vectors.
+* 'cos_sim_matrix': to calculate all pairwise similarities between mutational profiles
+* 'cluster_signatures': to hierarchically cluster signatures based on cosine similarity
+* 'plot_cosine_heatmap': to visualize pairwise cosine similarities between mutational profiles in a heatmap
+  Sample can be hierarchically clustered.
+
 MutationalPatterns v1.1.3 (Release date: 2017-04-20)
 =====================================================
 

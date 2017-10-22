@@ -35,14 +35,7 @@
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #' 
-#' ## Exclude mitochondrial and autosomal chromosomes.
-#' autosomal = extractSeqlevelsByGroup(species="Homo_sapiens",
-#'                                     style="UCSC",
-#'                                     group="auto")
-#'
-#' vcfs <- lapply(vcfs, function(x) keepSeqlevels(x, autosomal))
-#'
-#' # Take the chromosomes of interest.
+#' # Specify chromosomes of interest.
 #' chromosomes = names(genome(vcfs[[1]])[1:22])
 #'
 #' ## Do a rainfall plot for all chromosomes:
@@ -101,7 +94,7 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
         chr_subset = vcf[seqnames(vcf) == chromosomes[i]]
         n = length(chr_subset)
         if(n<=1){next}
-        type = c(type, mutation_types(chr_subset)[-1])
+        type = c(type, mut_type(chr_subset)[-1])
         loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
         dist = c(dist, diff(start(chr_subset)))
         chrom = c(chrom, rep(chromosomes[i],n-1))

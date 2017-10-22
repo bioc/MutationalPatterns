@@ -3,11 +3,11 @@
 #' Function finds the number of mutations that reside in genomic region and
 #' takes surveyed area of genome into account.
 #' 
-#' @param vcf_list A list with VCF GRanges objects
-#' @param surveyed_list A list with Granges of regions of the genome that have
-#' been surveyed (e.g. determined using GATK CallableLoci)
-#' @param region_list List with GRanges objects containing locations of
-#' genomic regions
+#' @param vcf_list A GRangesList or a list with VCF GRanges objects.
+#' @param surveyed_list A GRangesList or a list with GRanges of regions of
+#' the genome that have been surveyed (e.g. determined using GATK CallableLoci).
+#' @param region_list A GRangesList or a list with GRanges objects containing
+#' locations of genomic regions.
 #'
 #' @return A data.frame containing the number observed and number of expected
 #' mutations in each genomic region.
@@ -19,9 +19,9 @@
 #'                 package="MutationalPatterns"))
 #' 
 #' ## Use biomaRt to obtain data.
-#' ## We can query the BioMart database, but this may take a long time
-#' ## though, so we take some shortcuts by loading the results from our
-#' ## examples.  The corresponding code for downloading data can be
+#' ## We can query the BioMart database, but this may take a long time,
+#' ## so we take some shortcuts by loading the results from our
+#' ## examples. The corresponding code for downloading the data can be
 #' ## found above the command we run.
 #'
 #' # mart="ensemble"
@@ -138,6 +138,11 @@ genomic_distribution = function(vcf_list, surveyed_list, region_list)
 {
     if (length(vcf_list) != length(surveyed_list))
         stop("vcf_list and surveyed_list must have the same length")
+
+    if (is.null(names(region_list)))
+        stop(paste( "Please set the names of region_list using:",
+                    "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
+                    sep="\n"))
 
     df = data.frame()
     for(j in 1:length(region_list) )

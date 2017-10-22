@@ -1,6 +1,7 @@
 #' Count 96 trinucleotide mutation occurrences
 #'  
 #' @param type_context result from type_context function
+#' @importFrom S4Vectors isEmpty
 #' @noRd
 #' @return vector with 96 trinucleotide mutation occurrences
 
@@ -8,8 +9,9 @@ mut_96_occurrences = function(type_context)
 {
     vector = rep(0,96)
     names(vector) = TRIPLETS_96
-
-    if (is.null(type_context$types) || is.null(type_context$context))
+    
+    # if type_context is empty, return vector with zeroes
+    if (isEmpty(type_context$types) || isEmpty(type_context$context))
         return(vector)
     
     # for all mutations in this sample
@@ -31,9 +33,15 @@ mut_96_occurrences = function(type_context)
     return(vector)
 }
 
+#'
+#' This function has been renamed to 'mut_96_occurrences'.
+#'
+#' @noRd
+#' @export
+
 mut_96_occurences = function (type_context, strand)
 {
-    .Defunct("mut_96_occurence", package="MutationalPatterns",
+    .Defunct("mut_96_occurrences", package="MutationalPatterns",
             msg=paste("This function has been renamed to",
                         "'mut_96_occurrences'."))
 }

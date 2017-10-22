@@ -4,14 +4,16 @@
 \alias{plot_96_profile}
 \title{Plot 96 trinucleotide profile}
 \usage{
-plot_96_profile(mut_matrix, colors, ymax = 0.15)
+plot_96_profile(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 }
 \arguments{
 \item{mut_matrix}{96 trinucleotide profile matrix}
 
 \item{colors}{6 value color vector}
 
-\item{ymax}{Y axis maximum value, default = 0.015}
+\item{ymax}{Y axis maximum value, default = 0.2}
+
+\item{condensed}{More condensed plotting format. Default = F.}
 }
 \value{
 96 trinucleotide profile plot
@@ -32,4 +34,3 @@ plot_96_profile(mut_mat[,c(1,4,7)])
 \seealso{
 \code{\link{mut_matrix}}
 }
-

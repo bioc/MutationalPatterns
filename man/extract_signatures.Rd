@@ -32,4 +32,3 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 \seealso{
 \code{\link{mut_matrix}}
 }
-

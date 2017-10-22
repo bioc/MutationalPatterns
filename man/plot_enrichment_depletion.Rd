@@ -40,4 +40,3 @@ plot_enrichment_depletion(distr_test2)
 \code{\link{enrichment_depletion_test}},
 \code{\link{genomic_distribution}}
 }
-

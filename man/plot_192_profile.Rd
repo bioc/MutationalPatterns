@@ -4,14 +4,16 @@
 \alias{plot_192_profile}
 \title{Plot 192 trinucleotide profile}
 \usage{
-plot_192_profile(mut_matrix, colors, ymax = 0.15)
+plot_192_profile(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 }
 \arguments{
 \item{mut_matrix}{192 trinucleotide profile matrix}
 
 \item{colors}{6 value color vector}
 
-\item{ymax}{Y axis maximum value, default = 0.015}
+\item{ymax}{Y axis maximum value, default = 0.2}
+
+\item{condensed}{More condensed plotting format. Default = F.}
 }
 \value{
 192 trinucleotide profile plot
@@ -26,7 +28,7 @@ mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
                                     package="MutationalPatterns"))
 
 ## Extract the signatures.
-## This is a computational intensive task, so we load a precomputed
+## This is a computationally intensive task, so we load a precomputed
 ## version instead.
 # nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
 nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
@@ -43,4 +45,3 @@ plot_192_profile(nmf_res_strand$signatures)
 \code{\link{mut_matrix_stranded}},
 \code{\link{extract_signatures}}
 }
-

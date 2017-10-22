@@ -2,22 +2,20 @@
 % Please edit documentation in R/plot_strand_bias.R
 \name{plot_strand_bias}
 \alias{plot_strand_bias}
-\title{Plot strand bias per base substitution type}
+\title{Plot strand bias per base substitution type per group}
 \usage{
 plot_strand_bias(strand_bias, colors)
 }
 \arguments{
 \item{strand_bias}{data.frame, result from strand_bias function}
 
-\item{colors}{Optional color vector for plotting with 6 values}
+\item{colors}{Optional color vector with 6 values for plotting}
 }
 \value{
 Barplot
 }
 \description{
-For each base substitution type and transcriptional strand the total
-number of mutations and the relative contribution within a group is
-returned.
+Plot strand bias per base substitution type per group
 }
 \examples{
 ## See the 'mut_matrix_stranded()' example for how we obtained the
@@ -47,4 +45,3 @@ plot_strand_bias(strand_bias)
 \code{\link{strand_bias_test}}
 \code{\link{plot_strand}}
 }
-

@@ -4,8 +4,8 @@
 \alias{read_vcfs_as_granges}
 \title{Read VCF files into a GRangesList}
 \usage{
-read_vcfs_as_granges(vcf_files, sample_names, genome = "-",
-  group = "auto+sex", check_alleles = TRUE)
+read_vcfs_as_granges(vcf_files, sample_names, genome, group = "auto+sex",
+  check_alleles = TRUE)
 }
 \arguments{
 \item{vcf_files}{Character vector of VCF file names}
@@ -64,4 +64,3 @@ library(ref_genome, character.only = TRUE)
 vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
 
 }
-
