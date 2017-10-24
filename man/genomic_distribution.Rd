@@ -123,10 +123,8 @@ names(regions) <- c("Promoter", "Promoter flanking", "CTCF",
 seqlevelsStyle(regions) <- "UCSC"
 
 ## Get the filename with surveyed/callable regions
-surveyed_file <- list.files(system.file("extdata",
-                            package="MutationalPatterns"),
-                            pattern = ".bed",
-                            full.names = TRUE)
+surveyed_file <- system.file("extdata/callableloci-sample.bed",
+                            package="MutationalPatterns")
 
 ## Import the file using rtracklayer and use the UCSC naming standard
 library(rtracklayer)

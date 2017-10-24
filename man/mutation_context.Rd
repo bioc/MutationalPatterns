@@ -41,4 +41,3 @@ mut_context <- mutation_context(vcfs[[1]], ref_genome)
 \seealso{
 \code{\link{read_vcfs_as_granges}},
 }
-

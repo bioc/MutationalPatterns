@@ -6,9 +6,6 @@
 #' @param mut_matrix1 96 mutation count matrix (dimensions: 96 mutations X n samples)
 #' @param mut_matrix2 96 mutation count matrix (dimensions: 96 mutations X m samples)
 #' @return Matrix with pairwise cosine similarities (dimensions: n mutational profiles X m mutational profiles)
-#' 
-#' @usage 
-#' cos_sim_matrix(mut_matrix, cancer_signatures)
 #'
 #' @examples
 #' ## You can download mutational signatures from the COSMIC database:
@@ -19,9 +16,13 @@
 #' filename <- system.file("extdata/signatures_probabilities.txt",
 #'                         package="MutationalPatterns")
 #' cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
-#' 
+#'
+#' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
+#' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
+#'                    package="MutationalPatterns"))
+#'
 #' ## Match the order to MutationalPatterns standard of mutation matrix
-#' order = match(row.names(mut_matrix), cancer_signatures$Somatic.Mutation.Type)
+#' order = match(row.names(mut_mat), cancer_signatures$Somatic.Mutation.Type)
 #' ## Reorder cancer signatures dataframe
 #' cancer_signatures = cancer_signatures[order,]
 #' ## Use trinucletiode changes names as row.names
@@ -30,10 +31,6 @@
 #' cancer_signatures = as.matrix(cancer_signatures[,4:33])
 #' ## Rename signatures to number only
 #' colnames(cancer_signatures) = as.character(1:30)
-#'
-#' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
-#' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-#'                     package="MutationalPatterns"))
 #'
 #' ## Calculate the cosine similarity between each COSMIC signature and each 96 mutational profile
 #' cos_sim_matrix(mut_mat, cancer_signatures)

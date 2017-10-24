@@ -62,4 +62,3 @@ strand_from_vcf(vcfs[[1]], genes_hg19)
 \seealso{
 \code{\link{read_vcfs_as_granges}},
 }
-

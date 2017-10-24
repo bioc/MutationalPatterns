@@ -5,7 +5,8 @@
 \title{Compare two 96 mutation profiles}
 \usage{
 plot_compare_profiles(profile1, profile2, profile_names = c("profile 1",
-    "profile 2"), profile_ymax = 0.15, diff_ylim = c(-0.02, 0.02), colors)
+  "profile 2"), profile_ymax = 0.2, diff_ylim = c(-0.02, 0.02), colors,
+  condensed = FALSE)
 }
 \arguments{
 \item{profile1}{First 96 mutation profile}

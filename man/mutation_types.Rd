@@ -28,4 +28,3 @@ mutation_types(vcfs[[1]])
 \seealso{
 \code{\link{read_vcfs_as_granges}}
 }
-

@@ -4,8 +4,8 @@
 \alias{plot_contribution}
 \title{Plot signature contribution barplot}
 \usage{
-plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
-    mode="relative", palette=c())
+plot_contribution(contribution, signatures, index = c(), coord_flip = FALSE,
+  mode = "relative", palette = c())
 }
 \arguments{
 \item{contribution}{Signature contribution matrix}

@@ -17,10 +17,6 @@
 #' @import ggplot2
 #' @importFrom reshape2 melt
 #'
-#' @usage
-#' plot_contribution(contribution, signatures, index=c(), coord_flip=FALSE,
-#'     mode="relative", palette=c())
-#'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following
 #' ## mutation matrix.

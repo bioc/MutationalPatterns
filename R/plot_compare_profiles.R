@@ -19,10 +19,6 @@
 #' @importFrom reshape2 melt
 #' @importFrom BiocGenerics cbind
 #'
-#' @usage
-#' plot_compare_profiles(profile1, profile2, profile_names = c("profile 1",
-#'     "profile 2"), profile_ymax = 0.15, diff_ylim = c(-0.02, 0.02), colors)
-#'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following
 #' ## mutation matrix.
