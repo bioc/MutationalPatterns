@@ -39,20 +39,22 @@ mut_type = function(vcf)
 #'
 #' This function has been renamed.  Use 'mut_type' instead.
 #'
-#' @noRd
-#' @export
-
-get_types <- function(vcf)
-{
-    .Defunct("mut_type", package="MutationalPatterns",
-                msg=paste("This function has been renamed. Use",
-                            "'mut_type' instead."))
-}
-
+#' @param vcf  A GRanges object.
 #'
-#' This function has been renamed.  Use 'mut_type' instead.
+#' @return Character vector with base substitution types
 #'
-#' @noRd
+#' @examples
+#' ## See the 'read_vcfs_as_granges()' example for how we obtained the
+#' ## following data:
+#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+#'                 package="MutationalPatterns"))
+#'
+#' mut_type(vcfs[[1]])
+#'
+#' @seealso
+#' \code{\link{read_vcfs_as_granges}}
+#' \code{\link{mut_type}}
+#'
 #' @export
 
 mutation_types <- function(vcf)

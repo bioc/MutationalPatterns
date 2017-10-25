@@ -73,16 +73,3 @@ strand_occurrences = function(mut_mat_s, by)
 
     return(y)
 }
-
-#'
-#' This function has been renamed to 'strand_occurrences'.
-#'
-#' @noRd
-#' @export
-
-strand_occurences = function (type_context, strand)
-{
-    .Defunct("strand_occurrences", package="MutationalPatterns",
-            msg=paste("This function has been renamed to",
-                        "'strand_occurrences'."))
-}

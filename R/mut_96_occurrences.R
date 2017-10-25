@@ -32,16 +32,3 @@ mut_96_occurrences = function(type_context)
 
     return(vector)
 }
-
-#'
-#' This function has been renamed to 'mut_96_occurrences'.
-#'
-#' @noRd
-#' @export
-
-mut_96_occurences = function (type_context, strand)
-{
-    .Defunct("mut_96_occurrences", package="MutationalPatterns",
-            msg=paste("This function has been renamed to",
-                        "'mut_96_occurrences'."))
-}

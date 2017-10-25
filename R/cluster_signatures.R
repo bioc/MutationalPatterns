@@ -49,7 +49,6 @@
 #' 
 #' @export
 
-
 cluster_signatures = function(signatures, method = "complete")
 {
     # construct cosine similarity matrix

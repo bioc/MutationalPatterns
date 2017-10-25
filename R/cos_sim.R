@@ -15,7 +15,6 @@
 #' 
 #' @export
 
-
 cos_sim = function(x, y)
 {
   res = x %*% y / (sqrt(x %*% x) * sqrt(y %*% y))

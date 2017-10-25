@@ -62,16 +62,3 @@ mut_type_occurrences = function(vcf_list, ref_genome)
     colnames(df) = names(full_table)
     return(df)
 }
-
-#'
-#' This function has been renamed to 'mut_type_occurrences'.
-#'
-#' @noRd
-#' @export
-
-mut_type_occurences = function (type_context, strand)
-{
-    .Defunct("mut_type_occurrences", package="MutationalPatterns",
-            msg=paste("This function has been renamed to",
-                        "'mut_type_occurrences'."))
-}
