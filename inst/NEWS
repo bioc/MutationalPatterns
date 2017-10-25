@@ -1,4 +1,11 @@
-MutationalPatterns v1.3.0 (Release date: 2017-10-24)
+MutationalPatterns v1.3.2 (Release date: 2017-10-24)
+=====================================================
+
+Bugfixes:
+* Removed deprecated functions from previous release.
+* Improved examples in documentation.
+
+MutationalPatterns v1.3.1 (Release date: 2017-10-24)
 =====================================================
 
 Bugfixes:
