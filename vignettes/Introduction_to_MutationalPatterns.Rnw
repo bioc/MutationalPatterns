@@ -13,7 +13,7 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \author{Roel Janssen}
 \author{Ruben van Boxtel}
 \author{Edwin Cuppen}
-\affil{University Medical Center, Utrecht, Netherlands}
+\affil{University Medical Center Utrecht, Utrecht, The Netherlands}
 \date{\today}
 
 \begin{document} 
@@ -45,7 +45,7 @@ genomic analysis workflows and allows easy association with (publicly
 available) annotation data. 
 
 Background on the biological relevance of the different mutational patterns, a practical illustration of the package functionalities, comparison with similar tools and software packages and an elaborate discussion, are described in the MutationalPatterns article, of which a preprint is available at bioRxiv:
-\url{https://www.biorxiv.org/content/early/2016/10/17/071761}
+\url{https://doi.org/10.1101/071761}
 
 \newpage{}
 \section{Data}

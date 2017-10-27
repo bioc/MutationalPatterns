@@ -1,0 +1,17 @@
+citEntry(
+    entry = "article",
+    title = "MutationalPatterns: comprehensive genome-wide analysis of mutational processes",
+    author = personList(
+        as.person("Francis Blokzijl"),
+        as.person("Roel Janssen"),
+        as.person("Ruben van Boxtel"),
+        as.person("Edwin Cuppen")
+    ),
+    year = 2017,
+    journal = "bioRxiv",
+    doi = "10.1101/071761",
+    textVersion =
+        paste("Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen (2017):",
+              "MutationalPatterns: comprehensive genome-wide analysis of mutational processes",
+              "bioRxiv", "doi:10.1101/071761")
+)
