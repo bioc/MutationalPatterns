@@ -32,25 +32,31 @@ library(ggplot2)
 \section{Introduction}
 
 Mutational processes leave characteristic footprints in genomic DNA. This
-package provides a comprehensive set of flexible functions that allows researchers
-to easily evaluate and visualize a multitude of mutational patterns in base substitution
-catalogues of e.g. tumour samples or DNA-repair deficient cells. The package covers a wide
-range of patterns including: mutational signatures, transcriptional and replicative
-strand bias, genomic distribution and association with genomic features, which are
-collectively meaningful for studying the activity of mutational processes. The
-package provides functionalities for both extracting mutational signatures \emph{de
-novo} and determining the contribution of previously identified mutational
-signatures on a single sample level. MutationalPatterns integrates with common R
-genomic analysis workflows and allows easy association with (publicly
-available) annotation data. 
+package provides a comprehensive set of flexible functions that allows
+researchers to easily evaluate and visualize a multitude of mutational patterns
+in base substitution catalogues of e.g. tumour samples or DNA-repair deficient
+cells. The package covers a wide range of patterns including: mutational
+signatures, transcriptional and replicative strand bias, genomic distribution
+and association with genomic features, which are collectively meaningful for
+studying the activity of mutational processes. The package provides
+functionalities for both extracting mutational signatures \emph{de novo} and
+determining the contribution of previously identified mutational signatures on
+a single sample level. MutationalPatterns integrates with common R genomic
+analysis workflows and allows easy association with (publicly available)
+annotation data.
 
-Background on the biological relevance of the different mutational patterns, a practical illustration of the package functionalities, comparison with similar tools and software packages and an elaborate discussion, are described in the MutationalPatterns article, of which a preprint is available at bioRxiv:
+Background on the biological relevance of the different mutational patterns, a
+practical illustration of the package functionalities, comparison with similar
+tools and software packages and an elaborate discussion, are described in the
+MutationalPatterns article, of which a preprint is available at bioRxiv:
 \url{https://doi.org/10.1101/071761}
 
 \newpage{}
 \section{Data}
 
-To perform the mutational pattern analyses, you need to load one or multiple VCF files with single-nucleotide variant calls and the corresponding reference genome. 
+To perform the mutational pattern analyses, you need to load one or multiple
+VCF files with single-nucleotide variant calls and the corresponding reference
+genome.
  
 \subsection{List reference genome}
 
@@ -119,19 +125,19 @@ head(muts, 12)
 @
 
 We can retrieve the base substitutions from the VCF GRanges object and convert
-them to the 6 types of base substitution types that are distinguished by convention:
-C>A, C>G, C>T, T>A, T>C, T>G. For example, when the reference allele is G and the
-alternative allele is T (G>T), \Rfunction{mut\_type} returns the G:C>T:A mutation
-as a C>A mutation:
+them to the 6 types of base substitution types that are distinguished by
+convention: C>A, C>G, C>T, T>A, T>C, T>G. For example, when the reference
+allele is G and the alternative allele is T (G>T), \Rfunction{mut\_type}
+returns the G:C>T:A mutation as a C>A mutation:
 
 <<mut_type>>=
 types = mut_type(vcfs[[1]])
 head(types, 12)
 @
 
-To retrieve the sequence context (one base upstream and one base downstream) of the
-base substitutions in the VCF object from the reference genome, you can use the
-\Rfunction{mut\_context} function:
+To retrieve the sequence context (one base upstream and one base downstream) of
+the base substitutions in the VCF object from the reference genome, you can use
+the \Rfunction{mut\_context} function:
 
 <<mut_context>>=
 context = mut_context(vcfs[[1]], ref_genome)
@@ -139,8 +145,9 @@ head(context, 12)
 @
 
 With \Rfunction{type\_context}, you can retrieve the types and contexts
-for all positions in the VCF GRanges object. For the base substitutions that are converted to the conventional base
-substitution types, the reverse complement of the sequence context is returned.
+for all positions in the VCF GRanges object. For the base substitutions that are
+converted to the conventional base substitution types, the reverse complement of
+the sequence context is returned.
 
 <<type_context>>=
 type_context = type_context(vcfs[[1]], ref_genome)
@@ -160,10 +167,10 @@ type_occurrences
 
 \subsection{Mutation spectrum}
 
-A mutation spectrum shows the relative contribution of each mutation type in the 
-base substitution catalogs. The \Rfunction{plot\_spectrum} function plots the
-mean relative contribution of each of the 6 base substitution types over all
-samples. Error bars indicate standard deviation over all samples. The total
+A mutation spectrum shows the relative contribution of each mutation type in
+the base substitution catalogs. The \Rfunction{plot\_spectrum} function plots
+the mean relative contribution of each of the 6 base substitution types over
+all samples. Error bars indicate standard deviation over all samples. The total
 number of mutations is indicated.
 
 <<plot_spectrum>>=
@@ -182,7 +189,8 @@ Plot spectrum without legend:
 p3 <- plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 @
 
-The gridExtra package will be used throughout this vignette to combine multiple plots:
+The gridExtra package will be used throughout this vignette to combine multiple
+plots:
 <<combine_plot_spectrum_noeval, eval=FALSE>>=
 library("gridExtra")
 grid.arrange(p1, p2, p3, ncol=3, widths=c(3,3,1.75))
@@ -210,7 +218,7 @@ p4 <- plot_spectrum(type_occurrences, by = tissue, CT = TRUE, legend = TRUE)
 Define your own 7 colors for spectrum plotting:
 <<plot_spectrum_5>>=
 palette <- c("pink", "orange", "blue", "lightblue", "green", "red", "purple")
-p5 <- plot_spectrum(type_occurrences, CT = TRUE, legend = TRUE, colors = palette)
+p5 <- plot_spectrum(type_occurrences, CT=TRUE, legend=TRUE, colors=palette)
 @
 
 <<combine_plot_spectrum_2_noeval, echo=FALSE>>=
@@ -236,22 +244,29 @@ Make a 96 trinucleodide mutation count matrix:
 <<mut_matrix>>=
 mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome)
 head(mut_mat)
-
 @
 
 Plot the 96 profile of two samples:
+<<plot_96_profile_2_e, eval=FALSE, width=7, height=3>>=
+plot_96_profile(mut_mat[,c(1,7)])
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile_2, fig=TRUE, width=7, height=3>>=
+<<plot_96_profile_2, fig=TRUE, width=7, height=3, echo=FALSE>>=
 plot_96_profile(mut_mat[,c(1,7)])
 @
 \end{center}
 \end{figure}
 
 Plot 96 profile of two samples in a more condensed plotting format:
+<<plot_96_profile_3_e, eval=FALSE, width=7, height=3>>=
+plot_96_profile(mut_mat[,c(1,7)], condensed = TRUE)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile_3, fig=TRUE, width=7, height=3>>=
+<<plot_96_profile_3, fig=TRUE, width=7, height=3, echo=FALSE>>=
 plot_96_profile(mut_mat[,c(1,7)], condensed = TRUE)
 @
 \end{center}
@@ -264,10 +279,10 @@ plot_96_profile(mut_mat[,c(1,7)], condensed = TRUE)
 
 Mutational signatures are thought to represent mutational processes, and are
 characterized by a specific contribution of 96 base substitution types with a
-certain sequence context. Mutational signatures can be extracted from your mutation
-count matrix, with non-negative matrix factorization (NMF). A critical parameter
-in NMF is the factorization rank, which is the number of
-mutational signatures. You can determine the optimal factorization rank using the NMF
+certain sequence context. Mutational signatures can be extracted from your
+mutation count matrix, with non-negative matrix factorization (NMF). A critical
+parameter in NMF is the factorization rank, which is the number of mutational
+signatures. You can determine the optimal factorization rank using the NMF
 package \citep{Gaujoux2010}. As described in their paper:
 
 ``...a common
@@ -287,21 +302,26 @@ mut_mat <- mut_mat + 0.0001
 Use the NMF package to generate an estimate rank plot:
 <<use_nmf>>=
 library("NMF")
-estimate <- nmf(mut_mat, rank = 2:5, method = "brunet", nrun = 10, seed = 123456)
+estimate <- nmf(mut_mat, rank=2:5, method="brunet", nrun=10, seed=123456)
+@
+
+And plot it:
+<<estimate_rank_e, eval=FALSE, width=7, height=5>>=
+plot(estimate)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<estimate_rank, fig=TRUE, width=7, height=5>>=
+<<estimate_rank, fig=TRUE, width=7, height=5, echo=FALSE>>=
 plot(estimate)
-
 @
 \end{center}
 \end{figure}
 
-Extract 2 mutational signatures from the mutation count matrix with \Rfunction{extract\_signatures}
-(For larger datasets it is wise to perform more iterations by changing the nrun parameter to achieve
-stability and avoid local minima):
+Extract 2 mutational signatures from the mutation count matrix with
+\Rfunction{extract\_signatures} (For larger datasets it is wise to perform more
+iterations by changing the nrun parameter to achieve stability and avoid local
+minima):
 
 <<extract_signatures>>=
 nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10)
@@ -314,82 +334,108 @@ rownames(nmf_res$contribution) <- c("Signature A", "Signature B")
 @
 
 Plot the 96-profile of the signatures:
+<<plot_96_profile_e, eval=FALSE, width=7, height=3>>=
+plot_96_profile(nmf_res$signatures, condensed = TRUE)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile, fig=TRUE, width=7, height=3>>=
+<<plot_96_profile, fig=TRUE, width=7, height=3, echo=FALSE>>=
 plot_96_profile(nmf_res$signatures, condensed = TRUE)
 @
 \end{center}
 \end{figure}
 
 Visualize the contribution of the signatures in a barplot:
-\begin{figure}[H]
-\begin{center}
 <<plot_contribution>>=
-pc1 <- plot_contribution(nmf_res$contribution, nmf_res$signature, mode = "relative")
+pc1 <- plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         mode = "relative")
 @
-\end{center}
-\end{figure}
 
 Visualize the contribution of the signatures in absolute number of mutations:
+<<plot_contribution_2>>=
+pc2 <- plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         mode = "absolute")
+@
+
+Combine the two plots:
+<<plot_contribution_2_fig_e, fig=TRUE, width=7, height=5, eval=FALSE>>=
+grid.arrange(pc1, pc2)
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_2, fig=TRUE, width=7, height=5>>=
-pc2 <- plot_contribution(nmf_res$contribution, nmf_res$signature, mode = "absolute")
-
+<<plot_contribution_2_fig, fig=TRUE, width=7, height=5, echo=FALSE>>=
 grid.arrange(pc1, pc2)
-
 @
 \end{center}
 \end{figure}
 
 Flip X and Y coordinates:
 
-\begin{figure}[H]
-\begin{center}
-<<plot_contribution_4, fig=TRUE, width=7, height=4>>=
+<<plot_contribution_4_e, eval=FALSE>>=
 plot_contribution(nmf_res$contribution, nmf_res$signature,
                          mode = "absolute", coord_flip = TRUE)
-
 @
-\end{center}
-\end{figure}
-
-The relative contribution of each signature for each sample can also be plotted as a heatmap with \Rfunction{plot\_contribution\_heatmap}, which might be easier to interpret and compare than stacked barplots. The samples can be hierarchically clustered based on their euclidean distance. The signatures can be plotted in a user-specified order.
-
-Plot signature contribution as a heatmap with sample clustering dendrogram and a specified signature order:
 
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_heatmap>>=
-pch1 <- plot_contribution_heatmap(nmf_res$contribution, sig_order = c("Signature B", "Signature A"))
+<<plot_contribution_4, fig=TRUE, width=7, height=4, echo=FALSE>>=
+plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         mode = "absolute", coord_flip = TRUE)
 @
 \end{center}
 \end{figure}
+
+The relative contribution of each signature for each sample can also be plotted
+as a heatmap with \Rfunction{plot\_contribution\_heatmap}, which might be easier
+to interpret and compare than stacked barplots. The samples can be
+hierarchically clustered based on their euclidean distance. The signatures can
+be plotted in a user-specified order.
+
+Plot signature contribution as a heatmap with sample clustering dendrogram and
+a specified signature order:
+
+<<plot_contribution_heatmap>>=
+pch1 <- plot_contribution_heatmap(nmf_res$contribution,
+                                  sig_order = c("Signature B", "Signature A"))
+@
 
 Plot signature contribution as a heatmap without sample clustering:
+<<plot_contribution_heatmap2_e>>=
+pch2 <- plot_contribution_heatmap(nmf_res$contribution, cluster_samples=FALSE)
+@
+
+Combine the plots into one figure:
+<<plot_contribution_heatmap2_e2, eval=FALSE>>=
+grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6))
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_heatmap2, fig=TRUE, width=6, height=3>>=
-pch2 <- plot_contribution_heatmap(nmf_res$contribution, cluster_samples = FALSE)
+<<plot_contribution_heatmap2, fig=TRUE, width=6, height=3, echo=FALSE>>=
 grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6))
-
 @
 \end{center}
 \end{figure}
 
-Compare the reconstructed mutational profile with the original mutational profile:
+Compare the reconstructed mutational profile with the original mutational
+profile:
+
+<<plot_compare_profiles_e, eval=FALSE>>=
+plot_compare_profiles(mut_mat[,1],
+                        nmf_res$reconstructed[,1],
+                        profile_names = c("Original", "Reconstructed"),
+                        condensed = TRUE)
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_compare_profiles, fig=TRUE, width=6, height=5.5>>=
+<<plot_compare_profiles, fig=TRUE, width=6, height=5.5, echo=FALSE>>=
 plot_compare_profiles(mut_mat[,1], 
                         nmf_res$reconstructed[,1], 
                         profile_names = c("Original", "Reconstructed"),
                         condensed = TRUE)
-
 @
 \end{center}
 \end{figure}
@@ -416,16 +462,20 @@ cancer_signatures = as.matrix(cancer_signatures[,4:33])
 @ 
 
 Plot mutational profile of the first two COSMIC signatures:
+<<plot_96_profile_COSMIC_e, eval=FALSE>>=
+plot_96_profile(cancer_signatures[,1:2], condensed = TRUE, ymax = 0.3)
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile_COSMIC, fig=TRUE, width=7, height=3>>=
+<<plot_96_profile_COSMIC, fig=TRUE, width=7, height=3, echo=FALSE>>=
 plot_96_profile(cancer_signatures[,1:2], condensed = TRUE, ymax = 0.3)
 @
 \end{center}
 \end{figure}
 
-Hierarchically cluster the COSMIC signatures based on their similarity with average linkage:
+Hierarchically cluster the COSMIC signatures based on their similarity with
+average linkage:
 
 <<cluster_COSMIC, fig=TRUE, width=7, height=5>>=
 hclust_cosmic = cluster_signatures(cancer_signatures, method = "average")
@@ -436,34 +486,43 @@ plot(hclust_cosmic)
 
 \subsubsection{Similarity between mutational profiles and COSMIC signatures}
 
-The similarity between each mutational profile and each COSMIC signature, can be calculated with
-\Rfunction{cos\_sim\_matrix}, and visualized with \Rfunction{plot\_cosine\_heatmap}.
-The cosine similarity reflects how well each mutational profile can be explained by each signature
-individually. The advantage of this heatmap representation is that it shows in a glance the similarity
-in mutational profiles between samples, while at the same time providing information on which signatures
-are most prominent. The samples can be hierarchically clustered in \Rfunction{plot\_cosine\_heatmap}.
+The similarity between each mutational profile and each COSMIC signature, can be
+calculated with \Rfunction{cos\_sim\_matrix}, and visualized with
+\Rfunction{plot\_cosine\_heatmap}. The cosine similarity reflects how well each
+mutational profile can be explained by each signature individually. The
+advantage of this heatmap representation is that it shows in a glance the
+similarity in mutational profiles between samples, while at the same time
+providing information on which signatures are most prominent. The samples can be
+hierarchically clustered in \Rfunction{plot\_cosine\_heatmap}.
 
-The cosine similarity between two mutational profiles/signatures can be calculated
-with \Rfunction{cos\_sim}:
+The cosine similarity between two mutational profiles/signatures can be
+calculated with \Rfunction{cos\_sim}:
 
 <<cos_sim>>=
 cos_sim(mut_mat[,1], cancer_signatures[,1])
 @
 
-Calculate pairwise cosine similarity between mutational profiles and COSMIC signatures:
+Calculate pairwise cosine similarity between mutational profiles and COSMIC
+signatures:
 
 <<cos_sim_cosmic_samples, fig=TRUE, width=7, height=3.5>>=
 cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cancer_signatures)
 # Plot heatmap with specified signature order
-plot_cosine_heatmap(cos_sim_samples_signatures, col_order = cosmic_order, cluster_rows = TRUE)
-
+plot_cosine_heatmap(cos_sim_samples_signatures,
+                    col_order = cosmic_order,
+                    cluster_rows = TRUE)
 @
 
 \subsubsection{Find optimal contribution of COSMIC signatures to reconstruct 96 mutational profiles}
 
-In addition to \textit{de novo} extraction of signatures, the contribution of any set of signatures to the mutational profile of a sample can be quantified. This unique feature is specifically useful for mutational signature analyses of small cohorts or individual samples, but also to relate own findings to known signatures and published findings. The  \Rfunction{fit\_to\_signatures} function finds the optimal
-linear combination of mutational signatures that most closely reconstructs
-the mutation matrix by solving a non-negative least-squares constraints problem.
+In addition to \textit{de novo} extraction of signatures, the contribution of
+any set of signatures to the mutational profile of a sample can be quantified.
+This unique feature is specifically useful for mutational signature analyses of
+small cohorts or individual samples, but also to relate own findings to known
+signatures and published findings. The  \Rfunction{fit\_to\_signatures} function
+finds the optimal linear combination of mutational signatures that most closely
+reconstructs the mutation matrix by solving a non-negative least-squares
+constraints problem.
 
 Fit mutation matrix to the COSMIC mutational signatures:
 
@@ -471,7 +530,8 @@ Fit mutation matrix to the COSMIC mutational signatures:
 fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
 @ 
 
-Plot the optimal contribution of the COSMIC signatures in each sample as a stacked barplot.
+Plot the optimal contribution of the COSMIC signatures in each sample as a
+stacked barplot.
 
 <<plot_contribution_3_noeval, eval=FALSE>>=
 # Select signatures with some contribution
@@ -481,7 +541,6 @@ plot_contribution(fit_res$contribution[select,],
                     cancer_signatures[,select],
                     coord_flip = FALSE,
                     mode = "absolute")
-
 @
 
 <<plot_contribution_3, echo=FALSE>>=
@@ -503,22 +562,35 @@ ggsave("plot_contribution_3.pdf",
 \end{center}
 \end{figure}
 
-Plot relative contribution of the cancer signatures in each sample as a heatmap with sample clustering:
+Plot relative contribution of the cancer signatures in each sample as a heatmap
+with sample clustering:
+<<plot_contribution_heatmap3_e, eval=FALSE>>=
+plot_contribution_heatmap(fit_res$contribution,
+                          cluster_samples = TRUE,
+                          method = "complete")
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_heatmap3, fig=TRUE, width=8, height=3>>=
-plot_contribution_heatmap(fit_res$contribution, cluster_samples = TRUE, method = "complete")
+<<plot_contribution_heatmap3, fig=TRUE, width=8, height=3, echo=FALSE>>=
+plot_contribution_heatmap(fit_res$contribution,
+                          cluster_samples = TRUE,
+                          method = "complete")
 @
 \end{center}
 \end{figure}
 
 Compare the reconstructed mutational profile of sample 1
 with its original mutational profile:
+<<plot_compare_profiles_2_e, eval=FALSE>>=
+plot_compare_profiles(mut_mat[,1], fit_res$reconstructed[,1],
+                        profile_names = c("Original", "Reconstructed"),
+                        condensed = TRUE)
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_compare_profiles_2, fig=TRUE, width=6, height=5.5>>=
+<<plot_compare_profiles_2, fig=TRUE, width=6, height=5.5, echo=FALSE>>=
 plot_compare_profiles(mut_mat[,1], fit_res$reconstructed[,1],
                         profile_names = c("Original", "Reconstructed"),
                         condensed = TRUE)
@@ -536,12 +608,13 @@ cos_sim_ori_rec <- cos_sim_matrix(mut_mat, fit_res$reconstructed)
 cos_sim_ori_rec <- as.data.frame(diag(cos_sim_ori_rec))
 @
 
-We can use ggplot to make a barplot of the cosine similarities between the original
-and reconstructed mutational profile of each sample. This clearly shows how well each
-mutational profile can be reconstructed with the COSMIC mutational signatures. Two
-identical profiles have a cosine similarity of 1. The lower the cosine similarity between
-original and reconstructed, the less well the original mutational profile can be reconstructed
-with the COSMIC signatures. You could use, for example, cosine similarity of 0.95 as a cutoff.
+We can use ggplot to make a barplot of the cosine similarities between the
+original and reconstructed mutational profile of each sample. This clearly
+shows how well each mutational profile can be reconstructed with the COSMIC
+mutational signatures. Two identical profiles have a cosine similarity of 1.
+The lower the cosine similarity between original and reconstructed, the less
+well the original mutational profile can be reconstructed with the COSMIC
+signatures. You could use, for example, cosine similarity of 0.95 as a cutoff.
 
 <<cos_sim_ori_rec>>=
 # Adjust data frame for plotting with gpplot
@@ -549,9 +622,7 @@ colnames(cos_sim_ori_rec) = "cos_sim"
 cos_sim_ori_rec$sample = row.names(cos_sim_ori_rec)
 @
 
-\begin{figure}[H]
-\begin{center}
-<<plot_cos_sim_ori_rec, fig=TRUE, width=6, height=3>>=
+<<plot_cos_sim_ori_rec_e, eval=FALSE>>=
 # Load ggplot2
 library(ggplot2)
 # Make barplot
@@ -568,7 +639,27 @@ ggplot(cos_sim_ori_rec, aes(y=cos_sim, x=sample)) +
         panel.grid.major.y=element_blank()) +
   # Add cut.off line
   geom_hline(aes(yintercept=.95))
+@
 
+\begin{figure}[H]
+\begin{center}
+<<plot_cos_sim_ori_rec, fig=TRUE, width=6, height=3, echo=FALSE>>=
+# Load ggplot2
+library(ggplot2)
+# Make barplot
+ggplot(cos_sim_ori_rec, aes(y=cos_sim, x=sample)) +
+  geom_bar(stat="identity", fill = "skyblue4") +
+  coord_cartesian(ylim=c(0.8, 1)) +
+  # coord_flip(ylim=c(0.8,1)) +
+  ylab("Cosine similarity\n original VS reconstructed") +
+  xlab("") +
+  # Reverse order of the samples such that first is up
+  # xlim(rev(levels(factor(cos_sim_ori_rec$sample)))) +
+  theme_bw() +
+  theme(panel.grid.minor.y=element_blank(),
+        panel.grid.major.y=element_blank()) +
+  # Add cut.off line
+  geom_hline(aes(yintercept=.95))
 @
 \end{center}
 \end{figure}
@@ -631,25 +722,26 @@ strand_bias <- strand_bias_test(strand_counts)
 strand_bias
 @
 
-Plot the mutation spectrum with strand distinction
-
-\begin{figure}[H]
-\begin{center}
+Plot the mutation spectrum with strand distinction:
 <<plot_strand>>=
 ps1 <- plot_strand(strand_counts, mode = "relative")
 @ 
-\end{center}
-\end{figure}
 
 Plot the effect size (log2(untranscribed/transcribed) of the strand bias.
 Asteriks indicate significant strand bias.
+<<plot_strand_bias_3>>=
+ps2 <- plot_strand_bias(strand_bias)
+@
+
+Combine the plots into one figure:
+<<plot_strand_bias_e, eval=FALSE>>=
+grid.arrange(ps1, ps2)
+@
 
 \begin{figure}[H]
 \begin{center}
-<<plot_strand_bias, fig=TRUE, width=7.5, height=5.5>>=
-ps2 <- plot_strand_bias(strand_bias)
+<<plot_strand_bias, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
 grid.arrange(ps1, ps2)
-
 @
 \end{center}
 \end{figure}
@@ -657,12 +749,18 @@ grid.arrange(ps1, ps2)
 
 \subsection{Replicative strand bias analysis}
 
-The involvement of replication-associated mechanisms can be evaluated by testing for a
-mutational bias between the leading and lagging strand. The replication strand is dependent
-on the locations of replication origins from which DNA replication is fired. However,
-replication timing is dynamic and cell-type specific, which makes replication strand determination less straightforward than transcriptional strand bias analysis. Replication timing profiles can be generated with Repli-Seq experiments. Once the replication direction is defined, a strand asymmetry analysis can be performed similarly as the transcription strand bias analysis.
+The involvement of replication-associated mechanisms can be evaluated by
+testing for a mutational bias between the leading and lagging strand. The
+replication strand is dependent on the locations of replication origins from
+which DNA replication is fired. However, replication timing is dynamic and
+cell-type specific, which makes replication strand determination less
+straightforward than transcriptional strand bias analysis. Replication timing
+profiles can be generated with Repli-Seq experiments. Once the replication
+direction is defined, a strand asymmetry analysis can be performed similarly as
+the transcription strand bias analysis.
 
-Read example bed file provided with the package with replication direction annotation:
+Read example bed file provided with the package with replication direction
+annotation:
 
 <<repli_file>>=
 repli_file = system.file("extdata/ReplicationDirectionRegions.bed",
@@ -678,12 +776,14 @@ seqlevelsStyle(repli_strand_granges) = "UCSC"
 repli_strand_granges
 @
 
-The GRanges object should have a ``strand\_info'' metadata column, which contains only two different annotations,
-e.g. ``left'' and ``right'', or ``leading'' and ``lagging''. The genomic ranges cannot overlap, to allow only one
-annotation per location.
+The GRanges object should have a ``strand\_info'' metadata column, which
+contains only two different annotations, e.g. ``left'' and ``right'', or
+``leading'' and ``lagging''. The genomic ranges cannot overlap, to allow only
+one annotation per location.
 
 Get replicative strand information for all positions in the first VCF
-object. No strand information ``-'' is returned for base substitutions in unannotated genomic regions.
+object. No strand information ``-'' is returned for base substitutions in
+unannotated genomic regions.
 
 <<strand_from_vcf_rep>>=
 strand_rep <- mut_strand(vcfs[[1]], repli_strand_granges, mode = "replication")
@@ -694,17 +794,21 @@ Make mutation count matrix with transcriptional strand information (96
 trinucleotides * 2 strands = 192 features).
 
 <<mut_matrix_stranded_rep>>=
-mut_mat_s_rep <- mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges, mode = "replication")
+mut_mat_s_rep <- mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
+                                     mode = "replication")
 mut_mat_s_rep[1:5, 1:5]
 @
 
-The levels of the "strand\_info" metadata in the GRanges object determines the order in which the strands
-are reported in the mutation matrix that is returned by \Rfunction{mut\_matrix\_stranded},
-so if you want to count right before left, you can specify this, before you run \Rfunction{mut\_matrix\_stranded}:
+The levels of the "strand\_info" metadata in the GRanges object determines the
+order in which the strands are reported in the mutation matrix that is returned
+by \Rfunction{mut\_matrix\_stranded}, so if you want to count right before left,
+you can specify this, before you run \Rfunction{mut\_matrix\_stranded}:
 
 <<specify_levels>>=
-repli_strand_granges$strand_info <- factor(repli_strand_granges$strand_info, levels = c("right", "left"))
-mut_mat_s_rep2 <- mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges, mode = "replication")
+repli_strand_granges$strand_info <- factor(repli_strand_granges$strand_info,
+                                           levels = c("right", "left"))
+mut_mat_s_rep2 <- mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
+                                      mode = "replication")
 mut_mat_s_rep2[1:5, 1:5]
 @
 
@@ -724,27 +828,29 @@ strand_bias_rep
 
 Plot the mutation spectrum with strand distinction:
 
-\begin{figure}[H]
-\begin{center}
 <<plot_strand_rep>>=
 ps1 <- plot_strand(strand_counts_rep, mode = "relative")
 @
-\end{center}
-\end{figure}
 
 Plot the effect size (log2(untranscribed/transcribed) of the strand bias. 
 Asteriks indicate significant strand bias. 
 
+<<plot_strand_bias_rep2>>=
+ps2 <- plot_strand_bias(strand_bias_rep)
+@
+
+Combine the plots into one figure:
+<<plot_strand_bias_rep_e, eval=FALSE>>=
+grid.arrange(ps1, ps2)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_strand_bias_rep, fig=TRUE, width=7.5, height=5.5>>=
-ps2 <- plot_strand_bias(strand_bias_rep)
-
+<<plot_strand_bias_rep, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
 grid.arrange(ps1, ps2)
 @ 
 \end{center}
 \end{figure}
-
 
 \subsection{Extract signatures with strand bias}
 
@@ -764,11 +870,11 @@ a <- plot_192_profile(nmf_res_strand$signatures, condensed = TRUE)
 @
 
 Plot strand bias per mutation type for each signature with significance test:
-
 <<plot_strand_bias>>=
 b <- plot_signature_strand_bias(nmf_res_strand$signatures)
 @
 
+Combine the plots into one figure:
 <<plot_192_profile_noeval, eval=FALSE>>=
 grid.arrange(a, b, ncol = 2, widths = c(5, 1.8))
 @
@@ -922,7 +1028,6 @@ promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
 
 flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
                                     package="MutationalPatterns"))
-
 @ 
 
 Combine all genomic regions (GRanges objects) in a named list:
@@ -958,7 +1063,8 @@ Download the example surveyed region data:
 
 <<download_bed_data>>=
 ## Get the filename with surveyed/callable regions
-surveyed_file <- system.file("extdata/callableloci-sample.bed", package = "MutationalPatterns")
+surveyed_file <- system.file("extdata/callableloci-sample.bed",
+                             package = "MutationalPatterns")
 
 ## Import the file using rtracklayer and use the UCSC naming standard
 library(rtracklayer)
@@ -986,9 +1092,13 @@ distr_test <- enrichment_depletion_test(distr, by = tissue)
 head(distr_test)
 @ 
 
+<<plot_enrichment_depletion_e, eval=FALSE>>=
+plot_enrichment_depletion(distr_test)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_enrichment_depletion, fig=TRUE, width=7, height=5>>=
+<<plot_enrichment_depletion, fig=TRUE, width=7, height=5, echo=FALSE>>=
 plot_enrichment_depletion(distr_test)
 @
 \end{center}
