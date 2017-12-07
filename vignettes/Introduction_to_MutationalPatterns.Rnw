@@ -396,6 +396,10 @@ be plotted in a user-specified order.
 Plot signature contribution as a heatmap with sample clustering dendrogram and
 a specified signature order:
 
+<<pdf_device_prep2, echo=FALSE, results=hide>>=
+    grDevices::pdf(NULL)
+@
+
 <<plot_contribution_heatmap>>=
 pch1 <- plot_contribution_heatmap(nmf_res$contribution,
                                   sig_order = c("Signature B", "Signature A"))
@@ -409,6 +413,10 @@ pch2 <- plot_contribution_heatmap(nmf_res$contribution, cluster_samples=FALSE)
 Combine the plots into one figure:
 <<plot_contribution_heatmap2_e2, eval=FALSE>>=
 grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6))
+@
+
+<<pdf_device_prep3, echo=FALSE, results=hide>>=
+    grDevices::dev.off()
 @
 
 \begin{figure}[H]
@@ -505,12 +513,20 @@ cos_sim(mut_mat[,1], cancer_signatures[,1])
 Calculate pairwise cosine similarity between mutational profiles and COSMIC
 signatures:
 
+<<pdf_device_prep0, echo=FALSE, results=hide>>=
+    grDevices::pdf(NULL)
+@
+
 <<cos_sim_cosmic_samples, fig=TRUE, width=7, height=3.5>>=
 cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cancer_signatures)
 # Plot heatmap with specified signature order
 plot_cosine_heatmap(cos_sim_samples_signatures,
                     col_order = cosmic_order,
                     cluster_rows = TRUE)
+@
+
+<<pdf_device_prep1, echo=FALSE, results=hide>>=
+    grDevices::dev.off()
 @
 
 \subsubsection{Find optimal contribution of COSMIC signatures to reconstruct 96 mutational profiles}
