@@ -88,7 +88,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
         strand = mut_strand(vcf, ranges, mode = "transcription")
         row = mut_192_occurrences(type_context, strand)
         return(row)
-      }, mc.cores = num_cores, mc.silent = FALSE)
+      }, mc.cores = num_cores)
       
       # Combine the rows in one dataframe
       for (row in rows)
@@ -109,7 +109,10 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
     
     # Combine the rows in one dataframe
     for (row in rows)
+    {
+      if (class (row) == "try-error") stop (row)
       df = rbind (df, row)
+    }
   }
   
   # Add row names to data.frame

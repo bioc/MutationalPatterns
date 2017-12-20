@@ -1,3 +1,23 @@
+MutationalPatterns v1.4.2 (Release date: 2017-12-19)
+=====================================================
+
+Improvements.
+* Improve error handling with parallel functions.
+
+Bugfixes:
+* Up the cowplot dependency to fix empty plots bug.
+
+MutationalPatterns v1.4.1 (Release date: 2017-11-13)
+=====================================================
+
+Improvements:
+* Avoid letting lines run off the paper in the PDF vignette.
+
+MutationalPatterns v1.4.0 (Release date: 2017-10-30)
+=====================================================
+
+Bioconductor 3.6 release.
+
 MutationalPatterns v1.3.2 (Release date: 2017-10-24)
 =====================================================
 
