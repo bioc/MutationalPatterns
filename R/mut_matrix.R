@@ -46,7 +46,10 @@ mut_matrix = function(vcf_list, ref_genome)
 
     # Merge the rows into a dataframe.
     for (row in rows)
+    {
+        if (class (row) == "try-error") stop (row)
         df = rbind (df, row)
+    }
 
     names(df) = names(row)
     row.names(df) = names(vcf_list)

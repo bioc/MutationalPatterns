@@ -81,13 +81,6 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     if (!(class(ref_genome) == "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
 
-    # Using the parallel version of 'apply' effectively disables proper
-    # error-reporting.  A common error turns out to be non-existent input
-    # files.  So, this check provides the right error reporting.
-    if (!all(sapply (vcf_files, file.exists)))
-        stop(paste("Not all VCF files exist.  Please verify the location of",
-                   "your input files."))
-
     # Detect the number of available cores.  Windows does not support forking,
     # only threading, so unfortunately, we have to set it to 1.
     # On confined OS environments, this value can be NA, and in such
@@ -98,25 +91,31 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     else
         num_cores = 1
 
-    # To be able to print warnings from within the mclapply call,
-    # we need to explicitly set this option. See:
-    # https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=17122
+    # We handle errors and warnings separately for mclapply, because the error
+    # reporting of mclapply is done through its return value(s).
     original_warn_state = getOption("warn")
-    options(warn=1)
+    options(warn=-1)
+
+    # Store warning messages in a vector.
+    warnings <- NULL
 
     # Show the warning once for all VCF files that are loaded with this
     # call to read_vcfs_as_granges.
     if (!check_alleles)
     {
-        warning(paste("check_alleles is set to FALSE.  Make sure your input",
-                      "VCF does not contain any positions with insertions,",
-                      "deletions or multiple alternative alleles, as these",
-                      "positions cannot be analysed with MutationalPatterns",
-                      "and cause obscure errors."))
+        warnings <- c(warnings,
+                      paste("check_alleles is set to FALSE.  Make sure your",
+                            "input VCF does not contain any positions with",
+                            "insertions, deletions or multiple alternative",
+                            "alleles, as these positions cannot be analysed",
+                            "with MutationalPatterns and cause obscure",
+                            "errors."))
     }
 
-    vcf_list <- GRangesList(mclapply (vcf_files, function (file)
+    vcf_list <- mclapply (seq_along(vcf_files), function (index)
     {
+        file <- vcf_files[index]
+
         # Use VariantAnnotation's readVcf, but only store the
         # GRanges information in memory.  This speeds up the
         # loading significantly.
@@ -185,18 +184,43 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             if (length(rem) > 0)
             {
                 vcf = vcf[-rem]
-                warning(length(rem),
-                        " position(s) with indels and multiple",
-                        " alternative alleles are removed.")
+                warnings <- c(warnings,
+                              paste(length(rem),
+                                    "position(s) with indels and/or multiple",
+                                    "alternative alleles are excluded from",
+                                    paste(sample_names[[index]], ".", sep = "")))
             }
         }
 
-        return(vcf)
-    }, mc.cores = num_cores, mc.silent = FALSE))
+        # Pack GRanges object and the warnings to be able to display warnings
+        # at a later time.
+        return(list(vcf, warnings))
+    }, mc.cores = num_cores)
 
     # Reset the option.
     options(warn=original_warn_state)
-    
+
+    # mclapply wraps the call into a try(..., silent=TRUE)
+    # When an error occurs, the error is returned, and accessible in the
+    # return value(s).  The for-loop below checks for erroneous returns
+    # and shows the error message of the first occurring error.
+    #
+    # The return values of the mclapply output are packed as
+    # list(<GRanges>, <warnings>).  The function below unpacks the GRanges
+    # and displays the warnings.
+    vcf_list <- lapply (vcf_list, function (item) {
+        # Handle errors.
+        if (class (item) == "try-error") stop (item)
+        # Handle warnings.
+        if (!is.null(item[[2]]))
+            for (i in item[[2]])
+                warning (i)
+
+        # Unpack the GRanges
+        return(item[[1]])
+    })
+
+    vcf_list <- GRangesList(vcf_list)
     # Set the provided names for the samples.
     names(vcf_list) <- sample_names
 
