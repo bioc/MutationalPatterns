@@ -6,7 +6,8 @@
 #' (log2ratio) with results significance test.
 #'
 #' @import ggplot2
-#' @importFrom gridExtra grid.arrange
+#' @importFrom cowplot plot_grid
+#' @importFrom reshape2 melt
 #'
 #' @examples
 #' ## See the 'genomic_distribution()' example for how we obtained the
@@ -34,7 +35,7 @@
 
 plot_enrichment_depletion = function(df)
 {
-    df2 = melt(df[,c(1,2,6,8)])
+    df2 = melt(df[,c(1,2,6,8)], id = c("by", "region"))
 
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
@@ -59,7 +60,7 @@ plot_enrichment_depletion = function(df)
                 axis.text.x = element_blank(),
                 legend.title=element_blank()) +
         xlab("") +
-        ylab("No. mutations")
+        ylab("No. mutations") +
     scale_x_discrete(breaks=NULL)
 
     # determine max y value for plotting
@@ -78,7 +79,6 @@ plot_enrichment_depletion = function(df)
         geom_text(
             aes(x = by,
                 y = log2((observed+0.1) / (expected+0.1)),
-                ymax = log2((observed+0.1) / (expected+0.1)),
                 label = significant,
                 vjust = ifelse(sign(log2((observed+0.1) /
                                             (expected+0.1))) > 0, 0.5, 1)),
@@ -92,6 +92,6 @@ plot_enrichment_depletion = function(df)
         ylab("log2(observed/expected)") +
         scale_x_discrete(breaks = NULL)
 
-    plot = grid.arrange(plot1, plot2, heights = c(2,1.2))
-    return(plot)
+    output <- cowplot::plot_grid (plot1, plot2, ncol=1, nrow=2, rel_heights = c(2,1.2))
+    return(output)
 }
