@@ -101,6 +101,11 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
                         distance = dist,
                         chromosome = chrom)
 
+    # Removes colors based on missing mutation types.  This prevents colors from
+    # shifting when comparing samples with low mutation counts.
+    typesin = SUBSTITUTIONS %in% levels(data$type)
+    colors = colors[typesin]
+
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
     location = NULL
