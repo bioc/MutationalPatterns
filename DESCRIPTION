@@ -9,7 +9,7 @@ Author: Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
 Maintainer: Francis Blokzijl <F.Blokzijl@umcutrecht.nl>,
     Roel Janssen <R.R.E.Janssen-10@umcutrecht.nl>
 License: MIT + file LICENSE
-URL: https://doi.org/10.1101/071761
+URL: https://doi.org/10.1186/s13073-018-0539-0
 Imports:
     stats,
     parallel,
