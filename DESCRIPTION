@@ -3,7 +3,7 @@ Type: Package
 Title: Comprehensive genome-wide analysis of mutational processes
 Description: An extensive toolset for the characterization and visualization
     of a wide range of mutational patterns in base substitution catalogs.
-Version: 1.7.0
+Version: 1.7.1
 Date: 2018-03-16
 Author: Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
 Maintainer: Francis Blokzijl <F.Blokzijl@umcutrecht.nl>,
