@@ -55,8 +55,9 @@
 #' ## For transcription strand:
 #' ## You can obtain the known genes from the UCSC hg19 dataset using
 #' ## Bioconductor:
-#' # source("https://bioconductor.org/biocLite.R")
-#' # biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+#' # if (!requireNamespace("BiocManager", quietly=TRUE))
+    #' # install.packages("BiocManager")
+#' # BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 #' # library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 #'
 #' ## For this example, we preloaded the data for you:
