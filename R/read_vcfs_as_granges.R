@@ -24,7 +24,9 @@
 #'              with this package.  This setting can be set to FALSE to speed
 #'              up processing time only if the input vcf does not contain any
 #'              of such positions, as these will cause obscure errors.
-#'
+#' @param n_cores numeric. Number of cores used for parallel processing. If no
+#'              value is given, then the number of available cores is autodetected.
+#' 
 #' @return A GRangesList containing the GRanges obtained from 'vcf_files'
 #'
 #' @importFrom BiocGenerics match
@@ -63,7 +65,7 @@
 #' @export
 
 read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
-                                    group = "auto+sex", check_alleles = TRUE)
+                                    group = "auto+sex", check_alleles = TRUE, n_cores)
 {
     # Check sample names
     if (length(vcf_files) != length(sample_names))
@@ -81,15 +83,20 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     if (!(class(ref_genome) == "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
 
-    # Detect the number of available cores.  Windows does not support forking,
-    # only threading, so unfortunately, we have to set it to 1.
+    # If number of cores is not provided, detect the number of available cores.  
+    # Windows does not support forking, only threading, so unfortunately, we 
+    # have to set it to 1.
     # On confined OS environments, this value can be NA, and in such
-    # situations  we need to fallback to 1 core.
-    num_cores = detectCores()
-    if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
-        num_cores <- detectCores()
-    else
-        num_cores = 1
+    # situations we need to fallback to 1 core.
+
+    if(missing(n_cores))
+    {
+      n_cores = detectCores()
+        if (!(.Platform$OS.type == "windows" || is.na(n_cores)))
+          n_cores <- detectCores()
+        else
+          n_cores = 1
+    }
 
     # We handle errors and warnings separately for mclapply, because the error
     # reporting of mclapply is done through its return value(s).
@@ -195,7 +202,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         # Pack GRanges object and the warnings to be able to display warnings
         # at a later time.
         return(list(vcf, warnings))
-    }, mc.cores = num_cores)
+    }, mc.cores = n_cores)
 
     # Reset the option.
     options(warn=original_warn_state)
