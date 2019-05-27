@@ -3,6 +3,8 @@
 #' @description Make 96 trinucleotide mutation count matrix
 #' @param vcf_list List of collapsed vcf objects
 #' @param ref_genome BSGenome reference genome object 
+#' @param num_cores Number of cores used for parallel processing. If no value
+#'                  is given, then the number of available cores is autodetected.
 #' @return 96 mutation count matrix
 #' @import GenomicRanges
 #' @importFrom parallel detectCores
@@ -27,15 +29,18 @@
 #'
 #' @export
 
-mut_matrix = function(vcf_list, ref_genome)
+mut_matrix = function(vcf_list, ref_genome, num_cores)
 {
     df = data.frame()
 
-    num_cores = detectCores()
-    if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
-        num_cores <- detectCores()
-    else
-        num_cores = 1
+    if (missing(num_cores))
+    {
+        num_cores = detectCores()
+        if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
+            num_cores <- detectCores()
+        else
+            num_cores = 1
+    }
 
     rows <- mclapply (as.list(vcf_list), function (vcf)
     {

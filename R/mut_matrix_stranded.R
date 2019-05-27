@@ -10,6 +10,8 @@
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
 #' @param mode "transcription" or "replication", default = "transcription"
+#' @param num_cores Number of cores used for parallel processing. If no value
+#'                  is given, then the number of available cores is autodetected.
 #'
 #' @return 192 mutation count matrix (96 X 2 strands)
 #'
@@ -67,17 +69,20 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription")
+mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", num_cores)
 {
   df = data.frame()
   
   # Detect number of cores available for parallelization
-  num_cores = detectCores()
-  if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
-    num_cores <- detectCores()
-  else
-    num_cores = 1
-  
+  if (missing(num_cores))
+  {
+      num_cores = detectCores()
+      if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
+          num_cores <- detectCores()
+      else
+          num_cores = 1
+  }
+
   # Transcription mode
   if(mode == "transcription")
     {
