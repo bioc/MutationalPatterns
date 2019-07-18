@@ -64,7 +64,15 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
 
     # get chromosome lengths of reference genome
     chr_length = seqlengths(vcf)
-
+    # Check for missing seqlengths
+    if(sum(is.na(seqlengths(vcf))) > 1)
+    {
+    stop(paste("Chromosome lengths missing from vcf object.\n", 
+                   "Likely cause: contig lengths missing from the header of your vcf file(s).\n", 
+                    "Please evaluate: seqinfo(vcf)\n",
+                    "To add seqlengths to your vcf GRanges object use: seqlengths(vcf) <-  "))
+    }
+    
     # subset
     chr_length = chr_length[names(chr_length) %in% chromosomes]
 
