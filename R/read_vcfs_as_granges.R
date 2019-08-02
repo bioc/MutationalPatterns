@@ -65,7 +65,7 @@
 #' @export
 
 read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
-                                    group = "auto+sex", check_alleles = TRUE, n_cores)
+                                    group = "auto+sex", check_alleles = FALSE, n_cores)
 {
     # Check sample names
     if (length(vcf_files) != length(sample_names))
@@ -113,7 +113,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         warnings <- c(warnings,
                       paste("check_alleles is set to FALSE.  Make sure your",
                             "input VCF does not contain any positions with",
-                            "insertions, deletions or multiple alternative",
+                            "multiple alternative",
                             "alleles, as these positions cannot be analysed",
                             "with MutationalPatterns and cause obscure",
                             "errors."))
@@ -184,16 +184,14 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         {
             # Find and exclude positions with indels or multiple
             # alternative alleles.
-            rem <- which(all(!( !is.na(match(vcf$ALT, DNA_BASES)) &
-                                !is.na(match(vcf$REF, DNA_BASES)) &
-                                (lengths(vcf$ALT) == 1) )))
+            rem <- which(lengths(vcf$ALT) > 1)
 
             if (length(rem) > 0)
             {
                 vcf = vcf[-rem]
                 warnings <- c(warnings,
                               paste(length(rem),
-                                    "position(s) with indels and/or multiple",
+                                    "position(s) with multiple",
                                     "alternative alleles are excluded from",
                                     paste(sample_names[[index]], ".", sep = "")))
             }

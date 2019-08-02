@@ -9,6 +9,8 @@
 #' X n samples)
 #' @param signatures Signature matrix (dimensions: 96 mutations
 #' X n signatures)
+#' @param cutoff Numeric value of absolute signature contribution. Signatures above
+#' value are returned
 #'
 #' @return Named list with signature contributions and reconstructed
 #' mutation matrix
@@ -49,40 +51,91 @@
 #'
 #' @export
 
-fit_to_signatures = function(mut_matrix, signatures)
+fit_to_signatures = function(mut_matrix, signatures, mode, cutoff = 0)
 {
-    # make sure dimensions of input matrix are correct
-    if (dim(mut_matrix)[1] != dim(signatures)[1])
-        stop(paste("Mutation matrix and signatures input have",
-                   "different number of mutational features"))
-
-    n_features = dim(mut_matrix)[1]
-    n_samples = dim(mut_matrix)[2]
-    n_signatures = dim(signatures)[2]
-    lsq_contribution = matrix(NA, nrow=n_signatures, ncol=n_samples)
-    lsq_reconstructed = matrix(NA, nrow=n_features, ncol=n_samples)
-
-    # Process each sample
-    for (i in 1:ncol(mut_matrix))
-    {
-        y = mut_matrix[,i]
-        lsq = lsqnonneg(signatures, y)
-        lsq_contribution[,i] = lsq$x
-        lsq_reconstructed[,i] = signatures %*% as.matrix(lsq$x) 
+  
+    if (missing(mode) & class(mut_matrix) == "matrix") { mode = "unknown" }
+    else if (missing(mode)) { mode = c("snv","dbs","indel") }
+  
+    if (class(signatures) == "matrix")
+    { 
+      if (class(mut_matrix) == "matrix") { signatures = list("unknown"=signatures) }
+      else 
+      {
+        signatures_list = list()
+        for (m in names(mut_matrix))
+        {
+          if (all(rownames(mut_matrix[[m]]) == rownames(signatures))) 
+          { 
+            signatures_list[[m]] = signatures
+            signatures = signatures_list
+            break 
+          }
+        }
+      }
     }
-
-    # Add row and col names
-    sample_names = colnames(mut_matrix)
-    signature_names = colnames(signatures)
-    mut_type_names = rownames(signatures)
-
-    colnames(lsq_contribution) = sample_names
-    rownames(lsq_contribution) = signature_names
-
-    colnames(lsq_reconstructed) = sample_names
-    rownames(lsq_reconstructed) = mut_type_names
-
-    res = list(lsq_contribution, lsq_reconstructed)
+    if (class(mut_matrix) == "matrix") { mut_matrix = list("unknown"=mut_matrix) }
+    
+    contribution = list()
+    reconstructed = list()
+    
+    for (m in names(mut_matrix))
+    {
+      if (!(m %in% names(signatures))) { stop("One or more names of 'mut_matrix' not found in 'signatures'")}
+  
+      # make sure dimensions of input matrix are correct
+      if (dim(mut_matrix[[m]])[1] != dim(signatures[[m]])[1])
+          stop(paste("Mutation matrix and signatures input have",
+                     "different number of mutational features"))
+  
+      n_features = dim(mut_matrix[[m]])[1]
+      n_samples = dim(mut_matrix[[m]])[2]
+      n_signatures = dim(signatures[[m]])[2]
+      lsq_contribution = matrix(NA, nrow=n_signatures, ncol=n_samples)
+      lsq_reconstructed = matrix(NA, nrow=n_features, ncol=n_samples)
+  
+      # Process each sample
+      for (i in 1:ncol(mut_matrix[[m]]))
+      {
+          y = mut_matrix[[m]][,i]
+          lsq = lsqnonneg(signatures[[m]], y)
+          lsq_contribution[,i] = lsq$x
+          lsq_reconstructed[,i] = signatures[[m]] %*% as.matrix(lsq$x) 
+      }
+  
+      # Add row and col names
+      sample_names = colnames(mut_matrix[[m]])
+      signature_names = colnames(signatures[[m]])
+      mut_type_names = rownames(signatures[[m]])
+      
+      colnames(lsq_contribution) = sample_names
+      rownames(lsq_contribution) = signature_names
+      
+      lsq_contribution = lsq_contribution[which(rowSums(lsq_contribution)>10),]
+  
+      colnames(lsq_reconstructed) = sample_names
+      rownames(lsq_reconstructed) = mut_type_names
+      
+      contribution[[m]] = lsq_contribution
+      reconstructed[[m]] = lsq_reconstructed
+    }
+    
+    if (mode == "unknown") 
+    { 
+      contribution = contribution[[mode]]
+      reconstructed = reconstructed[[mode]]
+    } else {
+      mode = unlist(strsplit(mode,"\\+"))
+      mode = mode[match(names(contribution),mode)]
+      
+      if (is.na(mode)) { stop("No modes given are found in 'mut_matrix'") }
+      contribution = contribution[mode]
+      reconstructed = reconstructed[mode]
+    }
+    
+    
+    
+    res = list(contribution, reconstructed)
     names(res) = c("contribution", "reconstructed")
 
     return(res)

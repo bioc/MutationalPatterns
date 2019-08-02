@@ -42,27 +42,92 @@
 #' 
 #' @export
 
-cos_sim_matrix = function(mut_matrix1, mut_matrix2)
+cos_sim_matrix = function(mut_matrix1, mut_matrix2, mode)
 {
-  n_samples1 = ncol(mut_matrix1)
-  n_samples2 = ncol(mut_matrix2)
-  res_matrix = matrix(nrow = n_samples1, ncol = n_samples2)
   
-  for(s in 1:n_samples1)
-  {
-    signal1 = mut_matrix1[,s]
-    cos_sim_vector = c()
-    for(i in 1:n_samples2)
+  if (missing(mode) & class(mut_matrix1) == "matrix" & class(mut_matrix2) == "matrix") { mode = "unknown" }
+  else if (missing(mode)) { mode = c("snv","dbs","indel") }
+  
+  if (class(mut_matrix1) == "matrix" & class(mut_matrix2) == "list")
+  { 
+    row_list = list()
+    for (m in names(mut_matrix2))
     {
-      signal2 = mut_matrix2[,i]
-      cos_sim_vector[i] = cos_sim(signal1, signal2)
+      if (all(rownames(mut_matrix2[[m]]) == rownames(mut_matrix1))) 
+      { 
+        row_list[[m]] = mut_matrix1
+        mut_matrix1 = row_list
+        break 
+      }
     }
-    res_matrix[s,] = cos_sim_vector
+  } else if (class(mut_matrix1) == "list" & class(mut_matrix2) == "matrix")
+  {
+    row_list = list()
+    for (m in names(mut_matrix1))
+    {
+      if (all(rownames(mut_matrix1[[m]]) == rownames(mut_matrix2))) 
+      { 
+        row_list[[m]] = mut_matrix2
+        mut_matrix2 = row_list
+        break 
+      }
+    }
   }
-  rownames(res_matrix) = colnames(mut_matrix1)
-  colnames(res_matrix) = colnames(mut_matrix2)
+  if (class(mut_matrix1) == "matrix" & class(mut_matrix2) == "matrix") 
+  {
+    mut_matrix1 = list("unknown"=mut_matrix1)
+    mut_matrix2 = list("unknown"=mut_matrix2)
+  }
   
-  return(res_matrix)
+  res_matrix_list = list()
+  
+  names_lists = intersect(names(mut_matrix1), names(mut_matrix2))
+  if (all(is.na(names_lists))) { stop("No matching names between 'mut_matrix1' and 'mut_matrix2'")}
+  if (any(is.na(names_lists))) { warning("Only cosine similarity matrices for matching names in the mutation matrices")}
+  
+  for (m in names_lists)
+  {
+    if (!(m %in% names(mut_matrix2))) { stop("One or more names of 'mut_matrix1' not found in 'mut_matrix2'")}
+    
+    n_samples1 = ncol(mut_matrix1[[m]])
+    n_samples2 = ncol(mut_matrix2[[m]])
+    res_matrix = matrix(nrow = n_samples1, ncol = n_samples2)
+    
+    for(s in 1:n_samples1)
+    {
+      signal1 = mut_matrix1[[m]][,s]
+      cos_sim_vector = c()
+      for(i in 1:n_samples2)
+      {
+        signal2 = mut_matrix2[[m]][,i]
+        cos_sim_vector[i] = cos_sim(signal1, signal2)
+      }
+      res_matrix[s,] = cos_sim_vector
+    }
+    rownames(res_matrix) = colnames(mut_matrix1[[m]])
+    colnames(res_matrix) = colnames(mut_matrix2[[m]])
+    
+    res_matrix_list[[m]] = res_matrix
+  }
+
+  if (length(mode) > 1)
+  {
+    mode = intersect(mode[match(names(mut_matrix1),mode)], mode[match(names(mut_matrix2),mode)])
+    mode = mode[which(!is.na(mode))]
+    
+    if (isEmpty(mode)) { stop("Mode is not found in 'mut_matrix1' or 'mut_matrix2'") }
+    res_matrix_list = res_matrix_list[mode]
+  }
+  else if ( mode == "unknown" ) { res_matrix_list = res_matrix_list[[mode]] }
+  else {
+    mode = unlist(strsplit(mode,"\\+"))
+    mode = intersect(mode[which(mode %in% names(mut_matrix1))], mode[which(mode %in% names(mut_matrix2))])
+    mode = mode[which(!is.na(mode))]
+    
+    if (isEmpty(mode)) { stop("Mode is not found in 'mut_matrix1' or 'mut_matrix2'") }
+    res_matrix_list = res_matrix_list[mode]
+  }  
+  return(res_matrix_list)
 }
 
 

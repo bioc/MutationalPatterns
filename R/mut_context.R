@@ -4,6 +4,8 @@
 #' substitutions from the reference genome
 #' @param vcf A Granges object
 #' @param ref_genome Reference genome
+#' @param mode A character stating which type of mutation is to be extracted: 
+#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
 #' @return Character vector with the context of the base substitutions
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom GenomeInfoDb seqnames
@@ -19,14 +21,14 @@
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
 #'
-#' mut_context <- mut_context(vcfs[[1]], ref_genome)
+#' mut_context <- mut_context(vcfs[[1]], ref_genome, mode)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
 #' @export
 
-mut_context = function(vcf, ref_genome) 
+mut_context = function(vcf, ref_genome, mode="snv") 
 {
     # Make sure that the chromosome names are compatible with each other.
     if (!(all(seqlevels(vcf) %in% seqlevels(get(ref_genome)))))
@@ -35,8 +37,11 @@ mut_context = function(vcf, ref_genome)
                     "'seqlevelsStyle()' function to rename chromosome",
                     "names.") )
 
-    ranges = resize(vcf, 3, fix = "center")
-
+    if (!grepl("snv",tolower(mode)) & tolower(mode) != "all")
+        stop(paste( "Extract context is only available for single base substitutions"))
+  
+    vcf <- vcf[nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1]
+  
     vcf_context = as.character(getSeq(get(ref_genome),
                                         seqnames(vcf),
                                         start(vcf) - 1,

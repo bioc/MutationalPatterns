@@ -69,9 +69,12 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", num_cores)
+mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "transcription", num_cores)
 {
-  df = data.frame()
+  
+  mut_type = check_mutation_type(mut_type)
+  
+  df = list()
   
   # Detect number of cores available for parallelization
   if (missing(num_cores))
@@ -83,47 +86,57 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
           num_cores = 1
   }
 
-  # Transcription mode
-  if(mode == "transcription")
+  for (m in mut_type)
+  {
+    # Transcription mode
+    if(mode == "transcription")
+    {
+      # For each vcf in vcf_list count the mutational features with strand info
+      rows <- mclapply (as.list(vcf_list), function (vcf)
+      {
+        type_context = type_context(vcf, ref_genome, mode = m)
+        strand = mut_strand(vcf, ranges, mut_type = m, mode = "transcription")
+        row = mut_strand_occurrences(type_context, strand, mode = m)
+        return(row)
+      }, mc.cores = num_cores)
+      
+      df[[m]] = data.frame()
+      
+      # Combine the rows in one dataframe
+      for (row in rows)
+        df[[m]] = rbind (df[[m]], row)
+    }
+  
+    # Replication mode
+    if(mode == "replication")
     {
       # For each vcf in vcf_list count the 192 features
       rows <- mclapply (as.list(vcf_list), function (vcf)
       {
-        type_context = type_context(vcf, ref_genome)
-        strand = mut_strand(vcf, ranges, mode = "transcription")
-        row = mut_192_occurrences(type_context, strand)
+        type_context = type_context(vcf, ref_genome, mode = m)
+        strand = mut_strand(vcf, ranges, mut_type = m, mode = "replication")
+        row = mut_strand_occurrences(type_context, strand, mode = m)
         return(row)
-      }, mc.cores = num_cores)
+      }, mc.cores = num_cores, mc.silent = FALSE)
+      
+      if (isEmpty(do.call(rbind, rows))) { next }
+      
+      df[[m]] = data.frame()
       
       # Combine the rows in one dataframe
       for (row in rows)
-        df = rbind (df, row)
+      {
+        if (class (row) == "try-error") stop (row)
+        df[[m]] = rbind (df[[m]], row)
+      }
     }
   
-  # Replication mode
-  if(mode == "replication")
-  {
-    # For each vcf in vcf_list count the 192 features
-    rows <- mclapply (as.list(vcf_list), function (vcf)
-    {
-      type_context = type_context(vcf, ref_genome)
-      strand = mut_strand(vcf, ranges, mode = "replication")
-      row = mut_192_occurrences(type_context, strand)
-      return(row)
-    }, mc.cores = num_cores, mc.silent = FALSE)
-    
-    # Combine the rows in one dataframe
-    for (row in rows)
-    {
-      if (class (row) == "try-error") stop (row)
-      df = rbind (df, row)
-    }
+    # Add row names to data.frame
+    names(df[[m]]) = names(row)
+    row.names(df[[m]]) = names(vcf_list)
+    df[[m]] = t(df[[m]])
   }
   
-  # Add row names to data.frame
-  names(df) = names(row)
-  row.names(df) = names(vcf_list)
-  
   # Transpose and return
-  return(t(df))
+  return(df)
 }

@@ -39,8 +39,17 @@
 #'
 #' @export
 
-strand_bias_test = function(strand_occurrences)
+strand_bias_test = function(strand_occurrences, mode, method = "split")
 {
+    mode = check_mutation_type(mode)
+    
+    if(class(strand_occurrences) == "data.frame")
+    {
+      warning(paste("No named list found for 'strand_occurrences'.",
+                    "Method is set to 'combine'"))
+      method = "combine"        
+    }
+    
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
     group = NULL
@@ -50,16 +59,41 @@ strand_bias_test = function(strand_occurrences)
 
     # statistical test for strand ratio
     # poisson test
-    df_strand = reshape2::dcast(melt(strand_occurrences),
-                                group + type ~ strand,
-                                sum,
-                                subset = plyr::.(variable == "no_mutations"))
     
-    df_strand$total = df_strand[,3] + df_strand[,4]
-    df_strand$ratio = df_strand[,3] / df_strand[,4]
-    df_strand$p_poisson = apply(df_strand, 1, function(x) poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value)
-    df_strand$significant[df_strand$p_poisson < 0.05] = "*"
-    df_strand$significant[df_strand$p_poisson >= 0.05] = " "
+    if (method == "split")
+    {
+      mode = intersect(mode, names(strand_occurrences))
+      
+      df_result = list()
+      
+      for (m in mode)
+      {
+        df_strand = reshape2::dcast(melt(strand_occurrences[[m]]),
+                                    group + mutation + type ~ strand,
+                                    sum,
+                                    subset = plyr::.(variable == "no_mutations"))
+        
+        df_strand$total = df_strand[,4] + df_strand[,5]
+        df_strand$ratio = df_strand[,4] / df_strand[,5]
+        df_strand$p_poisson = apply(df_strand, 1, function(x) poisson.test(c(as.numeric(x[4]), as.numeric(x[5])), r=1)$p.value)
+        df_strand$significant[df_strand$p_poisson < 0.05] = "*"
+        df_strand$significant[df_strand$p_poisson >= 0.05] = " "
+        df_result[[m]] = df_strand
+      }
+    } else if (method == "combine")
+    {
+      df_strand = reshape2::dcast(melt(strand_occurrences),
+                                  group + mutation + type ~ strand,
+                                  sum,
+                                  subset = plyr::.(variable == "no_mutations"))
+      
+      df_strand$total = df_strand[,4] + df_strand[,5]
+      df_strand$ratio = df_strand[,4] / df_strand[,5]
+      df_strand$p_poisson = apply(df_strand, 1, function(x) poisson.test(c(as.numeric(x[4]), as.numeric(x[5])), r=1)$p.value)
+      df_strand$significant[df_strand$p_poisson < 0.05] = "*"
+      df_strand$significant[df_strand$p_poisson >= 0.05] = " "
+      df_result = df_strand
+    }
 
-    return(df_strand)
+    return(df_result)
 }

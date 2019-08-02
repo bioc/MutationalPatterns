@@ -51,86 +51,108 @@
 #'
 #' @export
 
-plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
+plot_rainfall <- function(vcf, chromosomes, mut_type, method = "split", title = "", colors, cex = 2.5,
                             cex_text = 3, ylim = 1e+08)
 {
+    mut_type = check_mutation_type(mut_type)
+    
     # If colors parameter not provided, set to default colors
-    if (missing(colors))
-        colors = COLORS6
-
+    if(missing(colors)) {colors_list=list("snv"=COLORS6, "dbs"=COLORS10)}
+    else { colors_list = colors }
+    
     # Check color vector length
-    if (length(colors) != 6)
-        stop("colors vector length not 6")
-
-    # get chromosome lengths of reference genome
-    chr_length = seqlengths(vcf)
-    # Check for missing seqlengths
-    if(sum(is.na(seqlengths(vcf))) > 1)
+    if(length(colors_list$snv) != 6){stop("Provide colors vector for single base substitutions with length 6")}
+    if(length(colors_list$dbs) != 10){stop("Provide colors vector for double base substitutions with length 10")}
+    
+    substitutions_list = list("snv"=SUBSTITUTIONS, "dbs"=SUBSTITUTIONS_DBS)
+    
+    muts = list()
+    for (m in mut_type)
     {
-    stop(paste("Chromosome lengths missing from vcf object.\n", 
-                   "Likely cause: contig lengths missing from the header of your vcf file(s).\n", 
-                    "Please evaluate: seqinfo(vcf)\n",
-                    "To add seqlengths to your vcf GRanges object use: seqlengths(vcf) <-  "))
+      if (m == "snv") { muts[[m]] = which(nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1) }
+      else if (m == "dbs") { muts[[m]] = which(nchar(as.character(vcf$REF))==2 & nchar(as.character(unlist(vcf$ALT)))==2) }
+      else if (m == "indel") { muts[[m]] = which(nchar(as.character(vcf$REF)) != nchar(as.character(unlist(vcf$ALT)))) }
     }
     
-    # subset
-    chr_length = chr_length[names(chr_length) %in% chromosomes]
-
-    # cumulative sum of chromosome lengths
-    chr_cum = c(0, cumsum(as.numeric(chr_length)))
-
-    # Plot chromosome labels without "chr"
-    names(chr_cum) = names(chr_length)
-    labels = gsub("chr", "", names(chr_length))
-
-    # position of chromosome labels
-    m=c()
-    for(i in 2:length(chr_cum))
-        m = c(m,(chr_cum[i-1] + chr_cum[i]) / 2)
-
-
-    # mutation characteristics
-    type = loc = dist = chrom = c()
-
-    # for each chromosome
-    for(i in 1:length(chromosomes))
+    if (method == "split")
     {
-        chr_subset = vcf[seqnames(vcf) == chromosomes[i]]
-        n = length(chr_subset)
-        if(n<=1){next}
-        type = c(type, mut_type(chr_subset)[-1])
-        loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
-        dist = c(dist, diff(start(chr_subset)))
-        chrom = c(chrom, rep(chromosomes[i],n-1))
-    }
-
-    data = data.frame(type = type,
-                        location = loc,
-                        distance = dist,
-                        chromosome = chrom)
-
-    # Removes colors based on missing mutation types.  This prevents colors from
-    # shifting when comparing samples with low mutation counts.
-    typesin = SUBSTITUTIONS %in% levels(data$type)
-    colors = colors[typesin]
-
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
-    location = NULL
-
-    # make rainfall plot
-    plot = ggplot(data, aes(x=location, y=distance)) +
-        geom_point(aes(colour=factor(type)), cex=cex) + 
-        geom_vline(xintercept = as.vector(chr_cum), linetype="dotted") +
-        annotate("text", x = m, y = ylim, label = labels, cex=cex_text) +
-        xlab("Genomic Location") +
-        ylab("Genomic Distance") +
-        scale_y_log10() +
-        scale_colour_manual(values=colors) +
-        scale_x_continuous(expand = c(0,0), limits=c(0, max(chr_cum))) +
-        ggtitle(title) +
-        theme_bw() +
-        theme(
+      plots = list()
+      
+      for (mut in mut_type)
+      {
+        input_vcf = vcf[which(1:length(vcf) %in% muts[[mut]]),]
+      
+        colors = colors_list[[mut]]
+      
+        # get chromosome lengths of reference genome
+        chr_length = seqlengths(input_vcf)
+        
+        # subset
+        chr_length = chr_length[names(chr_length) %in% chromosomes]
+        
+        # cumulative sum of chromosome lengths
+        chr_cum = c(0, cumsum(as.numeric(chr_length)))
+        
+        # Plot chromosome labels without "chr"
+        names(chr_cum) = names(chr_length)
+        labels = gsub("chr", "", names(chr_length))
+        
+        # position of chromosome labels
+        m=c()
+        for(i in 2:length(chr_cum))
+          m = c(m,(chr_cum[i-1] + chr_cum[i]) / 2)
+        
+        # mutation characteristics
+        type = loc = dist = chrom = c()
+        
+        # for each chromosome
+        for(i in 1:length(chromosomes))
+        {
+          chr_subset = input_vcf[seqnames(input_vcf) == chromosomes[i]]
+          
+          n = length(chr_subset)
+          if(n<=1){next}
+          type_list = mut_type(chr_subset, mode = mut)
+          if ("dbs" %in% names(type_list))
+          {
+            for (j in 1:length(type_list[["dbs"]])) type_list[["dbs"]][j] = paste0(substr(type_list[["dbs"]][j],1,2),">NN")
+          }
+          type = c(type, unname(unlist(type_list))[-1])
+          loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
+          dist = c(dist, diff(start(chr_subset)))
+          chrom = c(chrom, rep(chromosomes[i],n-1))
+        }
+        
+        data = data.frame(type = type,
+                          location = loc,
+                          distance = dist,
+                          chromosome = chrom)
+        
+        # Removes colors based on missing mutation types.  This prevents colors from
+        # shifting when comparing samples with low mutation counts.
+        substitutions = substitutions_list[[mut]]
+        typesin = substitutions %in% levels(data$type)
+        colors = colors[typesin]
+        
+        data$type = factor(data$type, levels = substitutions)
+        
+        # These variables will be available at run-time, but not at compile-time.
+        # To avoid compiling trouble, we initialize them to NULL.
+        location = NULL
+        
+        # make rainfall plot
+        plot = ggplot(data, aes(x=location, y=distance)) +
+          geom_point(aes(colour=factor(type)), cex=cex) + 
+          geom_vline(xintercept = as.vector(chr_cum), linetype="dotted") +
+          annotate("text", x = m, y = ylim, label = labels, cex=cex_text) +
+          xlab("Genomic Location") +
+          ylab("Genomic Distance") +
+          scale_y_log10() +
+          scale_colour_manual(values=colors) +
+          scale_x_continuous(expand = c(0,0), limits=c(0, max(chr_cum))) +
+          ggtitle(title) +
+          theme_bw() +
+          theme(
             legend.position = "bottom",
             legend.title = element_blank(),
             legend.key = element_blank(),
@@ -138,7 +160,98 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
             panel.grid.major.x = element_blank(),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank()) + 
-        guides(colour = guide_legend(nrow = 1))
-
-    return(plot)
+          guides(colour = guide_legend(nrow = 1))
+        
+        plots[[mut]] = plot
+      }
+      
+      return(plot_grid(plotlist=plots, align="v", ncol = 1))
+    } else if (method == "combine")
+    {
+      muts = unname(unlist(muts))
+      vcf = vcf[which(1:length(vcf) %in% muts),]
+  
+      colors = unname(unlist(colors_list[mut_type]))
+  
+      # get chromosome lengths of reference genome
+      chr_length = seqlengths(vcf)
+  
+      # subset
+      chr_length = chr_length[names(chr_length) %in% chromosomes]
+  
+      # cumulative sum of chromosome lengths
+      chr_cum = c(0, cumsum(as.numeric(chr_length)))
+  
+      # Plot chromosome labels without "chr"
+      names(chr_cum) = names(chr_length)
+      labels = gsub("chr", "", names(chr_length))
+  
+      # position of chromosome labels
+      m=c()
+      for(i in 2:length(chr_cum))
+          m = c(m,(chr_cum[i-1] + chr_cum[i]) / 2)
+  
+      # mutation characteristics
+      type = loc = dist = chrom = c()
+  
+      # for each chromosome
+      for(i in 1:length(chromosomes))
+      {
+          chr_subset = vcf[seqnames(vcf) == chromosomes[i]]
+          
+          n = length(chr_subset)
+          if(n<=1){next}
+          type_list = mut_type(chr_subset, mode = paste(mut_type, collapse="+"))
+          if ("dbs" %in% names(type_list))
+          {
+            if (!isEmpty(type_list[["dbs"]]))
+              for (j in 1:length(type_list[["dbs"]])) type_list[["dbs"]][j] = paste0(substr(type_list[["dbs"]][j],1,2),">NN")
+          }
+          type = c(type, unname(unlist(type_list))[-1])
+          loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
+          dist = c(dist, diff(start(chr_subset)))
+          chrom = c(chrom, rep(chromosomes[i],n-1))
+      }
+  
+      data = data.frame(type = type,
+                          location = loc,
+                          distance = dist,
+                          chromosome = chrom)
+  
+      # Removes colors based on missing mutation types.  This prevents colors from
+      # shifting when comparing samples with low mutation counts.
+      substitutions = unname(unlist(substitutions_list[mut_type]))
+      typesin = substitutions %in% levels(data$type)
+      colors = colors[typesin]
+      
+      data$type = factor(data$type, levels = substitutions)
+  
+      # These variables will be available at run-time, but not at compile-time.
+      # To avoid compiling trouble, we initialize them to NULL.
+      location = NULL
+  
+      # make rainfall plot
+      plot = ggplot(data, aes(x=location, y=distance)) +
+          geom_point(aes(colour=factor(type)), cex=cex) + 
+          geom_vline(xintercept = as.vector(chr_cum), linetype="dotted") +
+          annotate("text", x = m, y = ylim, label = labels, cex=cex_text) +
+          xlab("Genomic Location") +
+          ylab("Genomic Distance") +
+          scale_y_log10() +
+          scale_colour_manual(values=colors) +
+          scale_x_continuous(expand = c(0,0), limits=c(0, max(chr_cum))) +
+          ggtitle(title) +
+          theme_bw() +
+          theme(
+              legend.position = "bottom",
+              legend.title = element_blank(),
+              legend.key = element_blank(),
+              panel.grid.minor.x = element_blank(),
+              panel.grid.major.x = element_blank(),
+              axis.ticks.x = element_blank(),
+              axis.text.x = element_blank()) + 
+          guides(colour = guide_legend(nrow = 1))
+  
+      return(plot)
+    }
 }

@@ -27,6 +27,27 @@
 
 plot_96_profile = function(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 {
+    if(isEmpty(mut_matrix))
+    {
+      stop("Provide a named list for the mutation matrix of single base substitutions")
+    }
+    
+    if (class(mut_matrix) == "matrix")
+    {
+      if (all(rownames(mut_matrix) %in% TRIPLETS_96))
+      {
+        mut_matrix = list("snv"=mut_matrix)
+      }
+    }
+  
+    # Check if mutation matrix for single base substitutions exist
+    if(!("snv" %in% names(mut_matrix)))
+    {
+      stop("Plot of 96 profile is only available for single base substitutions")
+    }
+  
+    mut_matrix = mut_matrix$snv
+  
     # Relative contribution
     norm_mut_matrix = apply(mut_matrix, 2, function(x) x / sum(x) )
 

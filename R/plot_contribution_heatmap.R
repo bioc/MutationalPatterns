@@ -4,7 +4,10 @@
 #' 
 #' @param contribution Signature contribution matrix
 #' @param sig_order Character vector with the desired order of the signature names for plotting. Optional.
+#' @param mut_type Character stating which mutation type(s) must be plotted. Values of 'mut_type' must be
+#' names of the list 'contribution'
 #' @param cluster_samples Hierarchically cluster samples based on eucledian distance. Default = T.
+#' @param cluster_mut_type optional signatures subset parameter for clustering
 #' @param method The agglomeration method to be used for hierarchical clustering. This should be one of 
 #' "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
 #' or "centroid" (= UPGMC). Default = "complete".
@@ -55,11 +58,47 @@
 #' @export
 
 # plotting function for relative contribution of signatures in heatmap
-plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = TRUE, method = "complete", plot_values = FALSE)
+plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_samples = TRUE, cluster_mut_type, method = "complete", plot_values = FALSE)
 {
   # check contribution argument
-  if(class(contribution) != "matrix")
-    {stop("contribution must be a matrix")}
+  if(class(contribution) == "list"){combined = F}
+  else if (class(contribution) == "matrix")
+  {
+    warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
+    combined = T
+  } else {stop("contribution must be a named list")}
+  
+  if (!combined)
+  {
+    # Check mut_type argument
+    if (missing(mut_type)) {mut_type = names(contribution)}
+    else if (mut_type == "all") {mut_type = c("snv","dbs","indel")}
+    else {mut_type = unlist(strsplit(mut_type, "\\+"))}
+    if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
+    else {stop("One or more values of 'mut_type' is not found in 'contribution'. Run function without 'mut_type' argument or give values which are in contribution list")}
+    
+    if (cluster_samples)
+    { if (missing(cluster_mut_type)) {cluster_mut_type = names(contribution)}
+      else if (cluster_mut_type == "all") {cluster_mut_type = c("snv","dbs","indel")}
+      else {cluster_mut_type = unlist(strsplit(cluster_mut_type, "\\+"))}
+      if (!all(cluster_mut_type %in% names(contribution)))
+      {stop("One or more values of 'cluster_mut_type' is not found in 'contribution'. Run function without 'cluster_mut_type' argument or give values which are in contribution list")}
+      
+      cluster_mutations = c()
+      
+      for (m in cluster_mut_type)
+      {
+        if (any(grepl(m, names(contribution)))) { cluster_mutations = c(cluster_mutations, rownames(contribution[[m]])) }
+        else { cluster_mutations = NULL }
+      }
+      
+      if (isEmpty(cluster_mutations))
+        stop("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'mut_type'")
+    }  
+    
+    contribution = do.call(rbind, contribution)
+  } 
+  
   # check if there are signatures names in the contribution matrix
   if(is.null(row.names(contribution)))
     {stop("contribution must have row.names (signature names)")}
@@ -73,6 +112,8 @@ plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = 
     {stop("sig_order must be a character vector")}
   if(length(sig_order) != nrow(contribution))
     {stop("sig_order must have the same length as the number of signatures in the contribution matrix")}
+  if(any(is.na(match(sig_order, row.names(contribution)))))
+    {stop("sig_order must have the same signature names as in contribution")}
     
   # transpose
   contribution = t(contribution)
@@ -83,7 +124,8 @@ plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = 
   if (cluster_samples)
   {
     # hiearchically cluster samples based on eucledian distance between relative contribution
-    hc.sample = hclust(dist(contribution_norm), method = method)
+    if (combined) {hc.sample = hclust(dist(contribution_norm), method = method)}
+    else {hc.sample = hclust(dist(contribution_norm[,match(cluster_mutations, colnames(contribution_norm))]), method = method)}
     # order of samples according to hierarchical clustering
     sample_order = rownames(contribution)[hc.sample$order]
   } 

@@ -3,9 +3,14 @@
 #' For each base substitution type and strand the total number
 #' of mutations and the relative contribution within a group is returned.
 #'
-#' @param mut_mat_s 192 feature mutation count matrix, result from
+#' @param mut_mat_s strand feature mutation count matrix, result from
 #' 'mut_matrix_stranded()'
 #' @param by Character vector with grouping info, optional
+#' @param mode Character stating which type of mutation is to be extracted: 
+#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
+#' @param method Character stating if all mutation types should be combined
+#' (='combine') in relative contribution or taking apart (= 'split'). 
+#' Default is 'split'
 #'
 #' @return A data.frame with the total number of mutations and relative
 #' contribution within group per base substitution type and strand 
@@ -36,40 +41,101 @@
 #'
 #' @export
 
-strand_occurrences = function(mut_mat_s, by)
+strand_occurrences = function(mut_mat_s, by, mode, method = "split")
 {
-    df = t(mut_mat_s)
-
-    # check if grouping parameter by was provided, if not group by all
-    if(missing(by)){by = rep("all", nrow(df))}
-
-    # sum by group
-    x = stats::aggregate(df, by=list(by), FUN=sum) 
-
-    # add group as rownames
-    rownames(x) = x[,1]
-    x = x[,-1]
-
-    # calculate relative contribution within group
-    x_r = x / rowSums(x)
-
-    # get strand from rownames
-    strand = unlist(lapply( strsplit(rownames(mut_mat_s), "-") , function(x) x[2]))
-    # get substitutions from rownames
-    substitutions = substring(rownames(mut_mat_s), 3, 5)
-    
-    # sum per substition per strand
-    x2 = melt(aggregate(t(x), by = list(substitutions, strand), FUN=sum))
-    x2_r = melt(aggregate(t(x_r), by = list(substitutions, strand), FUN=sum))
-    colnames(x2) = c("type", "strand", "group", "no_mutations")
-    colnames(x2_r) = c("type", "strand", "group", "relative_contribution")
-
-    # combine relative and absolute
-    y = merge(x2, x2_r)
-
-    # reorder group, type, strand
-    y = y[,c(3,1,2,4,5)]
-    y = y[order(y$group, y$type),]
-
-    return(y)
+    mode = check_mutation_type(mode)
+    mode = intersect(mode, names(mut_mat_s))
+  
+    if (method == "split")
+    {
+      z = list()
+      
+      for (m in mode)
+      {
+        df = t(mut_mat_s[[m]])
+        
+        # check if grouping parameter by was provided, if not group by all
+        if(missing(by)){by = rep("all", nrow(df))}
+        
+        # sum by group
+        x = stats::aggregate(df, by=list(by), FUN=sum) 
+        
+        # add group as rownames
+        rownames(x) = x[,1]
+        x = x[,-1]
+        
+        # calculate relative contribution within group
+        x_r = x / rowSums(x)
+        
+        # get strand from rownames
+        strand = unlist(lapply( strsplit(rownames(mut_mat_s[[m]]), "-") , function(x) x[2]))
+        # get substitutions from rownames
+        if (m == "snv"){ substitutions = substring(rownames(mut_mat_s[[m]]), 3, 5) }
+        else if (m == "dbs"){ substitutions = substring(rownames(mut_mat_s[[m]]), 1, 2) }
+        
+        # sum per substition per strand
+        x2 = melt(aggregate(t(x), by = list(substitutions, strand), FUN=sum))
+        x2_r = melt(aggregate(t(x_r), by = list(substitutions, strand), FUN=sum))
+        colnames(x2) = c("type", "strand", "group", "no_mutations")
+        colnames(x2_r) = c("type", "strand", "group", "relative_contribution")
+        
+        # combine relative and absolute
+        y = merge(x2, x2_r)
+        
+        # reorder group, type, strand
+        y$mutation = m
+        y = y[,c(3,6,1,2,4,5)]
+        y = y[order(y$group, y$type),]
+        
+        z[[m]] = y
+      }
+      return(z)
+    } else if (method == "combine"){
+      mutation_types = names(mut_mat_s)
+      df = t(do.call(rbind, mut_mat_s))
+      
+      # check if grouping parameter by was provided, if not group by all
+      if(missing(by)){by = rep("all", nrow(df))}
+      
+      # sum by group
+      x = stats::aggregate(df, by=list(by), FUN=sum) 
+      
+      # add group as rownames
+      rownames(x) = x[,1]
+      x = x[,-1]
+      
+      # calculate relative contribution within group
+      x_r = x / rowSums(x)
+      
+      # get strand from rownames
+      strand = unlist(lapply( strsplit(colnames(df), "-") , function(x) x[2]))
+      # get substitutions from rownames
+      substitutions = c()
+      mut_types = c()
+      for (m in mutation_types)
+      {
+        if (m == "snv"){ 
+          substitutions = c(substitutions, substring(rownames(mut_mat_s[[m]]), 3, 5))
+          mut_types = c(mut_types, rep("snv", nrow(mut_mat_s[[m]])))
+        } else if (m == "dbs")
+        { substitutions = c(substitutions, substring(rownames(mut_mat_s[[m]]), 1, 2))
+          mut_types = c(mut_types, rep("dbs", nrow(mut_mat_s[[m]])))
+        }
+      }
+      
+      # sum per substition per strand
+      x2 = melt(aggregate(t(x), by = list(mut_types, substitutions, strand), FUN=sum))
+      x2_r = melt(aggregate(t(x_r), by = list(mut_types, substitutions, strand), FUN=sum))
+      colnames(x2) = c("mutation", "type", "strand", "group", "no_mutations")
+      colnames(x2_r) = c("mutation", "type", "strand", "group", "relative_contribution")
+      
+      # combine relative and absolute
+      y = merge(x2, x2_r)
+      
+      # reorder group, type, strand
+      y = y[,c(4,1,2,3,5,6)]
+      y = y[order(y$mutation, decreasing = T),]
+      
+      return(y)
+    } else {stop("Unknown value for 'method' is given. Choose between 'split' (default) or 'combine'")}
 }

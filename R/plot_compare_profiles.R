@@ -52,8 +52,24 @@ plot_compare_profiles = function(profile1,
                                     colors,
                                     condensed = FALSE)
 {
+    if (any(is.na(match(names(profile1), names(profile2)))) | any(is.na(match(names(profile1), names(profile2)))))
+    { stop("Mutations of profiles do not match. Is the same mutation type given?")}
+    
+    if (all(names(profile1) %in% TRIPLETS_96)) { mode = "snv" }
+    else if (all(names(profile1) %in% DBS)) { mode = "dbs" }
+    else if (all(names(profile1) %in% c(TRIPLETS_96, DBS)))
+    {
+      warning("Mutation type of profile1 is unknown. Treated as combined mutation type")
+      mode = "combined"
+    }
+  
     # if colors parameter not provided, set to default colors
-    if(missing(colors)){colors = COLORS6}
+    if(missing(colors))
+    {
+      if (mode == "snv") { colors = COLORS6 }
+      else if (mode == "dbs") { colors = COLORS10 }
+      else if (mode == "combined") { colors = c(COLORS6, COLORS10) }
+    }
     s1_relative = profile1 / sum(profile1)
     s2_relative = profile2 / sum(profile2)
     diff = s1_relative - s2_relative
@@ -69,22 +85,43 @@ plot_compare_profiles = function(profile1,
     
     x = cbind(s1_relative, s2_relative, diff)
     colnames(x) = c(profile_names, "Difference")
+    
+    substitution_dbs <- unlist(lapply(as.list(SUBSTITUTIONS_DBS), function(sub)
+    {
+      sub <- unlist(strsplit(sub, ">"))[1]
+      l <- length(which(startsWith(DBS, sub)))
+      return(rep(paste0(sub,">NN"), l))
+    }))
 
-    substitutions = c('C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G')
-    index = c(rep(1,1,16), rep(2,1,16), rep(3,1,16),
+    if (mode == "snv")
+    {
+      substitutions = SUBSTITUTIONS_96
+      index = c(rep(1,1,16), rep(2,1,16), rep(3,1,16),
                 rep(4,1,16), rep(5,1,16), rep(6,1,16))
-
-    # Context
-    context = CONTEXTS_96
-
-    # Replace mutated base with dot
-    substring(context,2,2) = "."
-
+      # Context
+      context = CONTEXTS_96
+      
+      # Replace mutated base with dot
+      substring(context,2,2) = "."
+    } else if (mode == "dbs")
+    {
+      substitutions = substitution_dbs
+      context = ALT_DBS
+    } else if (mode == "combined")
+    {
+      substitutions = c(SUBSTITUTIONS_96, substitution_dbs)
+      context = CONTEXTS_96
+      # Replace mutated base with dot
+      substring(context,2,2) = "."
+      context = c(context, ALT_DBS)
+    }
+    
     # Construct dataframe for plotting
-    df = data.frame(substitution = substitutions[index], context = context)
+    df = data.frame(substitution = substitutions, context = context)
     rownames(x) = NULL
     df2 = cbind(df, as.data.frame(x))
     df3 = melt(df2, id.vars = c("substitution", "context"))
+    df3$substitution <- factor(df3$substitution, levels = unique(df3$substitution))
 
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.

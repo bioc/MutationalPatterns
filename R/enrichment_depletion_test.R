@@ -37,13 +37,14 @@ enrichment_depletion_test = function(x, by = c())
     # Handle the 'by' parameter when necessary by aggregating x
     if (length(by) > 0)
     {
+        by = rep(by, each=3)
         x$by = by
         # Sum the columns while aggregating rows based on unique values
         # in 'by' and 'region'.
         res2 = stats::aggregate(cbind(n_muts,
                                         surveyed_length,
                                         surveyed_region_length,
-                                        observed) ~ by + region,
+                                        observed) ~ by + region + mutation,
                                 data = x, sum)
     }
     else
@@ -52,7 +53,7 @@ enrichment_depletion_test = function(x, by = c())
         # In this case, the 'by' variable is 'sample' variable.
         res2$by = res2$sample
         # Select output columns
-        res2 = res2[,c(9,1,3,4,6,8)]
+        res2 = res2[,c(10,3,1,4,5,7,9)]
     }
 
     # Calculate probability and expected number of mutations
