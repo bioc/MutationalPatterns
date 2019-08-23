@@ -1,18 +1,39 @@
-#' Make mutation count matrix of 96 trinucleotides 
+#' Make mutation count matrices of single and double substitutions and indels
 #'  
-#' @description Make 96 trinucleotide mutation count matrix
+#' @description Make mutation count matrices for 96 trinucleotide single base 
+#' substitutions, 78 double base substitutions and 
+#' 
 #' @param vcf_list List of collapsed vcf objects
 #' @param ref_genome BSGenome reference genome object 
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
-#' @param method Character stating how to use the data. method = "split" will give 
-#' results for each mutation type seperately, whereas method = "combine" will give 
-#' combined signatures. Default is "split"
-#' @param num_cores Number of cores used for parallel processing. If no value
+#' @param mode (Optional) A character stating which type of mutation is to be extracted: 
+#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'.\cr
+#' Default is 'snv'
+#' @param indel (Optional) List of mutation matrix and vectors for context, class and color of indels.
+#' Color vector must have the same length as the class vector, 
+#' because in plotting profiles, each class is represented by one color.\cr\cr
+#' It is also possible to give a character for predefined variables
+#' and counting mutations with predefined context:
+#' \itemize{
+#'   \item{"native"} {Represents a indel context of 3 classes per 
+#'   deletion and indel: "repetitive region", "microhomology" and 
+#'   "none" of these two. Indels have lengths 1 to 5+}
+#'   \item{"cosmic"} {Represents the indel context according to the
+#'   COSMIC database}
+#' }
+#' Default is "cosmic"
+#' @param method (Optional) Character stating how to use the data. 
+#' \itemize{
+#'   \item{"split":} { Each mutation type has seperate count matrix}
+#'   \item{"combine":} { Combined count matrix of all mutation types}
+#' }   
+#' Default is "split"
+#' @param num_cores (Optional) Number of cores used for parallel processing. If no value
 #'                  is given, then the number of available cores is autodetected.
-#' @return List with 96 mutation count matrix for single base substitutions, 
-#' 78 mutation count matrix for double base substitutions and ... mutation count
-#' matrix for indels
+#' @param ... Arguments passed to type_context()                  
+#'  
+#' @return List with mutation count matrices of snv (96 mutations), dbs (78 
+#' mutations) and indels (number of mutations depends on chosen context for indels)
+#' 
 #' @import GenomicRanges
 #' @importFrom parallel detectCores
 #' @importFrom parallel mclapply
@@ -33,10 +54,12 @@
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
+#' \code{\link{mut_occurrences}},
+#' \code{\link{type_context}}
 #'
 #' @export
 
-mut_matrix = function(vcf_list, ref_genome, mode = "snv", method = "split", num_cores)
+mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_cores)
 {
     # Check value of method
     if (!(method %in% c("split", "combine"))){ stop("Provide the right value of 'method'. Options are 'split' or 'combine'")}
@@ -52,25 +75,32 @@ mut_matrix = function(vcf_list, ref_genome, mode = "snv", method = "split", num_
             num_cores = 1
     }
     
-    mode = tolower(mode)
+    mode = check_mutation_type(mode)
+    if ("indel" %in% mode)
+    {
+      indel = indel_mutation_type(indel)
+    }
+    
     
     rows <- mclapply (as.list(vcf_list), function (vcf)
     {
         row = list()
-        
-        if (grepl("snv",mode) | mode == "all")
+        for (m in mode)
         {
-          type_context = type_context(vcf, ref_genome, mode)
-          snv = mut_96_occurrences(type_context$snv)
-          row = c(row, list("snv"=snv))
+          if (m == "snv") { 
+            row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m)$snv }
+          else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m)$dbs }
+          else if (m == "indel")
+          {
+            if(indel == "custom") 
+            {
+              warning("Custom classification of indels used")
+              column = which(colnames(indel$matrix) == names(vcf))
+              row[[m]] = indel$matrix[,column]
+            } else { 
+              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel), mode = m, indel = indel)$indel }
+          }
         }
-        if (grepl("dbs",mode) | mode == "all")
-        {
-          type_context = mut_type(vcf, mode)
-          dbs = mut_dbs_occurrences(type_context$dbs)
-          row = c(row, list("dbs"=dbs))
-        }
-        
         return(row)
     }, mc.cores = num_cores)
 
@@ -91,6 +121,14 @@ mut_matrix = function(vcf_list, ref_genome, mode = "snv", method = "split", num_
       df[[m]] <- t(df[[m]])
     }
     
-    if (method == "split") { return(df[which(!isEmpty(df))]) }
-    else if (method == "combine") { return(do.call(rbind, df[which(!isEmpty(df))]))}
+    if (method == "split") 
+    { 
+      if (length(which(!isEmpty(df))) == 1) 
+      {
+        return(df[[which(!isEmpty(df))]])
+      } else
+      {
+        return(df[which(!isEmpty(df))])
+      }
+    } else if (method == "combine") { return(do.call(rbind, df[which(!isEmpty(df))]))}
 }

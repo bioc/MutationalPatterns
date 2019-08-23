@@ -15,10 +15,10 @@ mut_dbs_occurrences = function(type_context)
     return(vector)
   
   # for all mutations in this sample
-  for (i in 1:length(type_context))
+  for (i in 1:length(type_context[[1]]))
   {
     # Find mutation type
-    type = which(DBS == type_context[i])
+    type = which(DBS == type_context[[1]][i])
     
     # Increase count for mutation type with one
     vector[type] = vector[type] + 1

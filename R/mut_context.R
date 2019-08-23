@@ -28,7 +28,7 @@
 #'
 #' @export
 
-mut_context = function(vcf, ref_genome, mode="snv") 
+mut_context = function(vcf, ref_genome, mode, indel) 
 {
     # Make sure that the chromosome names are compatible with each other.
     if (!(all(seqlevels(vcf) %in% seqlevels(get(ref_genome)))))
@@ -37,16 +37,42 @@ mut_context = function(vcf, ref_genome, mode="snv")
                     "'seqlevelsStyle()' function to rename chromosome",
                     "names.") )
 
-    if (!grepl("snv",tolower(mode)) & tolower(mode) != "all")
-        stop(paste( "Extract context is only available for single base substitutions"))
+    mode = check_mutation_type(mode)
   
-    vcf <- vcf[nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1]
+    if ("dbs" %in% mode)
+        stop("Extract context is not available for double base substitutions")
   
-    vcf_context = as.character(getSeq(get(ref_genome),
-                                        seqnames(vcf),
-                                        start(vcf) - 1,
-                                        end(vcf) + 1))
-    return(vcf_context)
+    contexts = list()
+    for (m in mode)
+    {
+      if (m == "snv")
+      {
+        input_vcf <- vcf[nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1]
+        
+        vcf_context = as.character(getSeq(get(ref_genome),
+                                          seqnames(input_vcf),
+                                          start(input_vcf) - 1,
+                                          end(input_vcf) + 1))
+        contexts[[m]] = vcf_context
+      } else if (m == "indel")
+      {
+        ref_len = nchar(as.character(vcf$REF))
+        alt_len = nchar(as.character(unlist(vcf$ALT)))
+        
+        input_vcf <- vcf[ref_len != alt_len & (ref_len == 1 | alt_len == 1),]
+        
+        bed <- data.frame("chrom"=as.character(seqnames(input_vcf)),
+                          "pos"=start(input_vcf),
+                          "ref"=as.character(input_vcf$REF),
+                          "alt"=as.character(unlist(input_vcf$ALT)))
+        
+        if (missing(indel)) { indel = "native" }
+        vcf_context = extract_indels(bed, context.database=indel)
+        contexts[[m]] = vcf_context
+      }
+    }
+    
+    return(contexts)
 }
 
 ##

@@ -5,17 +5,23 @@
 #' reconstructs the mutation matrix by solving the nonnegative least-squares
 #' constraints problem.
 #' 
-#' @param mut_matrix 96 mutation count matrix (dimensions: 96 mutations
-#' X n samples)
-#' @param signatures Signature matrix (dimensions: 96 mutations
-#' X n signatures)
-#' @param cutoff Numeric value of absolute signature contribution. Signatures above
-#' value are returned
+#' @param mut_matrix Named list of count matrices 
+#' @param signatures Named list of signature matrices (number of mutational features
+#' for each signature matrix must be the same as in the corresponding count matrix)
+#' @param cutoff Numeric value of absolute signature contribution. Signatures 
+#' greater than or equal to the given value are returned. Default = 0
+#' @param mode Character to select mutation type for which the function has to
+#' be executed
+#' @param method Character to select the method used to fit the signatures:
+#' \itemize{
+#'   \item{'least-squares'} {Solve the nonnegative least-squares constraints problem}
+#'   \item{'golden-ratio-search'} {Perform gold ratio search algortihm from deconstructSigs package}
+#' } 
+#' Default is 'least-squares'
+#' @param ... Other arguments passed to whichSignatures() when using method = 'golden-ratio-search'
 #'
 #' @return Named list with signature contributions and reconstructed
 #' mutation matrix
-#'
-#' @importFrom pracma lsqnonneg
 #'
 #' @examples
 #'
@@ -48,15 +54,15 @@
 #'
 #' @seealso
 #' \code{\link{mut_matrix}}
+#' \code{\link{least_square_error_fitting}}
+#' \code{\link{golden_ratio_search_fitting}}
 #'
 #' @export
 
-fit_to_signatures = function(mut_matrix, signatures, mode, cutoff = 0)
+fit_to_signatures = function(mut_matrix, signatures, mode, cutoff, method = "least-squares", ...)
 {
-  
-    if (missing(mode) & class(mut_matrix) == "matrix") { mode = "unknown" }
-    else if (missing(mode)) { mode = c("snv","dbs","indel") }
-  
+    mode = check_mutation_type(mode)
+    
     if (class(signatures) == "matrix")
     { 
       if (class(mut_matrix) == "matrix") { signatures = list("unknown"=signatures) }
@@ -74,69 +80,24 @@ fit_to_signatures = function(mut_matrix, signatures, mode, cutoff = 0)
         }
       }
     }
+    
     if (class(mut_matrix) == "matrix") { mut_matrix = list("unknown"=mut_matrix) }
     
-    contribution = list()
-    reconstructed = list()
+    mut_matrix = mut_matrix[intersect(mode, names(mut_matrix))]
     
-    for (m in names(mut_matrix))
+    dots = list(...)
+    
+    if (method == "least-squares")
     {
-      if (!(m %in% names(signatures))) { stop("One or more names of 'mut_matrix' not found in 'signatures'")}
-  
-      # make sure dimensions of input matrix are correct
-      if (dim(mut_matrix[[m]])[1] != dim(signatures[[m]])[1])
-          stop(paste("Mutation matrix and signatures input have",
-                     "different number of mutational features"))
-  
-      n_features = dim(mut_matrix[[m]])[1]
-      n_samples = dim(mut_matrix[[m]])[2]
-      n_signatures = dim(signatures[[m]])[2]
-      lsq_contribution = matrix(NA, nrow=n_signatures, ncol=n_samples)
-      lsq_reconstructed = matrix(NA, nrow=n_features, ncol=n_samples)
-  
-      # Process each sample
-      for (i in 1:ncol(mut_matrix[[m]]))
-      {
-          y = mut_matrix[[m]][,i]
-          lsq = lsqnonneg(signatures[[m]], y)
-          lsq_contribution[,i] = lsq$x
-          lsq_reconstructed[,i] = signatures[[m]] %*% as.matrix(lsq$x) 
-      }
-  
-      # Add row and col names
-      sample_names = colnames(mut_matrix[[m]])
-      signature_names = colnames(signatures[[m]])
-      mut_type_names = rownames(signatures[[m]])
-      
-      colnames(lsq_contribution) = sample_names
-      rownames(lsq_contribution) = signature_names
-      
-      lsq_contribution = lsq_contribution[which(rowSums(lsq_contribution)>10),]
-  
-      colnames(lsq_reconstructed) = sample_names
-      rownames(lsq_reconstructed) = mut_type_names
-      
-      contribution[[m]] = lsq_contribution
-      reconstructed[[m]] = lsq_reconstructed
+      if (missing(cutoff)) { cutoff = 0 }
+      res = least_squares_error_fitting(mut_matrix, signatures, cutoff)
+    } else if (method == "golden-ratio-search")
+    {
+      if (!("signature.cutoff" %in% names(dots)) & !missing(cutoff)) 
+        { res = golden_ratio_search_fitting(mut_matrix, signatures, signature.cutoff = cutoff, ...) }
+      else 
+        { res = golden_ratio_search_fitting(mut_matrix, signatures, ...) }
     }
     
-    if (mode == "unknown") 
-    { 
-      contribution = contribution[[mode]]
-      reconstructed = reconstructed[[mode]]
-    } else {
-      mode = unlist(strsplit(mode,"\\+"))
-      mode = mode[match(names(contribution),mode)]
-      
-      if (is.na(mode)) { stop("No modes given are found in 'mut_matrix'") }
-      contribution = contribution[mode]
-      reconstructed = reconstructed[mode]
-    }
-    
-    
-    
-    res = list(contribution, reconstructed)
-    names(res) = c("contribution", "reconstructed")
-
     return(res)
 }

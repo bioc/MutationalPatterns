@@ -20,13 +20,10 @@
 #'
 #' @export
 
-mutations_from_vcf = function(vcf, mode="snv") 
+mutations_from_vcf = function(vcf, mode) 
 {
     # Translate mode to lower case
-    mode = tolower(mode)
-    
-    if(!(mode %in% c("snv", "snv+dbs","snv+indel","dbs","dbs+indel","indel","all")))
-        stop("Mode must be 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'")
+    mode = check_mutation_type(mode)
     
     ref = as.character(vcf$REF)
     alt = as.character(unlist(vcf$ALT))
@@ -44,31 +41,27 @@ mutations_from_vcf = function(vcf, mode="snv")
     
     muts = list()
 
-    if (mode == "all")
+    for (m in mode)
     {
-      mode = "snv+dbs+indel"
-    }
-    
-    if (grepl("snv",mode))
-    {
-      ref_snv = ref[nchar(ref)==1 & nchar(alt)==1]
-      alt_snv = alt[nchar(ref)==1 & nchar(alt)==1]
-      
-      muts = c(muts,list("snv"=paste(ref_snv,alt_snv,sep=">")))
-    } 
-    if (grepl("dbs",mode))
-    {
-      ref_dbs = ref[nchar(ref)==2 & nchar(alt)==2]
-      alt_dbs = alt[nchar(ref)==2 & nchar(alt)==2]
-      
-      muts = c(muts,list("dbs"=paste(ref_dbs,alt_dbs,sep=">")))
-    }
-    if (grepl("indel",mode))
-    {
-      ref_ind = ref[nchar(ref)!=nchar(alt)]
-      alt_ind = alt[nchar(ref)!=nchar(alt)]
-      
-      muts = c(muts,list("indel"=paste(ref_ind,alt_ind,sep=">")))
+      if (m == "snv")
+      {
+        ref_snv = ref[nchar(ref)==1 & nchar(alt)==1]
+        alt_snv = alt[nchar(ref)==1 & nchar(alt)==1]
+        
+        muts[[m]] = paste(ref_snv,alt_snv,sep=">")
+      } else if(m == "dbs")
+      {
+        ref_dbs = ref[nchar(ref)==2 & nchar(alt)==2]
+        alt_dbs = alt[nchar(ref)==2 & nchar(alt)==2]
+        
+        muts[[m]] = paste(ref_dbs,alt_dbs,sep=">")
+      } else if (m == "indel")
+      {
+        ref_ind = ref[nchar(ref)!=nchar(alt) & (nchar(ref)==1 | nchar(alt)==1)]
+        alt_ind = alt[nchar(ref)!=nchar(alt) & (nchar(ref)==1 | nchar(alt)==1)]
+        
+        muts[[m]] = paste(ref_ind,alt_ind,sep=">")
+      }
     }
 
     return(muts)

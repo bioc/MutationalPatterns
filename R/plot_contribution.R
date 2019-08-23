@@ -68,6 +68,7 @@ plot_contribution = function(contribution,
                                 index=c(),
                                 coord_flip=FALSE,
                                 mode="relative",
+                                method = "split",
                                 palette=c())
 {
     # check mode parameter
@@ -89,6 +90,7 @@ plot_contribution = function(contribution,
           contribution[[m]] = contribution[[m]][,index]}
       }
     } else {
+      method = "combine"
       warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
     }
 
@@ -98,120 +100,286 @@ plot_contribution = function(contribution,
     Contribution = NULL
     Signature = NULL
     
-    if (mode == "both")
+    if (method == "split")
     {
-      mode = "relative"
-      mode_next = "absolute"
-    } else {mode_next = "none"}
-    
-    plots = list()
-    
-    if (mode == "relative")
-    {
-        # Plot contribution
-        m_contribution = melt(contribution)
-        colnames(m_contribution) = c("Signature", "Sample", "Contribution")
-
-        plot = ggplot(m_contribution,
+      if (mode == "both")
+      {
+        mode = "relative"
+        mode_next = "absolute"
+      } else {mode_next = "none"}
+      
+      plots = list()
+      
+      for (m in mut_type)
+      {
+        plots[[m]] = list()
+        
+        contribution[[m]] = contribution[[m]][which(rowSums(contribution[[m]]) > 0),]
+        if (all(round(colSums(contribution[[m]])) == 1))
+        {
+          warning(paste("Signature contributions are relative.",
+                        "Plot absolute contribution is not possible"))
+          mode = "relative"
+          mode_next = "none"
+        }
+        
+        if (mode == "relative")
+        {
+          # Plot contribution
+          m_contribution = melt(contribution[[m]])
+          colnames(m_contribution) = c("Signature", "Sample", "Contribution")
+          m_contribution$Signature = factor(m_contribution$Signature, 
+                                            levels = unique(m_contribution$Signature))
+          
+          plot = ggplot(m_contribution,
                         aes(x = factor(Sample),
                             y = Contribution,
-                            fill = factor(Signature),
+                            fill = Signature,
                             order = Sample)) +
-            geom_bar(position = "fill", stat="identity", colour="black")  +
+            geom_bar(position = "fill", stat="identity")  +
             # ylabel
             labs(x = "", y = "Relative contribution") +
             # white background
             theme_bw() +
             # no gridlines
             theme(panel.grid.minor.x=element_blank(),
-                    panel.grid.major.x=element_blank()) +
+                  panel.grid.major.x=element_blank()) +
             theme(panel.grid.minor.y=element_blank(),
-                    panel.grid.major.y=element_blank())
-        
-        plots = c(plots, list(plot))
-    }
-
-    # Handle the absolute mode.
-    if (mode == "absolute" | mode_next == "absolute")
-    {
-        if(missing(signatures))
-            stop(paste("For contribution plotting in mode 'absolute':",
-                        "also provide signatures matrix"))
-        
-        total_signatures = list()
-        abs_contribution = list()
-        
-        if (class(contribution) == "list")
+                  panel.grid.major.y=element_blank())
+          
+          plots[[m]] = c(plots[[m]], list(plot))
+        }
+      
+        # Handle the absolute mode.
+        if (mode == "absolute" | mode_next == "absolute")
         {
-          for (m in mut_type)
-          {
-            # total number of mutations per siganture
-            total_signatures[[m]] = colSums(signatures[[m]])[which(colnames(signatures[[m]]) %in% rownames(contribution[[m]]))] 
-            
-            # calculate signature contribution in absolute number of signatures
-            abs_contribution[[m]] = contribution[[m]] * total_signatures[[m]]
-          }
-        } else {
-          # total number of mutations per siganture
-          total_signatures = colSums(signatures)[which(colnames(signatures) %in% rownames(contribution))]  
+          if(missing(signatures))
+            stop(paste("For contribution plotting in mode 'absolute':",
+                       "also provide signatures matrix"))
+
+          # total number of mutations per signature
+          total_signatures = colSums(signatures[[m]])[which(colnames(signatures[[m]]) %in% rownames(contribution[[m]]))] 
           
           # calculate signature contribution in absolute number of signatures
-          abs_contribution = contribution * total_signatures
-        }
-
-        # Plot contribution
-        m_contribution = melt(abs_contribution)
-        colnames(m_contribution) = c("Signature", "Sample", "Contribution")
-
-        plot = ggplot(m_contribution, aes(x = factor(Sample),
+          abs_contribution = contribution[[m]] * total_signatures
+          
+          # Plot contribution
+          m_contribution = melt(abs_contribution)
+          colnames(m_contribution) = c("Signature", "Sample", "Contribution")
+          m_contribution$Signature = factor(m_contribution$Signature, 
+                                            levels = unique(m_contribution$Signature))
+          
+          plot = ggplot(m_contribution, aes(x = factor(Sample),
                                             y = Contribution,
                                             fill = factor(Signature),
                                             order = Sample)) + 
-            geom_bar(stat="identity", colour = "black")  +  
+            geom_bar(stat="identity")  +  
             # ylabel
             labs(x = "", y = "Absolute contribution \n (no. mutations)") +  
             # white background
             theme_bw() +
             # no gridlines
             theme(panel.grid.minor.x=element_blank(),
-                    panel.grid.major.x=element_blank()) +
+                  panel.grid.major.x=element_blank()) +
             theme(panel.grid.minor.y=element_blank(),
-                    panel.grid.major.y=element_blank())
+                  panel.grid.major.y=element_blank())
+          
+          plots[[m]] = c(plots[[m]], list(plot))
+        }
+      
+        if (mode_next == "none")
+        {
+          # Allow custom color palettes.
+          if (length(palette) > 0)
+            plots[[m]][[1]] = plots[[m]][[1]] + scale_fill_manual(name="Signature", values=palette)
+          else
+            plots[[m]][[1]]= plots[[m]][[1]] + scale_fill_discrete(name="Signature")
+          
+          # Handle coord_flip.
+          if (coord_flip)
+            plots[[m]][[1]] = plots[[m]][[1]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
+          else
+            plots[[m]][[1]] = plots[[m]][[1]] + xlim(levels(factor(m_contribution$Sample)))
+          
+          plots[[m]] = plots[[m]][[1]]
+
+        } else 
+        {
+          for (n in 1:length(plots[[m]]))
+          {
+            if (length(palette) > 0)
+              plots[[m]][[n]] = plots[[m]][[n]] + scale_fill_manual(name="Signature", values=palette)
+            else
+              plots[[m]][[n]] = plots[[m]][[n]] + scale_fill_discrete(name="Signature")
+            
+            # Handle coord_flip.
+            if (coord_flip)
+              plots[[m]][[n]] = plots[[m]][[n]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
+            else
+              plots[[m]][[n]] = plots[[m]][[n]] + xlim(levels(factor(m_contribution$Sample)))
+          }
+          
+          plots[[m]][[1]] = plots[[m]][[1]] + theme(legend.title = element_blank())
+        }
+      }
         
-        plots = c(plots, list(plot))
-    }
-    
-    if (mode_next == "none")
-    {
-      # Allow custom color palettes.
-      if (length(palette) > 0)
-          plot = plot + scale_fill_manual(name="Signature", values=palette)
-      else
-          plot = plot + scale_fill_discrete(name="Signature")
-  
-      # Handle coord_flip.
-      if (coord_flip)
-          plot = plot + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
-      else
-          plot = plot + xlim(levels(factor(m_contribution$Sample)))
-                  
-      return(plot)
-    } else 
-    {
-      for (m in 1:length(plots))
+      plotlist = list()
+      for (m in names(plots))
       {
-        if (length(palette) > 0)
-          plots[[m]] = plots[[m]] + scale_fill_manual(name="Signature", values=palette)
-        else
-          plots[[m]] = plots[[m]] + scale_fill_discrete(name="Signature")
-        
-        # Handle coord_flip.
-        if (coord_flip)
-          plots[[m]] = plots[[m]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
-        else
-          plots[[m]] = plots[[m]] + xlim(levels(factor(m_contribution$Sample)))
+        if (class(plots[[m]]) == "list")
+        {
+          plotlist = c(plotlist, list(plots[[m]][[1]]))
+          plotlist = c(plotlist, list(plots[[m]][[2]]))
+        } else {
+          plotlist = c(plotlist, list(plots[[m]]))
+        }
       }
       
-      return(plot_grid(plotlist=plots,ncol=1))
-    }
+      if (mode_next == "absolute") 
+        return(plot_grid(plotlist = plotlist, ncol=2, align="hv", axis="tblr"))
+      else 
+        return(plot_grid(plotlist = plotlist, ncol=1, align="v", axis = "lr"))
+    } else if (method == "combine")
+    {
+      if (mode == "both")
+      {
+        mode = "relative"
+        mode_next = "absolute"
+      } else {mode_next = "none"}
+      
+      if (class(contribution) == "list")
+      {
+        colsums = c()
+        total_signatures = list()
+        abs_contribution = list()
+        
+        for (m in mut_type){
+          if (all(round(colSums(contribution[[m]])) ==1 ))
+            colsums = c(colsums, T)
+          else 
+            colsums = c(colsums, F)
+          
+          # total number of mutations per signature
+          total_signatures[[m]] = colSums(signatures[[m]])[which(colnames(signatures[[m]]) %in% rownames(contribution[[m]]))] 
+          
+          # calculate signature contribution in absolute number of signatures
+          abs_contribution[[m]] = contribution[[m]] * total_signatures[[m]]
+        }
+        if (all(colsums == T))
+        {
+          warning(paste("Signature contributions are relative.",
+                        "Plot absolute contribution is not possible"))
+          mode = "relative"
+          mode_next = "none"
+        }
+        
+        names(contribution) = NULL
+        contribution = do.call(rbind, contribution)
+        names(abs_contribution) = NULL
+        abs_contribution = do.call(rbind, abs_contribution)
+      } else {
+        # total number of mutations per signature
+        total_signatures = colSums(signatures)[which(colnames(signatures) %in% rownames(contribution))]  
+        
+        # calculate signature contribution in absolute number of signatures
+        abs_contribution = contribution * total_signatures
+      }
+      
+      contribution = contribution[which(rowSums(contribution) > 0),]
+      abs_contribution = abs_contribution[which(rowSums(abs_contribution) > 0),]
+      
+      plots = list()
+      
+      if (mode == "relative")
+      {
+          # Plot contribution
+          m_contribution = melt(contribution)
+          colnames(m_contribution) = c("Signature", "Sample", "Contribution")
+          m_contribution$Signature = factor(m_contribution$Signature, 
+                                            levels = unique(m_contribution$Signature))
+  
+          plot = ggplot(m_contribution,
+                          aes(x = factor(Sample),
+                              y = Contribution,
+                              fill = Signature,
+                              order = Sample)) +
+              geom_bar(position = "fill", stat="identity")  +
+              # ylabel
+              labs(x = "", y = "Relative contribution") +
+              # white background
+              theme_bw() +
+              # no gridlines
+              theme(panel.grid.minor.x=element_blank(),
+                      panel.grid.major.x=element_blank()) +
+              theme(panel.grid.minor.y=element_blank(),
+                      panel.grid.major.y=element_blank())
+          
+          plots = c(plots, list(plot))
+      }
+  
+      # Handle the absolute mode.
+      if (mode == "absolute" | mode_next == "absolute")
+      {
+          if(missing(signatures))
+              stop(paste("For contribution plotting in mode 'absolute':",
+                          "also provide signatures matrix"))
+          
+          # Plot contribution
+          m_contribution = melt(abs_contribution)
+          colnames(m_contribution) = c("Signature", "Sample", "Contribution")
+          m_contribution$Signature = factor(m_contribution$Signature, 
+                                            levels = unique(m_contribution$Signature))
+  
+          plot = ggplot(m_contribution, aes(x = factor(Sample),
+                                              y = Contribution,
+                                              fill = Signature,
+                                              order = Sample)) + 
+              geom_bar(stat="identity")  +  
+              # ylabel
+              labs(x = "", y = "Absolute contribution \n (no. mutations)") +  
+              # white background
+              theme_bw() +
+              # no gridlines
+              theme(panel.grid.minor.x=element_blank(),
+                      panel.grid.major.x=element_blank()) +
+              theme(panel.grid.minor.y=element_blank(),
+                      panel.grid.major.y=element_blank())
+          
+          plots = c(plots, list(plot))
+      }
+      
+      if (mode_next == "none")
+      {
+        # Allow custom color palettes.
+        if (length(palette) > 0)
+            plot = plot + scale_fill_manual(name="Signature", values=palette)
+        else
+            plot = plot + scale_fill_discrete(name="Signature")
+    
+        # Handle coord_flip.
+        if (coord_flip)
+            plot = plot + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
+        else
+            plot = plot + xlim(levels(factor(m_contribution$Sample)))
+      } else 
+      {
+        for (m in 1:length(plots))
+        {
+          if (length(palette) > 0)
+            plots[[m]] = plots[[m]] + scale_fill_manual(name="Signature", values=palette)
+          else
+            plots[[m]] = plots[[m]] + scale_fill_discrete(name="Signature")
+          
+          # Handle coord_flip.
+          if (coord_flip)
+            plots[[m]] = plots[[m]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
+          else
+            plots[[m]] = plots[[m]] + xlim(levels(factor(m_contribution$Sample)))
+        }
+        
+        plot = plot_grid(plotlist=plots,ncol=1, align="v")
+      }
+      
+      return(plot)
+  }
 }

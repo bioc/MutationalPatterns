@@ -30,7 +30,7 @@
 extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
 {
     # Check if mutation matrix is not empty
-    if(isEmpty(mut_matrix))
+    if(all(isEmpty(mut_matrix)))
     {
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }

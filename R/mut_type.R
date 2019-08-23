@@ -22,8 +22,9 @@
 #'
 #' @export
 
-mut_type = function(vcf, mode = "snv") 
+mut_type = function(vcf, mode) 
 {
+    mode = check_mutation_type(mode)
     muts = mutations_from_vcf(vcf, mode)
     
     converted = list()
@@ -135,7 +136,7 @@ mut_type = function(vcf, mode = "snv")
         converted = c(converted,list("dbs"=types))
       }
       else if (n == "indel")
-      {
+      { 
         converted = c(converted, list("indel"=muts[[n]]))
       }
     }

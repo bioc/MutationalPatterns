@@ -1,5 +1,9 @@
 # Global package variables
 
+# Default genome
+
+DEFAULT_GENOME = "BSgenome.Hsapiens.UCSC.hg19"
+
 # Default colours for mutation spectrum plotting
 COLORS6 = c(
     "#2EBAED", "#000000", "#DE1C14",
@@ -15,6 +19,19 @@ COLORS10 = c(
     "#389C2F", "#F49C9B", "#D41F1E",
     "#FABC73", "#FB8101", "#C3AFD5",
     "#7D599E"
+)
+
+COLORS_INDEL = c(
+    "#F7BF80", "#ED8212", 
+    "#B5D988", "#31A12C", 
+    "#E44A39", "#B81C20"
+)
+
+COLORS_INDEL_COSMIC = c(
+    "#F7BF80", "#ED8212", "#B5D988", "#31A12C",
+    "#F8CAB9", "#EA8E77", "#E44A39", "#B81C20",
+    "#D0E1F2", "#97C1DE", "#4B97CA", "#1C68AA",
+    "#D0CFD4", "#B2AEC5", "#8079AE", "#634298"
 )
 
 SUBSTITUTIONS = c('C>A','C>G','C>T','T>A','T>C','T>G')
@@ -58,6 +75,56 @@ DBS_rep = paste(rep(DBS, each=2), c("left", "right"), sep="-")
 
 SUBSTITUTIONS_DBS = c("AC>NN", "AT>NN", "CC>NN","CG>NN","CT>NN","GC>NN","TA>NN","TC>NN","TG>NN","TT>NN")
 ALT_DBS = do.call(rbind, strsplit(DBS, ">"))[,2]
+
+INDEL = c(
+  paste0('del.rep.len.', 1:5),
+  paste0('ins.rep.len.', 1:5),
+  paste0('del.mh.bimh.', 1:5),
+  paste0('ins.mh.bimh.', 1:5),
+  paste0('del.none.len.', 1:5),
+  paste0('ins.none.len.', 1:5)
+)
+
+INDEL_CLASS = c(
+  rep('del.rep', 5), rep('ins.rep', 5),
+  rep('del.mh', 5), rep('ins.mh', 5),
+  rep('del.none', 5), rep('ins.none', 5)
+)
+
+INDEL_CLASS_HEADER = NULL
+
+INDEL_COSMIC = c(
+  paste0('del.1bp.homopol.C.len.', c(1:5,"6+")),
+  paste0('del.1bp.homopol.T.len.', c(1:5,"6+")),
+  paste0('ins.1bp.homopol.C.len.', c(0:4,"5+")),
+  paste0('ins.1bp.homopol.T.len.', c(0:4,"5+")),
+  paste0('del.rep.len.2.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.3.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.4.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.5+.rep.', c(1:5,"6+")),
+  paste0('ins.rep.len.2.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.3.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.4.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.5+.rep.', c(0:4,"5+")),
+  paste0('del.mh.len.2.bimh.1'),
+  paste0('del.mh.len.3.bimh.', c(1,2)),
+  paste0('del.mh.len.4.bimh.', c(1:3)),
+  paste0('del.mh.len.5+.bimh.', c(1:4,"5+"))
+)
+
+INDEL_COSMIC_CLASS = c(
+  rep("C", 6), rep("T", 6), 
+  rep("C", 6), rep("T", 6),
+  rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
+  rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
+  rep("2", 1), rep("3", 2), rep("4", 3), rep("5+", 5)
+)
+
+INDEL_COSMIC_CLASS_HEADER = c(
+  rep("del.1bp", 12), rep("ins.1bp", 12),
+  rep("del.rep", 24), rep("ins.rep", 24),
+  rep("del.mh", 11)
+)
 
 STRAND = rep(c("U","T"), 96)
 STRAND_DBS = rep(c("U","T"), 78)

@@ -1,7 +1,6 @@
-#' Retrieve context of base substitution types
+#' Retrieve context of mutations
 #' 
-#' A function to extract the bases 3' upstream and 5' downstream of the base
-#' substitution types.
+#' A function to extract the contexts of mutations for all mutation types
 #'
 #' @param vcf A CollapsedVCF object
 #' @param ref_genome Reference genome
@@ -29,7 +28,7 @@
 #'
 #' @export
 
-type_context = function(vcf, ref_genome, mode="snv")
+type_context = function(vcf, ref_genome, mode, ...)
 {
     mode = check_mutation_type(mode)
     
@@ -45,14 +44,14 @@ type_context = function(vcf, ref_genome, mode="snv")
 
     for (m in mode)
     {
-      muts = mutations_from_vcf(vcf, mode)
-      types = mut_type(vcf, mode)
+      muts = mutations_from_vcf(vcf, m)
+      types = mut_type(vcf, m)
       
       # if snvs are extracted, convert the base substitutions to the
       # conventional base substitution types
-      if (grepl("snv",mode))
+      if (m == "snv")
       {
-        mut_context = mut_context(vcf, ref_genome, mode)
+        mut_context = mut_context(vcf, ref_genome, m)$snv
         
         # find the mutations for which the context needs to be adjusted
         x = which(muts$snv != types$snv)
@@ -68,8 +67,11 @@ type_context = function(vcf, ref_genome, mode="snv")
         mut_context[x] = y
         
         res[[m]] = list("types"=types[[m]], "context"=mut_context)
-      } else {
+      } else if (m == "dbs"){
         res[[m]] = list("types"=types[[m]])
+      } else if (m == "indel"){
+        mut_context = mut_context(vcf, ref_genome, m, ...)$indel
+        res[[m]] = list("types"=types[[m]], "context"=mut_context)
       }
     }
     # return as named list
