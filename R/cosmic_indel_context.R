@@ -30,55 +30,82 @@
 
 cosmic_indel_context = function(indel) 
 {
-    len = indel[5]
-    sq = as.character(indel[7])
-    type = indel[6]
-    n = indel[8]
-    con = indel[9]
-    bimh = indel[10]
+    len = indel$indel_len
+    sq = as.character(indel$indel_seq)
+    type = indel$indel_type
+    n = indel$repeats
+    bimh = indel$bimh
     
-    if (con != "mh")
+    if (sq == "A" | sq == "G") 
+        sq = as.character(complement(DNAString(sq)))
+    
+    if (type == "del")
     {
-        if (sq == "A" | sq == "G") 
-            sq = as.character(complement(DNAString(sq)))
-        
-        if (len == 1) 
-        { 
-          len = paste0("1bp.homopol.",sq,".len") 
-        } else if (len >= 5) 
-        { 
-          len = "rep.len.5+.rep" 
-        } else 
-        { 
-          len = paste0("rep.len.",len,".rep") 
-        }
-        
-        if (type == "del"){
+        if (n >= 2)
+        {
+            if (len == 1) 
+            { 
+              len = paste0("1bp.homopol.",sq,".len") 
+            } else if (len >= 5) 
+            { 
+              len = "rep.len.5+.rep" 
+            } else 
+            { 
+              len = paste0("rep.len.",len,".rep") 
+            }
+            
             if (n >= 6) { n = "6+" }
             else { n = as.character(n) }
-        } else if (type == "ins")
+          
+            return(sprintf("del.%s.%s", len, n))
+        } else {
+            if (len == 1)
+            {
+              return(sprintf("del.1bp.homopol.%s.len.1", sq))
+            }
+            if (len >= 5) { len = "5+"}
+          
+            if (bimh >= 1)
+            {
+                if (bimh >= 5){ bimh = "5+" }
+                else { bimh = as.character(bimh) }
+                
+                return(sprintf("del.mh.len.%s.bimh.%s", len, bimh))
+            } else {
+                return(sprintf("del.rep.len.%s.rep.1", len))
+            }
+        }
+    } else if (type == "ins") 
+    { 
+        n = n-1
+    
+        if (n >= 1)
         {
+            if (len == 1) 
+            { 
+                len = paste0("1bp.homopol.",sq,".len") 
+            } else if (len >= 5) 
+            { 
+                len = "rep.len.5+.rep" 
+            } else 
+            { 
+                len = paste0("rep.len.",len,".rep") 
+            }
+            
             if (n >= 5) { n = "5+" }
             else { n = as.character(n) }
-        }
         
-        final_context = sprintf("%s.%s.%s", type, len, n)
-        
-    } else {
-        if (type == "del")
-        {
-            if (len >= 5){ len = "5+" }
-            else { len = as.character(len) }
-          
-            if (bimh >= 5){ bimh = "5+" }
-            else { bimh = as.character(bimh) }
-          
-            final_context = sprintf("del.mh.len.%s.bimh.%s", len, bimh)
-        } else 
-        {
-          final_context = NA
+            return(sprintf("ins.%s.%s", len, n))
+        } else {
+            if (len == 1)
+            {
+                return(sprintf("ins.1bp.homopol.%s.len.0", sq))
+            } else if (len >= 5) 
+            {
+                return("ins.rep.len.5+.rep.0")
+            } else {
+                return(sprintf("ins.rep.len.%s.rep.0", len))
+            }
         }
     }
-    
-    return(final_context)
 }

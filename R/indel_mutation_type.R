@@ -57,33 +57,43 @@ indel_mutation_type <- function(indel)
       indel_class <<- INDEL_CLASS
       indel_class_header <<- INDEL_CLASS_HEADER
       indel_colors <<- COLORS_INDEL
+      indel_name <<- "native"
     } else if (indel == "cosmic") 
     {
       indel_context <<- INDEL_COSMIC
       indel_class <<- INDEL_COSMIC_CLASS
       indel_class_header <<- INDEL_COSMIC_CLASS_HEADER
       indel_colors <<- COLORS_INDEL_COSMIC
+      indel_name <<- "cosmic"
     } else { stop(print("Unknown option for indel mutation types",
                         "Provide either 'native' or 'cosmic' character or",
                         "list with indel classes and contexts")) }
   } else if (class(indel) == "list")
   {
-    needed = c("matrix", "class","context","colors")
+    needed = c("matrix", "class","context")
     if (all(needed %in% names(indel)))
     {
       if ("header" %in% names(indel)) { indel_header <<- indel$header }
       else { indel_header <<- NULL }
+      
+      if ("colors" %in% names(indel)) { indel_colors <<- indel$colors }
+      else 
+      {
+        gg_color_hue <- function(n) {
+          hues = seq(15, 375, length = n + 1)
+          hcl(h = hues, l = 65, c = 100)[1:n]
+        }
+        
+        indel_colors <<- gg_color_hue(length(unique(indel$class)))
+      }
       indel_matrix <<- indel$matrix
       indel_context <<- indel$context
       indel_class <<- indel$class
-      indel_colors <<- indel$colors
-      indel = "custom"
+      indel_name <<- "custom"
     } else 
     {
       stop(sprintf("Custom indel list misses information about: %s", 
                    needed[which(!(needed %in% names(indel)))] ))
     }
   }
-  
-  return(indel)
 }

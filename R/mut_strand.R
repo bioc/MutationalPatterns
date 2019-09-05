@@ -111,8 +111,13 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
     {
       # Find reference allele of mutations (and strand of reference genome is
       # reported in vcf file).
-      if (m == "snv") {input_vcf = vcf[which(nchar(as.character(vcf$REF)) == 1 & nchar(as.character(vcf$ALT@unlistData)) == 1), ]}
-      else if (m == "dbs") {input_vcf = vcf[which(nchar(as.character(vcf$REF)) == 2 & nchar(as.character(vcf$ALT@unlistData)) == 2), ]}
+      ref = as.character(vcf$REF)
+      alt = as.character(vcf$ALT@unlistData)
+      
+      if (m == "snv") {input_vcf = vcf[which(nchar(ref) == 1 & nchar(alt) == 1), ]}
+      else if (m == "dbs") {input_vcf = vcf[which(nchar(ref) == 2 & nchar(alt) == 2), ]}
+      else if (m == "indel")
+        stop("Transcriptional strand bias can not be computed for indels")
       
       # Determine overlap between vcf positions and genes
       overlap = findOverlaps(input_vcf, genes)
@@ -136,7 +141,7 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
       
       if (m == "snv")
       {  
-        i = which(nchar(as.character(vcf_overlap$REF)) == 1 & nchar(as.character(vcf_overlap$ALT@unlistData)) == 1)
+        i = which(nchar(ref) == 1 & nchar(alt) == 1)
         overlap_mut = overlap[i,]
         
         ref = vcf_overlap$REF[i]
@@ -146,7 +151,7 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
         i = which(ref == "C" | ref == "T")
       } else if (m == "dbs")
       {
-        i = which(nchar(as.character(vcf_overlap$REF)) == 2 & nchar(as.character(vcf_overlap$ALT@unlistData)) ==2 )
+        i = which(nchar(ref) == 2 & nchar(alt) ==2 )
         overlap_mut = overlap[i,]
         
         ref = as.character(vcf_overlap$REF[i])
@@ -204,15 +209,14 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
     strand2 = list()
     for (m in mut_type)
     {
-      if (m == "snv")
-      {
-        i = which(nchar(as.character(vcf$REF)) == 1 & nchar(as.character(vcf$ALT@unlistData)) == 1)
-      } else if (m == "dbs")
-      {
-        i = which(nchar(as.character(vcf$REF)) == 2 & nchar(as.character(vcf$ALT@unlistData)) ==2 )
-      } else { i = NULL }
+      ref = as.character(vcf$REF)
+      alt = as.character(vcf$ALT@unlistData)
       
-      input_vcf = vcf[i,]
+      if (m == "snv") {input_vcf = vcf[which(nchar(ref) == 1 & nchar(alt) == 1), ]}
+      else if (m == "dbs") {input_vcf = vcf[which(nchar(ref) == 2 & nchar(alt) == 2), ]}
+      else if (m == "indel")
+        input_vcf = vcf[which(nchar(ref) != nchar(alt) &
+                                (nchar(ref) == 1 | nchar(alt) == 1)),]
       
       # Determine overlap between vcf positions and genomic regions
       overlap = findOverlaps(input_vcf, ranges)

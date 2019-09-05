@@ -9,6 +9,30 @@ mut_occurrences = function(type_context, mode, indel)
 {
   mode = check_mutation_type(mode)
   
+  if (all(names(type_context) %in% c("context", "types")))
+  {
+    context_96 = do.call(rbind, strsplit(TRIPLETS_96,""))[,c(1,3,7)]
+    context_96 = paste0(context_96[,1], context_96[,2], context_96[,3])
+    if (all(unique(type_context$context) %in% context_96) &
+        !is.null(unique(type_context$context)))
+    {
+      type_context = list("snv"=list("types"=type_context$types,
+                                     "context"=type_context$context))
+      mode = "snv"
+    }
+    else if (all(unique(type_context$types) %in% DBS))
+    {
+      type_context = list("dbs"=list("types"=type_context$types,
+                                     "context"=type_context$context))
+      mode = "dbs"
+    }
+    else if (all(unique(type_context$context) %in% indel_context))
+    {
+      type_context = list("indel"=list("types"=type_context$types,
+                                     "context"=type_context$context))
+      mode = "indel"
+    }
+  }
   count = list()
  
   for (m in mode)
@@ -36,7 +60,7 @@ mut_occurrences = function(type_context, mode, indel)
       context = table(type_context[[m]][["types"]])
     } else if (m == "indel")
     {
-      if (missing(indel)) { indel = "native" }
+      if (missing(indel)) { indel = "cosmic" }
       if (indel == "cosmic")
       { 
         count[[m]] = rep(0,83) 
@@ -53,41 +77,9 @@ mut_occurrences = function(type_context, mode, indel)
     count[[m]][names(context)] = context
   }
   
+  if (length(count) == 1){
+    count = unlist(unname(count))
+  }
+  
   return(count)
-}
-
-##
-## Deprecated variants
-##
-
-#'
-#' This function has been removed.  Use 'mut_occurrences' instead.
-#'
-#' @param vcf        A GRanges object
-#' @param ref_genome The reference genome
-#'
-#' @return Character vector with the context of the base substitutions
-#'
-#' @examples
-#' ## See the 'read_vcfs_as_granges()' example for how we obtained the
-#' ## following data:
-#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
-#'
-#' ## Load the corresponding reference genome.
-#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-#' library(ref_genome, character.only = TRUE)
-#'
-#' mut_context <- mut_context(vcfs[[1]], ref_genome)
-#'
-#' @seealso
-#' \code{\link{mut_context}}
-#'
-#' @export
-
-mut_96_occurrences <- function(vcf, ref_genome)
-{
-  .Defunct("mut_occurrences", package="MutationalPatterns",
-           msg=paste("This function has been renamed. Use",
-                     "'mut_occurrences' instead."))
 }

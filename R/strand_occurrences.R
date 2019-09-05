@@ -44,6 +44,37 @@
 strand_occurrences = function(mut_mat_s, by, mode, method = "split")
 {
     mode = check_mutation_type(mode)
+    
+    if (class(mut_mat_s) == "matrix")
+    {
+      if ((all(rownames(mut_mat_s) %in% TRIPLETS_192_trans) | 
+          all(rownames(mut_mat_s) %in% TRIPLETS_192_rep)) &
+          length(rownames(mut_mat_s) > 0))
+      {
+        mut_mat_s = list("snv" = mut_mat_s)
+        mode = "snv"
+      }
+      else if ((all(rownames(mut_mat_s) %in% DBS_trans) |
+                all(rownames(mut_mat_s) %in% DBS_rep)) &
+               length(rownames(mut_mat_s)) > 0)
+      {
+        mut_mat_s = list("dbs" = mut_mat_s)
+        mode = "dbs"
+      }
+      # else if (all(rownames(mut_mat_s) %in% )
+      # {
+      #   type_context = list("dbs"=list("types"=type_context$types,
+      #                                  "context"=type_context$context))
+      #   mode = "dbs"
+      # }
+      else if (all(unique(type_context$context) %in% indel_context))
+      {
+        type_context = list("indel"=list("types"=type_context$types,
+                                         "context"=type_context$context))
+        mode = "indel"
+      }
+    }
+    
     mode = intersect(mode, names(mut_mat_s))
   
     if (method == "split")

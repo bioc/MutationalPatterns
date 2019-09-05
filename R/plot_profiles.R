@@ -52,8 +52,8 @@ plot_profiles = function(mut_matrix, colors, ymax, mut_type, method = "split", c
   if ("indel" %in% mut_type)
   {
     if (!exists("indel_context")) { stop("Run 'indel_mutation_type()' to set global variables for indels")}
-    else if (indel_context[1] == "del.1bp.homopol.C.len.1") { indel = "cosmic" }
-    else if (indel_context[1] == "del.rep.len.1") { indel = "native" }
+    else if (indel_context[1] == "del.1bp.homopol.C.len.1") { indel_name = "cosmic" }
+    else if (indel_context[1] == "del.rep.len.1") { indel_name = "native" }
   }
   
   # Check mutation matrix when type is not given
@@ -119,7 +119,6 @@ plot_profiles = function(mut_matrix, colors, ymax, mut_type, method = "split", c
   if(length(unique(colors$indel)) != indel_color_number){stop("Provide indel colors vector with length same number of classes")}
   
   # Create context and classes lists
-  
   context = list()
   substitution = list()
   
@@ -137,7 +136,7 @@ plot_profiles = function(mut_matrix, colors, ymax, mut_type, method = "split", c
     return(rep(paste0(sub,">NN"), l))
   }))
   
-  if (indel == "cosmic")
+  if (indel_name == "cosmic")
   {
     context[["indel"]] = do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]]
     df = do.call(rbind, strsplit(indel_context, "\\."))[,c(1:4)]
@@ -145,8 +144,11 @@ plot_profiles = function(mut_matrix, colors, ymax, mut_type, method = "split", c
     substitution[["indel"]] = indel_class_value
     labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
     names(labels) = unique(substitution[["indel"]])
-  } else if (indel == "native") {
+  } else if (indel_name == "native") {
     context[["indel"]] = do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]]
+    substitution[["indel"]] = indel_class
+  } else {
+    context[["indel"]] = indel_context
     substitution[["indel"]] = indel_class
   }
   
@@ -358,40 +360,3 @@ plot_profiles = function(mut_matrix, colors, ymax, mut_type, method = "split", c
   
   return(plot)
 }
-
-##
-## Deprecated variants
-##
-
-#'
-#' This function has been removed.  Use 'plot_profiles' instead.
-#'
-#' @param vcf        A GRanges object
-#' @param ref_genome The reference genome
-#'
-#' @return Character vector with the context of the base substitutions
-#'
-#' @examples
-#' ## See the 'read_vcfs_as_granges()' example for how we obtained the
-#' ## following data:
-#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
-#'
-#' ## Load the corresponding reference genome.
-#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-#' library(ref_genome, character.only = TRUE)
-#'
-#' mut_context <- mut_context(vcfs[[1]], ref_genome)
-#'
-#' @seealso
-#' \code{\link{mut_context}}
-#'
-#' @export
-
-plot_96_profile <- function(vcf, ref_genome)
-{
-  .Defunct("plot_profiles", package="MutationalPatterns",
-           msg=paste("This function has been renamed. Use",
-                     "'plot_profiles' instead."))
-}
-

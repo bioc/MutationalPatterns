@@ -71,29 +71,34 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
   if (!combined)
   {
     # Check mut_type argument
-    if (missing(mut_type)) {mut_type = names(contribution)}
-    else if (mut_type == "all") {mut_type = c("snv","dbs","indel")}
-    else {mut_type = unlist(strsplit(mut_type, "\\+"))}
+    mut_type = check_mutation_type(mut_type)
+    
     if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
-    else {stop("One or more values of 'mut_type' is not found in 'contribution'. Run function without 'mut_type' argument or give values which are in contribution list")}
+    else {stop(paste("One or more values of 'mut_type' is not found in 'contribution'.", 
+                     "Run function without 'mut_type' argument or give values which are in contribution list"))}
     
     if (cluster_samples)
-    { if (missing(cluster_mut_type)) {cluster_mut_type = names(contribution)}
-      else if (cluster_mut_type == "all") {cluster_mut_type = c("snv","dbs","indel")}
-      else {cluster_mut_type = unlist(strsplit(cluster_mut_type, "\\+"))}
+    { 
+      if (missing(cluster_mut_type)) {cluster_mut_type = names(contribution)}
+      else if (length(cluster_mut_type ) == 1)
+      {
+        if (cluster_mut_type == "all") {cluster_mut_type = c("snv","dbs","indel")}
+      }
       if (!all(cluster_mut_type %in% names(contribution)))
-      {stop("One or more values of 'cluster_mut_type' is not found in 'contribution'. Run function without 'cluster_mut_type' argument or give values which are in contribution list")}
+      {stop(paste("One or more values of 'cluster_mut_type' is not found in 'contribution'.", 
+                  "Run function without 'cluster_mut_type' argument or give values which are in contribution list"))}
       
       cluster_mutations = c()
       
       for (m in cluster_mut_type)
       {
         if (any(grepl(m, names(contribution)))) { cluster_mutations = c(cluster_mutations, rownames(contribution[[m]])) }
-        else { cluster_mutations = NULL }
+        else { cluster_mutations = cluster_mutations }
       }
       
       if (isEmpty(cluster_mutations))
-        stop("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'mut_type'")
+        warning(paste("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'mut_type'.",
+                      "No clustering on mutation type is done"))
     }  
     
     contribution = do.call(rbind, contribution)
@@ -128,6 +133,8 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
     else {hc.sample = hclust(dist(contribution_norm[,match(cluster_mutations, colnames(contribution_norm))]), method = method)}
     # order of samples according to hierarchical clustering
     sample_order = rownames(contribution)[hc.sample$order]
+    
+    sig_order = c(cluster_mutations, " ", colnames(contribution)[which(!(colnames(contribution) %in% cluster_mutations))])
   } 
   else
   {
@@ -150,10 +157,21 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
   contribution_norm.m$Sample = factor(contribution_norm.m$Sample, levels = sample_order)
   contribution_norm.m$Signature = factor(contribution_norm.m$Signature, levels = sig_order)
   
+  if (cluster_samples)
+  {
+    if(!isEmpty(cluster_mutations))
+      contribution_norm.m = rbind(contribution_norm.m,
+                                  data.frame("Sample" = unique(contribution_norm.m$Sample),
+                                             "Signature" = " ",
+                                             "Contribution" = NA))
+  }
+    
   # plot heatmap
   heatmap = ggplot(contribution_norm.m, aes(x=Signature, y=Sample, fill=Contribution, order=Sample)) + 
     geom_tile(color = "white") +
-    scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Relative \ncontribution", limits = c(0,1) ) +
+    scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Relative \ncontribution", limits = c(0,1),
+                         na.value = "white") +
+    scale_x_discrete(breaks=sig_order, labels=sig_order) +
     theme_bw() + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(x=NULL, y=NULL) 

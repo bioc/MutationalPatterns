@@ -10,9 +10,9 @@
 #' @param coord_flip Flip X and Y coordinates, default = FALSE
 #' @param mode "relative", "absolute" or "both"; to plot the relative contribution or
 #' absolute number of mutations, default = "relative"
-#' @param palette A color palette like c("#FF0000", "#00FF00", "9999CC") that
-#' will be used as colors in the plot.  By default, ggplot2's colors are used
-#' to generate a palette.
+#' @param palette A list of color palette like c("#FF0000", "#00FF00", "9999CC")
+#' for each mutation type that will be used as colors in the plot.  
+#' By default, ggplot2's colors are used to generate a palette.
 #'
 #' @return Stacked barplot with contribution of each signature for each sample
 #'
@@ -82,18 +82,49 @@ plot_contribution = function(contribution,
       else {mut_type = unlist(strsplit(mut_type, "\\+"))}
       if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
       else {stop("One or more values of 'mut_type' is not found in 'contribution'")}
-    
+      
+      for (m in mut_type)
+      {
+        if (is.null(rownames(contribution[[m]])))
+          stop(paste("Provide contribution matrix for mutation type", 
+                     m,
+                     "with rownames for signatures"))
+      }
+      
       # optional subsetting if index parameter is provided
       if(length(index > 0)){
         for (m in mut_type)
         {
-          contribution[[m]] = contribution[[m]][,index]}
+          contribution[[m]] = contribution[[m]][,index]
+        }
       }
     } else {
       method = "combine"
-      warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
+      
+      if (is.null(names(contribution[[m]])))
+        stop("Provide contribution matrix with rownames for signatures")
+      else
+        warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
+      
     }
-
+  
+    if (length(palette) == 0)
+    {
+      if (class(signatures) == "matrix")
+      {
+        palette = default_colors_ggplot(ncol(signatures))
+        names(palette) = colnames(signatures)  
+      } else 
+      {
+        palette = list()
+        for (m in names(signatures))
+        {
+          palette[[m]] = default_colors_ggplot(ncol(signatures[[m]]))
+          names(palette[[m]]) = colnames(signatures[[m]])
+        }
+      }
+    }
+      
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
     Sample = NULL
@@ -141,6 +172,8 @@ plot_contribution = function(contribution,
             labs(x = "", y = "Relative contribution") +
             # white background
             theme_bw() +
+            # default or custom palette
+            scale_fill_manual(name="Signature", values = palette[[m]]) +
             # no gridlines
             theme(panel.grid.minor.x=element_blank(),
                   panel.grid.major.x=element_blank()) +
@@ -178,6 +211,8 @@ plot_contribution = function(contribution,
             labs(x = "", y = "Absolute contribution \n (no. mutations)") +  
             # white background
             theme_bw() +
+            # default or custom palette
+            scale_fill_manual(name="Signature", values = palette[[m]]) +
             # no gridlines
             theme(panel.grid.minor.x=element_blank(),
                   panel.grid.major.x=element_blank()) +
@@ -189,12 +224,6 @@ plot_contribution = function(contribution,
       
         if (mode_next == "none")
         {
-          # Allow custom color palettes.
-          if (length(palette) > 0)
-            plots[[m]][[1]] = plots[[m]][[1]] + scale_fill_manual(name="Signature", values=palette)
-          else
-            plots[[m]][[1]]= plots[[m]][[1]] + scale_fill_discrete(name="Signature")
-          
           # Handle coord_flip.
           if (coord_flip)
             plots[[m]][[1]] = plots[[m]][[1]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
@@ -207,11 +236,6 @@ plot_contribution = function(contribution,
         {
           for (n in 1:length(plots[[m]]))
           {
-            if (length(palette) > 0)
-              plots[[m]][[n]] = plots[[m]][[n]] + scale_fill_manual(name="Signature", values=palette)
-            else
-              plots[[m]][[n]] = plots[[m]][[n]] + scale_fill_discrete(name="Signature")
-            
             # Handle coord_flip.
             if (coord_flip)
               plots[[m]][[n]] = plots[[m]][[n]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
@@ -288,6 +312,8 @@ plot_contribution = function(contribution,
       contribution = contribution[which(rowSums(contribution) > 0),]
       abs_contribution = abs_contribution[which(rowSums(abs_contribution) > 0),]
       
+      palette = unlist(unname(palette))
+      
       plots = list()
       
       if (mode == "relative")
@@ -308,6 +334,8 @@ plot_contribution = function(contribution,
               labs(x = "", y = "Relative contribution") +
               # white background
               theme_bw() +
+              # default or custom palette
+              scale_fill_manual(name="Signature", values = palette) +
               # no gridlines
               theme(panel.grid.minor.x=element_blank(),
                       panel.grid.major.x=element_blank()) +
@@ -339,6 +367,8 @@ plot_contribution = function(contribution,
               labs(x = "", y = "Absolute contribution \n (no. mutations)") +  
               # white background
               theme_bw() +
+              # default or custom palette
+              scale_fill_manual(name="Signature", values = palette) +
               # no gridlines
               theme(panel.grid.minor.x=element_blank(),
                       panel.grid.major.x=element_blank()) +
@@ -350,12 +380,6 @@ plot_contribution = function(contribution,
       
       if (mode_next == "none")
       {
-        # Allow custom color palettes.
-        if (length(palette) > 0)
-            plot = plot + scale_fill_manual(name="Signature", values=palette)
-        else
-            plot = plot + scale_fill_discrete(name="Signature")
-    
         # Handle coord_flip.
         if (coord_flip)
             plot = plot + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))
@@ -365,11 +389,6 @@ plot_contribution = function(contribution,
       {
         for (m in 1:length(plots))
         {
-          if (length(palette) > 0)
-            plots[[m]] = plots[[m]] + scale_fill_manual(name="Signature", values=palette)
-          else
-            plots[[m]] = plots[[m]] + scale_fill_discrete(name="Signature")
-          
           # Handle coord_flip.
           if (coord_flip)
             plots[[m]] = plots[[m]] + coord_flip() + xlim(rev(levels(factor(m_contribution$Sample))))

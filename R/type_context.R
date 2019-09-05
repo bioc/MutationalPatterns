@@ -74,6 +74,9 @@ type_context = function(vcf, ref_genome, mode, ...)
         res[[m]] = list("types"=types[[m]], "context"=mut_context)
       }
     }
+    
+    if (length(res) == 1)
+      res = list("context"=res[[1]][["context"]], "types"=res[[1]][["types"]])
     # return as named list
     return(res)
 }

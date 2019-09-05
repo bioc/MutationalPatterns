@@ -78,7 +78,7 @@ mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_c
     mode = check_mutation_type(mode)
     if ("indel" %in% mode)
     {
-      indel = indel_mutation_type(indel)
+      indel_mutation_type(indel)
     }
     
     
@@ -88,17 +88,17 @@ mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_c
         for (m in mode)
         {
           if (m == "snv") { 
-            row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m)$snv }
-          else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m)$dbs }
+            row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m) }
+          else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m) }
           else if (m == "indel")
           {
-            if(indel == "custom") 
+            if(indel_name == "custom") 
             {
               warning("Custom classification of indels used")
               column = which(colnames(indel$matrix) == names(vcf))
               row[[m]] = indel$matrix[,column]
             } else { 
-              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel), mode = m, indel = indel)$indel }
+              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel_name), mode = m, indel = indel_name) }
           }
         }
         return(row)

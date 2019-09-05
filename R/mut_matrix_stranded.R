@@ -137,6 +137,8 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "t
     df[[m]] = t(df[[m]])
   }
   
-  # Transpose and return
-  return(df)
+  if (length(df) == 1)
+    return(df[[1]])
+  else 
+    return(df)
 }

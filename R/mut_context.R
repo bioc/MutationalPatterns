@@ -66,7 +66,7 @@ mut_context = function(vcf, ref_genome, mode, indel)
                           "ref"=as.character(input_vcf$REF),
                           "alt"=as.character(unlist(input_vcf$ALT)))
         
-        if (missing(indel)) { indel = "native" }
+        if (missing(indel)) { indel = "cosmic" }
         vcf_context = extract_indels(bed, context.database=indel)
         contexts[[m]] = vcf_context
       }

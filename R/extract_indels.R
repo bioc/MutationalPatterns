@@ -91,31 +91,31 @@ extract_indels <- function(bed, context.database, sample.name=NULL, ref.genome=D
       
     }, df$indel_seq, l_flank, r_flank, USE.NAMES=F))
     
-    #--------- Assign repeat, microhomology, or no context ---------#
-    if(verbose){ message('Determining indel contexts...') }
-    context <- unlist(Map(function(n_copies_along_flank, n_bases_mh, indel_len){
-      if (n_copies_along_flank >= 2){
-        if(indel_len < 50){ context <-'rep' }
-        else { context <- 'mh' }
-        
-      } else if(n_copies_along_flank >= 1 && n_bases_mh >= 2) {
-        context <- 'mh'
-      } else if(n_copies_along_flank >= 1 && n_bases_mh >= 1 && indel_len > 3 ) {
-        context <- 'mh'
-        
-      } else {
-        context <- 'none'
-      }
-      
-      return(context)
-      
-    }, n_copies_along_flank, n_bases_mh, df$indel_len))
-    
-    df <- cbind(df, "repeats"=n_copies_along_flank, "context"=context, "bimh"=n_bases_mh)
+    df <- cbind(df, "repeats"=n_copies_along_flank, "bimh"=n_bases_mh)
     
     # For native indel context 
     if (context.database == "native")
     {
+      #--------- Assign repeat, microhomology, or no context ---------#
+      if(verbose){ message('Determining indel contexts...') }
+      context <- unlist(Map(function(n_copies_along_flank, n_bases_mh, indel_len){
+        if (n_copies_along_flank >= 2){
+          if(indel_len < 50){ context <-'rep' }
+          else { context <- 'mh' }
+          
+        } else if(n_copies_along_flank >= 1 && n_bases_mh >= 2) {
+          context <- 'mh'
+        } else if(n_copies_along_flank >= 1 && n_bases_mh >= 1 && indel_len > 3 ) {
+          context <- 'mh'
+          
+        } else {
+          context <- 'none'
+        }
+        
+        return(context)
+        
+      }, n_copies_along_flank, n_bases_mh, df$indel_len))
+      
       #--------- Gather components for counting final contexts/signatures ---------#
       if(verbose){ message('Counting indel context occurrences...') }
       ## Slightly redundant (could have just assigned components to a dataframe). But easier to debug
@@ -154,6 +154,8 @@ extract_indels <- function(bed, context.database, sample.name=NULL, ref.genome=D
       {
         df$final_context[i] = cosmic_indel_context(df[i,])
       }
+      
+      df = df[df$final_context %in% indel_context,]
       
       return(df$final_context)
     }
