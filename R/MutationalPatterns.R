@@ -4,7 +4,7 @@
 
 DEFAULT_GENOME = "BSgenome.Hsapiens.UCSC.hg19"
 
-# Default colours for mutation spectrum plotting
+# Default colours for mutation profile plots
 COLORS6 = c(
     "#2EBAED", "#000000", "#DE1C14",
     "#D4D2D2", "#ADCC54", "#F0D0CE")
@@ -34,6 +34,7 @@ COLORS_INDEL_COSMIC = c(
     "#D0CFD4", "#B2AEC5", "#8079AE", "#634298"
 )
 
+# Predefined substitutions
 SUBSTITUTIONS = c('C>A','C>G','C>T','T>A','T>C','T>G')
 SUBSTITUTIONS_96 = rep(SUBSTITUTIONS, each=16)
 SUBSTITUTIONS_192 = rep(SUBSTITUTIONS, each=32)
@@ -126,6 +127,7 @@ INDEL_COSMIC_CLASS_HEADER = c(
   rep("del.mh", 11)
 )
 
+# Strand information 
 STRAND = rep(c("U","T"), 96)
 STRAND_DBS = rep(c("U","T"), 78)
 DNA_BASES = c("A", "C", "G", "T")

@@ -1,30 +1,36 @@
-#' Retrieve context of base substitutions
+#' Retrieve context of indel
 #'
-#' A function to extract the bases 3' upstream and 5' downstream of the base
-#' substitutions from the reference genome
-#' @param vcf A Granges object
-#' @param ref_genome Reference genome
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
-#' @return Character vector with the context of the base substitutions
-#' @importFrom GenomeInfoDb seqlevels
-#' @importFrom GenomeInfoDb seqnames
-#' @importFrom Biostrings getSeq
+#' A function to extract the indel context from a data.frame, 
+#' specified by the context according to the COSMIC database
+#' @param indel A data frame with information about a indel. Columns 
+#' needed in data.frame are: \cr
+#' \itemize{
+#' \item{indel_len:} {  Length of an indel sequence}
+#' \item{indel_seq:} {  Sequence of an indel}
+#' \item{indel_type:} {  'del'(etion) or 'ins'(erstion)}
+#' \item{repeats:} {  Number of repeats of an indel}
+#' \item{bimh:} {  Number of bases in microhomology}
+#' }
+#' @return Character vector with the context of the indel
+#' @importFrom Biostrings DNAString, complement
 #'
 #' @examples
-#' ## See the 'read_vcfs_as_granges()' example for how we obtained the
-#' ## following data:
-#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
-#'
-#' ## Load the corresponding reference genome.
-#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-#' library(ref_genome, character.only = TRUE)
-#'
-#' mut_context <- mut_context(vcfs[[1]], ref_genome, mode)
+#' ## Get a data.frame with the columns needed. Is also part of the
+#' ## function extract_indels
+#' indel = data.frame("chrom" = chr1,
+#'                    "pos" = 3249117,
+#'                    "ref" = "AT",
+#'                    "alt" = "A",
+#'                    "indel_len" = 1,
+#'                    "indel_type" = "del",
+#'                    "indel_seq" = "T",
+#'                    "repeats" = 4,
+#'                    "bimh" = 1)
+#' 
+#' context = cosmic_indel_context(indel)
 #'
 #' @seealso
-#' \code{\link{read_vcfs_as_granges}},
+#' \code{\link{extract_indels}}
 #'
 #' @export
 
@@ -36,9 +42,12 @@ cosmic_indel_context = function(indel)
     n = indel$repeats
     bimh = indel$bimh
     
+    # Get C or T base of indel
     if (sq == "A" | sq == "G") 
         sq = as.character(complement(DNAString(sq)))
     
+    # If type is a deletion, look at number of repeats
+    # and look at number of bases in microhomology
     if (type == "del")
     {
         if (n >= 2)
@@ -75,6 +84,8 @@ cosmic_indel_context = function(indel)
                 return(sprintf("del.rep.len.%s.rep.1", len))
             }
         }
+    # If type is insertion, look at number of repeats. 
+    # No microhomology context for insertions
     } else if (type == "ins") 
     { 
         n = n-1

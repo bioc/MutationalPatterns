@@ -6,16 +6,25 @@
 #' @param vcf CollapsedVCF object with mutations
 #' @param surveyed GRanges object with regions of the genome that were surveyed
 #' @param region GRanges object with genomic region(s)
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @importFrom GenomeInfoDb seqlevelsStyle
 #' @noRd
 #' @return A data.frame containing the overlapping mutations for a
 #' genomic region.
 
-intersect_with_region = function(vcf, surveyed, region, mode)
+intersect_with_region = function(vcf, surveyed, region, type)
 {
-    if (mode == "snv") { i = which(nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1) }
-    else if (mode == "dbs") { i = which(nchar(as.character(vcf$REF))==2 & nchar(as.character(unlist(vcf$ALT)))==2) }
-    else if (mode == "indel") { i = which(nchar(as.character(vcf$REF)) != nchar(as.character(unlist(vcf$ALT)))) }
+    nref = nchar(as.character(vcf$REF))
+    nalt = nchar(as.character(unlist(vcf$ALT)))
+  
+    type = check_mutation_type(type)
+    
+    if (type == "snv") { i = which(nref==1 & nalt==1) }
+    else if (type == "dbs") { i = which(nref==2 & nalt==2) }
+    else if (type == "indel") { i = which(nref != nalt & 
+                                            (nref == 1 | nalt == 1)) }
   
     vcf = vcf[i,]
     
@@ -27,9 +36,6 @@ intersect_with_region = function(vcf, surveyed, region, mode)
     if (seqlevelsStyle(region) != seqlevelsStyle(surveyed))
       stop(paste("The chromosome names (seqlevels) of the surveyed and",
                  "the region GRanges object do not match."))
-    
-    # Mutations on same chromosomes as in surveyed
-    vcf = vcf[which(as.character(seqnames(vcf)) %in% unique(as.character(seqnames(surveyed)))),]
     
     # Number of mutations in vcf file
     n_muts = length(vcf)

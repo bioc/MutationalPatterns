@@ -6,9 +6,9 @@
 #' @param chrom A character stating the chromosome
 #' @param pos The REF position as an integer
 #' @param indel.len The length of the indel as an integer
-#' @param indel.type A character stating whether the indel is an insertion ('ins') or deletion ('del')
-#' @param n.indel.lengths.l The length of the flanking sequence to return (measured in indel lengths)
-#' @param n.indel.lengths.r See n.indel.lengths.l
+#' @param indel.type A character stating whether the indel is an 'ins'(ertion) or 'del'(etion)
+#' @param n.indel.lengths.l (Optional) The length of the flanking sequence to return (measured in indel lengths)
+#' @param n.indel.lengths.r (Optional) See n.indel.lengths.l
 #'
 #' @return A vector of the left flank start/end position and right flank start/end position
 indel_seq_flanks_start_end <- function(chrom, pos, indel.len, indel.type, n.indel.lengths.l=1, n.indel.lengths.r=1){

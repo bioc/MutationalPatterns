@@ -4,8 +4,9 @@
 #'
 #' @param vcf A CollapsedVCF object
 #' @param ref_genome Reference genome
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @return Mutation types and context character vectors in a named list
 #'
 #' @importFrom IRanges reverse
@@ -20,7 +21,7 @@
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
 #'
-#' type_context <- type_context(vcfs[[1]], ref_genome, mode)
+#' type_context <- type_context(vcfs[[1]], ref_genome, type)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
@@ -28,9 +29,10 @@
 #'
 #' @export
 
-type_context = function(vcf, ref_genome, mode, ...)
+type_context = function(vcf, ref_genome, type, ...)
 {
-    mode = check_mutation_type(mode)
+    # Check the mutation type argument
+    type = check_mutation_type(type)
     
     # Deal with empty GRanges objects.
     if (length (vcf) == 0)
@@ -42,7 +44,7 @@ type_context = function(vcf, ref_genome, mode, ...)
     
     res = list()
 
-    for (m in mode)
+    for (m in type)
     {
       muts = mutations_from_vcf(vcf, m)
       types = mut_type(vcf, m)
@@ -51,10 +53,10 @@ type_context = function(vcf, ref_genome, mode, ...)
       # conventional base substitution types
       if (m == "snv")
       {
-        mut_context = mut_context(vcf, ref_genome, m)$snv
+        mut_context = mut_context(vcf, ref_genome, m)
         
         # find the mutations for which the context needs to be adjusted
-        x = which(muts$snv != types$snv)
+        x = which(muts != types)
         
         # subset mut_context
         y = mut_context[x]
@@ -66,17 +68,18 @@ type_context = function(vcf, ref_genome, mode, ...)
         # replace subset with reverse complement
         mut_context[x] = y
         
-        res[[m]] = list("types"=types[[m]], "context"=mut_context)
+        res[[m]] = list("types"=types, "context"=mut_context)
       } else if (m == "dbs"){
-        res[[m]] = list("types"=types[[m]])
+        res[[m]] = list("types"=types)
       } else if (m == "indel"){
-        mut_context = mut_context(vcf, ref_genome, m, ...)$indel
-        res[[m]] = list("types"=types[[m]], "context"=mut_context)
+        mut_context = mut_context(vcf, ref_genome, m, ...)
+        res[[m]] = list("types"=types, "context"=mut_context)
       }
     }
     
+    # Return a vector when there is only 1 mutation type
     if (length(res) == 1)
-      res = list("context"=res[[1]][["context"]], "types"=res[[1]][["types"]])
-    # return as named list
+      res = list("types"=res[[1]][["types"]], "context"=res[[1]][["context"]])
+    
     return(res)
 }

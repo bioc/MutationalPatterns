@@ -2,8 +2,6 @@
 #' 
 #' @param vcf_list A GRangesList
 #' @param ref_genome Reference genome
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
 #' @return data.frame with counts of each base substitution type for
 #' each sample in vcf_list
 #'
@@ -20,55 +18,52 @@
 #' library(ref_genome, character.only = TRUE)
 #'
 #' ## Get the type occurrences for all VCF objects.
-#' type_occurrences = mut_type_occurrences(vcfs, ref_genome, mode)
+#' type_occurrences = mut_type_occurrences(vcfs, ref_genome)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
 #' @export
 
-mut_type_occurrences = function(vcf_list, ref_genome, mode="snv")
+mut_type_occurrences = function(vcf_list, ref_genome)
 {  
-    mode <- tolower(mode)
-    if (!grepl("snv",mode) | mode == "all")
-    {
-      stop("Counting type occurrences only available for single base substitutions, give the right mode")
+  # Get the number of samples
+  n_samples = length(vcf_list)
+  df = data.frame()
+  
+  # Define CpG context
+  CpG = c("ACG", "CCG", "TCG", "GCG")
+  column_names = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G",
+                   "C>T at CpG", "C>T other")
+  
+  full_table = NULL
+  for(i in 1:n_samples)
+  {
+    vcf = vcf_list[[i]]
+    
+    # Get the mutation types
+    types = mut_type(vcf)
+    
+    CT_context = 0
+    CT_at_CpG = 0
+    CT_at_other = 0
+    
+    # For the C>T mutations check whether it has a CpG context
+    CT_muts = which(types == "C>T")
+    if (length(CT_muts) > 0) {
+      CT_context = type_context(vcf[CT_muts], ref_genome)[[2]]
+      CT_at_CpG = sum(!(is.na(BiocGenerics::match(CT_context,CpG))))
+      CT_at_other = length(CT_muts) - CT_at_CpG
     }
-    else 
-    {
-      n_samples = length(vcf_list)
-      df = data.frame()
+    
+    # Construct a table and handle missing mutation types.
+    full_table = table(factor(types, levels = column_names))
+    full_table["C>T at CpG"] = CT_at_CpG
+    full_table["C>T other"] = CT_at_other
+    df = BiocGenerics::rbind(df, full_table)
+  }
   
-      CpG = c("ACG", "CCG", "TCG", "GCG")
-      column_names = c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G",
-                          "C>T at CpG", "C>T other")
-  
-      full_table = NULL
-      for(i in 1:n_samples)
-      {
-          vcf = vcf_list[[i]]
-          types = mut_type(vcf, mode)$snv
-  
-          CT_context = 0
-          CT_at_CpG = 0
-          CT_at_other = 0
-          
-          CT_muts = which(types == "C>T")
-          if (length(CT_muts) > 0) {
-              CT_context = type_context(vcf[CT_muts], ref_genome, mode)$snv[[2]]
-              CT_at_CpG = sum(!(is.na(BiocGenerics::match(CT_context,CpG))))
-              CT_at_other = length(CT_muts) - CT_at_CpG
-          }
-  
-          # Construct a table and handle missing mutation types.
-          full_table = table(factor(types, levels = column_names))
-          full_table["C>T at CpG"] = CT_at_CpG
-          full_table["C>T other"] = CT_at_other
-          df = BiocGenerics::rbind(df, full_table)
-      }
-  
-      row.names(df) = names(vcf_list)
-      colnames(df) = names(full_table)
-      return(df)
-    }
+  row.names(df) = names(vcf_list)
+  colnames(df) = names(full_table)
+  return(df)
 }

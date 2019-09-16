@@ -5,10 +5,11 @@
 #'
 #' @param mut_mat_s strand feature mutation count matrix, result from
 #' 'mut_matrix_stranded()'
-#' @param by Character vector with grouping info, optional
-#' @param mode Character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
-#' @param method Character stating if all mutation types should be combined
+#' @param by (Optional) Character vector with grouping info
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param method (Optional) Character stating if all mutation types should be combined
 #' (='combine') in relative contribution or taking apart (= 'split'). 
 #' Default is 'split'
 #'
@@ -41,10 +42,12 @@
 #'
 #' @export
 
-strand_occurrences = function(mut_mat_s, by, mode, method = "split")
+strand_occurrences = function(mut_mat_s, by, type, method = "split")
 {
-    mode = check_mutation_type(mode)
+    # Check the mutation type argument
+    type = check_mutation_type(type)
     
+    # If mutation matrix object is a matrix, then find the mutation type
     if (class(mut_mat_s) == "matrix")
     {
       if ((all(rownames(mut_mat_s) %in% TRIPLETS_192_trans) | 
@@ -52,36 +55,29 @@ strand_occurrences = function(mut_mat_s, by, mode, method = "split")
           length(rownames(mut_mat_s) > 0))
       {
         mut_mat_s = list("snv" = mut_mat_s)
-        mode = "snv"
-      }
-      else if ((all(rownames(mut_mat_s) %in% DBS_trans) |
+        type = "snv"
+      } else if ((all(rownames(mut_mat_s) %in% DBS_trans) |
                 all(rownames(mut_mat_s) %in% DBS_rep)) &
                length(rownames(mut_mat_s)) > 0)
       {
         mut_mat_s = list("dbs" = mut_mat_s)
-        mode = "dbs"
-      }
-      # else if (all(rownames(mut_mat_s) %in% )
-      # {
-      #   type_context = list("dbs"=list("types"=type_context$types,
-      #                                  "context"=type_context$context))
-      #   mode = "dbs"
-      # }
-      else if (all(unique(type_context$context) %in% indel_context))
+        type = "dbs"
+      } else if (all(unique(type_context$context) %in% indel_context))
       {
         type_context = list("indel"=list("types"=type_context$types,
                                          "context"=type_context$context))
-        mode = "indel"
+        type = "indel"
       }
     }
     
-    mode = intersect(mode, names(mut_mat_s))
+    # Get the asked types
+    type = intersect(type, names(mut_mat_s))
   
     if (method == "split")
     {
       z = list()
       
-      for (m in mode)
+      for (m in type)
       {
         df = t(mut_mat_s[[m]])
         
@@ -120,6 +116,11 @@ strand_occurrences = function(mut_mat_s, by, mode, method = "split")
         
         z[[m]] = y
       }
+      
+      # Return a vector when there is only 1 mutation type
+      if (length(names(z)) == 1)
+        z = z[[1]]
+      
       return(z)
     } else if (method == "combine"){
       mutation_types = names(mut_mat_s)

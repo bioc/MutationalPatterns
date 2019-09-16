@@ -5,8 +5,17 @@
 #' 
 #' @param strand_occurrences Dataframe with mutation count per strand, result
 #' from strand_occurrences()
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param method (Optional) Character stating how to use the data. 
+#' \itemize{
+#'   \item{"split":} { Each mutation type has a seperate strand bias test}
+#'   \item{"combine":} { Combined strand bias test for all mutation types}
+#' }   
+#' Default is "split"
 #' @return Dataframe with poisson test P value for the ratio between the
-#' two strands per group per base substitution type.
+#' two strands per group
 #' @importFrom reshape2 dcast
 #' @importFrom reshape2 melt
 #' @importFrom plyr .
@@ -39,14 +48,16 @@
 #'
 #' @export
 
-strand_bias_test = function(strand_occurrences, mode, method = "split")
+strand_bias_test = function(strand_occurrences, type, method = "split")
 {
-    mode = check_mutation_type(mode)
+    # Check mutation type argument
+    type = check_mutation_type(type)
     
     if(class(strand_occurrences) == "data.frame")
     {
-      warning(paste("No named list found for 'strand_occurrences'.",
-                    "Method is set to 'combine'"))
+      if(length(unique(strand_occurrences$mutation)) > 1)
+        warning(paste("No named list found for 'strand_occurrences'.",
+                      "Method is set to 'combine'"))
       method = "combine"        
     }
     
@@ -62,11 +73,13 @@ strand_bias_test = function(strand_occurrences, mode, method = "split")
     
     if (method == "split")
     {
-      mode = intersect(mode, names(strand_occurrences))
+      # Get the asked mutation types
+      type = intersect(type, names(strand_occurrences))
       
       df_result = list()
       
-      for (m in mode)
+      # For each type, perform the strand bias test
+      for (m in type)
       {
         df_strand = reshape2::dcast(melt(strand_occurrences[[m]]),
                                     group + mutation + type ~ strand,
@@ -82,6 +95,7 @@ strand_bias_test = function(strand_occurrences, mode, method = "split")
       }
     } else if (method == "combine")
     {
+      # Perform the strand bias test
       df_strand = reshape2::dcast(melt(strand_occurrences),
                                   group + mutation + type ~ strand,
                                   sum,

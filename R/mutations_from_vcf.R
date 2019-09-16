@@ -2,8 +2,9 @@
 #' 
 #' A function to extract mutations of each position in vcf
 #' @param vcf A CollapsedVCF object
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @return List with character vector for each mutation type
 #' @import GenomicRanges
 #'
@@ -20,10 +21,10 @@
 #'
 #' @export
 
-mutations_from_vcf = function(vcf, mode) 
+mutations_from_vcf = function(vcf, type) 
 {
-    # Translate mode to lower case
-    mode = check_mutation_type(mode)
+    # Translate type to lower case
+    type = check_mutation_type(type)
     
     ref = as.character(vcf$REF)
     alt = as.character(unlist(vcf$ALT))
@@ -41,7 +42,10 @@ mutations_from_vcf = function(vcf, mode)
     
     muts = list()
 
-    for (m in mode)
+    # For each type, find the ref and alt with the lengths corresponding to
+    # that type: 1 for snv, 2 for dbs and longer for indels, where either 
+    # ref or alt must be of length 1
+    for (m in type)
     {
       if (m == "snv")
       {
@@ -64,5 +68,8 @@ mutations_from_vcf = function(vcf, mode)
       }
     }
 
+    if (length(names(muts)) == 1)
+      muts = muts[[1]]
+    
     return(muts)
 }

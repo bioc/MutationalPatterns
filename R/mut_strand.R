@@ -37,7 +37,7 @@
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
 #' @param mode "transcription" or "replication", default = "transcription"
-#' @param mut_type Optional. Get strand information for 1 or more mutation types.
+#' @param type Optional. Get strand information for 1 or more mutation types.
 #' Options are 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
 #'
 #' @return Character vector with transcriptional strand information with
@@ -87,10 +87,10 @@
 #'
 #' @export
 
-mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
+mut_strand = function(vcf, ranges, type, mode = "transcription")
 {
   
-  mut_type = check_mutation_type(mut_type)
+  type = check_mutation_type(type)
   
   # Transcription mode
   if(mode == "transcription")
@@ -107,7 +107,7 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
     strand2 = list()
     
     # Find strands for each mutation type
-    for (m in mut_type)
+    for (m in type)
     {
       # Find reference allele of mutations (and strand of reference genome is
       # reported in vcf file).
@@ -141,32 +141,26 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
       
       if (m == "snv")
       {  
-        i = which(nchar(ref) == 1 & nchar(alt) == 1)
-        overlap_mut = overlap[i,]
-        
-        ref = vcf_overlap$REF[i]
+        ref = as.character(vcf_overlap$REF)
         
         # Find the strand of C or T (since we regard base substitutions as
         # C>X or T>X) which mutations have ref allele C or T.
         i = which(ref == "C" | ref == "T")
       } else if (m == "dbs")
       {
-        i = which(nchar(ref) == 2 & nchar(alt) ==2 )
-        overlap_mut = overlap[i,]
-        
-        ref = as.character(vcf_overlap$REF[i])
-        alt = as.character(vcf_overlap$ALT@unlistData[i])
+        ref = as.character(vcf_overlap$REF)
+        alt = as.character(vcf_overlap$ALT@unlistData)
         mut = paste(ref, alt ,sep =">")
         i = which(mut %in% DBS)
       }
       
       # Store mutation strand info in vector.
-      strand_muts = rep(0, nrow(overlap_mut))
+      strand_muts = rep(0, nrow(overlap))
       strand_muts[i] = "+"
       strand_muts[-i] = "-"
       
       # Find strand of gene bodies of overlaps.
-      strand_genebodies = as.character(strand(genes)[overlap_mut$gene_body_id])
+      strand_genebodies = as.character(strand(genes)[overlap$gene_body_id])
       
       # Find if mut and gene_bodies are on the same strand.
       same_strand = (strand_muts  == strand_genebodies)
@@ -178,14 +172,14 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
       
       # If mutation is on different strand than gene, then its transcribed.
       T_index = which(same_strand == FALSE)
-      strand = rep(0, nrow(overlap_mut))
+      strand = rep(0, nrow(overlap))
       strand[U_index] = "untranscribed"
       strand[T_index] = "transcribed"
       
       # Make vector with all positions in input vcf for positions that do
       # not overlap with gene bodies, report "-".
       strand2[[m]] = rep("-", length(input_vcf))
-      strand2[[m]][overlap_mut$vcf_id] = strand
+      strand2[[m]][overlap$vcf_id] = strand
       # make factor 
       strand2[[m]] = factor(strand2[[m]], levels = c("untranscribed", "transcribed", "-"))
     }
@@ -207,7 +201,7 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
     }
     
     strand2 = list()
-    for (m in mut_type)
+    for (m in type)
     {
       ref = as.character(vcf$REF)
       alt = as.character(vcf$ALT@unlistData)
@@ -250,10 +244,15 @@ mut_strand = function(vcf, ranges, mut_type, mode = "transcription")
       # make factor, levels defines by levels in ranges object
       levels = c(levels(ranges$strand_info), "-")
       strand2[[m]] = factor(strand2[[m]], levels = levels)
-      if (isEmpty(strand2[[m]])) { mut_type = mut_type[mut_type != m] }
+      if (isEmpty(strand2[[m]])) { type = type[type != m] }
     }
   }
-  return(strand2[mut_type])
+  
+  # Return a vector when there is only 1 mutation type
+  if (length(names(strand2)) == 1)
+    return(strand2[[type]])
+  else 
+    return(strand2[type])
 }
 
 ##

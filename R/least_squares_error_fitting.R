@@ -63,7 +63,8 @@ least_squares_error_fitting <- function(mut_matrix, signatures, cutoff = 0)
     
     for (m in names(mut_matrix))
     {
-      if (!(m %in% names(signatures))) { stop("One or more names of 'mut_matrix' not found in 'signatures'")}
+      if (!(m %in% names(signatures))) 
+        stop(sprintf("No signatures found for mutation type %s", m))
       
       # make sure dimensions of input matrix are correct
       if (dim(mut_matrix[[m]])[1] != dim(signatures[[m]])[1])
@@ -102,11 +103,11 @@ least_squares_error_fitting <- function(mut_matrix, signatures, cutoff = 0)
       reconstructed[[m]] = lsq_reconstructed
     }
     
-    if (all(names(mut_matrix) == "unknown")) 
-    { 
-      contribution = contribution[["unknown"]]
-      reconstructed = reconstructed[["unknown"]]
-    } 
+    if (length(contribution) == 1)
+    {
+      contribution = contribution[[1]]
+      reconstructed = reconstructed[[1]]
+    }
     
     res = list(contribution, reconstructed)
     names(res) = c("contribution", "reconstructed")

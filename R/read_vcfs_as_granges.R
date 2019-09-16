@@ -9,7 +9,7 @@
 #' @param sample_names Character vector of sample names
 #' @param genome A string matching the name of a BSgenome library
 #'               corresponding to the reference genome of your VCFs
-#' @param group Selector for a seqlevel group.  All seqlevels outside
+#' @param group (Optional) Selector for a seqlevel group.  All seqlevels outside
 #'              of this group will be removed.  Possible values:
 #'              * 'all' for all chromosomes;
 #'              * 'auto' for autosomal chromosomes;
@@ -18,13 +18,13 @@
 #'              * 'circular' for circular chromosomes;
 #'              * 'none' for no filtering, which results in keeping all
 #'                seqlevels from the VCF file.
-#' @param check_alleles logical. If TRUE (default) positions with insertions,
+#' @param check_alleles (Optional) logical. If TRUE (default) positions with insertions,
 #'              deletions and/or multiple alternative alleles are excluded
 #'              from the vcf object, since these positions cannot be analysed
 #'              with this package.  This setting can be set to FALSE to speed
 #'              up processing time only if the input vcf does not contain any
 #'              of such positions, as these will cause obscure errors.
-#' @param n_cores numeric. Number of cores used for parallel processing. If no
+#' @param n_cores (Optional) numeric. Number of cores used for parallel processing. If no
 #'              value is given, then the number of available cores is autodetected.
 #' 
 #' @return A GRangesList containing the GRanges obtained from 'vcf_files'
@@ -65,7 +65,7 @@
 #' @export
 
 read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
-                                    group = "auto+sex", check_alleles = FALSE, n_cores)
+                                    group = "auto+sex", check_alleles = TRUE, n_cores)
 {
     # Check sample names
     if (length(vcf_files) != length(sample_names))
@@ -195,6 +195,23 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
                                     "alternative alleles are excluded from",
                                     paste(sample_names[[index]], ".", sep = "")))
             }
+        }
+        
+        # Search for DBS which are given as two sequential locations
+        dbs = which(diff(start(vcf)) == 1 & 
+                      nchar(as.character(vcf$REF) == 1) &
+                      nchar(as.character(unlist(vcf$ALT))) ==1 )
+        
+        # If there are such variants, then change end position of variant,
+        # add second ref and second alt base and delete next variant from vcf
+        if (length(dbs) > 0)
+        {
+          end(vcf)[dbs] = start(vcf)[dbs]+1
+          vcf$REF[dbs] = DNAStringSet(paste0(as.character(vcf$REF[dbs]), as.character(vcf$REF[dbs+1])))
+          vcf$ALT[dbs] = DNAStringSetList(lapply(dbs, function(i) {
+            DNAStringSet(paste0(as.character(unlist(vcf$ALT[i])), as.character(unlist(vcf$ALT[i+1]))))
+            }))
+          vcf = vcf[-(dbs+1),]
         }
 
         # Pack GRanges object and the warnings to be able to display warnings

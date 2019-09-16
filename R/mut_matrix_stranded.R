@@ -9,11 +9,15 @@
 #' @param ranges GRanges object with the genomic ranges of:
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
-#' @param mode "transcription" or "replication", default = "transcription"
+#' @param mode (Optional) "transcription" or "replication", default = "transcription"
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @param num_cores Number of cores used for parallel processing. If no value
 #'                  is given, then the number of available cores is autodetected.
 #'
-#' @return 192 mutation count matrix (96 X 2 strands)
+#' @return List of mutation count matrices for each mutation type. Number of different mutations
+#' for all types all doubled, because there are 2 strands
 #'
 #' @import GenomicRanges
 #' @importFrom parallel detectCores
@@ -69,10 +73,10 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "transcription", num_cores)
+mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", type, num_cores)
 {
-  
-  mut_type = check_mutation_type(mut_type)
+  # Check the mutation type
+  type = check_mutation_type(type)
   
   df = list()
   
@@ -86,7 +90,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "t
           num_cores = 1
   }
 
-  for (m in mut_type)
+  for (m in type)
   {
     # Transcription mode
     if(mode == "transcription")
@@ -94,9 +98,9 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "t
       # For each vcf in vcf_list count the mutational features with strand info
       rows <- mclapply (as.list(vcf_list), function (vcf)
       {
-        type_context = type_context(vcf, ref_genome, mode = m)
-        strand = mut_strand(vcf, ranges, mut_type = m, mode = "transcription")
-        row = mut_strand_occurrences(type_context, strand, mode = m)
+        type_context = type_context(vcf, ref_genome, type = m)
+        strand = mut_strand(vcf, ranges, type = m, mode = "transcription")
+        row = mut_strand_occurrences(type_context, strand, type = m)
         return(row)
       }, mc.cores = num_cores)
       
@@ -113,9 +117,9 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mut_type, mode = "t
       # For each vcf in vcf_list count the 192 features
       rows <- mclapply (as.list(vcf_list), function (vcf)
       {
-        type_context = type_context(vcf, ref_genome, mode = m)
-        strand = mut_strand(vcf, ranges, mut_type = m, mode = "replication")
-        row = mut_strand_occurrences(type_context, strand, mode = m)
+        type_context = type_context(vcf, ref_genome, type = m)
+        strand = mut_strand(vcf, ranges, type = m, mode = "replication")
+        row = mut_strand_occurrences(type_context, strand, type = m)
         return(row)
       }, mc.cores = num_cores, mc.silent = FALSE)
       

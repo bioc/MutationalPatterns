@@ -1,12 +1,13 @@
 #' Make mutation count matrices of single and double substitutions and indels
 #'  
 #' @description Make mutation count matrices for 96 trinucleotide single base 
-#' substitutions, 78 double base substitutions and 
+#' substitutions, 78 double base substitutions and indels. Number of indels 
+#' depends on the indel context given by the user
 #' 
 #' @param vcf_list List of collapsed vcf objects
 #' @param ref_genome BSGenome reference genome object 
-#' @param mode (Optional) A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'.\cr
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
 #' @param indel (Optional) List of mutation matrix and vectors for context, class and color of indels.
 #' Color vector must have the same length as the class vector, 
@@ -14,7 +15,7 @@
 #' It is also possible to give a character for predefined variables
 #' and counting mutations with predefined context:
 #' \itemize{
-#'   \item{"native"} {Represents a indel context of 3 classes per 
+#'   \item{"predefined"} {Represents a indel context of 3 classes per 
 #'   deletion and indel: "repetitive region", "microhomology" and 
 #'   "none" of these two. Indels have lengths 1 to 5+}
 #'   \item{"cosmic"} {Represents the indel context according to the
@@ -50,7 +51,7 @@
 #'
 #' ## Construct a mutation matrix from the loaded VCFs in comparison to the
 #' ## ref_genome.
-#' mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, mode)
+#' mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, type)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
@@ -59,13 +60,14 @@
 #'
 #' @export
 
-mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_cores)
+mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_cores)
 {
     # Check value of method
     if (!(method %in% c("split", "combine"))){ stop("Provide the right value of 'method'. Options are 'split' or 'combine'")}
   
     df = list("snv"=data.frame(), "dbs"=data.frame(), "indel"=data.frame())
 
+    # Set number of cores used for counting mutations
     if (missing(num_cores))
     {
         num_cores = detectCores()
@@ -75,30 +77,35 @@ mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_c
             num_cores = 1
     }
     
-    mode = check_mutation_type(mode)
-    if ("indel" %in% mode)
+    # Check mutation type and if indel is in type
+    # set the global variables for the indels
+    type = check_mutation_type(type)
+    if ("indel" %in% type | !missing(indel))
     {
       indel_mutation_type(indel)
+      type = c(type, "indel")
     }
-    
     
     rows <- mclapply (as.list(vcf_list), function (vcf)
     {
         row = list()
-        for (m in mode)
+        for (m in type)
         {
+          # For every present mutation type count the occurrences of mutations
           if (m == "snv") { 
-            row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m) }
-          else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), mode = m) }
+            row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), type = m) }
+          else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), type = m) }
           else if (m == "indel")
           {
             if(indel_name == "custom") 
             {
+              # If a custom mutation matrix is given for the indels, select those
+              # columns which correspond to samples in the vcfs
               warning("Custom classification of indels used")
               column = which(colnames(indel$matrix) == names(vcf))
               row[[m]] = indel$matrix[,column]
             } else { 
-              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel_name), mode = m, indel = indel_name) }
+              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel_name), type = m, indel = indel_name) }
           }
         }
         return(row)
@@ -121,6 +128,8 @@ mut_matrix = function(vcf_list, ref_genome, mode, indel, method = "split", num_c
       df[[m]] <- t(df[[m]])
     }
     
+    # If there is one mutation type, return a matrix,
+    # else return a list of mutation types
     if (method == "split") 
     { 
       if (length(which(!isEmpty(df))) == 1) 

@@ -3,15 +3,18 @@
 #' Plot relative contribution of signatures in a heatmap
 #' 
 #' @param contribution Signature contribution matrix
-#' @param sig_order Character vector with the desired order of the signature names for plotting. Optional.
-#' @param mut_type Character stating which mutation type(s) must be plotted. Values of 'mut_type' must be
-#' names of the list 'contribution'
-#' @param cluster_samples Hierarchically cluster samples based on eucledian distance. Default = T.
-#' @param cluster_mut_type optional signatures subset parameter for clustering
-#' @param method The agglomeration method to be used for hierarchical clustering. This should be one of 
+#' @param sig_order (Optional) Character vector with the desired order of the signature names for plotting. Optional.
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param cluster_samples (Optional) Hierarchically cluster samples based on eucledian distance. Default = TRUE.
+#' @param cluster_mut_type (Optional) Signatures subset parameter for clustering
+#' @param method (Optional) The agglomeration method to be used for hierarchical clustering. This should be one of 
 #' "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
-#' or "centroid" (= UPGMC). Default = "complete".
-#' @param plot_values Plot relative contribution values in heatmap. Default = F.
+#' or "centroid" (= UPGMC).\cr
+#' Default = "complete".
+#' @param plot_values (Optional) Plot relative contribution values in heatmap.\cr
+#' Default = F.
 #' 
 #' @return Heatmap with relative contribution of each signature for each sample
 #'
@@ -58,7 +61,13 @@
 #' @export
 
 # plotting function for relative contribution of signatures in heatmap
-plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_samples = TRUE, cluster_mut_type, method = "complete", plot_values = FALSE)
+plot_contribution_heatmap = function(contribution, 
+                                     sig_order, 
+                                     type, 
+                                     cluster_samples = TRUE, 
+                                     cluster_mut_type, 
+                                     method = "complete", 
+                                     plot_values = FALSE)
 {
   # check contribution argument
   if(class(contribution) == "list"){combined = F}
@@ -70,15 +79,17 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
   
   if (!combined)
   {
-    # Check mut_type argument
-    mut_type = check_mutation_type(mut_type)
+    # Check type argument
+    type = check_mutation_type(type)
     
-    if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
-    else {stop(paste("One or more values of 'mut_type' is not found in 'contribution'.", 
-                     "Run function without 'mut_type' argument or give values which are in contribution list"))}
+    if (all(type %in% names(contribution))) {contribution = contribution[type]}
+    else {stop(paste("One or more values of 'type' is not found in 'contribution'.", 
+                     "Run function without 'type' argument or give values which are in contribution list"))}
     
+    # Hierarchically cluster samples
     if (cluster_samples)
     { 
+      # Cluster signatures on mutation type
       if (missing(cluster_mut_type)) {cluster_mut_type = names(contribution)}
       else if (length(cluster_mut_type ) == 1)
       {
@@ -90,6 +101,7 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
       
       cluster_mutations = c()
       
+      # For each mutation type, get the mutation names for clustering
       for (m in cluster_mut_type)
       {
         if (any(grepl(m, names(contribution)))) { cluster_mutations = c(cluster_mutations, rownames(contribution[[m]])) }
@@ -97,20 +109,28 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
       }
       
       if (isEmpty(cluster_mutations))
-        warning(paste("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'mut_type'.",
+        warning(paste("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'type'.",
                       "No clustering on mutation type is done"))
     }  
     
     contribution = do.call(rbind, contribution)
-  } 
+  } else 
+  {
+    cluster_mutations = c()
+  }
   
   # check if there are signatures names in the contribution matrix
   if(is.null(row.names(contribution)))
     {stop("contribution must have row.names (signature names)")}
-  # if no signature order is provided, use the order as in the input matrix
+  # if no signature order is provided, check if signatures are clustered
+  # if clustered, then clustered mutation types at front
+  # else take same order as in the input matrix
   if(missing(sig_order))
   {
-    sig_order = rownames(contribution)
+    if (!isEmpty(cluster_mutations))
+      sig_order = c(cluster_mutations, " ", rownames(contribution)[which(!(rownames(contribution) %in% cluster_mutations))])
+    else
+      sig_order = rownames(contribution)
   }
   # check sig_order argument
   if(class(sig_order) != "character")
@@ -133,8 +153,6 @@ plot_contribution_heatmap = function(contribution, sig_order, mut_type, cluster_
     else {hc.sample = hclust(dist(contribution_norm[,match(cluster_mutations, colnames(contribution_norm))]), method = method)}
     # order of samples according to hierarchical clustering
     sample_order = rownames(contribution)[hc.sample$order]
-    
-    sig_order = c(cluster_mutations, " ", colnames(contribution)[which(!(colnames(contribution) %in% cluster_mutations))])
   } 
   else
   {

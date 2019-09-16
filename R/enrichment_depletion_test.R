@@ -4,7 +4,7 @@
 #' enrichment depletion test.
 #'
 #' @param x data.frame result from genomic_distribution() 
-#' @param by Optional grouping variable, e.g. tissue type
+#' @param by (Optional) Grouping variable, e.g. tissue type
 #' @return data.frame with the observed and expected number of mutations per
 #' genomic region per group (by) or sample
 #'
@@ -37,7 +37,7 @@ enrichment_depletion_test = function(x, by = c())
     # Handle the 'by' parameter when necessary by aggregating x
     if (length(by) > 0)
     {
-        by = rep(by, each=3)
+        by = rep(by, 3)
         x$by = by
         # Sum the columns while aggregating rows based on unique values
         # in 'by' and 'region'.

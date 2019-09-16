@@ -2,10 +2,13 @@
 #' 
 #' For each base substitution type and transcriptional strand the total number
 #' of mutations and the relative contribution within a group is returned.
-#' @param strand_counts data.frame, result from strand_occurrences function
-#' @param mode Either "absolute" for absolute number of mutations, 
-#' "relative" for relative contribution or "both" for both, default = "relative"
-#' @param colors Optional color vector for plotting with 6 values
+#' @param strand_counts A data.frame, result from strand_occurrences function
+#' @param mode (Optional) Either "absolute" for absolute number of mutations, 
+#' "relative" for relative contribution or "both" for both.\cr
+#' Default = "relative"
+#' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 
+#' 10 value color vector "dbs" for dbs.
+#' For indels give same number of colors as there are classes.
 #' @return Barplot
 #'
 #' @import ggplot2
@@ -50,11 +53,15 @@ plot_strand = function(strand_counts, mode = "relative", colors)
     method = "split"
   } else { method = "combine" }
   
+  # Set default colors
   if (missing(colors))
   {
     colors = c()
     if (any(grepl("snv", strand_counts$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_counts$mutation))) { colors = c(colors, COLORS10) }
+    if (exists("indel_colors"))
+      if (any(grepl("indel", strand_counts$mutation))) 
+        colors = c(colors, indel_colors)
   }
   
   # These variables will be available at run-time, but not at compile-time.
@@ -116,8 +123,9 @@ plot_strand = function(strand_counts, mode = "relative", colors)
   
   for (i in length(plots))
   {
-    if (method == "split"){ plots[[i]] = plots[[i]] + facet_wrap(mutation ~ group, scales = "free", nrow = length(levels(strand_counts$mutation)) )}
-    else if (method == "combine"){ plots[[i]] = plots[[i]] + facet_wrap( ~ group, scales = "free", nrow = length(levels(strand_counts$mutation)) )}
+    # If different graphs for each mutation types is wanted, use method = "split"
+    if (method == "split"){ plots[[i]] = plots[[i]] + facet_wrap(mutation ~ group,  nrow = length(levels(strand_counts$mutation)) )}
+    else if (method == "combine"){ plots[[i]] = plots[[i]] + facet_wrap( ~ group,  nrow = length(levels(strand_counts$mutation)) )}
   }
   
   plot = plot_grid(plotlist=plots)

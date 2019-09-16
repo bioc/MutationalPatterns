@@ -1,43 +1,8 @@
-#' Plot profiles for mutations found in mutation matrix
+#' Plot merged facets
 #'
-#' Plot relative contribution of mutational profiles
-#' @param mut_matrix Names list of mutation count matrices for mutation types. 
-#' @param colors Named list with 6 value color vector "snv" for snv, 10 value color vector "dbs" for dbs.
-#' For indels give same number of colors as there are classes. \cr
-#' 'native' contains 6 classes and 'cosmic' contains 16 classes
-#' @param ymax Numeric vector for Y axis maximum value, order is snv, dbs, indel. Can be named
-#' vector to specify mutation types. When "method = combine", "ymax" is the maximum of the
-#' given values.\cr
-#' As default, "ymax" is calculated from the relative contributions of the mutation types
-#' @param mut_type Character stating which mutation type(s) must be plotted. Values of "mut_type" must be
-#' names of the list "mut_matrix"
-#' @param method A character stating how profiles must be plotted. "split" for seperate plots, 
-#' "combine" for all mutations on same row. \cr 
-#' Default = "split"
-#' @param condensed More condensed plotting format. \cr 
-#' Default = F.
-#' @return profile plot of mutations
-#'
-#' @import ggplot2
-#' @importFrom reshape2 melt
-#' @importFrom BiocGenerics cbind
-#' @importFrom grid unit.c
-#' @importFrom gtable gtable_add_rows gtable_add_grob
-#'
-#' @examples
-#' ## See the 'mut_matrix_stranded()' example for how we obtained the
-#' ## mutation matrix with transcriptional strand information:
-#' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-#'                                 package="MutationalPatterns"))
-#'
-#' ## Plot the profiles of three samples
-#' plot_profiles(mut_mat[,c(1,4,7)])
-#'
-#' @seealso
-#' \code{\link{mut_matrix}}
-#'
+#' Helper function for ggplot to merge facets 
+#' 
 #' @export
-
 
 facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", space = "fixed",
                          shrink = TRUE, labeller = "label_value", as.table = TRUE,

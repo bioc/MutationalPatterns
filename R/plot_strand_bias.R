@@ -1,8 +1,10 @@
 #' Plot strand bias per base substitution type per group
 #'
-#' @param strand_bias data.frame, result from strand_bias function
-#' @param colors Optional color vector with 6 values for plotting
-#' @param max_yaxis Binary option to set y axis to maximum value of all
+#' @param strand_bias A data.frame, result from strand_bias function
+#' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 
+#' 10 value color vector "dbs" for dbs.
+#' For indels give same number of colors as there are classes.
+#' @param max_yaxis (Optional) Binary option to set y axis to maximum value of all
 #' mutation types. Default is 'max = FALSE'
 #' @return Barplot
 #'
@@ -37,7 +39,7 @@
 #'
 #' @export
 
-plot_strand_bias = function(strand_bias, colors, max_yaxis = F)
+plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
 {
   if (class(strand_bias) == "list")
   { 
@@ -45,11 +47,15 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = F)
     method = "split"
   } else { method = "combine" }
   
+  # Set default colors
   if (missing(colors))
   {
     colors = c()
     if (any(grepl("snv", strand_bias$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_bias$mutation))) { colors = c(colors, COLORS10) }
+    if (exists("indel_colors"))
+      if (any(grepl("indel", strand_counts$mutation))) 
+        colors = c(colors, indel_colors)
   }
   
   # get variable names
@@ -91,7 +97,7 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = F)
     geom_text(
       aes(x = type,
           y = log2((strand_bias[,4]) / (strand_bias[,5]+0.1)),
-          ymax = log2((strand_bias[,4]) / (strand_bias[,5]+0.1)),
+          #ymax = log2((strand_bias[,4]) / (strand_bias[,5]+0.1)),
           label = significant,
           vjust = ifelse(sign(log2((strand_bias[,4]) /
                                      (strand_bias[,5]+0.1))) > 0, 0.5, 1)),
@@ -105,9 +111,11 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = F)
     ylab(paste("log2(", var_names[1], "/", var_names[2], ")", sep = "") ) +
     scale_x_discrete(breaks=NULL)
   
+  # If max_yaxis is TRUE, set max yaxis to maximum of all mutation types
   if (max_yaxis) { plot = plot + scale_y_continuous(limits = c(-max, max)) }
   
-  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group, scales = "free", nrow = length(levels(strand_bias$mutation)) )}
-  else if (method == "combine"){ plot = plot + facet_wrap( ~ group, scales = "free", nrow = length(levels(strand_bias$mutation)) )}
+  # If different graphs for each mutation types is wanted, use method = "split"
+  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group, nrow = length(levels(strand_bias$mutation)) )}
+  else if (method == "combine"){ plot = plot + facet_wrap( ~ group, nrow = length(levels(strand_bias$mutation)) )}
   return(plot)
 }

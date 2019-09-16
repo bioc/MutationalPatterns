@@ -6,17 +6,21 @@
 #' @param strand factor with strand information for each
 #' position, for example "U" for untranscribed, "T" for transcribed strand, 
 #' and "-" for unknown
-#' @param mode character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' 
 #' @noRd
-#' @return A vector with 192 mutation occurrences and 96 trinucleotides
-#' for two strands
+#' @return A list of vectors, where each mutation type has a 
+#' vector with mutation counts for two strand
 
-mut_strand_occurrences = function(type_context, strand, mode)
+mut_strand_occurrences = function(type_context, strand, type)
 {
-  mode = check_mutation_type(mode)
+  # Check mutation type
+  type = check_mutation_type(type)
   
+  # If type_context is not a list of mutation types, try to find
+  # which type is present
   if (all(names(type_context) %in% c("context", "types")))
   {
     context_96 = do.call(rbind, strsplit(TRIPLETS_96,""))[,c(1,3,7)]
@@ -26,55 +30,64 @@ mut_strand_occurrences = function(type_context, strand, mode)
     {
       type_context = list("snv"=list("types"=type_context$types,
                                      "context"=type_context$context))
-      mode = "snv"
+      type = "snv"
     }
     else if (all(unique(type_context$types) %in% DBS))
     {
       type_context = list("dbs"=list("types"=type_context$types,
                                      "context"=type_context$context))
-      mode = "dbs"
+      type = "dbs"
     }
     else if (all(unique(type_context$context) %in% indel_context))
     {
       type_context = list("indel"=list("types"=type_context$types,
                                        "context"=type_context$context))
-      mode = "indel"
+      type = "indel"
     }
   }
   
   # get possible strand values
-  values = levels(strand[[mode]])
-  
-  idx1 = which(strand[[mode]] == values[1])
-  idx2 = which(strand[[mode]] == values[2])
+  if (class(strand) != "list")
+  {
+    values = levels(strand)
+    
+    idx1 = which(strand == values[1])
+    idx2 = which(strand == values[2])
+  } else 
+  {
+    values = levels(strand[[type]])
+    
+    idx1 = which(strand[[type]] == values[1])
+    idx2 = which(strand[[type]] == values[2])
+  }
   
   # get type context for both vcf subsets
-  type_context_1 = lapply(type_context[[mode]], function(x) x[idx1])
-  type_context_2 = lapply(type_context[[mode]], function(x) x[idx2])
+  type_context_1 = lapply(type_context[[type]], function(x) x[idx1])
+  type_context_2 = lapply(type_context[[type]], function(x) x[idx2])
   
-  if (mode == "snv")
+  if (type == "snv")
   {
     # make 96-trinucleotide count vector per set
-    vector1 = mut_occurrences(type_context_1, mode = mode)
-    vector2 = mut_occurrences(type_context_2, mode = mode)
+    vector1 = mut_occurrences(type_context_1, type = type)
+    vector2 = mut_occurrences(type_context_2, type = type)
     
     # add names
     names_1 = paste(TRIPLETS_96, values[1], sep = "-")
     names_2 = paste(TRIPLETS_96, values[2], sep = "-")
-  } else if (mode == "dbs")
+  } else if (type == "dbs")
   {
     # make DBS count vector per set
-    vector1 = mut_occurrences(type_context_1, mode = mode)
-    vector2 = mut_occurrences(type_context_2, mode = mode)
+    vector1 = mut_occurrences(type_context_1, type = type)
+    vector2 = mut_occurrences(type_context_2, type = type)
     
     # add names
     names_1 = paste(DBS, values[1], sep = "-")
     names_2 = paste(DBS, values[2], sep = "-")
-  } else if (mode == "indel")
+  } else if (type == "indel")
   { 
     # make indel count vector per set
-    vector1 = mut_occurrences(type_context_1, mode = mode, indel = indel_name)
-    vector2 = mut_occurrences(type_context_2, mode = mode, indel = indel_name)
+    vector1 = mut_occurrences(type_context_1, type = type, indel = indel_name)
+    vector2 = mut_occurrences(type_context_2, type = type, indel = indel_name)
     
     # add names
     names_1 = paste(indel_context, values[1], sep = "-")
@@ -82,6 +95,8 @@ mut_strand_occurrences = function(type_context, strand, mode)
   }
   
   # combine vectors in alternating fashion
+  # if one strand is not present, make a vector of zeros with the length
+  # of the different mutations
   if (length(vector1) == 0)
   {
     vector1 = rep(0, length(names_1))

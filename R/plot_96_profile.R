@@ -28,7 +28,7 @@
 plot_96_profile = function(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 {
     warning("Function will be deprecated. Use 'plot_profiles' instead")
-    plot = plot_profiles(mut_matrix = mut_matrix, mut_type = "snv", 
+    plot = plot_profiles(mut_matrix = mut_matrix, type = "snv", 
                          colors = colors, ymax = c("snv"=ymax), 
                          condensed = condensed)
     return(plot)

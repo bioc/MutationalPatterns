@@ -14,11 +14,16 @@
 #' @param vcf CollapsedVCF object
 #' @param chromosomes Vector of chromosome/contig names of the reference
 #' genome to be plotted
-#' @param title Optional plot title
-#' @param colors Vector of 6 colors used for plotting
-#' @param cex Point size
-#' @param cex_text Text size
-#' @param ylim Maximum y value (genomic distance)
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param title (Optional) Plot title
+#' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 
+#' 10 value color vector "dbs" for dbs.
+#' For indels give same number of colors as there are classes. \cr
+#' @param cex (Optional) Point size, default = 2.5
+#' @param cex_text (Optional) Text size, default = 3
+#' @param ylim (Optional) Maximum y value (genomic distance), default = 1e+8
 #' @return Rainfall plot
 #'
 #' @import ggplot2
@@ -51,37 +56,71 @@
 #'
 #' @export
 
-plot_rainfall <- function(vcf, chromosomes, mut_type, method = "split", title = "", colors, cex = 2.5,
+plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", colors, cex = 2.5,
                             cex_text = 3, ylim = 1e+08)
 {
-    mut_type = check_mutation_type(mut_type)
+    # Check the mutation type argument
+    type = check_mutation_type(type)
+    
+    # Set indel variables at empty, if they are present in global environment
+    if (!exists("indel_class"))
+      indel_class = indel_class_header = indel_context = indel_colors = c()
     
     # If colors parameter not provided, set to default colors
-    if(missing(colors)) {colors_list=list("snv"=COLORS6, "dbs"=COLORS10)}
-    else { colors_list = colors }
+    if(missing(colors))
+    { 
+      colors_list=list("snv"=COLORS6, 
+                       "dbs"=COLORS10,
+                       "indel"=indel_colors)
+    } else { colors_list = colors }
     
     # Check color vector length
-    if(length(colors_list$snv) != 6){stop("Provide colors vector for single base substitutions with length 6")}
-    if(length(colors_list$dbs) != 10){stop("Provide colors vector for double base substitutions with length 10")}
+    if ("snv" %in% type)
+      if (length(colors_list$snv) != 6)
+        stop("Provide colors vector for single base substitutions with length 6")
+    if ("dbs" %in% type)
+      if (length(colors_list$dbs) != 10)
+        stop("Provide colors vector for double base substitutions with length 10")
     
-    substitutions_list = list("snv"=SUBSTITUTIONS, "dbs"=SUBSTITUTIONS_DBS)
+    if ("indel" %in% type & length(indel_class > 0))
+    {
+      indel_color_number = 1
+      for (i in 2:length(indel_class))
+      {
+        if (indel_class[i-1] != indel_class[i]) { indel_color_number = indel_color_number + 1 }
+      }
+      
+      if(length(unique(colors_list$indel)) != indel_color_number)
+        stop("Provide indel colors vector with length same number of classes")
+    } else if ("indel" %in% type)
+    { 
+      stop("No indel information found, run indel_mutation_type() to set the global variables")
+    }
     
+    # Get all the substitutions for each mutation type  
+    substitutions_list = list("snv"=SUBSTITUTIONS, 
+                              "dbs"=SUBSTITUTIONS_DBS, 
+                              "indel"=unique(paste(indel_class_header,indel_class, sep=".")))
+    
+    # For each mutation type, get all mutations from the vcf
     muts = list()
-    for (m in mut_type)
+    for (m in type)
     {
       if (m == "snv") { muts[[m]] = which(nchar(as.character(vcf$REF))==1 & nchar(as.character(unlist(vcf$ALT)))==1) }
       else if (m == "dbs") { muts[[m]] = which(nchar(as.character(vcf$REF))==2 & nchar(as.character(unlist(vcf$ALT)))==2) }
-      else if (m == "indel") { muts[[m]] = which(nchar(as.character(vcf$REF)) != nchar(as.character(unlist(vcf$ALT)))) }
+      else if (m == "indel") { muts[[m]] = which(nchar(as.character(vcf$REF)) != nchar(as.character(unlist(vcf$ALT))) & 
+                                                   (nchar(as.character(vcf$REF)) == 1 | nchar(as.character(unlist(vcf$ALT))) ==1 )) }
     }
     
     if (method == "split")
     {
       plots = list()
       
-      for (mut in mut_type)
+      for (mut in type)
       {
         input_vcf = vcf[which(1:length(vcf) %in% muts[[mut]]),]
-      
+        input_vcf = input_vcf[order(input_vcf),]
+        
         colors = colors_list[[mut]]
       
         # get chromosome lengths of reference genome
@@ -103,27 +142,36 @@ plot_rainfall <- function(vcf, chromosomes, mut_type, method = "split", title = 
           m = c(m,(chr_cum[i-1] + chr_cum[i]) / 2)
         
         # mutation characteristics
-        type = loc = dist = chrom = c()
+        types = loc = dist = chrom = c()
         
-        # for each chromosome
+        # for each chromosome get types, location, distance and chromosome information
+        # of all mutations
         for(i in 1:length(chromosomes))
         {
           chr_subset = input_vcf[seqnames(input_vcf) == chromosomes[i]]
           
           n = length(chr_subset)
           if(n<=1){next}
-          type_list = mut_type(chr_subset, mode = mut)
-          if ("dbs" %in% names(type_list))
+          if (mut == "snv")
+            type_list = mut_type(chr_subset, type = mut)
+          else if (mut == "dbs")
           {
+            type_list = mut_type(chr_subset, type = mut)
             for (j in 1:length(type_list[["dbs"]])) type_list[["dbs"]][j] = paste0(substr(type_list[["dbs"]][j],1,2),">NN")
+          } else if (mut == "indel")
+          {
+            type_list = mut_context(chr_subset, ref_genome, type = mut)
+            type_list = do.call(rbind, strsplit(type_list[[1]], "\\."))[,c(1,2,4)]
+            type_list = list("indel"=paste(type_list[,1], type_list[,2], type_list[,3], sep="."))
           }
-          type = c(type, unname(unlist(type_list))[-1])
+  
+          types = c(types, unname(unlist(type_list))[-1])
           loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
           dist = c(dist, diff(start(chr_subset)))
           chrom = c(chrom, rep(chromosomes[i],n-1))
         }
         
-        data = data.frame(type = type,
+        data = data.frame(type = types,
                           location = loc,
                           distance = dist,
                           chromosome = chrom)
@@ -171,7 +219,7 @@ plot_rainfall <- function(vcf, chromosomes, mut_type, method = "split", title = 
       muts = unname(unlist(muts))
       vcf = vcf[which(1:length(vcf) %in% muts),]
   
-      colors = unname(unlist(colors_list[mut_type]))
+      colors = unname(unlist(colors_list[type]))
   
       # get chromosome lengths of reference genome
       chr_length = seqlengths(vcf)
@@ -194,18 +242,26 @@ plot_rainfall <- function(vcf, chromosomes, mut_type, method = "split", title = 
       # mutation characteristics
       type = loc = dist = chrom = c()
   
-      # for each chromosome
+      # for each chromosome get types, location, distance and chromosome information
+      # of all mutations
       for(i in 1:length(chromosomes))
       {
+          type_list = list()
           chr_subset = vcf[seqnames(vcf) == chromosomes[i]]
           
           n = length(chr_subset)
           if(n<=1){next}
-          type_list = mut_type(chr_subset, mode = paste(mut_type, collapse="+"))
-          if ("dbs" %in% names(type_list))
+          if ("snv" %in% type)
+            type_list[["snv"]] = mut_type(chr_subset, type = type)
+          if ("dbs" %in% type)
           {
             if (!isEmpty(type_list[["dbs"]]))
               for (j in 1:length(type_list[["dbs"]])) type_list[["dbs"]][j] = paste0(substr(type_list[["dbs"]][j],1,2),">NN")
+          } else if ("indel" %in% type)
+          {
+            type_list[["indel"]] = mut_context(chr_subset, ref_genome, type = mut)
+            type_list[["indel"]] = do.call(rbind, strsplit(type_list[["indel"]], "\\."))[,c(1,2,4)]
+            type_list[["indel"]] = list("indel"=paste(type_list[["indel"]][,1], type_list[["indel"]][,2], type_list[["indel"]][,3], sep="."))
           }
           type = c(type, unname(unlist(type_list))[-1])
           loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])

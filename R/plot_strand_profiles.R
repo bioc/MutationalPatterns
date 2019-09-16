@@ -1,11 +1,32 @@
-#' Plot 192 trinucleotide profile
+#' Plot transcription/replication profiles 
 #'
-#' Plot relative contribution of 192 trinucleotides      
-#' @param mut_matrix 192 trinucleotide profile matrix
-#' @param ymax Y axis maximum value, default = 0.2
-#' @param colors 6 value color vector
-#' @param condensed More condensed plotting format. Default = F.
-#' @return 192 trinucleotide profile plot
+#' Plot mutational profiles with transcription or replication strand information
+#' @param mut_matrix Named list of mutation count matrices for mutation types 
+#' with transcriptional or replication strand information
+#' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 10 value color vector "dbs" for dbs.
+#' For indels give same number of colors as there are classes. \cr
+#' The "predefined" context contains 6 classes and the "cosmic" context contains 16 classes
+#' @param ymax (Optional) Numeric vector for Y axis maximum value, order is snv, dbs, indel. Can be named
+#' vector to specify mutation types. When "method = combine", "ymax" is the maximum of the
+#' given values.\cr
+#' Set "ymax = maximum" to use the maximal signature contribution for each mutation type as maximum
+#' for the Y axis.\cr
+#' By default, "ymax" is c("snv"=0.2, "dbs"=0.5, "indel"=0.5)
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param mode Character stating which type of process to look at: transcription or replication
+#' @param method (Optional) Character stating how to use the data. 
+#' \itemize{
+#'   \item{"split":} { Each mutation type has seperate profile plot}
+#'   \item{"combine":} { Combined profile plots of all mutation types}
+#' }   
+#' Default is "split"
+#' @param condensed (Optional) More condensed plotting format. \cr 
+#' Default = FALSE
+#' @return The profile plot(s) of mutations for the given mutation types with transcriptional or
+#' replication strand information
+#' 
 #' @import ggplot2
 #' @importFrom reshape2 melt
 #' @importFrom BiocGenerics cbind
@@ -27,7 +48,7 @@
 #' colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
 #'
 #' ## Generate the plot
-#' plot_192_profile(nmf_res_strand$signatures)
+#' plot_strand_profiles(nmf_res_strand$signatures)
 #'
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
@@ -35,7 +56,7 @@
 #'
 #' @export
 
-plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method="split", condensed = FALSE)
+plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="split", condensed = FALSE)
 {
     # Check if mutation matrix is not empty
     if(all(isEmpty(mut_matrix)))
@@ -43,101 +64,183 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }
   
-    if (!(mode %in% c("transcription", "replication"))) { stop("No option for 'mode' is given. Specify strand bias: 'transcription' or 'replication'")  }
+    # Check the mutation type argument
+    type = check_mutation_type(type)
+    if ("indel" %in% type)
+    {
+      if (!exists("indel_context")) { stop("Run 'indel_mutation_type()' to set global variables for indels")}
+      else if (indel_context[1] == "del.1bp.homopol.C.len.1") { indel_name = "cosmic" }
+      else if (indel_context[1] == "del.rep.len.1") { indel_name = "predefined" }
+    }
+  
+    # Check mode 
+    if (missing(mode) | !(mode %in% c("transcription", "replication")))
+      stop("No or wrong option for 'mode' is given. Specify process: 'transcription' or 'replication'")
     
     if (class(mut_matrix) == "matrix")
+      strand = unique(do.call(rbind, strsplit(rownames(mut_matrix), "-"))[,2])
+    else if (class(mut_matrix) == "list")
+      strand = unique(do.call(rbind, strsplit(rownames(mut_matrix[[1]]), "-"))[,2])
+    
+    if ((mode == "transcription" & !(all(strand %in% c("transcribed", "untranscribed")))) |
+        (mode == "replication" & !(all(strand %in% c("left", "right")))))
+      stop("Selected 'mode' does not correspond to process information in the mutation matrices")
+    
+    # Check mutation matrix when type is not given
+    if (class(mut_matrix) == "matrix")
     {
-      if (mode == "transcription")
-      {
-        if (all(rownames(mut_matrix) %in% TRIPLETS_192_trans)){ mut_matrix = list("snv"=mut_matrix) }
-        else if (all(rownames(mut_matrix) %in% DBS_trans)) { mut_matrix = list("dbs"=mut_matrix) } 
-        else if (all(rownames(mut_matrix) %in% c(TRIPLETS_192_trans,DBS_trans)))
-        {
-          mut_matrix = list("snv"=mut_matrix[match(TRIPLETS_192_trans,rownames(nmf_res$signatures)),],
-                            "dbs"=mut_matrix[match(DBS_trans,rownames(nmf_res$signatures)),])
-          method = "combine"
-          mut_type = "all"
-        }
-      } else {
+      types_info = do.call(rbind, strsplit(rownames(mut_matrix), "-"))
+      types = types_info[,1]
+      strand = unique(types_info[,2])
       
-        if (all(rownames(mut_matrix) %in% TRIPLETS_192_rep)) { mut_matrix = list("snv"=mut_matrix) }
-        else if (all(rownames(mut_matrix) %in% DBS_rep)) { mut_matrix = list("dbs"=mut_matrix) }
-        else if (all(rownames(mut_matrix) %in% c(TRIPLETS_192_rep,DBS_rep)))
-        {
-          mut_matrix = list("snv"=mut_matrix[match(TRIPLETS_192_rep,rownames(nmf_res$signatures)),],
-                            "dbs"=mut_matrix[match(DBS_rep,rownames(nmf_res$signatures)),])
-          method = "combine"
-          mut_type = "all"
-        }
+      if (all(types %in% TRIPLETS_96)){
+        mut_matrix = list("snv"=mut_matrix)
+      } else if (all(types %in% DBS))
+      {
+        mut_matrix = list("dbs"=mut_matrix)
+      } else if (all(types %in% c(TRIPLETS_96,DBS)))
+      {
+        mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
+                          "dbs"=mut_matrix[types %in% DBS,])
+        method = "combine"
+      } else if (all(types %in% indel_context))
+      {
+        mut_matrix = list("indel"=mut_matrix)
+      } else if (all(types %in% c(TRIPLETS_96,indel_context)))
+      {
+        mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
+                          "indel"=mut_matrix[types %in% indel_context,])
+        method = "combine"
+      } else if (all(types %in% c(DBS, indel_context)))
+      {
+        mut_matrix = list("dbs"=mut_matrix[types %in% DBS,],
+                          "indel"=mut_matrix[types %in% indel_context,])
+        method = "combine"
+      } else if (all(types %in% c(TRIPLETS_96, DBS, indel_context)))
+      {
+        mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
+                          "dbs"=mut_matrix[types %in% DBS,],
+                          "indel"=mut_matrix[types %in% indel_context,])
+        method = "combine"
+      } else {
+        stop("Mutation matrix is not a list and mutation types could not be derived")
       }
+      
+      # Check if asked mutation types are present in the mutation matrices
+      if (!(type %in% names(mut_matrix)))
+        stop("Given mutation type(s) not found in mutation matrix")
     }
     
     # Check names of list of mutation matrices
     if (isEmpty(names(mut_matrix)) | any(!(names(mut_matrix) %in% c("snv","dbs","indel")))){
       stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
     }
-  
-    mut_type = check_mutation_type(mut_type)
     
-    mut_matrix = mut_matrix[intersect(names(mut_matrix), mut_type)]
+    # Select mutation types which are both in mut_matrix and in type
+    type = intersect(names(mut_matrix), type)
+    if (isEmpty(type))
+      stop("Given mutation type(s) not found in mutation matrix")
+    else 
+      mut_matrix = mut_matrix[type]
 
     # Check color vector length
     # Colors for plotting
-    if(missing(colors)){colors=list("snv"=COLORS6, "dbs"=COLORS10)}
+    if(missing(colors)) 
+    {
+      if (exists("indel_colors"))
+        colors=c(list("snv"=COLORS6),list("dbs"=COLORS10),list("indel"=indel_colors))
+      else
+        colors=c(list("snv"=COLORS6),list("dbs"=COLORS10))
+    }
     
-    if(length(colors$snv) != 6){stop("Provide colors vector for single base substitutions with length 6")}
-    if(length(colors$dbs) != 10){stop("Provide colors vector for double base substitutions with length 10")}
+    if (exists("indel_class"))
+    {
+      indel_color_number = 1
+      for (i in 2:length(indel_class))
+      {
+        if (indel_class[i-1] != indel_class[i]) { indel_color_number = indel_color_number + 1 }
+      }
+      if(length(unique(colors$indel)) != indel_color_number)
+        stop("Provide indel colors vector with length same number of classes")
+    } else {
+      indel_class_header=NULL
+    }
     
+    if(length(colors$snv) != 6){stop("Provide snv colors vector with length 6")}
+    if(length(colors$dbs) != 10){stop("Provide dbs colors vector with length 10")}
+    
+    # Create context, classes and strand lists
     context = list()
     substitution = list()
     strand = list()
     
-    context = c(context, list("snv"=rep(CONTEXTS_96, each=2)))
-    substitution = c(substitution, list("snv"=rep(SUBSTITUTIONS, each=32)))
-    
     # Replace mutated base with dot to get context
-    substring(context$snv, 2, 2) = "."
+    substr(CONTEXTS_96, 2, 2) = "."
+    context[["snv"]] = rep(CONTEXTS_96, each = 2)
+    substitution[["snv"]] = rep(SUBSTITUTIONS, each=32)
     
-    context = c(context, list("dbs"=rep(ALT_DBS, each=2)))
-    substitution_dbs <- unlist(lapply(as.list(SUBSTITUTIONS_DBS), function(sub)
+    # Replace alt with NN in dbs classes
+    context[["dbs"]] = rep(ALT_DBS , each = 2)
+    substitution[["dbs"]] <- unlist(lapply(as.list(SUBSTITUTIONS_DBS), function(sub)
     {
       sub <- unlist(strsplit(sub, ">"))[1]
       l <- length(which(startsWith(DBS, sub)))
-      return(rep(paste0(sub,">NN"), l))
+      return(rep(paste0(sub,">NN"), 2*l))
     }))
-    substitution = c(substitution, list("dbs"=rep(substitution_dbs, each=2)))
+    
+    # Set context and substitutions of the indels, along with plot values
+    if (exists("indel_name"))
+    {
+      if (indel_name == "cosmic")
+      {
+        context[["indel"]] = rep(do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]],
+                                 each = 2)
+        df = do.call(rbind, strsplit(indel_context, "\\."))[,c(1:4)]
+        indel_class_value = paste(df[,1],df[,2],df[,3],df[,4], sep=".")
+        substitution[["indel"]] = rep(indel_class_value, each = 2)
+        labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
+        names(labels) = unique(substitution[["indel"]])
+      } else if (indel_name == "predefined") {
+        context[["indel"]] = rep(do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]],
+                                 each = 2)
+        substitution[["indel"]] = rep(indel_class, each = 2)
+      } else {
+        context[["indel"]] = rep(indel_context, each = 2)
+        substitution[["indel"]] = rep(indel_class, each = 2)
+      }
+    }
+    
+    context = context[type]
+    substitution = substitution[type]
     
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
     value = NULL
     
-    if (missing(ymax)) {ymax = c("snv"=NA,"dbs"=NA,"indel"=NA)}
-    else if (isEmpty(names(ymax)))
+    if (missing(ymax)) {ymax = c("snv"=0.2,"dbs"=NA,"indel"=NA)}
+    else if (ymax == "maximum") { ymax = c("snv"=NA, "dbs"=NA, "indel"=NA)}
+    if (isEmpty(names(ymax)))
     {
       if (length(ymax) >= 3)
       {
         ymax = ymax[1:3]
         names(ymax) = c("snv","dbs","indel")
       } else {
-        ymax = c(ymax, c(0.2,0.5,0.5)[(1+length(ymax)):3])
+        ymax = c(ymax, c(0.2,NA,NA)[(1+length(ymax)):3])
         names(ymax) = c("snv","dbs","indel")
       }
-      warning("No names given for ymax, order used is 'snv', 'dbs', 'indel'", call. = T, immediate.=T)
-    } else if (all(!is.na(match(c("snv","dbs","indel"), names(ymax)))))
-    {
-      ymax = ymax[c("snv","dbs","indel")]
-    } else if (any(!(names(ymax) %in% c("","snv","dbs","indel"))))
-    {
-      stop("Names of ymax are not 'snv', 'dbs' or 'indel'")
-    } else if ("" %in% names(ymax))
-    {
-      stop("No names found for 1 or more values of ymax, give names for all values")
-    }
-    
+      warning(paste("No names given for ymax, order used is 'snv', 'dbs', 'indel'",
+                    "and default ymax is calculated for missing names.",
+                    "When 'method'='combine', first value of ymax is used"), call. = T, immediate.=T)
+      
+    } 
+    else if (all(names(mut_matrix) %in% names(ymax))) { ymax = ymax[names(mut_matrix)] } 
+    else { stop("None of unknown names found for 1 or more values of ymax, give names of mutation types in 'mut_matrix'") }
     
     if (method == "split")
     {
       df3 = list()
+      scale_y = c()
       
       # get strand from rownames of mut_matrix
       for (m in names(mut_matrix))
@@ -150,6 +253,8 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
           norm_mut_matrix_sum[i,] = colSums(norm_mut_matrix[(2*i-1):(2*i),])
         
         if (is.na(ymax[m])) { ymax[m] = max(norm_mut_matrix_sum) }
+        if (ymax[m] <= 0.1) { scale_y[m] = 0.02 }
+        else { scale_y[m] = 0.1 }
         
         # Construct dataframe
         df = data.frame(substitution = substitution[[m]],
@@ -157,17 +262,23 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
                         strand = strand[[m]])
         
         rownames(norm_mut_matrix) = NULL
-        
-        df2 = cbind(df, as.data.frame(norm_mut_matrix))
-        df3[[m]] = melt(df2, id.vars = c("substitution", "context", "strand"))
+        if (m == "indel" & !isEmpty(indel_class_header))
+        {
+          df2 = cbind(df, "header"=indel_class_header, as.data.frame(norm_mut_matrix))
+          df3[[m]] = melt(df2, id.vars = c("header","substitution", "context", "strand"))
+          df3[[m]]$header = factor(df3[[m]]$header, levels = unique(indel_class_header))
+        }
+        else 
+        {
+          df2 = cbind(df, as.data.frame(norm_mut_matrix))
+          df3[[m]] = melt(df2, id.vars = c("substitution", "context", "strand"))
+        }
+        df3[[m]]$substitution = factor(df3[[m]]$substitution, levels = unique(df3[[m]]$substitution))
       }
       
       plots = list()
       for (m in names(mut_matrix))
       {
-        if (ymax[m] <= 0.1) { scale_y = 0.01 }
-        else { scale_y = 0.1 }
-        
         if (condensed)
         {
           plot = ggplot(data=df3[[m]], aes(x=context,
@@ -177,10 +288,9 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
                                       alpha=strand)) +
             geom_bar(stat="identity", colour="black", size=.2) +
             scale_fill_manual(values=colors[[m]]) +
-            facet_grid(variable ~ substitution, scales = "free_x") +
             ylab("Relative contribution") +
             coord_cartesian(ylim=c(0,ymax[m])) +
-            scale_y_continuous(breaks=seq(0, ymax[m], scale_y)) +
+            scale_y_continuous(breaks=seq(0, ymax[m], scale_y[m])) +
             # no legend
             guides(fill=FALSE) +
             # white background
@@ -202,10 +312,9 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
                                     alpha=strand)) +
             geom_bar(stat="identity", colour="black", size=.2) + 
             scale_fill_manual(values=colors[[m]]) + 
-            facet_grid(variable ~ substitution, scales = "free_x") + 
             ylab("Relative contribution") + 
             coord_cartesian(ylim=c(0,ymax[m])) +
-            scale_y_continuous(breaks=seq(0, ymax[m], scale_y)) +
+            scale_y_continuous(breaks=seq(0, ymax[m], scale_y[m])) +
             # no legend
             guides(fill=FALSE) + 
             # white background
@@ -220,13 +329,28 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
                     panel.grid.major.x = element_blank())
         }
         
-        if (m == "dbs") { plot = plot + xlab('alternative') }
-        plots[[m]] = plot
+        # Set xaxis labels
+        if (m == "snv"){
+          plot = plot + facet_grid(variable ~ substitution, scales = "free_x")
+        } else if (m == "dbs"){
+          plot = plot + facet_grid(variable ~ substitution, scales = "free_x") + xlab("alternative")
+        } else if (m == "indel" & !isEmpty(indel_class_header)){
+          # When there is a class header present, use facet_nested() to plot with merged labels
+          plot = plot + 
+            facet_nested(variable ~ header + substitution, 
+                         scales = "free_x", 
+                         labeller = labeller(substitution=labels)) + 
+            xlab("length")
+        } else {
+          plot = plot + facet_grid(variable ~ substitution, scales = "free_x") + xlab("length")
+        }
+        
+        plots = c(plots, list(plot))
       }
       
-      plot = plot_grid(plotlist = plots, ncol = 1)
-      return(plot)
-    } else 
+      plot = plot_grid(plotlist = plots, ncol = 1, align = "v", axis = "lr")
+      
+    } else if (method == "combine")
     {
       colors = unname(unlist(colors[names(mut_matrix)]))
       mut_matrix = do.call(rbind, mut_matrix)
@@ -237,10 +361,9 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
       for (i in 1:nrow(norm_mut_matrix_sum))
         norm_mut_matrix_sum[i,] = colSums(norm_mut_matrix[(2*i-1):(2*i),])
       
-      if (all(is.na(ymax))) { ymax = max(norm_mut_matrix_sum) }
-      else { ymax = max(ymax) }
-      
-      if (ymax <= 0.1) { scale_y = 0.01 }
+      if (is.na(ymax[1])) { ymax = max(norm_mut_matrix_sum) }
+      else { ymax = ymax[1] }
+      if (ymax <= 0.1) { scale_y = 0.02 }
       else { scale_y = 0.1 }
       
       # Construct dataframe
@@ -307,6 +430,7 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, mut_type, mode, method
                 strip.text.y=element_text(size=9),
                 panel.grid.major.x = element_blank())
       }
-      return(plot)
     }
+    
+    return(plot)
 }

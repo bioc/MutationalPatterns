@@ -3,7 +3,7 @@
 #' 
 #' Find the linear combination of mutation signatures that most closely
 #' reconstructs the mutation matrix by using the golden ratio search
-#' algorithm implemented in the deconstructSigs package.
+#' algorithm implemented in the \link{deconstructSigs} package (Rosenthal et al. 2016).
 #' 
 #' @param mut_matrix Named list of count matrices 
 #' @param signatures Named list of signature matrices (number of mutational features
@@ -53,6 +53,7 @@
  
 golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
 {
+    # Check if mut_matrix and signatures are both lists
     if (class(mut_matrix) != "list" | isEmpty(names(mut_matrix)) | any(names(mut_matrix) == ""))
       stop("'mut_matrix' is not a list or some elements are not named")
     if (class(signatures) != "list" | isEmpty(names(signatures)) | any(names(signatures) == ""))
@@ -64,14 +65,19 @@ golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
     reconstructed = list()
     unknown = list()
     
+    # For each mutation type in mut_matrix
     for (m in names(mut_matrix))
     {
+      # Transpose the mutation matrix and signature matrix
       mut_matrix_transposed[[m]] = as.data.frame(t(mut_matrix[[m]]))
       signatures_transposed[[m]] = as.data.frame(t(signatures[[m]]))
       
+      # For each sample get results from the golden ratio search
       result = sapply(rownames(mut_matrix_transposed[[m]]), function(n)
         whichSignatures(mut_matrix_transposed[[m]], sample.id = n, signatures_transposed[[m]], contexts.needed = T, ...))
       
+      # Write results of contribution, reconstructed and unknown as lists of
+      # mutation types
       contribution[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
         data.frame(unlist(result[1,i])))))
       colnames(contribution[[m]]) = colnames(result)
@@ -79,10 +85,18 @@ golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
       reconstructed[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
         data.frame(unlist(result[3,i])))))
       colnames(reconstructed[[m]]) = colnames(result)
+      rownames(reconstructed[[m]]) = colnames(result[3][[1]])
       
       unknown[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
         data.frame(unlist(result[5,i])))))
       colnames(unknown[[m]]) = colnames(result)
+    }
+    
+    if (length(contribution) == 1)
+    {
+      contribution = contribution[[1]]
+      reconstructed = reconstructed[[1]]
+      unknown = unknown[[1]]
     }
     
     res = list("contribution"=contribution, "reconstructed"=reconstructed, "unknown"=unknown)

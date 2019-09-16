@@ -1,14 +1,17 @@
-#' Extract mutational signatures from 96 mutation matrix using NMF
+#' Extract mutational signatures from mutation matrix using NMF
 #'
-#' Decomposes trinucleotide count matrix into signatures and contribution of
+#' Decomposes count matrix of mutation type into signatures and contribution of
 #' those signatures to the spectra of the samples/vcf files.
 #'
-#' @param mut_matrix Mutation matrix of single or double substitution and/or indels
+#' @param mut_matrix Named list with mutation matrix of single or double substitution and/or indels.
+#' Optional to give a matrix object as mutation count matrix. When two mutation types are given in 
+#' the same matrix, the data is treated as "combined" and combined signatures will be returned.
 #' @param rank Number of signatures to extract
-#' @param nrun Number of iterations, default = 200
-#' @param method Character stating how to use the data. method = "split" will give 
+#' @param nrun (Optional) Number of iterations, default = 200
+#' @param method (Optional) Character stating how to use the data. method = "split" will give 
 #' results for each mutation type seperately, whereas method = "combine" will give 
-#' combined signatures. Default is "split"
+#' combined signatures.\cr
+#' Default is "split"
 #' @return Named list of mutation matrix, signatures and signature contribution for
 #' each mutation type (method = "split") or all mutation types together (method = "combine")
 #'
@@ -35,10 +38,16 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }
     
+    # If "mut_matrix" is a matrix, then search for the right mutation type. If not found
+    # mutation matrix is treated as combination of mutation types
     if (class(mut_matrix) == "matrix")
     {
       if (all(rownames(mut_matrix) %in% TRIPLETS_96)) { mut_matrix = list("snv"=mut_matrix) }
       else if (all(rownames(mut_matrix) %in% DBS)) { mut_matrix = list("dbs"=mut_matrix) }
+      else if (exists("indel_context"))
+      {
+        if (all(rownames(mut_matrix) %in% indel_context)) { mut_matrix = list("indel"=mut_matrix) }
+      }
       else 
       { 
         warning("Mutation type of 'mut_matrix' is unknown. Treated as combined mutation types")
@@ -53,6 +62,7 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
         stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
       }
       
+      # Perform NMF for each mutation type
       nmf_res <- lapply(mut_matrix, function(mut)
       {
         # Add a small pseudocount to avoid features with zero counts.
@@ -82,12 +92,23 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
       signatures = list()
       contribution = list()
       reconstructed = list()
+      
+      # Store results of all mutation types, together in the same lists
       for (m in names(mut_matrix))
       {
         signatures[[m]] = nmf_res[[m]][["signatures"]]
         contribution[[m]] = nmf_res[[m]][["contribution"]]
         reconstructed[[m]] = nmf_res[[m]][["reconstructed"]]
       }
+      
+      # Return a vector when there is only 1 mutation type
+      if (length(names(mut_matrix)) == 1)
+      {
+        signatures = signatures[[1]]
+        contribution = contribution[[1]]
+        reconstructed = reconstructed[[1]]
+      }
+      
       nmf_res = list(signatures = signatures,
                      contribution = contribution,
                      reconstructed = reconstructed)

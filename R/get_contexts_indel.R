@@ -1,14 +1,14 @@
 #' Extract indel sequence, type and length
 #'
 #' @param bed A dataframe containing the columns: chrom, pos, ref, alt
-#' @param ref_genome A character naming the BSgenome reference genome. Default is
+#' @param ref_genome (Optional) A character naming the BSgenome reference genome. Default is
 #' "BSgenome.Hsapiens.UCSC.hg19". If another reference genome is indicated, it will also need to be
 #' installed.
-#' @param get_other_indel_allele Only applies when mode=='indel' For indels, some vcfs only report
+#' @param get_other_indel_allele (Optional) Only applies when mode=='indel' For indels, some vcfs only report
 #' the sequence of one allele (REF for deletions and ALT for insertions). If TRUE, the unreported
 #' allele will be retrieved from the genome: a 5' base relative to the indel sequence. This base
 #' will also be added to the indel sequence and the POS will be adjusted accordingly (POS=POS-1).
-#' @param verbose Print progress messages?
+#' @param verbose (Optional) Print progress messages?
 #'
 #' @return A dataframe in the same structure as a bed file
 #' @export

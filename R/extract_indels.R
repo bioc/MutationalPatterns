@@ -1,31 +1,32 @@
 #' Extract indel signatures
 #'
-#' @description Will return a 1-column matrix containing the absolute indel signature
-#' contributions (i.e. the number of mutations contributing to each mutational signature). The
-#' signatures used are insertions/deletions within repeat regions (ins.rep, del.rep),
+#' @description Get a 1-column matrix containing the absolute indel signature
+#' contributions (i.e. the number of mutations contributing to each mutational signature).\cr
+#' For the context of the indels, there are two options:\cr\cr
+#' Use 'cosmic' for signatures defined by the COSMIC database.\cr
+#' Use 'predefined' for signatures defined as insertions/deletions within repeat regions (ins.rep, del.rep),
 #' insertions/deletions with flanking microhomology (ins.mh, del.mh), and insertions/deletions
 #' which don't fall under the previous 2 categories (ins.none, del.none). Each category is further
 #' stratified by the length of the indel.
 #'
 #' @param bed A dataframe containing the columns: chrom, pos, ref, alt
-#' @param sample.name If a character is provided, the header for the output matrix will be named to this. If none is
+#' @param context.database (Optional) A character naming the context database of the indels. Options are "cosmic" to get the contexts from COSMIC
+#' or "predefined" to get the predefined context from MutationalPatterns.\cr
+#' Default is "cosmic"
+#' @param sample.name (Optional) If a character is provided, the header for the output matrix will be named to this. If none is
 #' provided, the basename of the vcf file will be used.
-#' @param ref_genome A character naming the BSgenome reference genome. Default is "BSgenome.Hsapiens.UCSC.hg19". If another
+#' @param ref.genome (Optional) A character naming the BSgenome reference genome. Default is "BSgenome.Hsapiens.UCSC.hg19". If another
 #' reference genome is indicated, it will also need to be installed.
-#' @param indel.len.cap Specifies the max indel sequence length to consider when counting 'repeat' and 'none' contexts.
+#' @param indel.len.cap (Optional) Specifies the max indel sequence length to consider when counting 'repeat' and 'none' contexts.
 #' Counts of longer indels will simply be binned to the counts of contexts at the max indel sequence length.
-#' @param n.bases.mh.cap Specifies the max bases in microhomology to consider when counting repeat and microhomology
+#' @param n.bases.mh.cap (Optional) Specifies the max bases in microhomology to consider when counting repeat and microhomology
 #' contexts. Counts of longer indels will simply be binned to the counts of contexts at the max indel sequence length.
-#' @param get.other.indel.allele Only applies when mode=='indel' For indels, some vcfs only report
-#' the sequence of one allele (REF for deletions and ALT for insertions). If TRUE, the unreported
-#' allele will be retrieved from the genome: a 5' base relative to the indel sequence. This base
-#' will also be added to the indel sequence and the POS will be adjusted accordingly (POS=POS-1).
-#' @param verbose Print progress messages?
-#' @param ... Other arguments that can be passed to variantsFromVcf()
+#' @param verbose (Optional) Print progress messages?
+#' @param ... Other arguments that can be passed to get_contexts_indel()
 #'
-#' @return A 1-column matrix
+#' @return A 1-column mutation count matrix
 #' @export
-extract_indels <- function(bed, context.database, sample.name=NULL, ref.genome=DEFAULT_GENOME,
+extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, ref.genome=DEFAULT_GENOME,
                            indel.len.cap=5, n.bases.mh.cap=5, verbose=F, ...)
 {
     df <- get_contexts_indel(bed, ...)
@@ -159,27 +160,4 @@ extract_indels <- function(bed, context.database, sample.name=NULL, ref.genome=D
       
       return(df$final_context)
     }
-    
-    ## Count occurrences of each signature
-    # sig_occurrences <- table(with(sig_parts,{
-    #   unlist(Map(function(indel_type,context,indel_len,n_copies_along_flank,n_bases_mh){
-    #     if(context == 'mh'){
-    #       paste(indel_type, context, 'bimh', n_bases_mh, sep = '.')
-    #     } else {
-    #       paste(indel_type, context, 'len', indel_len, sep = '.')
-    #     }
-    #   },
-    #   indel_type, context, indel_len, n_copies_along_flank, n_bases_mh))
-    # }))
-    
-    ## Fill in indel signature matrix that was initiated at the start of the function
-    # indel_sigs[names(sig_occurrences)] <- sig_occurrences
-  
-    
-    # if(verbose){ message('Returning indel context counts...') }
-    # out <- matrix(indel_sigs, ncol = 1)
-    # rownames(out) <- names(indel_sigs)
-    #colnames(out) <- if(is.null(sample.name)){ basename(vcf.file) } else { sample.name }
-    
-    # return(out)
 }

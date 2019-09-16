@@ -5,8 +5,9 @@
 #' mutation types of the DBS from COSMIC.
 #' 
 #' @param vcf A CollapsedVCF object
-#' @param mode A character stating which type of mutation is to be extracted: 
-#' 'snv', 'snv+dbs', 'snv+indel', 'dbs', 'dbs+indel', 'indel' or 'all'
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @return List with character vector for each mutation type
 #'
 #' @examples
@@ -15,20 +16,31 @@
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #'
-#' mut_type(vcfs[[1]], mode)
+#' mut_type(vcfs[[1]], type)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}
 #'
 #' @export
 
-mut_type = function(vcf, mode) 
+mut_type = function(vcf, type) 
 {
-    mode = check_mutation_type(mode)
-    muts = mutations_from_vcf(vcf, mode)
+    # Check the mutation type argument
+    type = check_mutation_type(type)
+    
+    # Get the mutations from the vcf
+    muts = mutations_from_vcf(vcf, type)
+    
+    if (class(muts) != "list")
+    {
+      muts = list(muts)
+      names(muts) = type
+    }
     
     converted = list()
     
+    # For snv and dbs, convert the mutations to reverse complement
+    # when needed for the context
     for (n in names(muts))
     {
       if (n == "snv")
@@ -140,6 +152,10 @@ mut_type = function(vcf, mode)
         converted = c(converted, list("indel"=muts[[n]]))
       }
     }
+    
+    # Return a vector when there is only 1 mutation type
+    if(length(names(converted)) == 1)
+      converted = converted[[1]]
     
     return(converted)
 }

@@ -4,14 +4,22 @@
 #' 
 #' @param contribution List of signature contribution matrices
 #' @param signatures List of signature matrices
-#' @param mut_type Character stating which mutation type(s) must be plotted. Values of 'mut_type' must be
-#' names of the list 'contribution'
-#' @param index optional sample subset parameter
-#' @param coord_flip Flip X and Y coordinates, default = FALSE
-#' @param mode "relative", "absolute" or "both"; to plot the relative contribution or
-#' absolute number of mutations, default = "relative"
-#' @param palette A list of color palette like c("#FF0000", "#00FF00", "9999CC")
-#' for each mutation type that will be used as colors in the plot.  
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
+#' @param index (Optional) Sample subset parameter
+#' @param coord_flip (Optional) Flip X and Y coordinates, default = FALSE
+#' @param mode (Optional) Character stating to "relative" or "absolute" contribution of
+#' mutations. Also possible to plot "both".\cr 
+#' Default = "relative"
+#' @param method (Optional) Character stating how to use the data. 
+#' \itemize{
+#'   \item{"split":} { Each mutation type has seperate count matrix}
+#'   \item{"combine":} { Combined count matrix of all mutation types}
+#' }   
+#' Default is "split"
+#' @param palette (Optional) A list of color palette like c("#FF0000", "#00FF00", "9999CC")
+#' for each mutation type that will be used as colors in the plot.\cr
 #' By default, ggplot2's colors are used to generate a palette.
 #'
 #' @return Stacked barplot with contribution of each signature for each sample
@@ -74,12 +82,12 @@ plot_contribution = function(contribution,
     # check mode parameter
     if(!(mode == "relative" | mode == "absolute" | mode == "both"))
         stop("mode parameter should be either 'relative', 'absolute' or 'both'")
+  
+    # check mutation type
+    mut_type = check_mutation_type(mut_type)
     
     if (class(contribution) == "list")
     {
-      if (missing(mut_type)) {mut_type = names(contribution)}
-      else if (mut_type == "all") {mut_type = c("snv","dbs","indel")}
-      else {mut_type = unlist(strsplit(mut_type, "\\+"))}
       if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
       else {stop("One or more values of 'mut_type' is not found in 'contribution'")}
       
@@ -98,14 +106,14 @@ plot_contribution = function(contribution,
           contribution[[m]] = contribution[[m]][,index]
         }
       }
-    } else {
+    } else 
+    {
       method = "combine"
       
-      if (is.null(names(contribution[[m]])))
+      if (is.null(rownames(contribution)))
         stop("Provide contribution matrix with rownames for signatures")
       else
         warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
-      
     }
   
     if (length(palette) == 0)
@@ -131,6 +139,7 @@ plot_contribution = function(contribution,
     Contribution = NULL
     Signature = NULL
     
+    # Each mutation type has its own figure
     if (method == "split")
     {
       if (mode == "both")
@@ -145,7 +154,10 @@ plot_contribution = function(contribution,
       {
         plots[[m]] = list()
         
+        # Take all signatures with contribution more than 0
         contribution[[m]] = contribution[[m]][which(rowSums(contribution[[m]]) > 0),]
+        
+        # Test if contribution is already relative
         if (all(round(colSums(contribution[[m]])) == 1))
         {
           warning(paste("Signature contributions are relative.",
@@ -246,7 +258,8 @@ plot_contribution = function(contribution,
           plots[[m]][[1]] = plots[[m]][[1]] + theme(legend.title = element_blank())
         }
       }
-        
+      
+      # Make list out of list of lists  
       plotlist = list()
       for (m in names(plots))
       {
@@ -289,6 +302,8 @@ plot_contribution = function(contribution,
           # calculate signature contribution in absolute number of signatures
           abs_contribution[[m]] = contribution[[m]] * total_signatures[[m]]
         }
+        
+        # Test if contribution is already relative
         if (all(colsums == T))
         {
           warning(paste("Signature contributions are relative.",
@@ -309,6 +324,7 @@ plot_contribution = function(contribution,
         abs_contribution = contribution * total_signatures
       }
       
+      # Take all signatures with contribution more than 0
       contribution = contribution[which(rowSums(contribution) > 0),]
       abs_contribution = abs_contribution[which(rowSums(abs_contribution) > 0),]
       
