@@ -11,6 +11,7 @@ Maintainer: Roel Janssen <R.R.E.Janssen-10@umcutrecht.nl>,
 License: MIT + file LICENSE
 URL: https://doi.org/10.1186/s13073-018-0539-0
 Imports:
+    deconstructSigs,
     stats,
     parallel,
     S4Vectors,
@@ -25,7 +26,7 @@ Imports:
     GenomeInfoDb (>= 1.12.0),
     Biostrings (>= 2.40.0),
     ggdendro (>= 0.1-20),
-    cowplot (>= 0.9.2)
+    cowplot (>= 0.9.2)    
 Depends:
     R (>= 3.4.0),
     GenomicRanges (>= 1.24.0),
@@ -43,5 +44,5 @@ Suggests:
 biocViews: Genetics, SomaticMutation
 ZipData: NA
 LazyData: false
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Encoding: UTF-8
