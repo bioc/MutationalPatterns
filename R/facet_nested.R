@@ -2,6 +2,8 @@
 #'
 #' Helper function for ggplot to merge facets 
 #' 
+#' @import gtable
+#' 
 #' @export
 
 facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", space = "fixed",

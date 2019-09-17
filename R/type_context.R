@@ -47,6 +47,13 @@ type_context = function(vcf, ref_genome, type, ...)
     for (m in type)
     {
       muts = mutations_from_vcf(vcf, m)
+      
+      if (isEmpty(muts))
+      {
+        res[[m]] = list("types"=NULL, "context"=NULL)
+        break
+      }
+      
       types = mut_type(vcf, m)
       
       # if snvs are extracted, convert the base substitutions to the

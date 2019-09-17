@@ -114,17 +114,19 @@ mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_c
     # Merge the rows into a dataframe of each mutation type.
     for (m in names(rows[[1]]))
     {
-      for (row in rows)
+      rnames = c()
+      for (i in 1:length(rows))
       {
-      
         if (class (row) == "try-error") stop (row)
-        df[[m]] = rbind (df[[m]], row[[m]])
-        names(df[[m]]) = names(rows[[1]][[m]])
-        
+        if (length(rows[[i]][[m]]) > 0)
+        {
+          rnames = c(rnames, names(vcf_list)[i])
+          df[[m]] = rbind(df[[m]], rows[[i]][[m]])
+          names(df[[m]]) = names(rows[[i]][[m]])
+        }
       }
       
-      names(df[[m]]) = names(rows[[1]][[m]])
-      row.names(df[[m]]) = names(vcf_list)
+      if (!isEmpty(rnames)) rownames(df[[m]]) = rnames
       df[[m]] <- t(df[[m]])
     }
     

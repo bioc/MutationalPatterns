@@ -27,7 +27,7 @@
 #' @return A 1-column mutation count matrix
 #' @export
 extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, ref.genome=DEFAULT_GENOME,
-                           indel.len.cap=5, n.bases.mh.cap=5, verbose=F, ...)
+                           indel.len.cap=6, n.bases.mh.cap=5, verbose=F, ...)
 {
     df <- get_contexts_indel(bed, ...)
     
@@ -50,14 +50,14 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
   
     ## Getting flank start/end positions first, then retrieving the sequences using getSeq with a
     ## vectorized input improves speed significantly.
-    ## Cap n.indel.lengths.r to 3 (length of 3' (right-hand side) sequence to retrieve),
+    ## Cap n.indel.lengths.r to 6 (length of 3' (right-hand side) sequence to retrieve),
     ## since the max n_copies_along_flank condition used below caps at >=2.
     ## This improves speed significantly
     flanks_start_end <- with(df,{
       do.call(rbind, Map(
         f = indel_seq_flanks_start_end,
         chrom, pos, indel_len, indel_type,
-        n.indel.lengths.r=3
+        n.indel.lengths.r=6
       ))
     })
     
@@ -94,8 +94,8 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
     
     df <- cbind(df, "repeats"=n_copies_along_flank, "bimh"=n_bases_mh)
     
-    # For native indel context 
-    if (context.database == "native")
+    # For predefined indel context 
+    if (context.database == "predefined")
     {
       #--------- Assign repeat, microhomology, or no context ---------#
       if(verbose){ message('Determining indel contexts...') }
