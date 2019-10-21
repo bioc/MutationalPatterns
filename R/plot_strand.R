@@ -97,7 +97,7 @@ plot_strand = function(strand_counts, mode = "relative", colors)
       scale_x_discrete(breaks=NULL) +
       xlab("")
     
-      plots = c(plots, list(plot))
+    plots = c(plots, list(plot))
   }
   
   # Plot absolute contribution within each group
@@ -124,8 +124,10 @@ plot_strand = function(strand_counts, mode = "relative", colors)
   for (i in length(plots))
   {
     # If different graphs for each mutation types is wanted, use method = "split"
-    if (method == "split"){ plots[[i]] = plots[[i]] + facet_wrap(mutation ~ group,  nrow = length(levels(strand_counts$mutation)) )}
-    else if (method == "combine"){ plots[[i]] = plots[[i]] + facet_wrap( ~ group,  nrow = length(levels(strand_counts$mutation)) )}
+    if (method == "split"){ plots[[i]] = plots[[i]] + facet_wrap(mutation ~ group,  
+                                                                 nrow = length(levels(strand_counts$mutation)),
+                                                                 scales = "free_x")}
+    else if (method == "combine"){ plots[[i]] = plots[[i]] + facet_wrap( ~ group,  nrow = 1 )}
   }
   
   plot = plot_grid(plotlist=plots)

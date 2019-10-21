@@ -127,7 +127,10 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         # GRanges information in memory.  This speeds up the
         # loading significantly.
         vcf <- rowRanges(readVcf (file, genome_name))
-
+        
+        if (length(vcf) == 0)
+          stop(sprintf("Vcf file %s is empty", file))
+        
         # Convert to a single naming standard.
         seqlevelsStyle(vcf) <- ref_style[1]
 
@@ -201,6 +204,9 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         dbs = which(diff(start(vcf)) == 1 & 
                       nchar(as.character(vcf$REF) == 1) &
                       nchar(as.character(unlist(vcf$ALT))) ==1 )
+        if (length(dbs) > 0)
+          if (dbs[length(dbs)] == length(vcf))
+            dbs <- dbs[-length(dbs)]
         
         # If there are such variants, then change end position of variant,
         # add second ref and second alt base and delete next variant from vcf

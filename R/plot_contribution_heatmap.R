@@ -111,14 +111,15 @@ plot_contribution_heatmap = function(contribution,
       if (isEmpty(cluster_mutations))
         warning(paste("Values of 'cluster_mut_type' are not found in names of contribution list or do not match 'type'.",
                       "No clustering on mutation type is done"))
-    }  
+    } else {
+      cluster_mutations = c()
+    }
     
     contribution = do.call(rbind, contribution)
   } else 
   {
     cluster_mutations = c()
   }
-  
   # check if there are signatures names in the contribution matrix
   if(is.null(row.names(contribution)))
     {stop("contribution must have row.names (signature names)")}
@@ -128,22 +129,29 @@ plot_contribution_heatmap = function(contribution,
   if(missing(sig_order))
   {
     if (!isEmpty(cluster_mutations))
+    {
       sig_order = c(cluster_mutations, " ", rownames(contribution)[which(!(rownames(contribution) %in% cluster_mutations))])
-    else
+      if (sig_order[length(sig_order)] == " ")
+      {
+        sig_order = sig_order[1:(length(sig_order)-1)] 
+      }
+    } else
       sig_order = rownames(contribution)
-  }
-  # check sig_order argument
-  if(class(sig_order) != "character")
-    {stop("sig_order must be a character vector")}
-  if(length(sig_order) != nrow(contribution))
-    {stop("sig_order must have the same length as the number of signatures in the contribution matrix")}
-  if(any(is.na(match(sig_order, row.names(contribution)))))
+  } else {
+    # check sig_order argument
+    if(class(sig_order) != "character")
+      {stop("sig_order must be a character vector")}
+    if(length(sig_order) != nrow(contribution))
+      {stop("sig_order must have the same length as the number of signatures in the contribution matrix")}
+    if(any(is.na(match(sig_order, row.names(contribution)))))
     {stop("sig_order must have the same signature names as in contribution")}
+  }
     
   # transpose
   contribution = t(contribution)
   # relative contribution
   contribution_norm = contribution / rowSums(contribution)
+  contribution_norm[which(contribution_norm == "NaN")] = 0
   
   # if cluster samples is TRUE, perform clustering
   if (cluster_samples)
@@ -177,13 +185,13 @@ plot_contribution_heatmap = function(contribution,
   
   if (cluster_samples)
   {
-    if(!isEmpty(cluster_mutations))
+    if(!isEmpty(cluster_mutations) & length(cluster_mutations) != length(colnames(contribution)))
       contribution_norm.m = rbind(contribution_norm.m,
                                   data.frame("Sample" = unique(contribution_norm.m$Sample),
                                              "Signature" = " ",
                                              "Contribution" = NA))
   }
-    
+  
   # plot heatmap
   heatmap = ggplot(contribution_norm.m, aes(x=Signature, y=Sample, fill=Contribution, order=Sample)) + 
     geom_tile(color = "white") +
@@ -210,10 +218,10 @@ plot_contribution_heatmap = function(contribution,
     dendrogram = ggplot(segment(ddata)) + 
       geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
       coord_flip() + 
-      scale_y_reverse(expand = c(0.2, 0)) + 
+      scale_y_reverse()+#expand = c(0.2, 0)) + 
       theme_dendro()
     # combine plots
-    plot_final = cowplot::plot_grid(dendrogram, heatmap, align = 'h', rel_widths = c(0.3, 1))
+    plot_final = cowplot::plot_grid(dendrogram, heatmap, align = 'h', rel_widths = c(0.3, 1), axis = "tb" )
   } 
   else
   {

@@ -29,7 +29,8 @@
 extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, ref.genome=DEFAULT_GENOME,
                            indel.len.cap=6, n.bases.mh.cap=5, verbose=F, ...)
 {
-    df <- get_contexts_indel(bed, ...)
+
+    df <- get_contexts_indel(bed, ref_genome = ref.genome)
     
     if(verbose){ message('Initializing indel signature output vector...') }
     indel_sig_names <- c(

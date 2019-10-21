@@ -79,7 +79,8 @@ mut_context = function(vcf, ref_genome, type, indel)
         
         # Default indel context is "cosmic"
         if (missing(indel)) { indel = "cosmic" }
-        vcf_context = extract_indels(bed, context.database=indel)
+        vcf_context = extract_indels(bed, context.database=indel,
+                                     ref.genome = ref_genome)
         contexts[[m]] = vcf_context
       }
     }

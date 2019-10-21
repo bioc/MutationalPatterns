@@ -99,6 +99,11 @@ strand_occurrences = function(mut_mat_s, by, type, method = "split")
         # get substitutions from rownames
         if (m == "snv"){ substitutions = substring(rownames(mut_mat_s[[m]]), 3, 5) }
         else if (m == "dbs"){ substitutions = substring(rownames(mut_mat_s[[m]]), 1, 2) }
+        else if (m == "indel") 
+        { 
+          subs = do.call(rbind, strsplit(rownames(mut_mat_s[[m]]), "\\."))[,1:4]
+          substitutions = paste(subs[,1],subs[,2],subs[,3],subs[,4],sep=".")
+        }
         
         # sum per substition per strand
         x2 = melt(aggregate(t(x), by = list(substitutions, strand), FUN=sum))

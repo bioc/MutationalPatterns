@@ -72,7 +72,7 @@
 
 plot_contribution = function(contribution,
                                 signatures,
-                                mut_type,
+                                type,
                                 index=c(),
                                 coord_flip=FALSE,
                                 mode="relative",
@@ -84,14 +84,14 @@ plot_contribution = function(contribution,
         stop("mode parameter should be either 'relative', 'absolute' or 'both'")
   
     # check mutation type
-    mut_type = check_mutation_type(mut_type)
+    type = check_mutation_type(type)
     
     if (class(contribution) == "list")
     {
-      if (all(mut_type %in% names(contribution))) {contribution = contribution[mut_type]}
-      else {stop("One or more values of 'mut_type' is not found in 'contribution'")}
+      if (all(type %in% names(contribution))) {contribution = contribution[type]}
+      else {stop("One or more values of 'type' is not found in 'contribution'")}
       
-      for (m in mut_type)
+      for (m in type)
       {
         if (is.null(rownames(contribution[[m]])))
           stop(paste("Provide contribution matrix for mutation type", 
@@ -101,7 +101,7 @@ plot_contribution = function(contribution,
       
       # optional subsetting if index parameter is provided
       if(length(index > 0)){
-        for (m in mut_type)
+        for (m in type)
         {
           contribution[[m]] = contribution[[m]][,index]
         }
@@ -150,7 +150,7 @@ plot_contribution = function(contribution,
       
       plots = list()
       
-      for (m in mut_type)
+      for (m in type)
       {
         plots[[m]] = list()
         
@@ -190,7 +190,9 @@ plot_contribution = function(contribution,
             theme(panel.grid.minor.x=element_blank(),
                   panel.grid.major.x=element_blank()) +
             theme(panel.grid.minor.y=element_blank(),
-                  panel.grid.major.y=element_blank())
+                  panel.grid.major.y=element_blank()) +
+            theme(axis.text.x = element_blank(),
+                  axis.ticks.x = element_blank())
           
           plots[[m]] = c(plots[[m]], list(plot))
         }
@@ -290,7 +292,7 @@ plot_contribution = function(contribution,
         total_signatures = list()
         abs_contribution = list()
         
-        for (m in mut_type){
+        for (m in type){
           if (all(round(colSums(contribution[[m]])) ==1 ))
             colsums = c(colsums, T)
           else 

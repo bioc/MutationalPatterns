@@ -54,7 +54,7 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
     if (any(grepl("snv", strand_bias$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_bias$mutation))) { colors = c(colors, COLORS10) }
     if (exists("indel_colors"))
-      if (any(grepl("indel", strand_counts$mutation))) 
+      if (any(grepl("indel", strand_bias$mutation))) 
         colors = c(colors, indel_colors)
   }
   
@@ -115,7 +115,9 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
   if (max_yaxis) { plot = plot + scale_y_continuous(limits = c(-max, max)) }
   
   # If different graphs for each mutation types is wanted, use method = "split"
-  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group, nrow = length(levels(strand_bias$mutation)) )}
-  else if (method == "combine"){ plot = plot + facet_wrap( ~ group, nrow = length(levels(strand_bias$mutation)) )}
+  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group, 
+                                                   scales = "free_x",
+                                                   nrow = length(levels(strand_bias$mutation)) )}
+  else if (method == "combine"){ plot = plot + facet_wrap( ~ group, nrow = 1 )}
   return(plot)
 }

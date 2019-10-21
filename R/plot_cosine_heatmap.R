@@ -71,6 +71,11 @@ plot_cosine_heatmap = function(cos_sim_matrix,
                                method = "complete", 
                                plot_values = FALSE)
 {
+  if(class(cos_sim_matrix) == "list")
+  {
+    cos_sim_matrix = do.call(cbind, cos_sim_matrix)
+  }
+  
   # check explained argument
   if(class(cos_sim_matrix) != "matrix")
   {stop("cos_sim_matrix must be a matrix")}

@@ -62,7 +62,7 @@ plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", 
     # Check the mutation type argument
     type = check_mutation_type(type)
     
-    # Set indel variables at empty, if they are present in global environment
+    # Set indel variables at empty, if they are not present in global environment
     if (!exists("indel_class"))
       indel_class = indel_class_header = indel_context = indel_colors = c()
     
@@ -157,11 +157,11 @@ plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", 
           else if (mut == "dbs")
           {
             type_list = mut_type(chr_subset, type = mut)
-            for (j in 1:length(type_list[["dbs"]])) type_list[["dbs"]][j] = paste0(substr(type_list[["dbs"]][j],1,2),">NN")
+            for (j in 1:length(type_list)) type_list[j] = paste0(substr(type_list[j],1,2),">NN")
           } else if (mut == "indel")
           {
             type_list = mut_context(chr_subset, ref_genome, type = mut)
-            type_list = do.call(rbind, strsplit(type_list[[1]], "\\."))[,c(1,2,4)]
+            type_list = do.call(rbind, strsplit(type_list, "\\."))[,c(1,2,4)]
             type_list = list("indel"=paste(type_list[,1], type_list[,2], type_list[,3], sep="."))
           }
   

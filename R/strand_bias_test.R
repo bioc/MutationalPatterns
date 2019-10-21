@@ -64,7 +64,6 @@ strand_bias_test = function(strand_occurrences, type, method = "split")
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
     group = NULL
-    type = NULL
     strand = NULL
     variable = NULL
 

@@ -12,7 +12,7 @@
 #' \item{bimh:} {  Number of bases in microhomology}
 #' }
 #' @return Character vector with the context of the indel
-#' @importFrom Biostrings DNAString, complement
+#' @import Biostrings
 #'
 #' @examples
 #' ## Get a data.frame with the columns needed. Is also part of the

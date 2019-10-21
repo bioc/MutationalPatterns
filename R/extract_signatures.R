@@ -30,41 +30,72 @@
 #'
 #' @export
 
-extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
+extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "split")
 {
     # Check if mutation matrix is not empty
     if(all(isEmpty(mut_matrix)))
     {
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }
+  
+    # Check mutation type
+    type = check_mutation_type(type)
     
     # If "mut_matrix" is a matrix, then search for the right mutation type. If not found
     # mutation matrix is treated as combination of mutation types
     if (class(mut_matrix) == "matrix")
     {
-      if (all(rownames(mut_matrix) %in% TRIPLETS_96)) { mut_matrix = list("snv"=mut_matrix) }
-      else if (all(rownames(mut_matrix) %in% DBS)) { mut_matrix = list("dbs"=mut_matrix) }
+      if (all(rownames(mut_matrix) %in% TRIPLETS_96)) 
+      { 
+        mut_matrix = list("snv"=mut_matrix)
+        rank = c("snv"=rank)
+      }
+      else if (all(rownames(mut_matrix) %in% DBS))
+      { 
+        mut_matrix = list("dbs"=mut_matrix)
+        rank = c("dbs"=rank)
+      }
       else if (exists("indel_context"))
       {
-        if (all(rownames(mut_matrix) %in% indel_context)) { mut_matrix = list("indel"=mut_matrix) }
+        if (all(rownames(mut_matrix) %in% indel_context)) 
+        { 
+          mut_matrix = list("indel"=mut_matrix) 
+          rank = c("indel" = rank)
+        }
       }
-      else 
-      { 
-        warning("Mutation type of 'mut_matrix' is unknown. Treated as combined mutation types")
-        method = "combine"
-      }
+    }
+    
+    if (class(mut_matrix) == "matrix") 
+    { 
+      warning("Mutation type of 'mut_matrix' is unknown. Treated as combined mutation types")
+      method = "combine"
     }
     
     if (method == "split")
     {
+      mut_matrix = mut_matrix[type]
+      
+      if (length(names(rank)) == 0 & length(rank) == 1)
+      {
+        rank = rep(rank, length(type))
+        names(rank) = type
+      } else {
+        rank = rank[type]
+      }
+      
+      if (length(mut_matrix) == 0 | length(rank) == 0)
+        stop("One or more mutation types not found in count matrices or ranks")
+      
       # Check names of list of mutation matrices
       if (isEmpty(names(mut_matrix)) | any(!(names(mut_matrix) %in% c("snv","dbs","indel")))){
         stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
       }
       
       # Perform NMF for each mutation type
-      nmf_res <- lapply(mut_matrix, function(mut)
+      nmf_res <- lapply(names(mut_matrix), function(m)
       {
+        mut = mut_matrix[[m]]
+        rank = rank[m]
         # Add a small pseudocount to avoid features with zero counts.
         mut = as.matrix(mut) + 0.0001
         
@@ -89,6 +120,7 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
                     contribution = contribution,
                     reconstructed = reconstructed))
       })
+      names(nmf_res) = names(mut_matrix)
       signatures = list()
       contribution = list()
       reconstructed = list()
@@ -117,6 +149,12 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
       # Check if mut_matrix is a list or already combined to a matrix
       if (class(mut_matrix) == "list") 
       { 
+        mut_matrix = mut_matrix[type]
+        rank = rank[type]
+        
+        if (length(mut_matrix) == 0 | length(rank) == 0)
+          stop("One or more mutation types not found in count matrices or ranks")
+        
         # Check names of list of mutation matrices
         if (isEmpty(names(mut_matrix)) | any(!(names(mut_matrix) %in% c("snv","dbs","indel")))){
           stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
@@ -128,6 +166,8 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, method = "split")
       # Add a small pseudocount to avoid features with zero counts.
       mut_matrix = mut_matrix + 0.0001
       
+      rank = min(rank)
+            
       # Make sure the rank_range is valid.
       if (!(rank > 0 & rank == round(rank)))
         stop("Rank should be a positive integer")
