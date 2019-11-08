@@ -51,7 +51,7 @@ type_context = function(vcf, ref_genome, type, ...)
       if (isEmpty(muts))
       {
         res[[m]] = list("types"=NULL, "context"=NULL)
-        break
+        next
       }
       
       types = mut_type(vcf, m)

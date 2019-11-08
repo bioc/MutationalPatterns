@@ -80,7 +80,9 @@ library(ref_genome, character.only = TRUE)
 
 We provided an example data set with this package, which consists of a subset of
 somatic mutation catalogues of 9 normal human adult stem cells from 3 different
-tissues \citep{Blokzijl2016}.
+tissues \citep{Blokzijl2016}. When own data is loaded, please pay attention that
+the files are in VCF format 4.2 or higher, which makes sure that all variants are 
+loaded correctly.
 
 Load the MutationalPatterns package:
   
@@ -99,15 +101,8 @@ vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
 @ 
 
 <<locate_files, echo = FALSE>>=
-vcf_files <- c("../../../HMF_data/DR010-update/data/160704_HMFregCPCT_FR10301986_FR12244591_CPCT02020306/CPCT02020306R_CPCT02020306T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160704_HMFregCPCT_FR12244543_FR12244602_CPCT02030245/CPCT02030245R_CPCT02030245T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160704_HMFregCPCT_FR12244545_FR12244599_CPCT02100011/CPCT02100011R_CPCT02100011T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160704_HMFregCPCT_FR12244557_FR12244595_CPCT02110002/CPCT02110002R_CPCT02110002T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160704_HMFregCPCT_FR12244561_FR12244603_CPCT02030247/CPCT02030247R_CPCT02030247T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160709_HMFregCPCT_FR10301841_FR12244644_CPCT02020314/CPCT02020314R_CPCT02020314T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160709_HMFregCPCT_FR10301926_FR10301880_CPCT02020307/CPCT02020307R_CPCT02020307T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160709_HMFregCPCT_FR10301967_FR10301879_CPCT02020310/CPCT02020310R_CPCT02020310T_post_processed_v2.2.vcf.gz",
-              "../../../HMF_data/DR010-update/data/160709_HMFregCPCT_FR10301974_FR10301881_CPCT02020308/CPCT02020308R_CPCT02020308T_post_processed_v2.2.vcf.gz")
+vcf_files <- list.files("../inst/extdata",
+                        pattern = ".vcf", full.names = TRUE)
 @
 
 Define corresponding sample names for the VCF files:
@@ -186,14 +181,19 @@ type_occurrences
 \subsection{Double base substitutions and indels}
 
 Not only single base substitutions can be retrieved from the VCF GRanges object,
-but there is also the option to extract double base substitutions and/or indels,
-if they are present in the loaded VCF files. When multiple mutation types are
-requested, the output will be a list of mutation types.\\
+also double base substitutions and/or indels can be extracted,
+if they are present in the loaded VCF files. Double base substitutions have the 
+format "REF:NN > ALT:NN" or they are two SNVs with consecutive positions. Indels 
+must be in at least VCF format 4.2. That means that deletions have a REF with 
+the deletion length and an ALT with length 1, and insertions have a REF of 
+length 1 and an ALT with the insertion length. Moreover, the REF and ALT of
+indels only contains nucleotide letters (A, C, G and T), no other characters.
 
 These two types of mutations are retrieved the same way as the single base 
-substitutions: "REF>ALT", using \Rfunction{mutations\_from\_vcf}.
+substitutions: "REF>ALT", using \Rfunction{mutations\_from\_vcf}. 
 Therefore set the argument \texttt{type} to a vector of the wanted mutation
-types:
+types. When multiple mutation types are requested, the output will be a list of 
+mutation types.\\
   
 <<mutations_from_vcf>>=
 muts = mutations_from_vcf(vcfs[[1]], type = c("dbs", "indel"))
@@ -209,7 +209,7 @@ types = mut_type(vcfs[[1]], type = c("dbs", "indel"))
 lapply(types, head, 12)
 @
 
-The insertions and deletions can be translated a more clear definition, on
+The insertions and deletions can be translated to a more clear definition, on
 which the indels can be grouped. Since there is no single intuitive and 
 naturally constrained set of indel mutation types, it is possible to give
 an own definition of indels and to set global variables for this definition.
@@ -234,7 +234,7 @@ information as a list of mutation types:
 
 <<type_context>>=
 type_context = type_context(vcfs[[1]], ref_genome, type = c("dbs","indel"))
-lapply(type_context, function(x) lapply(x, head, 12))
+lapply(type_context, function(x) lapply(x, head, 10))
 @
 
 \subsection{Mutation spectrum}
@@ -319,15 +319,20 @@ head(mut_mat)
 @
   
 Plot the 96 profile of two samples:
-<<plot_96_profile_2_e, eval=FALSE, width=7, height=3>>=
+<<plot_96_profile_2_e, eval=FALSE>>=
 plot_profiles(mut_mat[,c(1,7)])
+@
+
+<<plot_96_profile_2, echo=FALSE>>=
+ggsave("plot_96_profile_2.pdf", 
+       plot_profiles(mut_mat[,c(1,7)]), 
+       width=10, 
+       height=3)
 @
   
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile_2, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_profiles(mut_mat[,c(1,7)])
-@
+\includegraphics[width=1.0\textwidth]{plot_96_profile_2}
 \end{center}
 \end{figure}
 
@@ -336,17 +341,22 @@ Plot 96 profile of two samples in a more condensed plotting format:
 plot_profiles(mut_mat[,c(1,7)], condensed = TRUE)
 @
   
+<<plot_96_profile_3, echo=FALSE>>=
+ggsave("plot_96_profile_3.pdf", 
+       plot_profiles(mut_mat[,c(1,7)], condensed = TRUE), 
+       width=10, 
+       height=3)
+@
+  
 \begin{figure}[H]
 \begin{center}
-<<plot_96_profile_3, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_profiles(mut_mat[,c(1,7)], condensed = TRUE)
-@
+\includegraphics[width=1.0\textwidth]{plot_96_profile_3}
 \end{center}
 \end{figure}
 
 \subsection{Plot mutation profiles of different types}
 
-To plot the mutation profiles of different mutation types (SBS, DBS 
+To plot the mutation profiles of different mutation types (SBS, DBS
 and/or indels), first make a list of mutation count matrices:
 
 <<mut_matrix>>=
@@ -366,26 +376,36 @@ Plot the mutation profiles of the two samples:
 plot_profiles(mut_mat_sub, type = "all")
 @
 
+<<plot_profiles_2, echo=FALSE>>=
+ggsave("plot_profiles_2.pdf", 
+       plot_profiles(mut_mat_sub, type = "all"),
+       width=10, 
+       height=10)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_profiles_2, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_profiles(mut_mat_sub, type = "all")
-@
+\includegraphics[width=1.0\textwidth]{plot_profiles_2}
 \end{center}
 \end{figure}
 
 It is also possible to plot mutation profiles with all mutation types
-together. 
+together.
 
-<<plot_profiles_3e, eval=FALSE, width=7, height=3>>=
+<<plot_profiles_3e, eval=FALSE>>=
 plot_profiles(mut_mat_sub, type = "all", method = "combine")
+@
+
+<<plot_profiles_3, echo=FALSE>>=
+ggsave("plot_profiles_3.pdf", 
+       plot_profiles(mut_mat_sub, type = "all", method = "combine"),
+       width=15, 
+       height=7)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<plot_profiles_3, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_profiles(mut_mat_sub, type = "all", method = "combine")
-@
+\includegraphics[width=1.0\textwidth]{plot_profiles_3}
 \end{center}
 \end{figure}
 
@@ -396,11 +416,11 @@ plot_profiles(mut_mat_sub, type = "all", method = "combine")
 
 Mutational signatures are thought to represent mutational processes, and are
 characterized by a specific contribution of 96 single base substitution types,
-78 double bas substitutions types or indels. Mutational signatures can be 
-extracted from your mutation count matrix, with non-negative matrix 
+78 double bas substitutions types or indels. Mutational signatures can be
+extracted from your mutation count matrix, with non-negative matrix
 factorization (NMF). A critical parameter in NMF is the factorization rank,
-which is the number of mutational signatures. You can determine the optimal 
-factorization rank using the NMF package \citep{Gaujoux2010}. As described in 
+which is the number of mutational signatures. You can determine the optimal
+factorization rank using the NMF package \citep{Gaujoux2010}. As described in
 their paper:
 
 ``...a common
@@ -411,8 +431,8 @@ cophenetic correlation coefficient starts decreasing. Another approach is to
 choose the rank for which the plot of the residual sum of squares (RSS) between
 the input matrix and its estimate shows an inflection point.''
 
-Lets start with the single base substitutions. First add a small psuedocount 
-to your mutation count matrix, such that there are no rows where the sum of 
+Lets start with the single base substitutions. First add a small psuedocount
+to your mutation count matrix, such that there are no rows where the sum of
 the row is zero:
 
 <<psuedo_count>>=
@@ -427,15 +447,20 @@ estimate <- nmf(mut_mat, rank=2:5, method="brunet", nrun=10, seed=123456)
 @
 
 And plot it:
-<<estimate_rank_e, eval=FALSE, width=7, height=5>>=
+<<estimate_rank_e, eval=FALSE>>=
 plot(estimate)
+@
+
+<<estimate_rank, echo = FALSE>>=
+ggsave("estimate_rank.pdf", 
+       plot(estimate), 
+       width=10, 
+       height=5)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<estimate_rank, fig=TRUE, width=7, height=5, echo=FALSE>>=
-plot(estimate)
-@
+\includegraphics[width=1.0\textwidth]{estimate_rank}
 \end{center}
 \end{figure}
 
@@ -455,20 +480,25 @@ rownames(nmf_res$contribution) <- c("Signature A", "Signature B")
 @
 
 Plot the 96-profile of the signatures:
-<<plot_profiles_e, eval=FALSE, width=7, height=3>>=
+<<plot_profiles_e, eval=FALSE>>=
 plot_profiles(nmf_res$signatures, condensed = TRUE)
+@
+
+<<plot_profiles, echo=FALSE>>=
+ggsave("plot_profiles.pdf",
+       plot_profiles(nmf_res$signatures, condensed = TRUE),
+       width = 10,
+       height = 7)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<plot_profiles, fig=TRUE, width=7, height=10, echo=FALSE>>=
-plot_profiles(nmf_res$signatures, condensed = TRUE)
-@
+\includegraphics[width=1.0\textwidth]{plot_profiles}
 \end{center}
 \end{figure}
 
-In order to extract signatures for DBS and indels, make a list of mutation 
-matrices for each mutation type:
+In order to extract signatures for all mutation types at once, make a list of 
+mutation matrices for each mutation type:
 
 <<mut_matrix_all_2>>=
 mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, type = "all")
@@ -476,12 +506,13 @@ mut_mat <- lapply(mut_mat, function(x) x + 0.0001)
 @
 
 Generate a estimate rank plot with the NMF package for each mutation type and
-find the best ranks. Extract then the signatures from the mutation matrices 
-with \Rfunction{extract\_signatures}.
+find the best ranks. Extract then the signatures from the mutation matrices
+with \Rfunction{extract\_signatures}. Use \texttt{type = "all"} to get all
+mutation types.
 
 <<extract_signatures_all>>=
-nmf_res <- extract_signatures(mut_mat, 
-                              rank = c("snv" = 2, "dbs" = 2, "indel" = 2), 
+nmf_res <- extract_signatures(mut_mat,
+                              rank = c("snv" = 2, "dbs" = 2, "indel" = 2),
                               type = "all",
                               nrun = 10)
 @
@@ -497,15 +528,20 @@ rownames(nmf_res$contribution$indel) <- c("INDEL A", "INDEL B")
 @
 
 Plot the profiles of the signatures:
-<<plot_profiles_e, eval=FALSE, width=7, height=3>>=
+<<plot_profiles_all_e, eval=FALSE, width=7, height=3>>=
 plot_profiles(nmf_res$signatures, condensed = TRUE, type = "all")
+@
+
+<<plot_profiles_all, echo=FALSE>>=
+ggsave("plot_profiles_all.pdf",
+       plot_profiles(nmf_res$signatures, condensed = TRUE, type = "all"),
+       width = 15,
+       height = 12)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<plot_profiles, fig=TRUE, width=7, height=10, echo=FALSE>>=
-plot_profiles(nmf_res$signatures, condensed = TRUE, type = "all")
-@
+\includegraphics[width=1.0\textwidth]{plot_profiles_all}
 \end{center}
 \end{figure}
 
@@ -522,15 +558,20 @@ pc2 <- plot_contribution(nmf_res$contribution, nmf_res$signature,
 @
 
 Combine the two plots:
-<<plot_contribution_2_fig_e, fig=TRUE, width=7, height=5, eval=FALSE>>=
+<<plot_contribution_2_fig_e, eval=FALSE>>=
 grid.arrange(pc1, pc2)
+@
+
+<<plot_contribution_2_fig, echo=FALSE>>=
+ggsave("plot_contribution2_fig.pdf",
+       grid.arrange(pc1, pc2),
+       width = 10,
+       height = 5)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_2_fig, fig=TRUE, width=7, height=5, echo=FALSE>>=
-grid.arrange(pc1, pc2)
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution2_fig}
 \end{center}
 \end{figure}
 
@@ -541,29 +582,41 @@ plot_contribution(nmf_res$contribution, nmf_res$signature,
                          mode = "absolute", coord_flip = TRUE)
 @
 
+<<plot_contribution_4, echo=FALSE>>=
+ggsave("plot_contribution_4.pdf",
+       plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         mode = "absolute", coord_flip = TRUE),
+       width=10,
+       height = 3)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_4, fig=TRUE, width=7, height=4, echo=FALSE>>=
-plot_contribution(nmf_res$contribution, nmf_res$signature,
-                         mode = "absolute", coord_flip = TRUE)
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution_4}
 \end{center}
 \end{figure}
 
-Visualize the contribution of all signatures in both relative and
-absolute number of mutations:
+To visualize the contribution of the signatures for all mutation types
+in both relative and absolute number of mutations, set 
+\texttt{type = "all"} and \texttt{mode = "both"}:
 
 <<plot_contribution_all_e, fig=TRUE, width=7, height=5, eval=FALSE>>=
 plot_contribution(nmf_res$contribution, nmf_res$signature,
                  type = "all", mode = "both")
 @
 
+<<plot_contribution_all, echo=FALSE>>=
+ggsave("plot_contribution_all.pdf",
+       plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         type = "all", mode = "both"),
+       width = 15,
+       height = 10)
+@
+
+
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_all, fig=TRUE, width=7, height=5, echo=FALSE>>=
-plot_contribution(nmf_res$contribution, nmf_res$signature,
-                       type = "all", mode = "both")
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution_all}
 \end{center}
 \end{figure}
 
@@ -591,36 +644,50 @@ Combine the plots into one figure:
 grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6))
 @
 
+<<plot_contribution_heatmap2, echo=FALSE>>=
+ggsave("plot_contribution_heatmap2.pdf",
+       grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6)),
+       width = 10,
+       height = 10)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_heatmap2, fig=TRUE, width=10, height=10, echo=FALSE>>=
-grid.arrange(pch1, pch2, ncol = 2, widths = c(2,1.6))
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution_heatmap2.pdf}
 \end{center}
 \end{figure}
 
 When plotting the signature contribution of multiple mutation types, it is
 possible to cluster on a specified mutation type. The mutation type(s) on
 which the data will be clustered, will show up at the left side of the heatmap.
+Plot the signature contribution, clustered by DBS signatures, by setting
+\texttt{cluster\_mut\_type = "dbs"}:
 
 <<plot_contribution_heatmap_all_e, eval=FALSE>>=
-plot_contribution_heatmap(nmf_res$contribution, type = "all", 
-                          cluster_mut_type = "dbs",
-                          plot_values = TRUE)
-@
-
-\begin{figure}[H]
-\begin{center}
-<<plot_contribution_heatmap_all, fig=TRUE, width=10, height=10, echo=FALSE>>=
 plot_contribution_heatmap(nmf_res$contribution, type = "all",
                           cluster_mut_type = "dbs",
                           plot_values = TRUE)
 @
+
+<<plot_contribution_heatmap_all, echo=FALSE>>=
+ggsave("plot_contribution_heatmap_all.pdf",
+       plot_contribution_heatmap(nmf_res$contribution, type = "all",
+                                 cluster_mut_type = "dbs",
+                                 plot_values = TRUE),
+       width = 10,
+       height = 10)
+@
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{plot_contribution_heatmap_all}
 \end{center}
 \end{figure}
 
-Compare the reconstructed mutational profile with the original mutational
-profile:
+In order to see the performance of the NMF algorithm, a reconstruction 
+of the count matrices are given by \Rfunction{extract\_signatures}.
+Compare a reconstructed 96 mutational profile of SNVs with the original 
+96 mutational profile of SNVs:
 
 <<plot_compare_profiles_e, eval=FALSE>>=
 plot_compare_profiles(mut_mat$snv[,1],
@@ -629,14 +696,19 @@ plot_compare_profiles(mut_mat$snv[,1],
                         condensed = TRUE)
 @
 
+<<plot_compare_profiles, echo=FALSE>>=
+ggsave("plot_compare_profiles.pdf",
+       plot_compare_profiles(mut_mat$snv[,1],
+                             nmf_res$reconstructed$snv[,1],
+                             profile_names = c("Original", "Reconstructed"),
+                             condensed = TRUE),
+       width = 10,
+       height = 5.5)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_compare_profiles, fig=TRUE, width=6, height=5.5, echo=FALSE>>=
-plot_compare_profiles(mut_mat$snv[,1],
-                        nmf_res$reconstructed$snv[,1],
-                        profile_names = c("Original", "Reconstructed"),
-                        condensed = TRUE)
-@
+\includegraphics[width=1.0\textwidth]{plot_compare_profiles}
 \end{center}
 \end{figure}
 
@@ -644,47 +716,83 @@ plot_compare_profiles(mut_mat$snv[,1],
 
 \subsubsection{COSMIC mutational signatures}
 
-Download mutational signatures from the COSMIC website. For convenience
-the SBS signatures of version 2 are used:
+Download mutational signatures from the COSMIC website. As there are 
+multiple versions of the signatures, this vignette uses the signatures from
+COSMIC version 3 for SBS, DBS and indels. These signatures are available in
+numerical form from synapse.org ID syn12009743. Download here the referece
+whole genome signatures. Then load as follow:
 
-<<download_cancer_signatures>>=
-sp_url <- paste("https://cancer.sanger.ac.uk/cancergenome/assets/",
-                "signatures_probabilities.txt", sep = "")
+% <<download_cancer_signatures>>=
+% sp_url <- paste("https://cancer.sanger.ac.uk/cancergenome/assets/",
+%                 "signatures_probabilities.txt", sep = "")
+% 
+% snv_signatures = read.table(sp_url, sep = "\t", header = TRUE)
+% # Match the order of the mutation types to MutationalPatterns standard
+% new_order = match(row.names(mut_mat$snv), snv_signatures$Somatic.Mutation.Type)
+% # Reorder cancer signatures dataframe
+% snv_signatures = snv_signatures[as.vector(new_order),]
+% # Add trinucletiode changes names as row.names
+% row.names(snv_signatures) = snv_signatures$Somatic.Mutation.Type
+% # Keep only 96 contributions of the signatures in matrix
+% snv_signatures = as.matrix(snv_signatures[,4:33])
+% @
+ 
+<<load_signatures_e, eval = FALSE>>=
+# Read the SBS signatures file
+snv_signatures = read.csv("sigProfiler_SBS_signatures_v3_2019_05_22.csv")
+# Derive the 96 mutations
+snv_signatures$MutationType = sprintf("%s[%s]%s",
+                                      substr(snv_signatures$SubType, 1, 1),
+                                      snv_signatures$Type,
+                                      substr(snv_signatures$SubType, 3, 3))
 
-snv_signatures = read.table(sp_url, sep = "\t", header = TRUE)
 # Match the order of the mutation types to MutationalPatterns standard
-new_order = match(row.names(mut_mat$snv), snv_signatures$Somatic.Mutation.Type)
+new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
 # Reorder cancer signatures dataframe
 snv_signatures = snv_signatures[as.vector(new_order),]
 # Add trinucletiode changes names as row.names
-row.names(snv_signatures) = snv_signatures$Somatic.Mutation.Type
+row.names(snv_signatures) = snv_signatures$MutationType
 # Keep only 96 contributions of the signatures in matrix
-snv_signatures = as.matrix(snv_signatures[,4:33])
-@
+snv_signatures = as.matrix(snv_signatures[,3:69])
 
-DBS and indel signatures are available from synapse.org ID syn12009743.
-Download the reference whole-genome signatures.
-
-<<load_signatures_e, eval = FALSE>>=
+# Read the DBS signatures file
 dbs_signatures = read.csv("sigProfiler_DBS_signatures.csv")
+# Add mutation types as rownames
 rownames(dbs_signatures) = dbs_signatures$Mutation.Type
+# Keep only 10 DBS signatures
 dbs_signatures = as.matrix(dbs_signatures[,2:11])
 
+# Read the indel signatures file
 indel_signatures = read.csv("sigProfiler_ID_signatures.csv")
+# Add indel context as rownames
 rownames(indel_signatures) = INDEL_COSMIC
+# Keep only the 17 indel signatures
 indel_signatures = as.matrix(indel_signatures[,2:18])
 
+# Store all mutation types in one list
 cancer_signatures = list("snv" = snv_signatures,
                          "dbs" = dbs_signatures,
                          "indel" = indel_signatures)
 @
 
 <<load_signatures, echo = FALSE>>=
-dbs_signatures = read.csv("../../sigProfiler_DBS_signatures.csv")
+snv_signatures = read.csv("../inst/extdata/sigProfiler_SBS_signatures_v3_2019_05_22.csv")
+snv_signatures$MutationType = sprintf("%s[%s]%s",
+                                      substr(snv_signatures$SubType, 1, 1),
+                                      snv_signatures$Type,
+                                      substr(snv_signatures$SubType, 3, 3))
+new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
+snv_signatures = snv_signatures[as.vector(new_order),]
+row.names(snv_signatures) = snv_signatures$MutationType
+snv_signatures = as.matrix(snv_signatures[,3:69])
+
+dbs_signatures = read.csv(system.file("sigProfiler_DBS_signatures.csv",
+                                      package="MutationalPatterns"))
 rownames(dbs_signatures) = dbs_signatures$Mutation.Type
 dbs_signatures = as.matrix(dbs_signatures[,2:11])
 
-indel_signatures = read.csv("../../sigProfiler_ID_signatures.csv")
+indel_signatures = read.csv(system.file("sigProfiler_ID_signatures.csv",
+                                        package = "MutationalPatterns"))
 rownames(indel_signatures) = INDEL_COSMIC
 indel_signatures = as.matrix(indel_signatures[,2:18])
 
@@ -695,26 +803,50 @@ cancer_signatures = list("snv" = snv_signatures,
 
 Plot mutational profile of the first two COSMIC SBS signatures:
 <<plot_profiles_COSMIC_e, eval=FALSE>>=
-plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = 0.3)
+plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum")
+@
+
+<<plot_profiles_COSMIC, echo=FALSE>>=
+ggsave("plot_profiles_COSMIC.pdf",
+       plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum"),
+       width = 7,
+       height = 3)
 @
 
 \begin{figure}[H]
 \begin{center}
-<<plot_profiles_COSMIC, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = 0.3)
-@
+\includegraphics[width=1.0\textwidth]{plot_profiles_COSMIC}
 \end{center}
 \end{figure}
 
 Hierarchically cluster the COSMIC SBS signatures based on their similarity with
 average linkage:
 
-<<cluster_COSMIC, fig=TRUE, width=7, height=5>>=
+<<cluster_COSMIC_e, eval = FALSE>>=
 hclust_cosmic = cluster_signatures(cancer_signatures$snv, method = "average")
 # store signatures in new order
 cosmic_order = colnames(cancer_signatures$snv)[hclust_cosmic$order]
 plot(hclust_cosmic)
 @
+
+<<cluster_COSMIC, echo = FALSE>>=
+hclust_cosmic = cluster_signatures(cancer_signatures$snv, method = "average")
+# store signatures in new order
+cosmic_order = colnames(cancer_signatures$snv)[hclust_cosmic$order]
+ggsave("cluster_COSMIC.pdf",
+       plot(hclust_cosmic),
+       width = 12,
+       height = 7)
+@
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{cluster_COSMIC}
+\end{center}
+\end{figure}
+
+The same can be done for DBS and indel signatures, by changing the 
+\texttt{type} argument to "all".
 
 \subsubsection{Similarity between mutational profiles and COSMIC signatures}
 
@@ -734,18 +866,33 @@ calculated with \Rfunction{cos\_sim}:
 cos_sim(mut_mat$snv[,1], cancer_signatures$snv[,1])
 @
 
-Calculate pairwise cosine similarity between mutational profiles of
-single base substitutions and COSMIC signatures:
+To do pairwise cosine similarity calculations of mutational profiles and COSMIC
+signatures, use the function \Rcode{cos\_sim\_matrix}:
 
-\begin{figure}[H]
-\begin{center}
-<<cos_sim_cosmic_samples, fig=TRUE, width=7, height=3.5>>=
+<<cos_sim_cosmic_samples>>=
 cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cancer_signatures,
                                             type = "all")
-# Plot heatmap with specified signature order
+lapply(cos_sim_samples_signatures, function(x) x[1:5,1:5])
+@
+
+Plot the cosine similarity heatmap of the SBS signatures:
+
+<<plot_cosine_heatmap_e, eval = FALSE>>=
 plot_cosine_heatmap(cos_sim_samples_signatures$snv,
                     cluster_rows = TRUE)
 @
+
+<<plot_cosine_heatmap, echo = FALSE>>=
+ggsave("plot_cosine_heatmap.pdf",
+       plot_cosine_heatmap(cos_sim_samples_signatures$snv,
+                           cluster_rows = TRUE),
+       width = 12,
+       height = 5)
+@
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{plot_cosine_heatmap}
 \end{center}
 \end{figure}
 
@@ -763,10 +910,16 @@ implemented in the deconstructSigs package from Rosenthal et al.
 \citep{Rosenthal2016}). The default option is the non-negative least-squares
 problem.
 
-Fit mutation matrix to the COSMIC SBS mutational signatures:
+First get new mutation matrices, without the 0.001 used by the NMF estimation:
+
+<<mut_mat_new>>=
+mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome, type = "all")
+@
+
+Fit mutation matrices to the COSMIC signatures:
 
 <<fit_to_signatures>>=
-fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
+fit_res <- fit_to_signatures(mut_mat, cancer_signatures, type = "all")
 @
 
 Plot the optimal contribution of the COSMIC signatures in each sample as a
@@ -774,25 +927,38 @@ stacked barplot.
 
 <<plot_contribution_3_noeval, eval=FALSE>>=
 # Select signatures with some contribution
-select <- which(rowSums(fit_res$contribution) > 10)
+fit_res$contribution$snv <- fit_res$contribution$snv[
+  which(rowSums(fit_res$contribution$snv) > 10),]
+fit_res$contribution$dbs <- fit_res$contribution$dbs[
+  which(rowSums(fit_res$contribution$dbs) > 0.1),]
+fit_res$contribution$indel <- fit_res$contribution$indel[
+  which(rowSums(fit_res$contribution$indel) > 10),]
+
 # Plot contribution barplot
-plot_contribution(fit_res$contribution[select,],
-                    cancer_signatures$snv[,select],
+plot_contribution(fit_res$contribution,
+                    cancer_signatures,
                     coord_flip = FALSE,
                     mode = "absolute")
 @
 
+<<plot_contribution_3, echo=FALSE>>=
+fit_res$contribution$snv <- fit_res$contribution$snv[which(rowSums(fit_res$contribution$snv) > 10),]
+fit_res$contribution$dbs <- fit_res$contribution$dbs[which(rowSums(fit_res$contribution$dbs) > 0.1),]
+fit_res$contribution$indel <- fit_res$contribution$indel[which(rowSums(fit_res$contribution$indel) > 10),]
+
+ggsave("plot_contribution_3.pdf",
+       plot_contribution(fit_res$contribution,
+                         cancer_signatures,
+                         type = "all",
+                         coord_flip = FALSE,
+                         mode = "absolute"),
+       width=15,
+       height = 15)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_3, echo=FALSE>>=
-# Select signatures with some contribution
-select <- which(rowSums(fit_res$contribution) > 10)
-# Plot contribution
-plot_contribution(fit_res$contribution[select,],
-                  cancer_signatures$snv[,select],
-                  coord_flip = FALSE,
-                  mode = "absolute")
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution_3}
 \end{center}
 \end{figure}
 
@@ -801,72 +967,107 @@ the mutation matrix with the golden ratio search and plot results from
 both methods in relative contribution:
 
 <<fit_to_signatures_grs>>=
-fit_res_grs <- fit_to_signatures(mut_mat, cancer_signatures,
+fit_res_grs <- fit_to_signatures(mut_mat, cancer_signatures, type = "snv",
                              method = "golden-ratio-search")
 # Select signatures with some contribution
 select_grs <- which(rowSums(fit_res_grs$contribution) > 0.06)
+@
 
-# Make a color vector for SBS signatures such that colors will match in
-# results from both algorithms
+In order to match colors when \Rfunction{plot\_contribution} is run for both
+the non-negative least squares problem and the golden ratio search, make a 
+palette of colors with the \\ \Rfunction{default\_colors\_ggplot} function:
+
+<<color_palette>>=
 colorvector <- default_colors_ggplot(ncol(cancer_signatures$snv))
+@
 
+Then plot the results of both algorithms:
+
+<<plot_contribution_nnls_grs>>=
 # Plot relative contribution from non-negative least squares
-pc1 <- plot_contribution(fit_res$contribution[select,],
-                    cancer_signatures$snv[,select],
-                    coord_flip = FALSE,
-                    mode = "relative",
-                    palette = list("snv" = colorvector[select]))
+select = match(rownames(fit_res$contribution$snv), colnames(cancer_signatures$snv))
+
+pc1 <- plot_contribution(fit_res$contribution,
+                   cancer_signatures$snv,
+                   coord_flip = FALSE,
+                   type = "snv",
+                   mode = "relative",
+                   palette = list("snv" = colorvector[select]))
 
 # Plot relative contribution from golden ratio search
 pc2 <- plot_contribution(fit_res_grs$contribution[select_grs,],
-                         cancer_signatures$snv[,select_grs],
-                         coord_flip = FALSE,
-                         mode = "relative",
-                         palette = list("snv" = colorvector[select_grs]))
+                        cancer_signatures$snv[,select_grs],
+                        coord_flip = FALSE,
+                        mode = "relative",
+                        palette = list("snv" = colorvector[select_grs]))
 @
 
-\begin{figure}[H]
-\begin{center}
-<<plot_contribution_heatmap2, fig=TRUE, width=6, height=3, echo=FALSE>>=
+Combine the two plots in one figure:
+
+<<plot_contribution_nnls_grs_fig_e, echo=FALSE>>=
 grid.arrange(pc1, pc2, ncol = 2, widths = c(2,2))
 @
+
+
+<<plot_contribution_nnls_grs_fig, echo=FALSE>>=
+ggsave("plot_contribution_nnls_grs.pdf",
+       grid.arrange(pc1, pc2, ncol = 2, widths = c(2,2)),
+       width = 15,
+       height = 10)
+@
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{plot_contribution_nnls_grs}
 \end{center}
 \end{figure}
 
-Plot relative contribution fitted with the non-negative least-squares problem
-of the SBS cancer signatures in each sample as a heatmap with sample
-clustering:
+The relative contributions of signatures to samples can be plotted as a
+heatmap. Plot the contribution heatmap of the SBS signatures:
+
 <<plot_contribution_heatmap3_e, eval=FALSE>>=
-plot_contribution_heatmap(fit_res$contribution,
+plot_contribution_heatmap(fit_res$contribution$snv,
                           cluster_samples = TRUE,
                           method = "complete")
 @
 
+<<plot_contribution_heatmap3, echo=FALSE>>=
+ggsave("plot_contribution_heatmap3.pdf",
+  plot_contribution_heatmap(fit_res$contribution$snv,
+                            cluster_samples = TRUE,
+                            method = "complete"),
+  width = 8,
+  height = 3)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_contribution_heatmap3, fig=TRUE, width=8, height=3, echo=FALSE>>=
-plot_contribution_heatmap(fit_res$contribution,
-                          cluster_samples = TRUE,
-                          method = "complete")
-@
+\includegraphics[width=1.0\textwidth]{plot_contribution_heatmap3}
 \end{center}
 \end{figure}
 
-Compare the reconstructed mutational profile of sample 1
-with its original mutational profile:
+A quality control of the fitted signatures is to compare the reconstructed
+mutational profiles with the orignals. This can be done with the function 
+\Rfunction{plot\_compare\_profiles}. Compare the reconstructed mutational profile
+of indels of sample 1 with its original mutational profile of indels:
 <<plot_compare_profiles_2_e, eval=FALSE>>=
-plot_compare_profiles(mut_mat$snv[,1], fit_res$reconstructed[,1],
+plot_compare_profiles(mut_mat$indel[,1], fit_res$reconstructed$indel[,1],
                         profile_names = c("Original", "Reconstructed"),
                         condensed = TRUE)
 @
 
+<<plot_compare_profiles_2, echo=FALSE>>=
+ggsave("plot_compare_profiles_2.pdf",
+  plot_compare_profiles(mut_mat$indel[,1], fit_res$reconstructed$indel[,1],
+                        profile_names = c("Original", "Reconstructed"),
+                        condensed = TRUE),
+  width = 6,
+  height = 5.5)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_compare_profiles_2, fig=TRUE, width=6, height=5.5, echo=FALSE>>=
-plot_compare_profiles(mut_mat$snv[,1], fit_res$reconstructed[,1],
-                        profile_names = c("Original", "Reconstructed"),
-                        condensed = TRUE)
-@
+\includegraphics[width=1.0\textwidth]{plot_compare_profiles}
 \end{center}
 \end{figure}
 
@@ -875,9 +1076,9 @@ mutational profiles with \Rfunction{cos\_sim\_matrix}:
 
 <<cos_sim_ori_rec>>=
 # calculate all pairwise cosine similarities
-cos_sim_ori_rec <- cos_sim_matrix(mut_mat$snv, fit_res$reconstructed)
+cos_sim_ori_rec <- cos_sim_matrix(mut_mat, fit_res$reconstructed, type = "all")
 # extract cosine similarities per sample between original and reconstructed
-cos_sim_ori_rec <- as.data.frame(diag(cos_sim_ori_rec))
+cos_sim_ori_rec <- lapply(cos_sim_ori_rec, function(x) as.data.frame(diag(x)))
 @
 
 We can use ggplot to make a barplot of the cosine similarities between the
@@ -890,15 +1091,19 @@ signatures. You could use, for example, cosine similarity of 0.95 as a cutoff.
 
 <<cos_sim_ori_rec>>=
 # Adjust data frame for plotting with gpplot
-colnames(cos_sim_ori_rec) = "cos_sim"
-cos_sim_ori_rec$sample = row.names(cos_sim_ori_rec)
+for (i in 1:length(cos_sim_ori_rec)){
+  colnames(cos_sim_ori_rec[[i]]) = "cos_sim"
+  cos_sim_ori_rec[[i]]$sample = row.names(cos_sim_ori_rec[[i]])
+}
 @
+
+Plot the cosine similarities for the SBS signatures:
 
 <<plot_cos_sim_ori_rec_e, eval=FALSE>>=
 # Load ggplot2
 library(ggplot2)
 # Make barplot
-ggplot(cos_sim_ori_rec, aes(y=cos_sim, x=sample)) +
+ggplot(cos_sim_ori_rec$snv, aes(y=cos_sim, x=sample)) +
   geom_bar(stat="identity", fill = "skyblue4") +
   coord_cartesian(ylim=c(0.8, 1)) +
   # coord_flip(ylim=c(0.8,1)) +
@@ -913,26 +1118,31 @@ ggplot(cos_sim_ori_rec, aes(y=cos_sim, x=sample)) +
   geom_hline(aes(yintercept=.95))
 @
 
-\begin{figure}[H]
-\begin{center}
-<<plot_cos_sim_ori_rec, fig=TRUE, width=6, height=3, echo=FALSE>>=
+<<plot_cos_sim_ori_rec, echo=FALSE>>=
 # Load ggplot2
 library(ggplot2)
 # Make barplot
-ggplot(cos_sim_ori_rec, aes(y=cos_sim, x=sample)) +
-  geom_bar(stat="identity", fill = "skyblue4") +
-  coord_cartesian(ylim=c(0.8, 1)) +
-  # coord_flip(ylim=c(0.8,1)) +
-  ylab("Cosine similarity\n original VS reconstructed") +
-  xlab("") +
-  # Reverse order of the samples such that first is up
-  # xlim(rev(levels(factor(cos_sim_ori_rec$sample)))) +
-  theme_bw() +
-  theme(panel.grid.minor.y=element_blank(),
-        panel.grid.major.y=element_blank()) +
-  # Add cut.off line
-  geom_hline(aes(yintercept=.95))
+ggsave("plot_cos_sim_ori_rec.pdf",
+  ggplot(cos_sim_ori_rec$snv, aes(y=cos_sim, x=sample)) +
+    geom_bar(stat="identity", fill = "skyblue4") +
+    coord_cartesian(ylim=c(0.8, 1)) +
+    # coord_flip(ylim=c(0.8,1)) +
+    ylab("Cosine similarity\n original VS reconstructed") +
+    xlab("") +
+    # Reverse order of the samples such that first is up
+    # xlim(rev(levels(factor(cos_sim_ori_rec$sample)))) +
+    theme_bw() +
+    theme(panel.grid.minor.y=element_blank(),
+          panel.grid.major.y=element_blank()) +
+    # Add cut.off line
+    geom_hline(aes(yintercept=.95)),
+  width = 6,
+  height = 3)
 @
+
+\begin{figure}[H]
+\begin{center}
+\includegraphics[width=1.0\textwidth]{plot_cos_sim_ori_rec}
 \end{center}
 \end{figure}
 
@@ -1020,11 +1230,16 @@ Combine the plots into one figure:
 grid.arrange(ps1, ps2)
 @
 
+<<plot_strand_bias, echo=FALSE>>=
+ggsave("plot_strand_bias.pdf",
+       grid.arrange(ps1,ps2),
+       width = 12,
+       height = 12)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_strand_bias, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
-grid.arrange(ps1, ps2)
-@
+\includegraphics[width=1.0\textwidth]{plot_strand_bias}
 \end{center}
 \end{figure}
 
@@ -1045,14 +1260,14 @@ Read example bed file provided with the package with replication direction
 annotation:
 
 <<repli_file>>=
-repli_file = system.file("extdata/ReplicationDirectionRegionsHaradhvala.bed",
+repli_file = system.file("extdata/ReplicationDirectionRegions.bed",
                            package = "MutationalPatterns")
 repli_strand = read.table(repli_file, header = TRUE)
 # Store in GRanges object
 repli_strand_granges = GRanges(seqnames = repli_strand$Chr,
   ranges = IRanges(start = repli_strand$Start + 1,
                    end = repli_strand$Stop),
-  strand_info = repli_strand$Class)
+  strand_info = factor(repli_strand$Class))
 # UCSC seqlevelsstyle
 seqlevelsStyle(repli_strand_granges) = "UCSC"
 repli_strand_granges
@@ -1132,11 +1347,16 @@ Combine the plots into one figure:
 grid.arrange(ps1, ps2)
 @
 
+<<plot_strand_bias_rep, echo=FALSE>>=
+ggsave("plot_strand_bias_rep.pdf",
+       grid.arrange(ps1, ps2),
+       width=12,
+       height = 12)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_strand_bias_rep, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
-grid.arrange(ps1, ps2)
-@
+\includegraphics[width=1.0\textwidth]{plot_strand_bias_rep}
 \end{center}
 \end{figure}
 
@@ -1173,11 +1393,16 @@ Combine the plots into one figure:
 grid.arrange(a, b, ncol = 2, widths = c(5, 1.8))
 @
 
+<<plot_192_profile, echo=FALSE>>=
+ggsave("plot_192_profile.pdf",
+       grid.arrange(a, b, ncol = 2, widths = c(5, 1.8)),
+       width = 15,
+       height = 12)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_strand_bias_rep, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
-grid.arrange(a, b, ncol = 2, widths = c(5, 1.8))
-@
+\includegraphics[width=1.0\textwidth]{plot_192_profile}
 \end{center}
 \end{figure}
 
@@ -1244,7 +1469,7 @@ ggsave("plot_rainfall_dbs_indel.pdf",
        plot_rainfall(vcfs[[1]], title = names(vcfs[1]),
                      type = c("dbs", "indel"),
                      chromosomes = chromosomes, cex = 1.5, ylim = 1e+09),
-       width=9,
+       width=12,
        height=3)
 @
 
@@ -1254,18 +1479,18 @@ ggsave("plot_rainfall_dbs_indel.pdf",
 \end{center}
 \end{figure}
 
-% Make rainfall plot of the first sample over chromosome 1:
-%
-% \begin{figure}[H]
-% \begin{center}
-% <<plot_rainfall_2, fig=TRUE, width=6, height=3>>=
-% chromosomes <- seqnames(get(ref_genome))[1]
-% plot_rainfall(vcfs[[1]], title = names(vcfs[1]),
-%                 chromosomes = chromosomes[1], cex = 2, ylim = 1e+09)
-% @
-% \end{center}
-% \end{figure}
-
+% % Make rainfall plot of the first sample over chromosome 1:
+% %
+% % \begin{figure}[H]
+% % \begin{center}
+% % <<plot_rainfall_2, fig=TRUE, width=6, height=3>>=
+% % chromosomes <- seqnames(get(ref_genome))[1]
+% % plot_rainfall(vcfs[[1]], title = names(vcfs[1]),
+% %                 chromosomes = chromosomes[1], cex = 2, ylim = 1e+09)
+% % @
+% % \end{center}
+% % \end{figure}
+% 
 \subsection{Enrichment or depletion of mutations in genomic regions}
 
 Test for enrichment or depletion of mutations in certain genomic regions, such
@@ -1418,11 +1643,16 @@ head(distr_test)
 plot_enrichment_depletion(distr_test)
 @
 
+<<plot_enrichment_depletion, echo=FALSE>>=
+ggsave("plot_enrichment_depletion.pdf",
+       plot_enrichment_depletion(distr_test),
+       width=12,
+       height = 10)
+@
+
 \begin{figure}[H]
 \begin{center}
-<<plot_enrichment_depletion, fig=TRUE, width=7, height=5, echo=FALSE>>=
-plot_enrichment_depletion(distr_test)
-@
+\includegraphics[width=1.0\textwidth]{plot_enrichment_depletion}
 \end{center}
 \end{figure}
 

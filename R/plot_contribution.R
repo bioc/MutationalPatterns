@@ -106,6 +106,15 @@ plot_contribution = function(contribution,
           contribution[[m]] = contribution[[m]][,index]
         }
       }
+      
+      if (class(signatures) == "matrix"){
+        for (m in names(contribution)){
+          if (any(colnames(signatures) == rownames(contribution))){
+            signatures = list(signatures)
+            names(signatures) = m
+          }
+        }
+      }
     } else 
     {
       method = "combine"
@@ -190,9 +199,7 @@ plot_contribution = function(contribution,
             theme(panel.grid.minor.x=element_blank(),
                   panel.grid.major.x=element_blank()) +
             theme(panel.grid.minor.y=element_blank(),
-                  panel.grid.major.y=element_blank()) +
-            theme(axis.text.x = element_blank(),
-                  axis.ticks.x = element_blank())
+                  panel.grid.major.y=element_blank())
           
           plots[[m]] = c(plots[[m]], list(plot))
         }

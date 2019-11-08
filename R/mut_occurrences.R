@@ -30,35 +30,36 @@ mut_occurrences = function(type_context, type, indel)
                                      "context"=type_context$context))
       type = "snv"
     }
-    else if (all(unique(type_context$types) %in% DBS))
+    else if (all(unique(type_context$types) %in% DBS) &
+             !is.null(unique(type_context$types)))
     {
       type_context = list("dbs"=list("types"=type_context$types,
                                      "context"=type_context$context))
       type = "dbs"
     }
-    else if (all(unique(type_context$context) %in% indel_context))
+    else if (all(unique(type_context$context) %in% indel_context) &
+             !is.null(unique(type_context$context)))
     {
       type_context = list("indel"=list("types"=type_context$types,
                                      "context"=type_context$context))
       type = "indel"
     }
   }
+  print(type)
+  
   count = list()
  
   for (m in type)
   {
-    # if type_context is empty, return vector with zeroes for mutation type
-    if (all(isEmpty(type_context[[m]])))
-    {
-      count[[m]] = NULL
-      next
-    }
-    
     # For each mutation type, count the context occurrences
     if (m == "snv")
     {
       count[[m]] = rep(0,96)
       names(count[[m]]) = TRIPLETS_96
+      
+      if (all(isEmpty(type_context[[m]])))
+        next
+      
       context = sprintf("%s[%s]%s", 
                         substr(type_context[[m]][["context"]], 1, 1),
                         type_context[[m]][["types"]],
@@ -68,6 +69,10 @@ mut_occurrences = function(type_context, type, indel)
     {
       count[[m]] = rep(0,78)
       names(count[[m]]) = DBS
+      
+      if (all(isEmpty(type_context[[m]])))
+        next
+      
       context = table(type_context[[m]][["types"]])
     } else if (m == "indel")
     {
@@ -81,6 +86,9 @@ mut_occurrences = function(type_context, type, indel)
         count[[m]]=rep(0,30)
         names(count[[m]]) = indel_context
       }
+      
+      if (all(isEmpty(type_context[[m]])))
+        break
       
       context = table(type_context[[m]][["context"]])
     }

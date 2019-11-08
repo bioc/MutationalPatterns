@@ -118,7 +118,10 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
       rows <- mclapply (as.list(vcf_list), function (vcf)
       {
         type_context = type_context(vcf, ref_genome, type = m)
-        strand = mut_strand(vcf, ranges, type = m, mode = "replication")
+        if(is.null(type_context$types))
+          strand = factor(c(),levels = c("left","right","-"))
+        else
+          strand = mut_strand(vcf, ranges, type = m, mode = "replication")
         row = mut_strand_occurrences(type_context, strand, type = m)
         return(row)
       }, mc.cores = num_cores, mc.silent = FALSE)

@@ -32,13 +32,15 @@ mut_strand_occurrences = function(type_context, strand, type)
                                      "context"=type_context$context))
       type = "snv"
     }
-    else if (all(unique(type_context$types) %in% DBS))
+    else if (all(unique(type_context$types) %in% DBS) &
+             !is.null(unique(type_context$types)))
     {
       type_context = list("dbs"=list("types"=type_context$types,
                                      "context"=type_context$context))
       type = "dbs"
     }
-    else if (all(unique(type_context$context) %in% indel_context))
+    else if (all(unique(type_context$context) %in% indel_context) &
+             !is.null(unique(type_context$context)))
     {
       type_context = list("indel"=list("types"=type_context$types,
                                        "context"=type_context$context))
@@ -62,8 +64,15 @@ mut_strand_occurrences = function(type_context, strand, type)
   }
   
   # get type context for both vcf subsets
-  type_context_1 = lapply(type_context[[type]], function(x) x[idx1])
-  type_context_2 = lapply(type_context[[type]], function(x) x[idx2])
+  if (length(strand) == 0)
+  {
+    type_context_1 = list("types"=NULL,"context"=NULL)
+    type_context_2 = list("types"=NULL,"context"=NULL)
+  } else 
+  {
+    type_context_1 = lapply(type_context[[type]], function(x) x[idx1])
+    type_context_2 = lapply(type_context[[type]], function(x) x[idx2])
+  }
   
   if (type == "snv")
   {

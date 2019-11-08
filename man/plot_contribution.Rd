@@ -4,7 +4,7 @@
 \alias{plot_contribution}
 \title{Plot signature contribution barplot}
 \usage{
-plot_contribution(contribution, signatures, mut_type, index = c(),
+plot_contribution(contribution, signatures, type, index = c(),
   coord_flip = FALSE, mode = "relative", method = "split",
   palette = c())
 }
@@ -12,6 +12,10 @@ plot_contribution(contribution, signatures, mut_type, index = c(),
 \item{contribution}{List of signature contribution matrices}
 
 \item{signatures}{List of signature matrices}
+
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
+'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+Default is 'snv'}
 
 \item{index}{(Optional) Sample subset parameter}
 
@@ -31,10 +35,6 @@ Default is "split"}
 \item{palette}{(Optional) A list of color palette like c("#FF0000", "#00FF00", "9999CC")
 for each mutation type that will be used as colors in the plot.\cr
 By default, ggplot2's colors are used to generate a palette.}
-
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
-'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
-Default is 'snv'}
 }
 \value{
 Stacked barplot with contribution of each signature for each sample

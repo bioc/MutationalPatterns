@@ -219,6 +219,20 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             }))
           vcf = vcf[-(dbs+1),]
         }
+        
+        indel = which((nchar(as.character(vcf$REF)) == 1 &
+                        nchar(as.character(unlist(vcf$ALT))) > 1) |
+                        (nchar(as.character(vcf$REF)) > 1 &
+                           nchar(as.character(unlist(vcf$ALT))) == 1))
+          
+        if (any(c(grepl("[^ACGT]",as.character(vcf$REF[indel])),
+                  grepl("[^ACGT]",as.character(unlist(vcf$ALT[indel])))))){
+          vcf = vcf[-indel,]
+          warnings <- c(warnings, paste("Indels not according to VCF format",
+                                        "4.2 or higher, all indels are excluded",
+                                        "from", 
+                                        paste(sample_names[[index]], ".", sep = "")))
+        }
 
         # Pack GRanges object and the warnings to be able to display warnings
         # at a later time.
@@ -242,7 +256,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         # Handle warnings.
         if (!is.null(item[[2]]))
             for (i in item[[2]])
-                warning (i)
+                warning (i, immediate. = T)
 
         # Unpack the GRanges
         return(item[[1]])
