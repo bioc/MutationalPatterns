@@ -201,12 +201,24 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         }
         
         # Search for DBS which are given as two sequential locations
-        dbs = which(diff(start(vcf)) == 1 & 
-                      nchar(as.character(vcf$REF) == 1) &
-                      nchar(as.character(unlist(vcf$ALT))) ==1 )
+        dbs = intersect(which(diff(start(vcf)) == 1),
+                        which(nchar(as.character(vcf$REF)) == 1 &
+                                nchar(as.character(unlist(vcf$ALT))) ==1 ))
         if (length(dbs) > 0)
           if (dbs[length(dbs)] == length(vcf))
             dbs <- dbs[-length(dbs)]
+          if (1 %in% diff(dbs))
+          {
+            rem <- c(which(diff(dbs) == 1),which(diff(dbs) == 1)+1)
+            dbs <- dbs[-rem]
+            warnings <- c(warnings, paste(length(rem),
+                                          "position(s) found that form groups",
+                                          "of consecutive single",
+                                          "nucleotide variants of length more", 
+                                          "than 2. Position(s) are excluded",
+                                          "from", 
+                                          paste(sample_names[[index]], ".", sep = "")))
+          }
         
         # If there are such variants, then change end position of variant,
         # add second ref and second alt base and delete next variant from vcf
