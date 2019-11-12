@@ -164,7 +164,14 @@ plot_contribution = function(contribution,
         plots[[m]] = list()
         
         # Take all signatures with contribution more than 0
+        sigs <- names(which(rowSums(contribution[[m]]) > 0))
         contribution[[m]] = contribution[[m]][which(rowSums(contribution[[m]]) > 0),]
+        
+        if(length(sigs) == 1)
+        {
+          contribution[[m]] = t(as.matrix(contribution[[m]]))
+          rownames(contribution[[m]]) = sigs
+        }
         
         # Test if contribution is already relative
         if (all(round(colSums(contribution[[m]])) == 1))
