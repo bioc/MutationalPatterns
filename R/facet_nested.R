@@ -1,14 +1,18 @@
 #' Plot merged facets
 #'
-#' Helper function for ggplot to merge facets 
+#' @description Helper function for ggplot to merge facets 
+#' 
+#' @param rows Variables on the rows
+#' @param cols Variables on the columns
+#' @param scales Character string indicating if scale of x or y axis is fixed or free
+#' @param labeller Character vector with the labels of the facets
 #' 
 #' @import gtable
 #' 
 #' @export
 
-facet_nested <- function(rows, scales = "fixed", labeller = "label_value")
+facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", labeller = "label_value")
 {
-  cols = NULL
   space = "fixed"
   shrink = TRUE
   as.table = TRUE

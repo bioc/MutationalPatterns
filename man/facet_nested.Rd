@@ -7,10 +7,16 @@
 \title{Plot merged facets}
 \usage{
 facet_nested(rows = NULL, cols = NULL, scales = "fixed",
-  space = "fixed", shrink = TRUE, labeller = "label_value",
-  as.table = TRUE, switch = NULL, drop = TRUE, margins = FALSE,
-  facets = NULL, nest_line = FALSE, resect = unit(0, "mm"),
-  bleed = FALSE)
+  labeller = "label_value")
+}
+\arguments{
+\item{rows}{Variables on the rows}
+
+\item{cols}{Variables on the columns}
+
+\item{scales}{Character string indicating if scale of x or y axis is fixed or free}
+
+\item{labeller}{Character vector with the labels of the facets}
 }
 \description{
 Helper function for ggplot to merge facets
