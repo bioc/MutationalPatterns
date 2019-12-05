@@ -153,7 +153,7 @@ plot_contribution_heatmap = function(contribution,
       {stop("sig_order must be a character vector")}
     if(length(sig_order) != nrow(contribution))
     {stop(paste("sig_order must have the same length as the number of",
-                  "signatures in the contribution matrix")}
+                  "signatures in the contribution matrix"))}
     if(any(is.na(match(sig_order, row.names(contribution)))))
     {stop("sig_order must have the same signature names as in contribution")}
   }
