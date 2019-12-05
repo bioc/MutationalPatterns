@@ -6,11 +6,20 @@
 #' 
 #' @export
 
-facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", space = "fixed",
-                         shrink = TRUE, labeller = "label_value", as.table = TRUE,
-                         switch = NULL, drop = TRUE, margins = FALSE, facets = NULL,
-                         nest_line = FALSE, resect = unit(0, "mm"), bleed = FALSE)
+facet_nested <- function(rows, scales = "fixed", labeller = "label_value")
 {
+  cols = NULL
+  space = "fixed"
+  shrink = TRUE
+  as.table = TRUE
+  switch = NULL
+  drop = TRUE
+  margins = FALSE
+  facets = NULL
+  nest_line = FALSE
+  resect = unit(0, "mm")
+  bleed = FALSE
+  
   if (!is.null(facets)) {
     rows <- facets
   }

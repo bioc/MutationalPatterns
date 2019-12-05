@@ -54,8 +54,9 @@
 #' mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, type)
 #'
 #' @seealso
-#' \code{\link{read_vcfs_as_granges}}
-#' \code{\link{mut_occurrences}}
+#' \code{\link{read_vcfs_as_granges}}, 
+#' \code{\link{mut_occurrences}}, 
+#' \code{\link{mut_occurrences}},
 #' \code{\link{type_context}}
 #'
 #' @export
