@@ -17,7 +17,7 @@
 #' @examples
 #' ## Get a data.frame with the columns needed. Is also part of the
 #' ## function extract_indels
-#' indel = data.frame("chrom" = chr1,
+#' indel = data.frame("chrom" = "chr1",
 #'                    "pos" = 3249117,
 #'                    "ref" = "AT",
 #'                    "alt" = "A",

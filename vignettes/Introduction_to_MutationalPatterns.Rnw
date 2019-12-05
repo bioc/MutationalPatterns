@@ -86,12 +86,8 @@ loaded correctly.
 
 Load the MutationalPatterns package:
   
-<<load_package_e, eval = FALSE>>=
+<<load_package>>=
 library(MutationalPatterns)
-@
-
-<<load_package, echo = FALSE>>=
-devtools::load_all("../R")
 @
 
 Locate the VCF files of the example data:

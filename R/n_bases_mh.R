@@ -14,7 +14,7 @@
 #' @param flank.seq The flanking sequence as a character
 #'
 #' @return An integer stating the number of bases in microhomology
-n_bases_mh <- function(indel.seq, flank.seq, indel.len){
+n_bases_mh <- function(indel.seq, flank.seq){
   #indel.sequence = "CTA"
   #flank.sequence = "C"
   

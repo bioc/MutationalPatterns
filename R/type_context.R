@@ -7,6 +7,7 @@
 #' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
+#' @param ... Arguments parsed to mut_context
 #' @return Mutation types and context character vectors in a named list
 #'
 #' @importFrom IRanges reverse

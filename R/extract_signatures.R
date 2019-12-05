@@ -6,6 +6,9 @@
 #' @param mut_matrix Named list with mutation matrix of single or double substitution and/or indels.
 #' Optional to give a matrix object as mutation count matrix. When two mutation types are given in 
 #' the same matrix, the data is treated as "combined" and combined signatures will be returned.
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+#' Default is 'snv'
 #' @param rank Number of signatures to extract
 #' @param nrun (Optional) Number of iterations, default = 200
 #' @param method (Optional) Character stating how to use the data. method = "split" will give 
