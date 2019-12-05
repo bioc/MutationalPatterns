@@ -17,6 +17,11 @@ genome to be plotted}
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
+\item{method}{(Optional) Character stating how to plot the results. method = "split" will give 
+seperate plots for each mutation type, whereas method = "combine" will give one plot with all
+mutation types.\cr
+Default is "split"}
+
 \item{title}{(Optional) Plot title}
 
 \item{colors}{(Optional) Named list with 6 value color vector "snv" for snv, 

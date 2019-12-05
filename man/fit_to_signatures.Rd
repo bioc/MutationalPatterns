@@ -71,6 +71,6 @@ fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
 }
 \seealso{
 \code{\link{mut_matrix}}
-\code{\link{least_square_error_fitting}}
+\code{\link{least_squares_error_fitting}}
 \code{\link{golden_ratio_search_fitting}}
 }

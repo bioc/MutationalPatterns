@@ -26,7 +26,7 @@
 #'
 #' @import ggplot2
 #' @importFrom reshape2 melt
-#' @import cowplot
+#' @importFrom cowplot plot_grid
 #'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following

@@ -12,7 +12,7 @@
 #' @return Barplot
 #'
 #' @import ggplot2
-#' @import cowplot
+#' @importFrom cowplot plot_grid
 #'
 #' @examples
 #' ## See the 'mut_matrix_stranded()' example for how we obtained the

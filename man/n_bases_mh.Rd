@@ -4,7 +4,7 @@
 \alias{n_bases_mh}
 \title{Calculate the number of bases that are homologous to the 3' flanking sequence}
 \usage{
-n_bases_mh(indel.seq, flank.seq, indel.len)
+n_bases_mh(indel.seq, flank.seq)
 }
 \arguments{
 \item{indel.seq}{The indel sequence as a character}
