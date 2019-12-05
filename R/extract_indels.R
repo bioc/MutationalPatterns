@@ -27,7 +27,7 @@
 #' @return A 1-column mutation count matrix
 #' @export
 extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, ref.genome=DEFAULT_GENOME,
-                           indel.len.cap=6, n.bases.mh.cap=5, verbose=F, ...)
+                           indel.len.cap=6, n.bases.mh.cap=5, verbose=FALSE, ...)
 {
 
     df <- get_contexts_indel(bed, ref_genome = ref.genome)
@@ -68,7 +68,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
       names = df$chrom,
       start = flanks_start_end[,'l_start'],
       end = flanks_start_end[,'l_end'],
-      as.character = T
+      as.character = TRUE
     )
     
     r_flank <- getSeq(
@@ -81,7 +81,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
     
     #--------- Repeat contexts ---------#
     if(verbose){ message("Calculating the number of copies of the indel sequence are present in the 3' flanking sequence...") }
-    n_copies_along_flank <- unlist(Map(n_copies_along_flank, df$indel_seq, r_flank, USE.NAMES=F))
+    n_copies_along_flank <- unlist(Map(n_copies_along_flank, df$indel_seq, r_flank, USE.NAMES=FALSE))
   
     #--------- Microhomology contexts ---------#
     if(verbose){ message("Calculating the (max) number of bases that are homologous to the 5'/3' flanking sequence...") }

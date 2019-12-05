@@ -15,7 +15,8 @@
 #'
 #' @return A dataframe in the same structure as a bed file
 #' @export
-get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_allele=F, verbose=F){
+get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, 
+                               get_other_indel_allele=FALSE, verbose=FALSE){
   
   bed_colnames <- c('chrom','pos','ref','alt')
   if(!(identical(colnames(bed)[1:4], bed_colnames))){
@@ -74,7 +75,7 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_a
         getSeq(
           x=eval(parse(text=ref_genome)),
           names=chrom, start=pos-1,end=pos-1,
-          as.character=T
+          as.character=TRUE
         )
       })
       bed_split$del_type$ref <- with(bed_split$del_type, { paste0(alt, ref) })

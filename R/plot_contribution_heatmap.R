@@ -70,11 +70,11 @@ plot_contribution_heatmap = function(contribution,
                                      plot_values = FALSE)
 {
   # check contribution argument
-  if(class(contribution) == "list"){combined = F}
+  if(class(contribution) == "list"){combined = FALSE}
   else if (class(contribution) == "matrix")
   {
     warning("Matrix given for 'contribution', treated as combined signatures",
-            call.=T, immediate.=T)
+            call.=TRUE, immediate.=TRUE)
     combined = TRUE
   } else {stop("contribution must be a named list")}
   

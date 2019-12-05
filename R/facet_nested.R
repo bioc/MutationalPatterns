@@ -8,6 +8,7 @@
 #' @param labeller Character vector with the labels of the facets
 #' 
 #' @import gtable
+#' @importFrom grid linesGrob
 #' 
 #' @export
 
