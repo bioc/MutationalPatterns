@@ -38,6 +38,7 @@ Suggests:
     BSgenome.Hsapiens.1000genomes.hs37d5 (>= 0.99.1),
     BSgenome.Hsapiens.UCSC.hg19 (>= 1.4.0),
     BiocStyle (>= 2.0.3),
+    grDevices,
     TxDb.Hsapiens.UCSC.hg19.knownGene (>= 3.2.2),
     biomaRt (>= 2.28.0),
     gridExtra (>= 2.2.1),

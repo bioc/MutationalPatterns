@@ -756,7 +756,7 @@ dbs_signatures = as.matrix(dbs_signatures[,2:11])
 # Read the indel signatures file
 indel_signatures = read.csv("sigProfiler_ID_signatures.csv")
 # Add indel context as rownames
-rownames(indel_signatures) = INDEL_COSMIC
+rownames(indel_signatures) = MutationalPatterns:::INDEL_COSMIC
 # Keep only the 17 indel signatures
 indel_signatures = as.matrix(indel_signatures[,2:18])
 
@@ -768,7 +768,7 @@ cancer_signatures = list("snv" = snv_signatures,
 
 <<load_signatures, echo = FALSE>>=
 signature_files = list.files(system.file("extdata", package = "MutationalPatterns"),
-                            pattern = ".csv", full.names = T)
+                            pattern = ".csv", full.names = TRUE)
 snv_signatures = read.csv(signature_files[3])
 snv_signatures$MutationType = sprintf("%s[%s]%s",
                                       substr(snv_signatures$SubType, 1, 1),
@@ -784,7 +784,7 @@ rownames(dbs_signatures) = dbs_signatures$Mutation.Type
 dbs_signatures = as.matrix(dbs_signatures[,2:11])
 
 indel_signatures = read.csv(signature_files[2])
-rownames(indel_signatures) = INDEL_COSMIC
+rownames(indel_signatures) = MutationalPatterns:::INDEL_COSMIC
 indel_signatures = as.matrix(indel_signatures[,2:18])
 
 cancer_signatures = list("snv" = snv_signatures,
