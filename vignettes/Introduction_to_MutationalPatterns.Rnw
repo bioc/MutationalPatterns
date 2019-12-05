@@ -91,15 +91,10 @@ library(MutationalPatterns)
 @
 
 Locate the VCF files of the example data:
-<<locate_files_e, eval = FALSE>>=
+<<locate_files>>=
 vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
                         pattern = ".vcf", full.names = TRUE)
 @ 
-
-<<locate_files, echo = FALSE>>=
-vcf_files <- list.files("../inst/extdata",
-                        pattern = ".vcf", full.names = TRUE)
-@
 
 Define corresponding sample names for the VCF files:
 <<set_sample_names>>=
