@@ -47,7 +47,7 @@ rep('del.rep', 5), rep('ins.rep', 5),
 rep('del.mh', 5), rep('ins.mh', 5),
 rep('del.none', 5), rep('ins.none', 5)
 ),
-             "colors"=COLORS_INDEL = c(
+             "colors" = c(
 "#F7BF80", "#ED8212", 
 "#B5D988", "#31A12C", 
 "#E44A39", "#B81C20"
