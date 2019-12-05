@@ -15,6 +15,7 @@ Imports:
     stats,
     parallel,
     S4Vectors,
+    gtable,
     BiocGenerics (>= 0.18.0),
     VariantAnnotation (>= 1.18.1),
     reshape2 (>= 1.4.1),
