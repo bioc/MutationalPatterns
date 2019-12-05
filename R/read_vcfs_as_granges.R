@@ -268,7 +268,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         # Handle warnings.
         if (!is.null(item[[2]]))
             for (i in item[[2]])
-                warning (i, immediate. = T)
+                warning (i, immediate. = TRUE)
 
         # Unpack the GRanges
         return(item[[1]])

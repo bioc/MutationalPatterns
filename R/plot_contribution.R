@@ -122,7 +122,8 @@ plot_contribution = function(contribution,
       if (is.null(rownames(contribution)))
         stop("Provide contribution matrix with rownames for signatures")
       else
-        warning("Matrix given for 'contribution', treated as combined signatures", call.=T, immediate.=T)
+        warning(paste("Matrix given for 'contribution', treated as combined",
+                      "signatures"), call.=TRUE, immediate.=TRUE)
     }
   
     if (length(palette) == 0)
@@ -308,9 +309,9 @@ plot_contribution = function(contribution,
         
         for (m in type){
           if (all(round(colSums(contribution[[m]])) ==1 ))
-            colsums = c(colsums, T)
+            colsums = c(colsums, TRUE)
           else 
-            colsums = c(colsums, F)
+            colsums = c(colsums, FALSE)
           
           # total number of mutations per signature
           total_signatures[[m]] = colSums(signatures[[m]])[which(colnames(signatures[[m]]) %in% rownames(contribution[[m]]))] 
@@ -320,7 +321,7 @@ plot_contribution = function(contribution,
         }
         
         # Test if contribution is already relative
-        if (all(colsums == T))
+        if (all(colsums == TRUE))
         {
           warning(paste("Signature contributions are relative.",
                         "Plot absolute contribution is not possible"))

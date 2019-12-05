@@ -76,7 +76,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
       names = df$chrom,
       start = flanks_start_end[,'r_start'],
       end = flanks_start_end[,'r_end'],
-      as.character = T
+      as.character = TRUE
     )
     
     #--------- Repeat contexts ---------#
@@ -91,7 +91,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
       
       max(mh_l,mh_r)
       
-    }, df$indel_seq, l_flank, r_flank, USE.NAMES=F))
+    }, df$indel_seq, l_flank, r_flank, USE.NAMES=FALSE))
     
     df <- cbind(df, "repeats"=n_copies_along_flank, "bimh"=n_bases_mh)
     

@@ -62,8 +62,12 @@ enrichment_depletion_test = function(x, by = c())
         res2 = x
         # In this case, the 'by' variable is 'sample' variable.
         res2$by = res2$sample
+        
         # Select output columns
-        res2 = res2[,c(10,3,1,4,5,7,9)]
+        if("mutation" %in% names(res2))
+          res2 = res2[,c(10,3,1,4,5,7,9)]
+        else
+          res2 = res2[,c(9,1,3,4,6,8)]
     }
 
     # Calculate probability and expected number of mutations

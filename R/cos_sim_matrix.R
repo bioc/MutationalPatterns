@@ -52,8 +52,8 @@
 cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
 {
   # Type is default if not given
-  if (missing(type)) {type_default = T}
-  else {type_default = F}
+  if (missing(type)) {type_default = TRUE}
+  else {type_default = FALSE}
   
   # If "mut_matrix1" and "mut_matrix2" are matrices and no type is given
   # then type is unknown and function stopped

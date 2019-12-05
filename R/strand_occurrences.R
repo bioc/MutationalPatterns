@@ -171,7 +171,7 @@ strand_occurrences = function(mut_mat_s, by, type, method = "split")
       
       # reorder group, type, strand
       y = y[,c(4,1,2,3,5,6)]
-      y = y[order(y$mutation, decreasing = T),]
+      y = y[order(y$mutation, decreasing = TRUE),]
       
       return(y)
     } else {stop("Unknown value for 'method' is given. Choose between 'split' (default) or 'combine'")}

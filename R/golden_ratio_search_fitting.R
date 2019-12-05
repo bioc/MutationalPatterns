@@ -74,16 +74,20 @@ golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
       
       # For each sample get results from the golden ratio search
       result = sapply(rownames(mut_matrix_transposed[[m]]), function(n)
-        whichSignatures(mut_matrix_transposed[[m]], sample.id = n, signatures_transposed[[m]], contexts.needed = T, ...))
+        whichSignatures(mut_matrix_transposed[[m]], sample.id = n, 
+                        signatures_transposed[[m]], 
+                        contexts.needed = TRUE, ...))
       
-      # Write results of contribution, reconstructed and unknown as lists of
-      # mutation types
-      contribution[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
-        data.frame(unlist(result[1,i])))))
+      # Write results of contribution, reconstructed and unknown as lists 
+      # of mutation types
+      contribution[[m]] = as.matrix(do.call(cbind, 
+                                            lapply(1:ncol(result), function(i)
+                                              data.frame(unlist(result[1,i])))))
       colnames(contribution[[m]]) = colnames(result)
       
-      reconstructed[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
-        data.frame(unlist(result[3,i])))))
+      reconstructed[[m]] = as.matrix(do.call(cbind, 
+                                             lapply(1:ncol(result), function(i) 
+                                               data.frame(unlist(result[3,i])))))
       colnames(reconstructed[[m]]) = colnames(result)
       rownames(reconstructed[[m]]) = colnames(result[3][[1]])
       
@@ -99,7 +103,9 @@ golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
       unknown = unknown[[1]]
     }
     
-    res = list("contribution"=contribution, "reconstructed"=reconstructed, "unknown"=unknown)
+    res = list("contribution"=contribution, 
+               "reconstructed"=reconstructed, 
+               "unknown"=unknown)
     
     return(res)
 }

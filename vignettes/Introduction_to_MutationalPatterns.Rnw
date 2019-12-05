@@ -767,7 +767,9 @@ cancer_signatures = list("snv" = snv_signatures,
 @
 
 <<load_signatures, echo = FALSE>>=
-snv_signatures = read.csv("../inst/extdata/sigProfiler_SBS_signatures_v3_2019_05_22.csv")
+signature_files = list.files(system.file("extdata", package = "MutationalPatterns"),
+                            pattern = ".csv", full.names = T)
+snv_signatures = read.csv(signature_files[3])
 snv_signatures$MutationType = sprintf("%s[%s]%s",
                                       substr(snv_signatures$SubType, 1, 1),
                                       snv_signatures$Type,
@@ -777,13 +779,11 @@ snv_signatures = snv_signatures[as.vector(new_order),]
 row.names(snv_signatures) = snv_signatures$MutationType
 snv_signatures = as.matrix(snv_signatures[,3:69])
 
-dbs_signatures = read.csv(system.file("sigProfiler_DBS_signatures.csv",
-                                      package="MutationalPatterns"))
+dbs_signatures = read.csv(signature_files[1])
 rownames(dbs_signatures) = dbs_signatures$Mutation.Type
 dbs_signatures = as.matrix(dbs_signatures[,2:11])
 
-indel_signatures = read.csv(system.file("sigProfiler_ID_signatures.csv",
-                                        package = "MutationalPatterns"))
+indel_signatures = read.csv(signature_files[2])
 rownames(indel_signatures) = INDEL_COSMIC
 indel_signatures = as.matrix(indel_signatures[,2:18])
 

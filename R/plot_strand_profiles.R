@@ -231,7 +231,7 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
       }
       warning(paste("No names given for ymax, order used is 'snv', 'dbs', 'indel'",
                     "and default ymax is calculated for missing names.",
-                    "When 'method'='combine', first value of ymax is used"), call. = T, immediate.=T)
+                    "When 'method'='combine', first value of ymax is used"), call. = TRUE, immediate.=TRUE)
       
     } 
     else if (all(names(mut_matrix) %in% names(ymax))) { ymax = ymax[names(mut_matrix)] } 

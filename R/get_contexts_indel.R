@@ -10,6 +10,9 @@
 #' will also be added to the indel sequence and the POS will be adjusted accordingly (POS=POS-1).
 #' @param verbose (Optional) Print progress messages?
 #'
+#' @importFrom VariantAnnotation alt
+#' @importFrom VariantAnnotation ref
+#'
 #' @return A dataframe in the same structure as a bed file
 #' @export
 get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_allele=F, verbose=F){
@@ -47,10 +50,10 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_a
       } else if(ref_len < alt_len){
         'ins'
       }
-    },ref_len, alt_len, USE.NAMES=F))
+    },ref_len, alt_len, USE.NAMES=FALSE))
   })
   
-  if(get_other_indel_allele==T){
+  if(get_other_indel_allele==TRUE){
     if(verbose){ message('Retrieving other indel allele...') }
     bed_split <- lapply(
       list(del_type=c('del','mnv_del'),ins_type=c('ins','mnv_ins'),mnv_neutral='mnv_neutral'),
@@ -93,7 +96,7 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_a
         getSeq(
           x=eval(parse(text=ref_genome)),
           names=chrom, start=pos-1,end=pos-1,
-          as.character=T
+          as.character=TRUE
         )
       })
       bed_split$ins_type$alt <- with(bed_split$ins_type, { paste0(ref,alt) })
@@ -124,7 +127,7 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, get_other_indel_a
       } else {
         NA
       }
-    },ref,alt,indel_type,indel_len, USE.NAMES=F))
+    },ref,alt,indel_type,indel_len, USE.NAMES=FALSE))
   })
   
   ## Output

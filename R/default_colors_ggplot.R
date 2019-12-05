@@ -10,6 +10,8 @@
 #' @param n Numeric stating the number of default colors wanted
 #' @return Character vector with colornames in HEX format
 #' 
+#' @importFrom grDevices hcl
+#' 
 #' @examples 
 #' ## Get the default colors of ggplot2 for 10 classes
 #' n = 10

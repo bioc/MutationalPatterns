@@ -63,8 +63,8 @@
 fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "least-squares", ...)
 {
     # Check mutation type argument
-    if (missing(type)) { type_default = T }
-    else { type_default = F }
+    if (missing(type)) { type_default = TRUE }
+    else { type_default = FALSE }
     type = check_mutation_type(type)
     
     # If signature object is a matrix, then look at "mut_matrix" for mutation type
