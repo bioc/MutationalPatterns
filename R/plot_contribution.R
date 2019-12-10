@@ -109,7 +109,7 @@ plot_contribution = function(contribution,
       
       if (class(signatures) == "matrix"){
         for (m in names(contribution)){
-          if (any(colnames(signatures) == rownames(contribution))){
+          if (any(colnames(signatures) == rownames(contribution[[m]]))){
             signatures = list(signatures)
             names(signatures) = m
           }
@@ -166,7 +166,8 @@ plot_contribution = function(contribution,
         
         # Take all signatures with contribution more than 0
         sigs <- names(which(rowSums(contribution[[m]]) > 0))
-        contribution[[m]] = contribution[[m]][which(rowSums(contribution[[m]]) > 0),]
+        contribution[[m]] = contribution[[m]][which(rowSums(contribution[[m]]) > 0),
+                                              ,drop=FALSE]
         
         if(length(sigs) == 1)
         {
@@ -342,8 +343,10 @@ plot_contribution = function(contribution,
       }
       
       # Take all signatures with contribution more than 0
-      contribution = contribution[which(rowSums(contribution) > 0),]
-      abs_contribution = abs_contribution[which(rowSums(abs_contribution) > 0),]
+      contribution = contribution[which(rowSums(contribution) > 0),
+                                  ,drop=FALSE]
+      abs_contribution = abs_contribution[which(rowSums(abs_contribution) > 0),
+                                          ,drop=FALSE]
       
       palette = unlist(unname(palette))
       

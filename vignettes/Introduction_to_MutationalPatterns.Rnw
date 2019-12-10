@@ -106,7 +106,8 @@ sample_names <- c(
 
 Load the VCF files into a \texttt{GRangesList}:
 <<read_vcfs_as_granges>>=
-vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
+vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome,
+                             group = "auto+sex", check_alleles = TRUE)
 summary(vcfs)
 @
   

@@ -14,7 +14,7 @@
 
 facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", labeller = "label_value")
 {
-  space = "fixed"
+  space = "free_x"
   shrink = TRUE
   as.table = TRUE
   switch = NULL

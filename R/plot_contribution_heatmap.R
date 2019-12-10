@@ -70,13 +70,24 @@ plot_contribution_heatmap = function(contribution,
                                      plot_values = FALSE)
 {
   # check contribution argument
-  if(class(contribution) == "list"){combined = FALSE}
+  if(class(contribution) == "list")
+  { 
+    for (m in names(contribution))
+    {
+        if (ncol(contribution[[m]]) == 1)
+          cluster_samples = FALSE
+    }
+    combined = FALSE
+  }
   else if (class(contribution) == "matrix")
   {
+    if (ncol(contribution) == 1) cluster_samples = FALSE
     warning("Matrix given for 'contribution', treated as combined signatures",
             call.=TRUE, immediate.=TRUE)
     combined = TRUE
   } else {stop("contribution must be a named list")}
+  
+  
   
   if (!combined)
   {
@@ -171,7 +182,8 @@ plot_contribution_heatmap = function(contribution,
     # relative contribution
     if (combined) {hc.sample = hclust(dist(contribution_norm), method = method)}
     else {hc.sample = hclust(dist(contribution_norm[,match(cluster_mutations, 
-                                                           colnames(contribution_norm))]),
+                                                           colnames(contribution_norm)),
+                                                    drop=FALSE]),
                              method = method)}
     # order of samples according to hierarchical clustering
     sample_order = rownames(contribution)[hc.sample$order]

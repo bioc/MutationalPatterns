@@ -94,7 +94,8 @@ least_squares_error_fitting <- function(mut_matrix, signatures, cutoff = 0)
       colnames(lsq_contribution) = sample_names
       rownames(lsq_contribution) = signature_names
       
-      lsq_contribution = lsq_contribution[which(rowSums(lsq_contribution)>=cutoff),]
+      lsq_contribution = lsq_contribution[which(rowSums(lsq_contribution)>=cutoff),
+                                          ,drop=FALSE] 
       
       colnames(lsq_reconstructed) = sample_names
       rownames(lsq_reconstructed) = mut_type_names

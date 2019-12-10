@@ -110,13 +110,12 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     # call to read_vcfs_as_granges.
     if (!check_alleles)
     {
-        warnings <- c(warnings,
-                      paste("check_alleles is set to FALSE.  Make sure your",
-                            "input VCF does not contain any positions with",
-                            "multiple alternative",
-                            "alleles, as these positions cannot be analysed",
-                            "with MutationalPatterns and cause obscure",
-                            "errors."))
+        warning(paste("check_alleles is set to FALSE.  Make sure your",
+                      "input VCF does not contain any positions with",
+                      "multiple alternative",
+                      "alleles, as these positions cannot be analysed",
+                      "with MutationalPatterns and cause obscure",
+                      "errors."), immediate. = TRUE)
     }
 
     vcf_list <- mclapply (seq_along(vcf_files), function (index)
@@ -192,11 +191,9 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             if (length(rem) > 0)
             {
                 vcf = vcf[-rem]
-                warnings <- c(warnings,
-                              paste(length(rem),
-                                    "position(s) with multiple",
-                                    "alternative alleles are excluded from",
-                                    paste(sample_names[[index]], ".", sep = "")))
+                warnings$check_allele <- 
+                  rbind(warnings$check_allele,
+                        c(sample_names[[index]], length(rem)))
             }
         }
         
@@ -207,20 +204,20 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         if (length(dbs) > 0)
           if (dbs[length(dbs)] == length(vcf))
             dbs <- dbs[-length(dbs)]
+          rem = NULL
           if (1 %in% diff(dbs))
           {
-            rem <- c(which(diff(dbs) == 1),which(diff(dbs) == 1)+1)
+            # Remove multi nucleotide variants
+            rem = which(diff(dbs) == 1)
+            mnv = unique(sort(c(dbs[rem],dbs[rem]+1,dbs[rem]+2)))
+            
+            rem <- unique(c(rem,rem+1))
             dbs <- dbs[-rem]
-            warnings <- c(warnings, paste(length(rem),
-                                          "position(s) found that form groups",
-                                          "of consecutive single",
-                                          "nucleotide variants of length more", 
-                                          "than 2. Position(s) are excluded",
-                                          "from", 
-                                          paste(sample_names[[index]], ".", sep = "")))
+            warnings$dbs <- rbind(warnings$dbs,
+                                  c(sample_names[[index]], length(mnv)))
           }
         
-        # If there are such variants, then change end position of variant,
+        # If there are DBS, then change end position of variant,
         # add second ref and second alt base and delete next variant from vcf
         if (length(dbs) > 0)
         {
@@ -229,7 +226,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
           vcf$ALT[dbs] = DNAStringSetList(lapply(dbs, function(i) {
             DNAStringSet(paste0(as.character(unlist(vcf$ALT[i])), as.character(unlist(vcf$ALT[i+1]))))
             }))
-          vcf = vcf[-(dbs+1),]
+          vcf = vcf[-c(mnv,(dbs+1)),]
         }
         
         indel = which((nchar(as.character(vcf$REF)) == 1 &
@@ -240,10 +237,8 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         if (any(c(grepl("[^ACGT]",as.character(vcf$REF[indel])),
                   grepl("[^ACGT]",as.character(unlist(vcf$ALT[indel])))))){
           vcf = vcf[-indel,]
-          warnings <- c(warnings, paste("Indels not according to VCF format",
-                                        "4.2 or higher, all indels are excluded",
-                                        "from", 
-                                        paste(sample_names[[index]], ".", sep = "")))
+          warnings$indel <- rbind(warnings$indel,
+                                  c(sample_names[[index]]))
         }
 
         # Pack GRanges object and the warnings to be able to display warnings
@@ -262,21 +257,64 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     # The return values of the mclapply output are packed as
     # list(<GRanges>, <warnings>).  The function below unpacks the GRanges
     # and displays the warnings.
-    vcf_list <- lapply (vcf_list, function (item) {
-        # Handle errors.
-        if (class (item) == "try-error") stop (item)
-        # Handle warnings.
-        if (!is.null(item[[2]]))
-            for (i in item[[2]])
-                warning (i, immediate. = TRUE)
-
-        # Unpack the GRanges
-        return(item[[1]])
+    
+    # Handle errors
+    summ <- lapply(vcf_list, function(item) {
+        if (class(item) == "try-error") stop (item)
+        ref = as.character(item[[1]]$REF)
+        alt = as.character(unlist(item[[1]]$ALT))
+        
+        nsnvs = length(which(nchar(ref) == 1 & nchar(alt) == 1))
+        ndbs = length(which(nchar(ref) == 2 & nchar(alt) == 2))
+        nindel = length(which((nchar(ref) == 1 & nchar(alt) != 1) | 
+                                (nchar(ref) != 1 & nchar(alt) == 1)))
+        
+        return(c(nsnvs, ndbs, nindel))
     })
-
-    vcf_list <- GRangesList(vcf_list)
+    
+    
+    # Handle warnings
+    warnings <- do.call(rbind, vcf_list)[,2]
+    warnings <- sapply(warnings, function(item) item[c('check_alleles','dbs','indel')])
+    warns = NULL
+    for (i in which(!(is.na(rownames(warnings))))){
+        warns[[rownames(warnings)[i]]] = do.call(rbind, warnings[i,])
+        colnames(warns[[rownames(warnings)[i]]]) <- c("Sample", "Position(s)")
+    }
+  
+    lapply(names(warns), function(item) {
+        if (item == "check_alleles")
+        {
+            warning("Position(s) with multiple ",
+                    "alternative alleles are excluded\n",
+                    paste0(capture.output(warns$check_allele), collapse = "\n"),
+                    immediate. = TRUE)
+        } else if (item == "dbs")
+        {
+          warning("Position(s) excluded that form ", 
+                  "multiple nucleotide variants ", 
+                  "of length more than 2.\n",
+                  paste0(capture.output(warns$dbs), collapse = "\n"),
+                  immediate. = TRUE)
+        } else if (item == "indel")
+        {
+          warning("Indels not according to VCF format ",
+                  "4.2 or higher, all indels are excluded from:\n ",
+                  paste(warns$indel, collapse=", "),
+                  immediate. = TRUE)
+        }
+    })
+    
+    vcf_list <- GRangesList(do.call(rbind, vcf_list)[,1])
+    
     # Set the provided names for the samples.
     names(vcf_list) <- sample_names
-
+    
+    # Print a summary of mutations found
+    summ <- do.call(rbind, summ)
+    colnames(summ) <- c("Number of SNV", "Number of DBS", "Number of indel")
+    rownames(summ) <- names(vcf_list)
+    print(summ)
+    
     return(vcf_list)
 }
