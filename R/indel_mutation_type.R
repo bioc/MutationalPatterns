@@ -61,13 +61,13 @@ indel_mutation_type <- function(indel)
   unlockBinding("INDEL_CONTEXT",e)
   unlockBinding("INDEL_CLASS",e)
   unlockBinding("INDEL_CLASS_HEADER",e)
-  unlockBinding("INDEL_COLORS",e)
+  unlockBinding("COLORS_INDEL",e)
   
   if (class(indel) == "character")
   {
     if (indel == "predefined"){
       e$INDEL = "predefined"
-      e$INDEL_CONTEXT = e$INDEL_CONEXT_PREDEF
+      e$INDEL_CONTEXT = e$INDEL_CONTEXT_PREDEF
       e$INDEL_CLASS = e$INDEL_CLASS_PREDEF
       e$INDEL_CLASS_HEADER =  e$INDEL_CLASS_HEADER_PREDEF
       e$COLORS_INDEL = e$COLORS_INDEL_PREDEF
@@ -106,5 +106,5 @@ indel_mutation_type <- function(indel)
   lockBinding("INDEL_CONTEXT",e)
   lockBinding("INDEL_CLASS",e)
   lockBinding("INDEL_CLASS_HEADER",e)
-  lockBinding("INDEL_COLORS",e)
+  lockBinding("COLORS_INDEL",e)
 }
