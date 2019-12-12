@@ -275,7 +275,11 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     
     # Handle warnings
     warnings <- do.call(rbind, vcf_list)[,2]
-    warnings <- sapply(warnings, function(item) item[c('check_alleles','dbs','indel')])
+    warnings <- sapply(warnings, function(item) {
+      if (is.null(item))
+        item = list("check_alleles"=NULL,"dbs"=NULL,"indel"=NULL)
+      item[c('check_alleles','dbs','indel')]
+      })
     warns = NULL
     for (i in which(!(is.na(rownames(warnings))))){
         warns[[rownames(warnings)[i]]] = do.call(rbind, warnings[i,])

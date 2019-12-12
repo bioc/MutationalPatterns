@@ -59,7 +59,7 @@
 #'
 #' @export
 
-mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_cores)
+mut_matrix = function(vcf_list, ref_genome, type, method = "split", num_cores)
 {
     # Check value of method
     if (!(method %in% c("split", "combine"))){ stop("Provide the right value of 'method'. Options are 'split' or 'combine'")}
@@ -76,15 +76,9 @@ mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_c
             num_cores = 1
     }
     
-    # Check mutation type and if indel is in type
-    # set the global variables for the indels
+    # Check mutation type 
     type = check_mutation_type(type)
-    if ("indel" %in% type | !missing(indel))
-    {
-      indel_mutation_type(indel)
-      type = c(type, "indel")
-    }
-    
+
     rows <- mclapply (as.list(vcf_list), function (vcf)
     {
         row = list()
@@ -96,7 +90,7 @@ mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_c
           else if (m == "dbs") { row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), type = m) }
           else if (m == "indel")
           {
-            if(indel_name == "custom") 
+            if(INDEL == "custom") 
             {
               # If a custom mutation matrix is given for the indels, select those
               # columns which correspond to samples in the vcfs
@@ -104,7 +98,7 @@ mut_matrix = function(vcf_list, ref_genome, type, indel, method = "split", num_c
               column = which(colnames(indel$matrix) == names(vcf))
               row[[m]] = indel$matrix[,column]
             } else { 
-              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, indel_name), type = m, indel = indel_name) }
+              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, INDEL), type = m, indel = INDEL) }
           }
         }
         return(row)
