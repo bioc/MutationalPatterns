@@ -21,13 +21,13 @@ COLORS10 = c(
     "#7D599E"
 )
 
-COLORS_INDEL = c(
+COLORS_INDEL_PREDEF = c(
     "#F7BF80", "#ED8212", 
     "#B5D988", "#31A12C", 
     "#E44A39", "#B81C20"
 )
 
-COLORS_INDEL_COSMIC = c(
+COLORS_INDEL = c(
     "#F7BF80", "#ED8212", "#B5D988", "#31A12C",
     "#F8CAB9", "#EA8E77", "#E44A39", "#B81C20",
     "#D0E1F2", "#97C1DE", "#4B97CA", "#1C68AA",
@@ -77,7 +77,9 @@ DBS_rep = paste(rep(DBS, each=2), c("left", "right"), sep="-")
 SUBSTITUTIONS_DBS = c("AC>NN", "AT>NN", "CC>NN","CG>NN","CT>NN","GC>NN","TA>NN","TC>NN","TG>NN","TT>NN")
 ALT_DBS = do.call(rbind, strsplit(DBS, ">"))[,2]
 
-INDEL = c(
+INDEL = "cosmic"
+
+INDEL_CONTEXT_PREDEF = c(
   paste0('del.rep.len.', 1:5),
   paste0('ins.rep.len.', 1:5),
   paste0('del.mh.bimh.', 1:5),
@@ -86,15 +88,15 @@ INDEL = c(
   paste0('ins.none.len.', 1:5)
 )
 
-INDEL_CLASS = c(
+INDEL_CLASS_PREDEF = c(
   rep('del.rep', 5), rep('ins.rep', 5),
   rep('del.mh', 5), rep('ins.mh', 5),
   rep('del.none', 5), rep('ins.none', 5)
 )
 
-INDEL_CLASS_HEADER = NULL
+INDEL_CLASS_HEADER_PREDEF = NULL
 
-INDEL_COSMIC = c(
+INDEL_CONTEXT = c(
   paste0('del.1bp.homopol.C.len.', c(1:5,"6+")),
   paste0('del.1bp.homopol.T.len.', c(1:5,"6+")),
   paste0('ins.1bp.homopol.C.len.', c(0:4,"5+")),
@@ -113,7 +115,7 @@ INDEL_COSMIC = c(
   paste0('del.mh.len.5+.bimh.', c(1:4,"5+"))
 )
 
-INDEL_COSMIC_CLASS = c(
+INDEL_CLASS = c(
   rep("C", 6), rep("T", 6), 
   rep("C", 6), rep("T", 6),
   rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
@@ -121,11 +123,13 @@ INDEL_COSMIC_CLASS = c(
   rep("2", 1), rep("3", 2), rep("4", 3), rep("5+", 5)
 )
 
-INDEL_COSMIC_CLASS_HEADER = c(
+INDEL_CLASS_HEADER = c(
   rep("del.1bp", 12), rep("ins.1bp", 12),
   rep("del.rep", 24), rep("ins.rep", 24),
   rep("del.mh", 11)
 )
+
+INDEL_MATRIX = NULL
 
 # Strand information 
 STRAND = rep(c("U","T"), 96)

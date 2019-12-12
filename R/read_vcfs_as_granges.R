@@ -204,7 +204,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         if (length(dbs) > 0)
           if (dbs[length(dbs)] == length(vcf))
             dbs <- dbs[-length(dbs)]
-          rem = NULL
+          mnv = NULL
           if (1 %in% diff(dbs))
           {
             # Remove multi nucleotide variants

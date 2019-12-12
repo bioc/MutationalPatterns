@@ -54,21 +54,23 @@ indel_mutation_type <- function(indel)
   
   # If a character is given, check for "predefined" or "cosmic"
   # and set global variables accordingly
+  if (indel == "cosmic") return()
+  
+  e <- loadNamespace("MutationalPatterns")
+  unlockBinding("INDEL",e)
+  unlockBinding("INDEL_CONTEXT",e)
+  unlockBinding("INDEL_CLASS",e)
+  unlockBinding("INDEL_CLASS_HEADER",e)
+  unlockBinding("INDEL_COLORS",e)
+  
   if (class(indel) == "character")
   {
     if (indel == "predefined"){
-      indel_context <<- INDEL
-      indel_class <<- INDEL_CLASS
-      indel_class_header <<- INDEL_CLASS_HEADER
-      indel_colors <<- COLORS_INDEL
-      indel_name <<- "predefined"
-    } else if (indel == "cosmic") 
-    {
-      indel_context <<- INDEL_COSMIC
-      indel_class <<- INDEL_COSMIC_CLASS
-      indel_class_header <<- INDEL_COSMIC_CLASS_HEADER
-      indel_colors <<- COLORS_INDEL_COSMIC
-      indel_name <<- "cosmic"
+      e$INDEL = "predefined"
+      e$INDEL_CONTEXT = e$INDEL_CONEXT_PREDEF
+      e$INDEL_CLASS = e$INDEL_CLASS_PREDEF
+      e$INDEL_CLASS_HEADER =  e$INDEL_CLASS_HEADER_PREDEF
+      e$COLORS_INDEL = e$COLORS_INDEL_PREDEF
     } else { stop(print("Unknown option for indel mutation types",
                         "Provide either 'predefined' or 'cosmic' character or",
                         "list with indel classes and contexts")) }
@@ -79,19 +81,19 @@ indel_mutation_type <- function(indel)
     needed = c("matrix", "class","context")
     if (all(needed %in% names(indel)))
     {
-      if ("header" %in% names(indel)) { indel_header <<- indel$header }
-      else { indel_header <<- NULL }
+      if ("header" %in% names(indel)) { e$INDEL_CLASS_HEADER = indel$header }
+      else { e$INDEL_CLASS_HEADER = NULL }
       
       # Colors can be given in the list, else default colors are chosen
-      if ("colors" %in% names(indel)) { indel_colors <<- indel$colors }
+      if ("colors" %in% names(indel)) { e$COLORS_INDEL = indel$colors }
       else 
       {
-        indel_colors <<- default_colors_ggplot(length(unique(indel$class)))
+        e$COLORS_INDEL <<- default_colors_ggplot(length(unique(indel$class)))
       }
-      indel_matrix <<- indel$matrix
-      indel_context <<- indel$context
-      indel_class <<- indel$class
-      indel_name <<- "custom"
+      e$INDEL_MATRIX = indel$matrix
+      e$INDEL_CONTEXT = indel$context
+      e$INDEL_CLASS = indel$class
+      e$INDEL = "custom"
     } else 
     {
       # Stop when one or more obligatory elements are missing
@@ -99,4 +101,10 @@ indel_mutation_type <- function(indel)
                    needed[which(!(needed %in% names(indel)))] ))
     }
   }
+  
+  lockBinding("INDEL",e)
+  lockBinding("INDEL_CONTEXT",e)
+  lockBinding("INDEL_CLASS",e)
+  lockBinding("INDEL_CLASS_HEADER",e)
+  lockBinding("INDEL_COLORS",e)
 }
