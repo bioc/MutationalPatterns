@@ -757,7 +757,7 @@ dbs_signatures = as.matrix(dbs_signatures[,2:11])
 # Read the indel signatures file
 indel_signatures = read.csv("sigProfiler_ID_signatures.csv")
 # Add indel context as rownames
-rownames(indel_signatures) = MutationalPatterns:::INDEL_COSMIC
+rownames(indel_signatures) = MutationalPatterns:::INDEL_CONTEXT
 # Keep only the 17 indel signatures
 indel_signatures = as.matrix(indel_signatures[,2:18])
 

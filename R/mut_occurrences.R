@@ -6,13 +6,12 @@
 #' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
-#' @param indel (Optional) A character stating which indel context database to choose:
-#' 'predefined' or 'cosmic'. Is used as argument for extract_indels()
 #' @importFrom S4Vectors isEmpty
+#' @export
 #' @noRd
 #' @return List of vector with mutation occurrences for all mutation types asked for
 
-mut_occurrences = function(type_context, type, indel)
+mut_occurrences = function(type_context, type)
 {
   # Check mutation type
   type = check_mutation_type(type)
@@ -37,7 +36,7 @@ mut_occurrences = function(type_context, type, indel)
                                      "context"=type_context$context))
       type = "dbs"
     }
-    else if (all(unique(type_context$context) %in% indel_context) &
+    else if (all(unique(type_context$context) %in% INDEL_CONTEXT) &
              !is.null(unique(type_context$context)))
     {
       type_context = list("indel"=list("types"=type_context$types,
@@ -45,7 +44,6 @@ mut_occurrences = function(type_context, type, indel)
       type = "indel"
     }
   }
-  print(type)
   
   count = list()
  
@@ -76,15 +74,14 @@ mut_occurrences = function(type_context, type, indel)
       context = table(type_context[[m]][["types"]])
     } else if (m == "indel")
     {
-      if (missing(indel)) { indel = "cosmic" }
-      if (indel == "cosmic")
+      if (INDEL == "cosmic")
       { 
         count[[m]] = rep(0,83) 
-        names(count[[m]]) = indel_context
-      } else if (indel == "native")
+        names(count[[m]]) = INDEL_CONTEXT
+      } else if (INDEL == "predefined")
       { 
         count[[m]]=rep(0,30)
-        names(count[[m]]) = indel_context
+        names(count[[m]]) = INDEL_CONTEXT
       }
       
       if (all(isEmpty(type_context[[m]])))

@@ -59,9 +59,8 @@ plot_strand = function(strand_counts, mode = "relative", colors)
     colors = c()
     if (any(grepl("snv", strand_counts$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_counts$mutation))) { colors = c(colors, COLORS10) }
-    if (exists("indel_colors"))
-      if (any(grepl("indel", strand_counts$mutation))) 
-        colors = c(colors, indel_colors)
+    if (any(grepl("indel", strand_counts$mutation))) 
+        colors = c(colors, COLORS_INDEL)
   }
   
   # These variables will be available at run-time, but not at compile-time.

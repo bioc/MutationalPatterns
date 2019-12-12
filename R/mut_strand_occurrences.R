@@ -39,7 +39,7 @@ mut_strand_occurrences = function(type_context, strand, type)
                                      "context"=type_context$context))
       type = "dbs"
     }
-    else if (all(unique(type_context$context) %in% indel_context) &
+    else if (all(unique(type_context$context) %in% INDEL_CONTEXT) &
              !is.null(unique(type_context$context)))
     {
       type_context = list("indel"=list("types"=type_context$types,
@@ -95,12 +95,12 @@ mut_strand_occurrences = function(type_context, strand, type)
   } else if (type == "indel")
   { 
     # make indel count vector per set
-    vector1 = mut_occurrences(type_context_1, type = type, indel = indel_name)
-    vector2 = mut_occurrences(type_context_2, type = type, indel = indel_name)
+    vector1 = mut_occurrences(type_context_1, type = type)
+    vector2 = mut_occurrences(type_context_2, type = type)
     
     # add names
-    names_1 = paste(indel_context, values[1], sep = "-")
-    names_2 = paste(indel_context, values[2], sep = "-")
+    names_1 = paste(INDEL_CONTEXT, values[1], sep = "-")
+    names_2 = paste(INDEL_CONTEXT, values[2], sep = "-")
   }
   
   # combine vectors in alternating fashion

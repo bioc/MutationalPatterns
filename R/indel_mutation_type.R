@@ -17,9 +17,9 @@
 #'   COSMIC database}
 #' }
 #' Default is "cosmic"
-#' @return The global variables indel_class, indel_class_header,
-#' indel_context and indel_colors will be set with this function. 
-#' Furthermore a character is returned, which state the chosen option
+#' @return This function changes internal variables used by the package
+#' to analyse indels.
+#' 
 #'
 #' @examples 
 #' ## For custom input of predefined context
@@ -54,8 +54,7 @@ indel_mutation_type <- function(indel)
   
   # If a character is given, check for "predefined" or "cosmic"
   # and set global variables accordingly
-  if (indel == "cosmic") return()
-  
+
   e <- loadNamespace("MutationalPatterns")
   unlockBinding("INDEL",e)
   unlockBinding("INDEL_CONTEXT",e)
@@ -65,7 +64,16 @@ indel_mutation_type <- function(indel)
   
   if (class(indel) == "character")
   {
-    if (indel == "predefined"){
+    if (indel == "cosmic"){
+      if (e$INDEL != "cosmic")
+      {
+        e$INDEL = "cosmic"
+        e$INDEL_CONTEXT = e$INDEL_CONTEXT_COSMIC
+        e$INDEL_CLASS = e$INDEL_CLASS_COSMIC
+        e$INDEL_CLASS_HEADER =  e$INDEL_CLASS_HEADER_COSMIC
+        e$COLORS_INDEL = e$COLORS_INDEL_COSMIC
+      }
+    } else if (indel == "predefined"){
       e$INDEL = "predefined"
       e$INDEL_CONTEXT = e$INDEL_CONTEXT_PREDEF
       e$INDEL_CLASS = e$INDEL_CLASS_PREDEF
@@ -88,7 +96,7 @@ indel_mutation_type <- function(indel)
       if ("colors" %in% names(indel)) { e$COLORS_INDEL = indel$colors }
       else 
       {
-        e$COLORS_INDEL <<- default_colors_ggplot(length(unique(indel$class)))
+        e$COLORS_INDEL = default_colors_ggplot(length(unique(indel$class)))
       }
       e$INDEL_MATRIX = indel$matrix
       e$INDEL_CONTEXT = indel$context

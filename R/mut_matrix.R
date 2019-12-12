@@ -61,6 +61,8 @@
 
 mut_matrix = function(vcf_list, ref_genome, type, method = "split", num_cores)
 {
+    
+  
     # Check value of method
     if (!(method %in% c("split", "combine"))){ stop("Provide the right value of 'method'. Options are 'split' or 'combine'")}
   
@@ -98,7 +100,7 @@ mut_matrix = function(vcf_list, ref_genome, type, method = "split", num_cores)
               column = which(colnames(indel$matrix) == names(vcf))
               row[[m]] = indel$matrix[,column]
             } else { 
-              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m, INDEL), type = m, indel = INDEL) }
+              row[[m]] = mut_occurrences(type_context(vcf, ref_genome, m), type = m) }
           }
         }
         return(row)

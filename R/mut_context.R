@@ -9,8 +9,6 @@
 #' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
-#' @param indel (Optional) A character stating which indel context database to choose:
-#' 'predefined' or 'cosmic'. Is used as argument for extract_indels()
 #' @return Character vector with the context of the base substitutions
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom GenomeInfoDb seqnames
@@ -33,7 +31,7 @@
 #'
 #' @export
 
-mut_context = function(vcf, ref_genome, type, indel) 
+mut_context = function(vcf, ref_genome, type) 
 {
     # Make sure that the chromosome names are compatible with each other.
     if (!(all(seqlevels(vcf) %in% seqlevels(get(ref_genome)))))
@@ -78,9 +76,9 @@ mut_context = function(vcf, ref_genome, type, indel)
                           "alt"=as.character(unlist(input_vcf$ALT)))
         
         # Default indel context is "cosmic"
-        if (missing(indel)) { indel = "cosmic" }
-        vcf_context = extract_indels(bed, context.database=indel,
+        vcf_context = extract_indels(bed, context.database=INDEL,
                                      ref.genome = ref_genome)
+        
         contexts[[m]] = vcf_context
       }
     }

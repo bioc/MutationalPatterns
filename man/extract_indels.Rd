@@ -6,7 +6,7 @@
 \usage{
 extract_indels(bed, context.database = "cosmic", sample.name = NULL,
   ref.genome = DEFAULT_GENOME, indel.len.cap = 6, n.bases.mh.cap = 5,
-  verbose = F, ...)
+  verbose = FALSE, ...)
 }
 \arguments{
 \item{bed}{A dataframe containing the columns: chrom, pos, ref, alt}

@@ -34,6 +34,13 @@ COLORS_INDEL = c(
     "#D0CFD4", "#B2AEC5", "#8079AE", "#634298"
 )
 
+COLORS_INDEL_COSMIC = c(
+  "#F7BF80", "#ED8212", "#B5D988", "#31A12C",
+  "#F8CAB9", "#EA8E77", "#E44A39", "#B81C20",
+  "#D0E1F2", "#97C1DE", "#4B97CA", "#1C68AA",
+  "#D0CFD4", "#B2AEC5", "#8079AE", "#634298"
+)
+
 # Predefined substitutions
 SUBSTITUTIONS = c('C>A','C>G','C>T','T>A','T>C','T>G')
 SUBSTITUTIONS_96 = rep(SUBSTITUTIONS, each=16)
@@ -115,6 +122,25 @@ INDEL_CONTEXT = c(
   paste0('del.mh.len.5+.bimh.', c(1:4,"5+"))
 )
 
+INDEL_CONTEXT_COSMIC = c(
+  paste0('del.1bp.homopol.C.len.', c(1:5,"6+")),
+  paste0('del.1bp.homopol.T.len.', c(1:5,"6+")),
+  paste0('ins.1bp.homopol.C.len.', c(0:4,"5+")),
+  paste0('ins.1bp.homopol.T.len.', c(0:4,"5+")),
+  paste0('del.rep.len.2.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.3.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.4.rep.', c(1:5,"6+")),
+  paste0('del.rep.len.5+.rep.', c(1:5,"6+")),
+  paste0('ins.rep.len.2.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.3.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.4.rep.', c(0:4,"5+")),
+  paste0('ins.rep.len.5+.rep.', c(0:4,"5+")),
+  paste0('del.mh.len.2.bimh.1'),
+  paste0('del.mh.len.3.bimh.', c(1,2)),
+  paste0('del.mh.len.4.bimh.', c(1:3)),
+  paste0('del.mh.len.5+.bimh.', c(1:4,"5+"))
+)
+
 INDEL_CLASS = c(
   rep("C", 6), rep("T", 6), 
   rep("C", 6), rep("T", 6),
@@ -124,6 +150,20 @@ INDEL_CLASS = c(
 )
 
 INDEL_CLASS_HEADER = c(
+  rep("del.1bp", 12), rep("ins.1bp", 12),
+  rep("del.rep", 24), rep("ins.rep", 24),
+  rep("del.mh", 11)
+)
+
+INDEL_CLASS_COSMIC = c(
+  rep("C", 6), rep("T", 6), 
+  rep("C", 6), rep("T", 6),
+  rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
+  rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
+  rep("2", 1), rep("3", 2), rep("4", 3), rep("5+", 5)
+)
+
+INDEL_CLASS_HEADER_COSMIC = c(
   rep("del.1bp", 12), rep("ins.1bp", 12),
   rep("del.rep", 24), rep("ins.rep", 24),
   rep("del.mh", 11)

@@ -62,7 +62,7 @@ strand_occurrences = function(mut_mat_s, by, type, method = "split")
       {
         mut_mat_s = list("dbs" = mut_mat_s)
         type = "dbs"
-      } else if (all(unique(type_context$context) %in% indel_context))
+      } else if (all(unique(type_context$context) %in% INDEL_CONTEXT))
       {
         type_context = list("indel"=list("types"=type_context$types,
                                          "context"=type_context$context))

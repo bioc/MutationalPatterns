@@ -66,19 +66,18 @@ plot_compare_profiles = function(profile1,
     else if (all(names(profile1) %in% c(TRIPLETS_96, DBS))) { type = c("snv", "dbs")}
     else 
     {
-        if (!exists("indel_context")) { stop("Run 'indel_mutation_type()' to set global variables for indels")}
-        else if (all(names(profile1) %in% indel_context)) { type = "indel" }
-        else if (all(names(profile1) %in% c(TRIPLETS_96, indel_context)))
+        if (all(names(profile1) %in% INDEL_CONTEXT)) { type = "indel" }
+        else if (all(names(profile1) %in% c(TRIPLETS_96, INDEL_CONTEXT)))
         {
             warning("Mutation type of profile1 is unknown. Treated as combined mutation type")
             type = c("snv", "indel")
         }
-        else if (all(names(profile1) %in% c(DBS, indel_context)))
+        else if (all(names(profile1) %in% c(DBS, INDEL_CONTEXT)))
         {
             warning("Mutation type of profile1 is unknown. Treated as combined mutation type")
             type = c("dbs", "indel")
         }
-        else if (all(names(profile1) %in% c(TRIPLETS_96, DBS, indel_context)))
+        else if (all(names(profile1) %in% c(TRIPLETS_96, DBS, INDEL_CONTEXT)))
         {
             warning("Mutation type of profile1 is unknown. Treated as combined mutation type")
             type = c("snv", "dbs", "indel")
@@ -93,7 +92,7 @@ plot_compare_profiles = function(profile1,
       colors = list()
       if ("snv" %in% type) { colors[["snv"]] = COLORS6 }
       if ("dbs" %in% type) { colors[["dbs"]] = COLORS10 }
-      if ("indel" %in% type) { colors[["indel"]] = indel_colors }
+      if ("indel" %in% type) { colors[["indel"]] = COLORS_INDEL }
     }
   
     # Get relative profiles and difference
@@ -141,8 +140,8 @@ plot_compare_profiles = function(profile1,
     }
     if ("indel" %in% type)
     {
-      substitutions[["indel"]] = indel_class
-      context[["indel"]] = do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]]
+      substitutions[["indel"]] = INDEL_CLASS
+      context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
     }
     
     # Translate lists into vector

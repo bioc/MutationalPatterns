@@ -21,9 +21,8 @@ It is also possible to give a character for predefined variables:
 Default is "cosmic"}
 }
 \value{
-The global variables indel_class, indel_class_header,
-indel_context and indel_colors will be set with this function. 
-Furthermore a character is returned, which state the chosen option
+This function changes internal variables used by the package
+to analyse indels.
 }
 \description{
 A function to set the global values of the context variable, 

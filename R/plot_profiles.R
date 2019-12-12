@@ -54,17 +54,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   
   # Check the mutation type argument
   type = check_mutation_type(type)
-  # if ("indel" %in% type)
-  # {
-  #   if (!exists("indel_context")) { stop("Run 'indel_mutation_type()' to set global variables for indels")}
-  #   else if (indel_context[1] == "del.1bp.homopol.C.len.1") { indel_name = "cosmic" }
-  #   else if (indel_context[1] == "del.rep.len.1") { indel_name = "predefined" }
-  # } else if (!exists("indel_context"))
-  # {
-  #   indel_class = indel_class_header = indel_context = indel_colors = c()
-  #   indel_name = ""
-  # }
-  
+
   # Check mutation matrix when type is not given
   
   if (class(mut_matrix) == "matrix")
@@ -154,7 +144,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   }))
   
   # Set context and substitutions of the indels, along with plot values
-  if (indel_name == "cosmic")
+  if (INDEL == "cosmic")
   {
     context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
     df = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,c(1:4)]
@@ -162,7 +152,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
     substitution[["indel"]] = indel_class_value
     labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
     names(labels) = unique(substitution[["indel"]])
-  } else if (indel_name == "predefined") {
+  } else if (INDEL == "predefined") {
     context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
     substitution[["indel"]] = INDEL_CLASS
   } else {

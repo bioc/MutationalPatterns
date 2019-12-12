@@ -58,13 +58,10 @@ extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "spli
         mut_matrix = list("dbs"=mut_matrix)
         rank = c("dbs"=rank)
       }
-      else if (exists("indel_context"))
-      {
-        if (all(rownames(mut_matrix) %in% indel_context)) 
-        { 
-          mut_matrix = list("indel"=mut_matrix) 
-          rank = c("indel" = rank)
-        }
+      else if (all(rownames(mut_matrix) %in% INDEL_CONTEXT)) 
+      { 
+        mut_matrix = list("indel"=mut_matrix) 
+        rank = c("indel" = rank)
       }
     }
     

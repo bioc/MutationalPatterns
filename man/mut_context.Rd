@@ -4,7 +4,7 @@
 \alias{mut_context}
 \title{Retrieve context of base substitutions}
 \usage{
-mut_context(vcf, ref_genome, type, indel)
+mut_context(vcf, ref_genome, type)
 }
 \arguments{
 \item{vcf}{A Granges object}
@@ -14,9 +14,6 @@ mut_context(vcf, ref_genome, type, indel)
 \item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
-
-\item{indel}{(Optional) A character stating which indel context database to choose:
-'predefined' or 'cosmic'. Is used as argument for extract_indels()}
 }
 \value{
 Character vector with the context of the base substitutions

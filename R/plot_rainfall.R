@@ -66,16 +66,12 @@ plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", 
     # Check the mutation type argument
     type = check_mutation_type(type)
     
-    # Set indel variables at empty, if they are not present in global environment
-    if (!exists("indel_class"))
-      indel_class = indel_class_header = indel_context = indel_colors = c()
-    
     # If colors parameter not provided, set to default colors
     if(missing(colors))
     { 
       colors_list=list("snv"=COLORS6, 
                        "dbs"=COLORS10,
-                       "indel"=indel_colors)
+                       "indel"=COLORS_INDEL)
     } else { colors_list = colors }
     
     # Check color vector length
@@ -86,25 +82,19 @@ plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", 
       if (length(colors_list$dbs) != 10)
         stop("Provide colors vector for double base substitutions with length 10")
     
-    if ("indel" %in% type & length(indel_class > 0))
+    indel_color_number = 1
+    for (i in 2:length(INDEL_CLASS))
     {
-      indel_color_number = 1
-      for (i in 2:length(indel_class))
-      {
-        if (indel_class[i-1] != indel_class[i]) { indel_color_number = indel_color_number + 1 }
-      }
-      
-      if(length(unique(colors_list$indel)) != indel_color_number)
-        stop("Provide indel colors vector with length same number of classes")
-    } else if ("indel" %in% type)
-    { 
-      stop("No indel information found, run indel_mutation_type() to set the global variables")
+      if (INDEL_CLASS[i-1] != INDEL_CLASS[i]) { indel_color_number = indel_color_number + 1 }
     }
     
+    if(length(unique(colors_list$indel)) != indel_color_number)
+      stop("Provide indel colors vector with length same number of classes")
+
     # Get all the substitutions for each mutation type  
     substitutions_list = list("snv"=SUBSTITUTIONS, 
                               "dbs"=SUBSTITUTIONS_DBS, 
-                              "indel"=unique(paste(indel_class_header,indel_class, sep=".")))
+                              "indel"=unique(paste(INDEL_CLASS_HEADER,INDEL_CLASS, sep=".")))
     
     # For each mutation type, get all mutations from the vcf
     muts = list()

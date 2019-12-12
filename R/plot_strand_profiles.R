@@ -66,13 +66,7 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
   
     # Check the mutation type argument
     type = check_mutation_type(type)
-    if ("indel" %in% type)
-    {
-      if (!exists("indel_context")) { stop("Run 'indel_mutation_type()' to set global variables for indels")}
-      else if (indel_context[1] == "del.1bp.homopol.C.len.1") { indel_name = "cosmic" }
-      else if (indel_context[1] == "del.rep.len.1") { indel_name = "predefined" }
-    }
-  
+
     # Check mode 
     if (missing(mode) | !(mode %in% c("transcription", "replication")))
       stop("No or wrong option for 'mode' is given. Specify process: 'transcription' or 'replication'")
@@ -103,24 +97,24 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
         mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
                           "dbs"=mut_matrix[types %in% DBS,])
         method = "combine"
-      } else if (all(types %in% indel_context))
+      } else if (all(types %in% INDEL_CONTEXT))
       {
         mut_matrix = list("indel"=mut_matrix)
-      } else if (all(types %in% c(TRIPLETS_96,indel_context)))
+      } else if (all(types %in% c(TRIPLETS_96,INDEL_CONTEXT)))
       {
         mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
-                          "indel"=mut_matrix[types %in% indel_context,])
+                          "indel"=mut_matrix[types %in% INDEL_CONTEXT,])
         method = "combine"
-      } else if (all(types %in% c(DBS, indel_context)))
+      } else if (all(types %in% c(DBS, INDEL_CONTEXT)))
       {
         mut_matrix = list("dbs"=mut_matrix[types %in% DBS,],
-                          "indel"=mut_matrix[types %in% indel_context,])
+                          "indel"=mut_matrix[types %in% INDEL_CONTEXT,])
         method = "combine"
-      } else if (all(types %in% c(TRIPLETS_96, DBS, indel_context)))
+      } else if (all(types %in% c(TRIPLETS_96, DBS, INDEL_CONTEXT)))
       {
         mut_matrix = list("snv"=mut_matrix[types %in% TRIPLETS_96,],
                           "dbs"=mut_matrix[types %in% DBS,],
-                          "indel"=mut_matrix[types %in% indel_context,])
+                          "indel"=mut_matrix[types %in% INDEL_CONTEXT,])
         method = "combine"
       } else {
         stop("Mutation matrix is not a list and mutation types could not be derived")
@@ -147,24 +141,16 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     # Colors for plotting
     if(missing(colors)) 
     {
-      if (exists("indel_colors"))
-        colors=c(list("snv"=COLORS6),list("dbs"=COLORS10),list("indel"=indel_colors))
-      else
-        colors=c(list("snv"=COLORS6),list("dbs"=COLORS10))
+      colors=c(list("snv"=COLORS6),list("dbs"=COLORS10),list("indel"=COLORS_INDEL))
     }
     
-    if (exists("indel_class"))
+    indel_color_number = 1
+    for (i in 2:length(INDEL_CLASS))
     {
-      indel_color_number = 1
-      for (i in 2:length(indel_class))
-      {
-        if (indel_class[i-1] != indel_class[i]) { indel_color_number = indel_color_number + 1 }
-      }
-      if(length(unique(colors$indel)) != indel_color_number)
-        stop("Provide indel colors vector with length same number of classes")
-    } else {
-      indel_class_header=NULL
+      if (INDEL_CLASS[i-1] != INDEL_CLASS[i]) { indel_color_number = indel_color_number + 1 }
     }
+    if(length(unique(colors$indel)) != indel_color_number)
+      stop("Provide indel colors vector with length same number of classes")
     
     if(length(colors$snv) != 6){stop("Provide snv colors vector with length 6")}
     if(length(colors$dbs) != 10){stop("Provide dbs colors vector with length 10")}
@@ -193,20 +179,20 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     {
       if (indel_name == "cosmic")
       {
-        context[["indel"]] = rep(do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]],
+        context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
                                  each = 2)
-        df = do.call(rbind, strsplit(indel_context, "\\."))[,c(1:4)]
+        df = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,c(1:4)]
         indel_class_value = paste(df[,1],df[,2],df[,3],df[,4], sep=".")
         substitution[["indel"]] = rep(indel_class_value, each = 2)
         labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
         names(labels) = unique(substitution[["indel"]])
       } else if (indel_name == "predefined") {
-        context[["indel"]] = rep(do.call(rbind, strsplit(indel_context, "\\."))[,lengths(strsplit(indel_context, "\\."))[1]],
+        context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
                                  each = 2)
-        substitution[["indel"]] = rep(indel_class, each = 2)
+        substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
       } else {
-        context[["indel"]] = rep(indel_context, each = 2)
-        substitution[["indel"]] = rep(indel_class, each = 2)
+        context[["indel"]] = rep(INDEL_CONTEXT, each = 2)
+        substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
       }
     }
     
@@ -262,11 +248,11 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
                         strand = strand[[m]])
         
         rownames(norm_mut_matrix) = NULL
-        if (m == "indel" & !isEmpty(indel_class_header))
+        if (m == "indel" & !isEmpty(INDEL_CLASS_HEADER))
         {
-          df2 = cbind(df, "header"=indel_class_header, as.data.frame(norm_mut_matrix))
+          df2 = cbind(df, "header"=INDEL_CLASS_HEADER, as.data.frame(norm_mut_matrix))
           df3[[m]] = melt(df2, id.vars = c("header","substitution", "context", "strand"))
-          df3[[m]]$header = factor(df3[[m]]$header, levels = unique(indel_class_header))
+          df3[[m]]$header = factor(df3[[m]]$header, levels = unique(INDEL_CLASS_HEADER))
         }
         else 
         {
@@ -334,7 +320,7 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
           plot = plot + facet_grid(variable ~ substitution, scales = "free_x")
         } else if (m == "dbs"){
           plot = plot + facet_grid(variable ~ substitution, scales = "free_x") + xlab("alternative")
-        } else if (m == "indel" & !isEmpty(indel_class_header)){
+        } else if (m == "indel" & !isEmpty(INDEL_CLASS_HEADER)){
           # When there is a class header present, use facet_nested() to plot with merged labels
           plot = plot + 
             facet_nested(variable ~ header + substitution, 

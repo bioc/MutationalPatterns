@@ -32,6 +32,8 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
 
     df <- get_contexts_indel(bed, ref_genome = ref.genome)
     
+    if (context.database == "predefined") indel.len.cap = 5
+
     if(verbose){ message('Initializing indel signature output vector...') }
     indel_sig_names <- c(
       paste0('del.rep.len.', 1:indel.len.cap),
@@ -98,6 +100,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
     # For predefined indel context 
     if (context.database == "predefined")
     {
+      
       #--------- Assign repeat, microhomology, or no context ---------#
       if(verbose){ message('Determining indel contexts...') }
       context <- unlist(Map(function(n_copies_along_flank, n_bases_mh, indel_len){
@@ -157,7 +160,7 @@ extract_indels <- function(bed, context.database = "cosmic", sample.name=NULL, r
         df$final_context[i] = cosmic_indel_context(df[i,])
       }
       
-      df = df[df$final_context %in% indel_context,]
+      df = df[df$final_context %in% INDEL_CONTEXT,]
       
       return(df$final_context)
     }

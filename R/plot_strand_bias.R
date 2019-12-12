@@ -53,9 +53,8 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
     colors = c()
     if (any(grepl("snv", strand_bias$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_bias$mutation))) { colors = c(colors, COLORS10) }
-    if (exists("indel_colors"))
       if (any(grepl("indel", strand_bias$mutation))) 
-        colors = c(colors, indel_colors)
+        colors = c(colors, COLORS_INDEL)
   }
   
   # get variable names

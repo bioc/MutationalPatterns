@@ -4,8 +4,7 @@
 \alias{mut_matrix}
 \title{Make mutation count matrices of single and double substitutions and indels}
 \usage{
-mut_matrix(vcf_list, ref_genome, type, indel, method = "split",
-  num_cores)
+mut_matrix(vcf_list, ref_genome, type, method = "split", num_cores)
 }
 \arguments{
 \item{vcf_list}{List of collapsed vcf objects}
@@ -15,6 +14,16 @@ mut_matrix(vcf_list, ref_genome, type, indel, method = "split",
 \item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
+
+\item{method}{(Optional) Character stating how to use the data. 
+\itemize{
+  \item{"split":} { Each mutation type has seperate count matrix}
+  \item{"combine":} { Combined count matrix of all mutation types}
+}   
+Default is "split"}
+
+\item{num_cores}{(Optional) Number of cores used for parallel processing. If no value
+is given, then the number of available cores is autodetected.}
 
 \item{indel}{(Optional) List of mutation matrix and vectors for context, class and color of indels.
 Color vector must have the same length as the class vector, 
@@ -29,16 +38,6 @@ and counting mutations with predefined context:
   COSMIC database}
 }
 Default is "cosmic"}
-
-\item{method}{(Optional) Character stating how to use the data. 
-\itemize{
-  \item{"split":} { Each mutation type has seperate count matrix}
-  \item{"combine":} { Combined count matrix of all mutation types}
-}   
-Default is "split"}
-
-\item{num_cores}{(Optional) Number of cores used for parallel processing. If no value
-is given, then the number of available cores is autodetected.}
 
 \item{...}{Arguments passed to type_context()}
 }

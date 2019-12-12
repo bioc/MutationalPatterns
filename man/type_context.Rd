@@ -4,7 +4,7 @@
 \alias{type_context}
 \title{Retrieve context of mutations}
 \usage{
-type_context(vcf, ref_genome, type, ...)
+type_context(vcf, ref_genome, type)
 }
 \arguments{
 \item{vcf}{A CollapsedVCF object}
@@ -14,8 +14,6 @@ type_context(vcf, ref_genome, type, ...)
 \item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
-
-\item{...}{Arguments parsed to mut_context}
 }
 \value{
 Mutation types and context character vectors in a named list

@@ -7,7 +7,6 @@
 #' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
-#' @param ... Arguments parsed to mut_context
 #' @return Mutation types and context character vectors in a named list
 #'
 #' @importFrom IRanges reverse
@@ -30,7 +29,7 @@
 #'
 #' @export
 
-type_context = function(vcf, ref_genome, type, ...)
+type_context = function(vcf, ref_genome, type)
 {
     # Check the mutation type argument
     type = check_mutation_type(type)
@@ -80,7 +79,7 @@ type_context = function(vcf, ref_genome, type, ...)
       } else if (m == "dbs"){
         res[[m]] = list("types"=types)
       } else if (m == "indel"){
-        mut_context = mut_context(vcf, ref_genome, m, ...)
+        mut_context = mut_context(vcf, ref_genome, m)
         res[[m]] = list("types"=types, "context"=mut_context)
       }
     }
