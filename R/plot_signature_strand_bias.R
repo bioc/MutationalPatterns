@@ -42,6 +42,8 @@
 plot_signature_strand_bias = function(signatures_strand_bias, type, colors)
 {
     # Check mutation type argument
+    if (missing(type)) type_default = TRUE
+    else type_default = FALSE
     type = check_mutation_type(type)  
     
     if (class(signatures_strand_bias) == "list")
@@ -89,10 +91,10 @@ plot_signature_strand_bias = function(signatures_strand_bias, type, colors)
       } else {
         stop("Mutation matrix is not a list and mutation types could not be derived")
       }
-      
-      if (!(type %in% names(signatures_strand_bias)))
-        stop("Given mutation type(s) not found in mutation matrix")
     }
+    
+    if (type_default) type = names(signatures_strand_bias)
+    else type = intersect(type, names(signatures_strand_bias))
     
     if (missing(colors))
     {

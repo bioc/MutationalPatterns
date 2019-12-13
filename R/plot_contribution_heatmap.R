@@ -82,12 +82,8 @@ plot_contribution_heatmap = function(contribution,
   else if (class(contribution) == "matrix")
   {
     if (ncol(contribution) == 1) cluster_samples = FALSE
-    warning("Matrix given for 'contribution', treated as combined signatures",
-            call.=TRUE, immediate.=TRUE)
     combined = TRUE
   } else {stop("contribution must be a named list")}
-  
-  
   
   if (!combined)
   {
@@ -139,6 +135,7 @@ plot_contribution_heatmap = function(contribution,
   {
     cluster_mutations = c()
   }
+  
   # check if there are signatures names in the contribution matrix
   if(is.null(row.names(contribution)))
     {stop("contribution must have row.names (signature names)")}

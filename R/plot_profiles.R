@@ -53,6 +53,8 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   }
   
   # Check the mutation type argument
+  if (missing(type)) type_default = TRUE
+  else type_default = FALSE
   type = check_mutation_type(type)
 
   # Check mutation matrix when type is not given
@@ -92,9 +94,9 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
       stop("Mutation matrix is not a list and mutation types could not be derived")
     }
     
-    # Check if asked mutation types are present in the mutation matrices
-    if (!(type %in% names(mut_matrix)))
-      stop("Given mutation type(s) not found in mutation matrix")
+    # # Check if asked mutation types are present in the mutation matrices
+    # if (!(type %in% names(mut_matrix)))
+    #   stop("Given mutation type(s) not found in mutation matrix")
   }
   
   # Check names of list of mutation matrices
@@ -103,17 +105,21 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   }
   
   # Select mutation types which are both in mut_matrix and in type
-  type = intersect(names(mut_matrix), type)
-  if (isEmpty(type))
-    stop("Given mutation type(s) not found in mutation matrix")
-  else 
-    mut_matrix = mut_matrix[type]
-  
+  if (!type_default)
+  {
+    type = intersect(names(mut_matrix), type)
+    if (isEmpty(type))
+      stop("Given mutation type(s) not found in mutation matrix")
+    else 
+      mut_matrix = mut_matrix[type]
+  } else {
+    type = names(mut_matrix)
+  }
+
   # Check color vector length
   # Colors for plotting
   if(missing(colors)) 
     colors=c(list("snv"=COLORS6),list("dbs"=COLORS10),list("indel"=COLORS_INDEL))
-  
 
   indel_color_number = 1
   for (i in 2:length(INDEL_CLASS))

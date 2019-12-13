@@ -9,9 +9,9 @@ BiocStyle::latex(use.unsrturl=FALSE)
 @
 
 \title{Introduction to \Biocpkg{MutationalPatterns}}
+\author{Bastiaan Van der Roest}
 \author{Francis Blokzijl}
 \author{Roel Janssen}
-\author{Bastiaan Van der Roest}
 \author{Ruben van Boxtel}
 \author{Edwin Cuppen}
 \affil{University Medical Center Utrecht, Utrecht, The Netherlands}
@@ -714,93 +714,89 @@ COSMIC version 3 for SBS, DBS and indels. These signatures are available in
 numerical form from synapse.org ID syn12009743. Download here the referece
 whole genome signatures. Then load as follow:
 
-% <<download_cancer_signatures>>=
-% sp_url <- paste("https://cancer.sanger.ac.uk/cancergenome/assets/",
-%                 "signatures_probabilities.txt", sep = "")
-% 
-% snv_signatures = read.table(sp_url, sep = "\t", header = TRUE)
-% # Match the order of the mutation types to MutationalPatterns standard
-% new_order = match(row.names(mut_mat$snv), snv_signatures$Somatic.Mutation.Type)
-% # Reorder cancer signatures dataframe
-% snv_signatures = snv_signatures[as.vector(new_order),]
-% # Add trinucletiode changes names as row.names
-% row.names(snv_signatures) = snv_signatures$Somatic.Mutation.Type
-% # Keep only 96 contributions of the signatures in matrix
-% snv_signatures = as.matrix(snv_signatures[,4:33])
-% @
- 
 <<load_signatures_e, eval = FALSE>>=
 # Read the SBS signatures file
-snv_signatures = read.csv("sigProfiler_SBS_signatures_v3_2019_05_22.csv")
+# snv_signatures = read.csv("sigProfiler_SBS_signatures_v3_2019_05_22.csv")
 # Derive the 96 mutations
-snv_signatures$MutationType = sprintf("%s[%s]%s",
-                                      substr(snv_signatures$SubType, 1, 1),
-                                      snv_signatures$Type,
-                                      substr(snv_signatures$SubType, 3, 3))
+# snv_signatures$MutationType = sprintf("%s[%s]%s",
+                                      # substr(snv_signatures$SubType, 1, 1),
+                                      # snv_signatures$Type,
+                                      # substr(snv_signatures$SubType, 3, 3))
 
 # Match the order of the mutation types to MutationalPatterns standard
-new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
+# new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
 # Reorder cancer signatures dataframe
-snv_signatures = snv_signatures[as.vector(new_order),]
+# snv_signatures = snv_signatures[as.vector(new_order),]
 # Add trinucletiode changes names as row.names
-row.names(snv_signatures) = snv_signatures$MutationType
+# row.names(snv_signatures) = snv_signatures$MutationType
 # Keep only 96 contributions of the signatures in matrix
-snv_signatures = as.matrix(snv_signatures[,3:69])
+# snv_signatures = as.matrix(snv_signatures[,3:69])
 
 # Read the DBS signatures file
-dbs_signatures = read.csv("sigProfiler_DBS_signatures.csv")
+# dbs_signatures = read.csv("sigProfiler_DBS_signatures.csv")
 # Add mutation types as rownames
-rownames(dbs_signatures) = dbs_signatures$Mutation.Type
+# rownames(dbs_signatures) = dbs_signatures$Mutation.Type
 # Keep only 10 DBS signatures
-dbs_signatures = as.matrix(dbs_signatures[,2:11])
+# dbs_signatures = as.matrix(dbs_signatures[,2:11])
 
 # Read the indel signatures file
-indel_signatures = read.csv("sigProfiler_ID_signatures.csv")
+# indel_signatures = read.csv("sigProfiler_ID_signatures.csv")
 # Add indel context as rownames
-rownames(indel_signatures) = MutationalPatterns:::INDEL_CONTEXT
+# rownames(indel_signatures) = MutationalPatterns:::INDEL_CONTEXT
 # Keep only the 17 indel signatures
-indel_signatures = as.matrix(indel_signatures[,2:18])
+# indel_signatures = as.matrix(indel_signatures[,2:18])
 
 # Store all mutation types in one list
-cancer_signatures = list("snv" = snv_signatures,
-                         "dbs" = dbs_signatures,
-                         "indel" = indel_signatures)
+# cosmic_signatures = list("snv" = snv_signatures,
+#                          "dbs" = dbs_signatures,
+#                          "indel" = indel_signatures)
+
+cosmic_signatures = readRDS(system.file("states/COSMIC_signatures",
+                                        package = "MutationalPatterns"))
 @
 
-<<load_signatures, echo = FALSE>>=
-signature_files = list.files(system.file("extdata", package = "MutationalPatterns"),
-                            pattern = ".csv", full.names = TRUE)
-snv_signatures = read.csv(signature_files[3])
-snv_signatures$MutationType = sprintf("%s[%s]%s",
-                                      substr(snv_signatures$SubType, 1, 1),
-                                      snv_signatures$Type,
-                                      substr(snv_signatures$SubType, 3, 3))
-new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
-snv_signatures = snv_signatures[as.vector(new_order),]
-row.names(snv_signatures) = snv_signatures$MutationType
-snv_signatures = as.matrix(snv_signatures[,3:69])
+% <<load_signatures, echo = FALSE>>=
+% signature_files = list.files(system.file("extdata", package = "MutationalPatterns"),
+%                             pattern = ".csv", full.names = TRUE)
+% snv_signatures = read.csv(signature_files[3])
+% snv_signatures$MutationType = sprintf("%s[%s]%s",
+%                                       substr(snv_signatures$SubType, 1, 1),
+%                                       snv_signatures$Type,
+%                                       substr(snv_signatures$SubType, 3, 3))
+% new_order = match(row.names(mut_mat$snv), snv_signatures$MutationType)
+% snv_signatures = snv_signatures[as.vector(new_order),]
+% row.names(snv_signatures) = snv_signatures$MutationType
+% snv_signatures = as.matrix(snv_signatures[,3:69])
+% 
+% dbs_signatures = read.csv(signature_files[1])
+% rownames(dbs_signatures) = dbs_signatures$Mutation.Type
+% dbs_signatures = as.matrix(dbs_signatures[,2:11])
+% 
+% indel_signatures = read.csv(signature_files[2])
+% rownames(indel_signatures) = MutationalPatterns:::INDEL_CONTEXT_COSMIC
+% indel_signatures = as.matrix(indel_signatures[,2:18])
+% 
+% cancer_signatures = list("snv" = snv_signatures,
+%                          "dbs" = dbs_signatures,
+%                          "indel" = indel_signatures)
+% @
 
-dbs_signatures = read.csv(signature_files[1])
-rownames(dbs_signatures) = dbs_signatures$Mutation.Type
-dbs_signatures = as.matrix(dbs_signatures[,2:11])
+The SBS signatures from the COSMIC database include signatures which are 
+probably because of sequencing artefacts. These signatures can better be
+removed before performing analyses. 
 
-indel_signatures = read.csv(signature_files[2])
-rownames(indel_signatures) = MutationalPatterns:::INDEL_COSMIC
-indel_signatures = as.matrix(indel_signatures[,2:18])
-
-cancer_signatures = list("snv" = snv_signatures,
-                         "dbs" = dbs_signatures,
-                         "indel" = indel_signatures)
+<<exclude_artefacts>>=
+cosmic_signatures$snv = cosmic_signatures$snv[,-c(32,48,50:65)]
 @
 
 Plot mutational profile of the first two COSMIC SBS signatures:
 <<plot_profiles_COSMIC_e, eval=FALSE>>=
-plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum")
+plot_profiles(cosmic_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum")
 @
 
 <<plot_profiles_COSMIC, echo=FALSE>>=
 ggsave("plot_profiles_COSMIC.pdf",
-       plot_profiles(cancer_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum"),
+       plot_profiles(cosmic_signatures$snv[,1:2], condensed = TRUE, ymax = "maximum"),
        width = 7,
        height = 3)
 @
@@ -815,16 +811,16 @@ Hierarchically cluster the COSMIC SBS signatures based on their similarity with
 average linkage:
 
 <<cluster_COSMIC_e, eval = FALSE>>=
-hclust_cosmic = cluster_signatures(cancer_signatures$snv, method = "average")
+hclust_cosmic = cluster_signatures(cosmic_signatures$snv, method = "average")
 # store signatures in new order
-cosmic_order = colnames(cancer_signatures$snv)[hclust_cosmic$order]
+cosmic_order = colnames(cosmic_signatures$snv)[hclust_cosmic$order]
 plot(hclust_cosmic)
 @
 
 <<cluster_COSMIC, echo = FALSE>>=
-hclust_cosmic = cluster_signatures(cancer_signatures$snv, method = "average")
+hclust_cosmic = cluster_signatures(cosmic_signatures$snv, method = "average")
 # store signatures in new order
-cosmic_order = colnames(cancer_signatures$snv)[hclust_cosmic$order]
+cosmic_order = colnames(cosmic_signatures$snv)[hclust_cosmic$order]
 ggsave("cluster_COSMIC.pdf",
        plot(hclust_cosmic),
        width = 12,
@@ -855,14 +851,14 @@ The cosine similarity between two mutational profiles/signatures can be
 calculated with \Rfunction{cos\_sim}:
 
 <<cos_sim>>=
-cos_sim(mut_mat$snv[,1], cancer_signatures$snv[,1])
+cos_sim(mut_mat$snv[,1], cosmic_signatures$snv[,1])
 @
 
 To do pairwise cosine similarity calculations of mutational profiles and COSMIC
 signatures, use the function \Rcode{cos\_sim\_matrix}:
 
 <<cos_sim_cosmic_samples>>=
-cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cancer_signatures,
+cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cosmic_signatures,
                                             type = "all")
 lapply(cos_sim_samples_signatures, function(x) x[1:5,1:5])
 @
@@ -911,7 +907,7 @@ mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome, type = "all")
 Fit mutation matrices to the COSMIC signatures:
 
 <<fit_to_signatures>>=
-fit_res <- fit_to_signatures(mut_mat, cancer_signatures, type = "all")
+fit_res <- fit_to_signatures(mut_mat, cosmic_signatures, type = "all")
 @
 
 Plot the optimal contribution of the COSMIC signatures in each sample as a
@@ -928,7 +924,7 @@ fit_res$contribution$indel <- fit_res$contribution$indel[
 
 # Plot contribution barplot
 plot_contribution(fit_res$contribution,
-                    cancer_signatures,
+                    cosmic_signatures,
                     coord_flip = FALSE,
                     mode = "absolute")
 @
@@ -940,7 +936,7 @@ fit_res$contribution$indel <- fit_res$contribution$indel[which(rowSums(fit_res$c
 
 ggsave("plot_contribution_3.pdf",
        plot_contribution(fit_res$contribution,
-                         cancer_signatures,
+                         cosmic_signatures,
                          type = "all",
                          coord_flip = FALSE,
                          mode = "absolute"),
@@ -959,7 +955,7 @@ the mutation matrix with the golden ratio search and plot results from
 both methods in relative contribution:
 
 <<fit_to_signatures_grs>>=
-fit_res_grs <- fit_to_signatures(mut_mat, cancer_signatures, type = "snv",
+fit_res_grs <- fit_to_signatures(mut_mat, cosmic_signatures, type = "snv",
                              method = "golden-ratio-search")
 # Select signatures with some contribution
 select_grs <- which(rowSums(fit_res_grs$contribution) > 0.06)
@@ -970,17 +966,17 @@ the non-negative least squares problem and the golden ratio search, make a
 palette of colors with the \\ \Rfunction{default\_colors\_ggplot} function:
 
 <<color_palette>>=
-colorvector <- default_colors_ggplot(ncol(cancer_signatures$snv))
+colorvector <- default_colors_ggplot(ncol(cosmic_signatures$snv))
 @
 
 Then plot the results of both algorithms:
 
 <<plot_contribution_nnls_grs>>=
 # Plot relative contribution from non-negative least squares
-select = match(rownames(fit_res$contribution$snv), colnames(cancer_signatures$snv))
+select = match(rownames(fit_res$contribution$snv), colnames(cosmic_signatures$snv))
 
 pc1 <- plot_contribution(fit_res$contribution,
-                   cancer_signatures$snv,
+                   cosmic_signatures$snv,
                    coord_flip = FALSE,
                    type = "snv",
                    mode = "relative",
@@ -988,7 +984,7 @@ pc1 <- plot_contribution(fit_res$contribution,
 
 # Plot relative contribution from golden ratio search
 pc2 <- plot_contribution(fit_res_grs$contribution[select_grs,],
-                        cancer_signatures$snv[,select_grs],
+                        cosmic_signatures$snv[,select_grs],
                         coord_flip = FALSE,
                         mode = "relative",
                         palette = list("snv" = colorvector[select_grs]))

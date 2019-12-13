@@ -209,7 +209,8 @@ plot_rainfall <- function(vcf, chromosomes, type, method = "split", title = "", 
             panel.grid.major.x = element_blank(),
             axis.ticks.x = element_blank(),
             axis.text.x = element_blank()) + 
-          guides(colour = guide_legend(nrow = 1))
+          guides(colour = guide_legend(nrow = 2),
+                 fill = guide_legend(nrow = 2))
         
         plots[[mut]] = plot
       }

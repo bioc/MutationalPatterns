@@ -5,11 +5,11 @@ Description: An extensive toolset for the characterization and visualization
     of a wide range of mutational patterns in base substitution catalogs.
 Version: 1.6.2
 Date: 2018-10-18
-Author: Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
+Author: Bastiaan Van der Roest, Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
 Maintainer: Roel Janssen <R.R.E.Janssen-10@umcutrecht.nl>,
     Francis Blokzijl <f.blokzijl@hubrecht.eu>
 License: MIT + file LICENSE
-URL: https://doi.org/10.1186/s13073-018-0539-0
+URL: https://github.com/UMCUGenetics/MutationalPatterns
 Imports:
     deconstructSigs,
     stats,
