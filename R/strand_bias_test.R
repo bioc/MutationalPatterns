@@ -50,9 +50,6 @@
 
 strand_bias_test = function(strand_occurrences, type, method = "split")
 {
-    # Check mutation type argument
-    type = check_mutation_type(type)
-    
     if(class(strand_occurrences) == "data.frame")
     {
       if(length(unique(strand_occurrences$mutation)) > 1)
@@ -73,7 +70,8 @@ strand_bias_test = function(strand_occurrences, type, method = "split")
     if (method == "split")
     {
       # Get the asked mutation types
-      type = intersect(type, names(strand_occurrences))
+      type = check_mutation_type(strand_occurrences)
+      strand_occurrences = strand_occurrences[type]
       
       df_result = list()
       

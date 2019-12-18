@@ -51,11 +51,6 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   {
     stop("Provide a named list for 'mut_matrix' with at least one mutation type")
   }
-  
-  # Check the mutation type argument
-  if (missing(type)) type_default = TRUE
-  else type_default = FALSE
-  type = check_mutation_type(type)
 
   # Check mutation matrix when type is not given
   
@@ -104,18 +99,10 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
     stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
   }
   
-  # Select mutation types which are both in mut_matrix and in type
-  if (!type_default)
-  {
-    type = intersect(names(mut_matrix), type)
-    if (isEmpty(type))
-      stop("Given mutation type(s) not found in mutation matrix")
-    else 
-      mut_matrix = mut_matrix[type]
-  } else {
-    type = names(mut_matrix)
-  }
-
+  # Check the mutation type argument
+  type = check_mutation_type(type, mut_matrix)
+  mut_matrix = mut_matrix[type]
+  
   # Check color vector length
   # Colors for plotting
   if(missing(colors)) 

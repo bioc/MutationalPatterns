@@ -63,11 +63,6 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     {
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }
-  
-    # Check the mutation type argument
-    if (missing(type)) type_default = TRUE
-    else type_default = FALSE
-    type = check_mutation_type(type)
 
     # Check mode 
     if (missing(mode) | !(mode %in% c("transcription", "replication")))
@@ -133,17 +128,8 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     }
     
     # Select mutation types which are both in mut_matrix and in type
-    # Select mutation types which are both in mut_matrix and in type
-    if (!type_default)
-    {
-      type = intersect(names(mut_matrix), type)
-      if (isEmpty(type))
-        stop("Given mutation type(s) not found in mutation matrix")
-      else 
-        mut_matrix = mut_matrix[type]
-    } else {
-      type = names(mut_matrix)
-    }
+    type = check_mutation_type(type, mut_matrix)
+    mut_matrix = mut_matrix[type]
     
     # Check color vector length
     # Colors for plotting

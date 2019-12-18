@@ -62,11 +62,6 @@
 
 fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "least-squares", ...)
 {
-    # Check mutation type argument
-    if (missing(type)) { type_default = TRUE }
-    else { type_default = FALSE }
-    type = check_mutation_type(type)
-    
     # If signature object is a matrix, then look at "mut_matrix" for mutation type
     if (class(signatures) == "matrix")
     { 
@@ -104,8 +99,6 @@ fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "lea
             break 
           }
         }
-        
-        type = names(mut_matrix)
       }
     }
     
@@ -114,10 +107,9 @@ fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "lea
                  "could not be found in signature list"))
     
     # Get the mutation types asked for
-    if (!type_default & !(all(type %in% names(mut_matrix))))
-      stop("One or more mutation types are not found in count matrices")
-    mut_matrix = mut_matrix[intersect(type, names(mut_matrix))]
-    signatures = signatures[intersect(type, names(signatures))]
+    type = check_mutation_type(type, mut_matrix)
+    mut_matrix = mut_matrix[type]
+    signatures = signatures[type]
     
     # Extra arguments for whichSignatures()
     dots = list(...)

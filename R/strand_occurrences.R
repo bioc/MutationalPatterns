@@ -44,9 +44,6 @@
 
 strand_occurrences = function(mut_mat_s, by, type, method = "split")
 {
-    # Check the mutation type argument
-    type = check_mutation_type(type)
-    
     # If mutation matrix object is a matrix, then find the mutation type
     if (class(mut_mat_s) == "matrix")
     {
@@ -62,17 +59,20 @@ strand_occurrences = function(mut_mat_s, by, type, method = "split")
       {
         mut_mat_s = list("dbs" = mut_mat_s)
         type = "dbs"
-      } else if (all(unique(type_context$context) %in% INDEL_CONTEXT))
+      } else if ((all(rownames(mut_mat_s) %in% 
+                      c(paste0(INDEL_CONTEXT,"-right"),
+                        paste0(INDEL_CONTEXT,"-left"))) &
+                 length(rownames(mut_mat_s)) > 0)
       {
-        type_context = list("indel"=list("types"=type_context$types,
-                                         "context"=type_context$context))
+        mut_mat_s = list("indel" = mut_mat_s)
         type = "indel"
       }
     }
     
     # Get the asked types
-    type = intersect(type, names(mut_mat_s))
-  
+    type = check_mutation_type(type, mut_mat_s)
+    mut_mat_s = mut_mat_s[type]
+    
     if (method == "split")
     {
       z = list()

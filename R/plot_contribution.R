@@ -82,21 +82,12 @@ plot_contribution = function(contribution,
     # check mode parameter
     if(!(mode == "relative" | mode == "absolute" | mode == "both"))
         stop("mode parameter should be either 'relative', 'absolute' or 'both'")
-  
-    # check mutation type
-    if (missing(type)) type_default = TRUE
-    else type_default = FALSE
-    type = check_mutation_type(type)
-    
+
     if (class(contribution) == "list")
     {
-      if (!type_default)
-      {
-        if (all(type %in% names(contribution))) {contribution = contribution[type]}
-        else {stop("One or more values of 'type' is not found in 'contribution'")}
-      } else {
-        type = names(contribution)
-      }
+      # check mutation type
+      type = check_mutation_type(type, contribution)
+      contribution = contribution[type]
       
       for (m in type)
       {
