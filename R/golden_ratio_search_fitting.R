@@ -54,9 +54,9 @@
 golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
 {
     # Check if mut_matrix and signatures are both lists
-    if (class(mut_matrix) != "list" | isEmpty(names(mut_matrix)) | any(names(mut_matrix) == ""))
+    if (!is(mut_matrix, "list") | isEmpty(names(mut_matrix)) | any(names(mut_matrix) == ""))
       stop("'mut_matrix' is not a list or some elements are not named")
-    if (class(signatures) != "list" | isEmpty(names(signatures)) | any(names(signatures) == ""))
+    if (!is(signatures, "list") | isEmpty(names(signatures)) | any(names(signatures) == ""))
       stop("'signatures' is not a list or some elements are not named")
   
     mut_matrix_transposed = list()

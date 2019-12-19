@@ -35,8 +35,15 @@
 
 plot_enrichment_depletion = function(df)
 {
-    df2 = melt(df[,c(1,2,3,7,9)], id = c("by", "region", "mutation"))
-    df2$mutation = factor(df2$mutation, levels = c("snv", "dbs", "indel"))
+    if ("mutation" %in% colnames(df))
+    {
+      mutation = TRUE
+      df2 = melt(df[,c(1,2,3,7,9)], id = c("by", "region", "mutation"))
+      df2$mutation = factor(df2$mutation, levels = c("snv", "dbs", "indel"))
+    } else {
+      mutation = FALSE
+      df2 = melt(df[,c(1,2,6,8)], id = c("by", "region"))
+    }
 
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
@@ -55,27 +62,36 @@ plot_enrichment_depletion = function(df)
         geom_bar(colour="black",
                     stat="identity",
                     position=position_dodge()) +
-        facet_grid(mutation ~ region, scales = "free") +
         theme_bw()  +
         theme(axis.ticks = element_blank(),
                 axis.text.x = element_blank(),
                 legend.title=element_blank()) +
         xlab("") +
         ylab("No. mutations") +
-    scale_x_discrete(breaks=NULL)
+        scale_x_discrete(breaks=NULL)
+    
+    if (mutation)
+      plot1 = plot1 + facet_grid(mutation ~ region, scales = "free")
+    else 
+      plot1 = plot1 + facet_grid(. ~ region, scales = "free")
 
     # determine max y value for plotting
     # = log2 ratio with pseudo counts
     max_df = df[,1:3]
     maximum = c()
-    for (m in unique(df2$mutation))
-    {
-        maximum = c(maximum, ceiling(max(abs(log2((df$observed[df$mutation==m]+0.1) / (df$expected[df$mutation==m]+0.1))))))
-    }
-    max_df$max = rep(maximum, nrow(max_df) / length(maximum))
-    max_df$mutation = factor(max_df$mutation, levels = c("snv","dbs","indel"))
+    if (mutation){
+      for (m in unique(df2$mutation))
+      {
+          maximum = c(maximum, ceiling(max(abs(log2((df$observed[df$mutation==m]+0.1) / (df$expected[df$mutation==m]+0.1))))))
+      }
+      max_df$max = rep(maximum, nrow(max_df) / length(maximum))
+      max_df$mutation = factor(max_df$mutation, levels = c("snv","dbs","indel"))
     
-    df$mutation = factor(df$mutation, levels = c("snv","dbs","indel"))
+      df$mutation = factor(df$mutation, levels = c("snv","dbs","indel"))
+    } else {
+      maximum = ceiling(max(abs(log2((df$observed+0.1) / (df$expected+0.1)))))
+      max_df$max = rep(maximum, nrow(max_df))
+    }
 
     # Part 2: effect size of enrichment/depletion with significance test
     plot2 = ggplot(data=df, aes(x=by,
@@ -92,7 +108,6 @@ plot_enrichment_depletion = function(df)
                 vjust = ifelse(sign(log2((observed+0.1) /
                                             (expected+0.1))) > 0, 0.5, 1)),
                 size = 8, position = position_dodge(width = 1)) +
-        facet_grid(mutation ~ region, scales = "free") +
         theme_bw() +
         theme(axis.ticks = element_blank(),
                 axis.text.x = element_blank(),
@@ -102,6 +117,11 @@ plot_enrichment_depletion = function(df)
         scale_x_discrete(breaks = NULL) +
         geom_blank(data=max_df, aes(y=-max)) +
         geom_blank(data=max_df, aes(y=max))
+    
+    if(mutation)
+      plot2 = plot2 + facet_grid(mutation ~ region, scales = "free")
+    else
+      plot2 = plot2 + facet_grid(. ~ region, scales = "free")
 
     output <- cowplot::plot_grid (plot1, plot2, ncol=1, nrow=2, rel_heights = c(2,1.2), align="v")
     return(output)

@@ -62,7 +62,8 @@ nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
 colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
 
 ## Generate the plot
-plot_strand_profiles(nmf_res_strand$signatures)
+plot_strand_profiles(nmf_res_strand$signatures, mode = "transcription",
+                     type = "snv")
 
 }
 \seealso{

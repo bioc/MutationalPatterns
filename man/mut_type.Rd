@@ -27,7 +27,7 @@ mutation types of the DBS from COSMIC.
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
-mut_type(vcfs[[1]], type)
+mut_type(vcfs[[1]], type = "snv")
 
 }
 \seealso{

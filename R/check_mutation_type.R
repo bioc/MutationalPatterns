@@ -14,10 +14,17 @@
 #'
 #' @export
 
-check_mutation_type <- function(type)
+check_mutation_type <- function(type, matrix)
 {
+  if (missing(matrix)) matrix = NULL
+  
   # Default type is "snv"
-  if (missing(type)) {type = c("snv")}
+  if (missing(type)) {
+    if (is(matrix, "list")) 
+      type = names(matrix)  
+    else 
+      type = "snv"
+  }
   
   # Translate type to lower case
   type = unname(sapply(type, function(m) tolower(m)))
@@ -28,5 +35,16 @@ check_mutation_type <- function(type)
     stop("One or more mutation types given are unknown")
   }
   
-  return(type)
+  if (is.null(matrix)) return(type)
+  else {
+    type = intersect(type, names(matrix))
+    if (length(type) == 0)
+      stop(paste("Type(s) not found in data.\n ",
+                 "Please run without type argument or provide type(s)",
+                 "that are in data"))
+    
+    return(type)
+  }
+  
+  
 }

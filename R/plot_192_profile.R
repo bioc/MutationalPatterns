@@ -37,9 +37,9 @@
 
 plot_192_profile = function(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 {
-    if (grepl("transcribed", rownames(nmf_res_strand$signatures)[1]))
+    if (grepl("transcribed", rownames(mut_matrix)[1]))
       mode = "transcription"
-    else if (grepl("left", rownames(nmf_res_strand$signatures)[1]))
+    else if (grepl("left", rownames(mut_matrix)[1]))
       mode = "replication"
   
     warning("Function will be deprecated. Use 'plot_strand_profiles' instead")

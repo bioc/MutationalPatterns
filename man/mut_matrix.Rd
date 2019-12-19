@@ -62,7 +62,8 @@ library(ref_genome, character.only = TRUE)
 
 ## Construct a mutation matrix from the loaded VCFs in comparison to the
 ## ref_genome.
-mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, type)
+mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome, 
+                      type = "snv")
 
 }
 \seealso{

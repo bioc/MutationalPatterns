@@ -83,7 +83,7 @@ plot_contribution = function(contribution,
     if(!(mode == "relative" | mode == "absolute" | mode == "both"))
         stop("mode parameter should be either 'relative', 'absolute' or 'both'")
 
-    if (class(contribution) == "list")
+    if (is(contribution, "list"))
     {
       # check mutation type
       type = check_mutation_type(type, contribution)
@@ -105,7 +105,7 @@ plot_contribution = function(contribution,
         }
       }
       
-      if (class(signatures) == "matrix"){
+      if (is(signatures, "matrix")){
         for (m in names(contribution)){
           if (any(colnames(signatures) == rownames(contribution[[m]]))){
             signatures = list(signatures)
@@ -120,7 +120,7 @@ plot_contribution = function(contribution,
       if (is.null(rownames(contribution)))
         stop("Provide contribution matrix with rownames for signatures")
       
-      if (is.list(signatures))
+      if (is(signatures, "list"))
       {
         keep_sigs = NULL
         for (m in names(signatures)){
@@ -135,7 +135,7 @@ plot_contribution = function(contribution,
   
     if (length(palette) == 0)
     {
-      if (class(signatures) == "matrix")
+      if (is(signatures, "matrix"))
       {
         palette = default_colors_ggplot(ncol(signatures))
         names(palette) = colnames(signatures)  
@@ -309,7 +309,7 @@ plot_contribution = function(contribution,
         mode_next = "absolute"
       } else {mode_next = "none"}
       
-      if (class(contribution) == "list")
+      if (is(contribution, "list"))
       {
         colsums = c()
         total_signatures = list()

@@ -54,7 +54,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
 
   # Check mutation matrix when type is not given
   
-  if (class(mut_matrix) == "matrix")
+  if (is(mut_matrix, "matrix"))
   {
     if (all(rownames(mut_matrix) %in% TRIPLETS_96)){
       mut_matrix = list("snv"=mut_matrix)

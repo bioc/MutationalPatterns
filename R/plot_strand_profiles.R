@@ -48,7 +48,8 @@
 #' colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
 #'
 #' ## Generate the plot
-#' plot_strand_profiles(nmf_res_strand$signatures)
+#' plot_strand_profiles(nmf_res_strand$signatures, mode = "transcription",
+#'                      type = "snv")
 #'
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
@@ -68,9 +69,9 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     if (missing(mode) | !(mode %in% c("transcription", "replication")))
       stop("No or wrong option for 'mode' is given. Specify process: 'transcription' or 'replication'")
     
-    if (class(mut_matrix) == "matrix")
+    if (is(mut_matrix, "matrix"))
       strand = unique(do.call(rbind, strsplit(rownames(mut_matrix), "-"))[,2])
-    else if (class(mut_matrix) == "list")
+    else if (is(mut_matrix, "list"))
       strand = unique(do.call(rbind, strsplit(rownames(mut_matrix[[1]]), "-"))[,2])
     
     if ((mode == "transcription" & !(all(strand %in% c("transcribed", "untranscribed")))) |
@@ -78,7 +79,7 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
       stop("Selected 'mode' does not correspond to process information in the mutation matrices")
     
     # Check mutation matrix when type is not given
-    if (class(mut_matrix) == "matrix")
+    if (is(mut_matrix, "matrix"))
     {
       types_info = do.call(rbind, strsplit(rownames(mut_matrix), "-"))
       types = types_info[,1]

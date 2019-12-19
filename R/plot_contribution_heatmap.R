@@ -70,7 +70,7 @@ plot_contribution_heatmap = function(contribution,
                                      plot_values = FALSE)
 {
   # check contribution argument
-  if(class(contribution) == "list")
+  if(is(contribution, "list"))
   { 
     for (m in names(contribution))
     {
@@ -79,7 +79,7 @@ plot_contribution_heatmap = function(contribution,
     }
     combined = FALSE
   }
-  else if (class(contribution) == "matrix")
+  else if (is(contribution, "matrix"))
   {
     if (ncol(contribution) == 1) cluster_samples = FALSE
     combined = TRUE
@@ -88,14 +88,8 @@ plot_contribution_heatmap = function(contribution,
   if (!combined)
   {
     # Check type argument
-    type = check_mutation_type(type)
-    
-    if (all(type %in% names(contribution))) 
-        contribution = contribution[type]
-    else {stop(paste("One or more values of 'type' is not found",
-                     "in 'contribution'.",
-                     "Run function without 'type' argument or give", 
-                     "values which are in contribution list"))}
+    type = check_mutation_type(type, contribution)
+    contribution = contribution[type]
     
     # Hierarchically cluster samples
     if (cluster_samples)
@@ -157,7 +151,7 @@ plot_contribution_heatmap = function(contribution,
       sig_order = rownames(contribution)
   } else {
     # check sig_order argument
-    if(class(sig_order) != "character")
+    if(!is(sig_order, "character"))
       {stop("sig_order must be a character vector")}
     if(length(sig_order) != nrow(contribution))
     {stop(paste("sig_order must have the same length as the number of",

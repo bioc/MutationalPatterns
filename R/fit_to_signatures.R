@@ -63,9 +63,9 @@
 fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "least-squares", ...)
 {
     # If signature object is a matrix, then look at "mut_matrix" for mutation type
-    if (class(signatures) == "matrix")
+    if (is(signatures, "matrix"))
     { 
-      if (class(mut_matrix) == "matrix") 
+      if (is(mut_matrix,"matrix") )
       { 
         signatures = list("snv"=signatures) 
         mut_matrix = list("snv"=mut_matrix)
@@ -85,9 +85,9 @@ fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "lea
       }
       
     # If count matrix object is a matrix, then look at "signatures" for mutation type
-    } else if (class(signatures) == "list")
+    } else if (is(signatures, "list"))
     {
-      if (class(mut_matrix) == "matrix") 
+      if (is(mut_matrix,"matrix") )
       {
         mut_list = list()
         for (m in names(signatures))
@@ -102,7 +102,7 @@ fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "lea
       }
     }
     
-    if (class(mut_matrix) != "list")
+    if (!is(mut_matrix, "list"))
       stop(paste("No list is given for 'mut_matrix' and mutation type",
                  "could not be found in signature list"))
     

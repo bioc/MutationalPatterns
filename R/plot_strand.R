@@ -47,7 +47,7 @@ plot_strand = function(strand_counts, mode = "relative", colors)
 {
   plots = list()
   
-  if (class(strand_counts) == "list")
+  if (is(strand_counts, "list"))
   { 
     strand_counts = do.call(rbind, strand_counts) 
     method = "split"

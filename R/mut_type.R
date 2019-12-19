@@ -16,7 +16,7 @@
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #'
-#' mut_type(vcfs[[1]], type)
+#' mut_type(vcfs[[1]], type = "snv")
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}
@@ -31,7 +31,7 @@ mut_type = function(vcf, type)
     # Get the mutations from the vcf
     muts = mutations_from_vcf(vcf, type)
     
-    if (class(muts) != "list")
+    if (!is(muts, "list"))
     {
       muts = list(muts)
       names(muts) = type

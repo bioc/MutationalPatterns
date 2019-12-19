@@ -31,7 +31,7 @@ vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
-type_context <- type_context(vcfs[[1]], ref_genome, type)
+type_context <- type_context(vcfs[[1]], ref_genome, type = "snv")
 
 }
 \seealso{

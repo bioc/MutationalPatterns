@@ -5,7 +5,7 @@
 \title{Read VCF files into a GRangesList}
 \usage{
 read_vcfs_as_granges(vcf_files, sample_names, genome, group = "auto+sex",
-  check_alleles = TRUE, n_cores)
+  check_alleles = TRUE, dbs_format = "sequential", n_cores)
 }
 \arguments{
 \item{vcf_files}{Character vector of VCF file names}
@@ -32,6 +32,12 @@ with this package.  This setting can be set to FALSE to speed
 up processing time only if the input vcf does not contain any
 of such positions, as these will cause obscure errors.}
 
+\item{dbs_format}{(Optional) A string to give the format of the double base substitutions
+present in the vcf files. Options are 'one-line' for variants where REF and 
+ALT are both length 2, or 'sequential' when DBS consist of 2 sequential 
+SNVs.\cr
+Default is 'sequential'.}
+
 \item{n_cores}{(Optional) numeric. Number of cores used for parallel processing. If no
 value is given, then the number of available cores is autodetected.}
 }
@@ -57,6 +63,7 @@ sample_names <- c ( "colon1", "colon2", "colon3",
 vcf_files <- list.files(system.file("extdata", 
                                     package="MutationalPatterns"),
                                     pattern = ".vcf", full.names = TRUE)
+vcf_files = vcf_files[5:13]
 
 # Get a reference genome BSgenome object.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"

@@ -41,7 +41,7 @@
 
 plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
 {
-  if (class(strand_bias) == "list")
+  if (is(strand_bias, "list"))
   { 
     strand_bias = do.call(rbind, strand_bias) 
     method = "split"

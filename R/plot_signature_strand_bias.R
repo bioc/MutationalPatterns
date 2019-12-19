@@ -46,14 +46,14 @@ plot_signature_strand_bias = function(signatures_strand_bias, type, colors)
     else type_default = FALSE
     type = check_mutation_type(type)  
     
-    if (class(signatures_strand_bias) == "list")
+    if (is(signatures_strand_bias, "list"))
     {  
       method = "split"
     } else { method = "combine" }
     
     # If strand bias is a matrix, find the mutation types present by 
     # comparing the rownames with defined contexts
-    if (class(signatures_strand_bias) == "matrix")
+    if (is(signatures_strand_bias, "matrix"))
     {
       types_info = do.call(rbind, strsplit(rownames(signatures_strand_bias), "-"))
       types = types_info[,1]

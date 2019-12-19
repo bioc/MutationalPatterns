@@ -140,8 +140,21 @@ plot_compare_profiles = function(profile1,
     }
     if ("indel" %in% type)
     {
-      substitutions[["indel"]] = INDEL_CLASS
-      context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
+      if (INDEL == "cosmic")
+      {
+        context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
+        df = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,c(1:4)]
+        indel_class_value = paste(df[,1],df[,2],df[,3],df[,4], sep=".")
+        substitutions[["indel"]] = indel_class_value
+        labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
+        names(labels) = unique(substitutions[["indel"]])
+      } else if (INDEL == "predefined") {
+        context[["indel"]] = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]]
+        substitutions[["indel"]] = INDEL_CLASS
+      } else {
+        context[["indel"]] = INDEL_CONTEXT
+        substitutions[["indel"]] = INDEL_CLASS
+      }
     }
     
     # Translate lists into vector
@@ -152,8 +165,17 @@ plot_compare_profiles = function(profile1,
     # Construct dataframe for plotting
     df = data.frame(substitution = substitutions, context = context)
     rownames(x) = NULL
-    df2 = cbind(df, as.data.frame(x))
-    df3 = melt(df2, id.vars = c("substitution", "context"))
+    
+    if ("indel" %in% type & !isEmpty(INDEL_CLASS_HEADER))
+    {
+      df2 = cbind(df, "header"=INDEL_CLASS_HEADER, as.data.frame(x))
+      df3 = melt(df2, id.vars = c("header","substitution", "context"))
+      df3$header = factor(df3$header, levels = unique(INDEL_CLASS_HEADER))
+    } else 
+    {
+      df2 = cbind(df, as.data.frame(x))
+      df3 = melt(df2, id.vars = c("substitution", "context"))
+    }
     df3$substitution <- factor(df3$substitution, levels = unique(df3$substitution))
 
     # These variables will be available at run-time, but not at compile-time.
@@ -165,13 +187,24 @@ plot_compare_profiles = function(profile1,
     Signature = NULL
 
     # Add dummy non_visible data points to force y axis limits per facet
-    df4 = data.frame(substitution = rep(substitutions[1], 4),
-                        context = rep(context[1],4),
-                        variable = c(profile_names, "Difference", "Difference"),
-                        value = c(profile_ymax,
-                                    profile_ymax,
-                                    diff_ylim[1],
-                                    diff_ylim[2]))
+    if ("indel" %in% type & !isEmpty(INDEL_CLASS_HEADER)){
+      df4 = data.frame(header = rep(df3$header[1],4),
+                       substitution = rep(substitutions[1], 4),
+                       context = rep(context[1],4),
+                       variable = c(profile_names, "Difference", "Difference"),
+                       value = c(profile_ymax,
+                                 profile_ymax,
+                                 diff_ylim[1],
+                                 diff_ylim[2]))
+    } else {
+      df4 = data.frame(substitution = rep(substitutions[1], 4),
+                          context = rep(context[1],4),
+                          variable = c(profile_names, "Difference", "Difference"),
+                          value = c(profile_ymax,
+                                      profile_ymax,
+                                      diff_ylim[1],
+                                      diff_ylim[2]))
+    }
     if (condensed)
     {
       plot = ggplot(data=df3, aes(x=context,
@@ -184,7 +217,7 @@ plot_compare_profiles = function(profile1,
         geom_point(data = df4, aes(x = context,
                                    y = value), alpha = 0) +
         scale_fill_manual(values=colors) +
-        facet_grid(variable ~ substitution, scales = "free") +
+        #facet_grid(variable ~ substitution, scales = "free") +
         ylab("Relative contribution") +
         # ylim(-yrange, yrange) +
         # no legend
@@ -213,7 +246,7 @@ plot_compare_profiles = function(profile1,
         geom_point(data = df4, aes(x = context,
                                     y = value), alpha = 0) +
         scale_fill_manual(values=colors) +
-        facet_grid(variable ~ substitution, scales = "free_y") +
+        #facet_grid(variable ~ substitution, scales = "free_y") +
         ylab("Relative contribution") +
         # ylim(-yrange, yrange) +
         # no legend
@@ -230,5 +263,16 @@ plot_compare_profiles = function(profile1,
                 strip.text.y=element_text(size=14),
                 panel.grid.major.x = element_blank())
     }
+    
+    if ("indel" %in% type & !isEmpty(INDEL_CLASS_HEADER)){
+      plot = plot + 
+        facet_nested(variable ~ header + substitution, 
+                     scales = "free", 
+                     labeller = labeller(substitution=labels)) + 
+        xlab("length")
+    } else {
+      plot = plot + facet_grid(variable ~ substitution, scales = "free_y") + xlab("length")
+    }
+    
     return(plot)
 }

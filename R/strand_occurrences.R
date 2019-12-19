@@ -45,7 +45,7 @@
 strand_occurrences = function(mut_mat_s, by, type, method = "split")
 {
     # If mutation matrix object is a matrix, then find the mutation type
-    if (class(mut_mat_s) == "matrix")
+    if (is(mut_mat_s, "matrix"))
     {
       if ((all(rownames(mut_mat_s) %in% TRIPLETS_192_trans) | 
           all(rownames(mut_mat_s) %in% TRIPLETS_192_rep)) &
@@ -62,7 +62,7 @@ strand_occurrences = function(mut_mat_s, by, type, method = "split")
       } else if ((all(rownames(mut_mat_s) %in% 
                       c(paste0(INDEL_CONTEXT,"-right"),
                         paste0(INDEL_CONTEXT,"-left"))) &
-                 length(rownames(mut_mat_s)) > 0)
+                 length(rownames(mut_mat_s)) > 0))
       {
         mut_mat_s = list("indel" = mut_mat_s)
         type = "indel"

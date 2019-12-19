@@ -57,7 +57,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
   
   # If "mut_matrix1" and "mut_matrix2" are matrices and no type is given
   # then type is unknown and function stopped
-  if (class(mut_matrix1) == "matrix" & class(mut_matrix2) == "matrix")
+  if (is(mut_matrix1,"matrix") & is(mut_matrix2, "matrix"))
     if (!type_default)
       stop(paste("Mutation type of matrices is unknown, type can not be chosen.",
                  "Remove type argument or give named lists as mutation matrices"))
@@ -68,7 +68,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
   # If "mut_matrix1" is matrix and "mut_matrix2" is list, then type
   # of "mut_matrix1" is same as type of matrix in "mut_matrix2" with
   # same rownames
-  if (class(mut_matrix1) == "matrix" & class(mut_matrix2) == "list")
+  if (is(mut_matrix1, "matrix") & is(mut_matrix2, "list"))
   { 
     row_list = list()
     for (m in names(mut_matrix2))
@@ -80,7 +80,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
         break 
       }
     }
-  } else if (class(mut_matrix1) == "list" & class(mut_matrix2) == "matrix")
+  } else if (is(mut_matrix1, "list") & is(mut_matrix2, "matrix"))
   {
     row_list = list()
     for (m in names(mut_matrix1))
@@ -94,7 +94,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
     }
   }
   # If both are matrices, then set type to default
-  if (class(mut_matrix1) == "matrix" & class(mut_matrix2) == "matrix") 
+  if (is(mut_matrix1, "matrix") & is(mut_matrix2, "matrix"))
   {
     mut_matrix1 = list("snv"=mut_matrix1)
     mut_matrix2 = list("snv"=mut_matrix2)

@@ -24,7 +24,7 @@
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
 #'
-#' mut_context <- mut_context(vcfs[[1]], ref_genome, type)
+#' mut_context <- mut_context(vcfs[[1]], ref_genome, type = "snv")
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},

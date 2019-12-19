@@ -24,6 +24,11 @@
 #'              with this package.  This setting can be set to FALSE to speed
 #'              up processing time only if the input vcf does not contain any
 #'              of such positions, as these will cause obscure errors.
+#' @param dbs_format (Optional) A string to give the format of the double base substitutions
+#'              present in the vcf files. Options are 'one-line' for variants where REF and 
+#'              ALT are both length 2, or 'sequential' when DBS consist of 2 sequential 
+#'              SNVs.\cr
+#'              Default is 'sequential'.
 #' @param n_cores (Optional) numeric. Number of cores used for parallel processing. If no
 #'              value is given, then the number of available cores is autodetected.
 #' 
@@ -53,6 +58,7 @@
 #' vcf_files <- list.files(system.file("extdata", 
 #'                                     package="MutationalPatterns"),
 #'                                     pattern = ".vcf", full.names = TRUE)
+#' vcf_files = vcf_files[5:13]
 #'
 #' # Get a reference genome BSgenome object.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
@@ -65,7 +71,8 @@
 #' @export
 
 read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
-                                    group = "auto+sex", check_alleles = TRUE, n_cores)
+                                 group = "auto+sex", check_alleles = TRUE, 
+                                 dbs_format = "sequential", n_cores)
 {
     # Check sample names
     if (length(vcf_files) != length(sample_names))
@@ -80,7 +87,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     genome_name <- genome(ref_genome)[[1]]
 
     # Check the class of the reference genome
-    if (!(class(ref_genome) == "BSgenome"))
+    if (!is(ref_genome, "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
 
     # If number of cores is not provided, detect the number of available cores.  
@@ -197,48 +204,65 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             }
         }
         
-        # Search for DBS which are given as two sequential locations
-        dbs = intersect(which(diff(start(vcf)) == 1),
-                        which(nchar(as.character(vcf$REF)) == 1 &
-                                nchar(as.character(unlist(vcf$ALT))) ==1 ))
-        if (length(dbs) > 0)
-          if (dbs[length(dbs)] == length(vcf))
-            dbs <- dbs[-length(dbs)]
-          mnv = NULL
-          if (1 %in% diff(dbs))
-          {
-            # Remove multi nucleotide variants
-            rem = which(diff(dbs) == 1)
-            mnv = unique(sort(c(dbs[rem],dbs[rem]+1,dbs[rem]+2)))
-            
-            rem <- unique(c(rem,rem+1))
-            dbs <- dbs[-rem]
-            warnings$dbs <- rbind(warnings$dbs,
-                                  c(sample_names[[index]], length(mnv)))
-          }
-        
-        # If there are DBS, then change end position of variant,
-        # add second ref and second alt base and delete next variant from vcf
-        if (length(dbs) > 0)
+        if (dbs_format == "sequential")
         {
-          end(vcf)[dbs] = start(vcf)[dbs]+1
-          vcf$REF[dbs] = DNAStringSet(paste0(as.character(vcf$REF[dbs]), as.character(vcf$REF[dbs+1])))
-          vcf$ALT[dbs] = DNAStringSetList(lapply(dbs, function(i) {
-            DNAStringSet(paste0(as.character(unlist(vcf$ALT[i])), as.character(unlist(vcf$ALT[i+1]))))
-            }))
-          vcf = vcf[-c(mnv,(dbs+1)),]
+          # Check if no variants with REF and ALT of length 2
+          check_dbs = which(nchar(as.character(vcf$REF)) == 2 &
+                              nchar(as.character(unlist(vcf$ALT))) == 2)
+          if (length(check_dbs) > 0) 
+            stop(paste("Variants found with REF and ALT of length 2.\n ",
+                       "Please use 'dbs-format = \"sequential\"' or give",
+                       "a new vcf file"))
+          
+          # Search for DBS which are given as two sequential locations
+          dbs = which(diff(start(vcf)) == 1)
+          dbs1 = which(nchar(as.character(vcf$REF)[dbs]) == 1 &
+                         nchar(as.character(unlist(vcf$ALT))[dbs]) == 1)
+          dbs2 = which(nchar(as.character(vcf$REF)[dbs+1]) == 1 &
+                         nchar(as.character(unlist(vcf$ALT))[dbs+1]) == 1)
+          dbs = dbs[intersect(dbs1, dbs2)]
+
+          if (length(dbs) > 0)
+            if (dbs[length(dbs)] == length(vcf))
+              dbs <- dbs[-length(dbs)]
+            mnv = NULL
+            if (1 %in% diff(dbs))
+            {
+              # Remove multi nucleotide variants
+              rem = which(diff(dbs) == 1)
+              mnv = unique(sort(c(dbs[rem],dbs[rem]+1,dbs[rem]+2)))
+              
+              rem <- unique(c(rem,rem+1))
+              dbs <- dbs[-rem]
+              warnings$dbs <- rbind(warnings$dbs,
+                                    c(sample_names[[index]], length(mnv)))
+            }
+          
+          
+          # If there are DBS, then change end position of variant,
+          # add second ref and second alt base and delete next variant from vcf
+          if (length(dbs) > 0)
+          {
+            end(vcf)[dbs] = start(vcf)[dbs]+1
+            vcf$REF[dbs] = DNAStringSet(paste0(as.character(vcf$REF[dbs]), as.character(vcf$REF[dbs+1])))
+            vcf$ALT[dbs] = DNAStringSetList(lapply(dbs, function(i) {
+              DNAStringSet(paste0(as.character(unlist(vcf$ALT[i])), as.character(unlist(vcf$ALT[i+1]))))
+              }))
+            vcf = vcf[-c(mnv,(dbs+1)),]
+          }
         }
         
         indel = which((nchar(as.character(vcf$REF)) == 1 &
                         nchar(as.character(unlist(vcf$ALT))) > 1) |
                         (nchar(as.character(vcf$REF)) > 1 &
                            nchar(as.character(unlist(vcf$ALT))) == 1))
-          
-        if (any(c(grepl("[^ACGT]",as.character(vcf$REF[indel])),
-                  grepl("[^ACGT]",as.character(unlist(vcf$ALT[indel])))))){
-          vcf = vcf[-indel,]
+        
+        rem_indel = unique(c(grep("[^ACGTN]",as.character(vcf$REF[indel])),
+                             grep("[^ACGTN]",as.character(unlist(vcf$ALT))[indel])))   
+        if (length(rem_indel) > 0){
+          vcf = vcf[-indel[rem_indel],]
           warnings$indel <- rbind(warnings$indel,
-                                  c(sample_names[[index]]))
+                                  c(sample_names[[index]], length(rem_indel)))
         }
 
         # Pack GRanges object and the warnings to be able to display warnings
@@ -258,9 +282,9 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     # list(<GRanges>, <warnings>).  The function below unpacks the GRanges
     # and displays the warnings.
     
-    # Handle errors
+    # Handle errors and give read-in summary
     summ <- lapply(vcf_list, function(item) {
-        if (class(item) == "try-error") stop (item)
+        if (is(item, "try-error")) stop (item)
         ref = as.character(item[[1]]$REF)
         alt = as.character(unlist(item[[1]]$ALT))
         
@@ -283,31 +307,34 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     warns = NULL
     for (i in which(!(is.na(rownames(warnings))))){
         warns[[rownames(warnings)[i]]] = do.call(rbind, warnings[i,])
-        colnames(warns[[rownames(warnings)[i]]]) <- c("Sample", "Position(s)")
+        if (is.null(warns)) next
+        else colnames(warns[[rownames(warnings)[i]]]) <- c("Sample", "Position(s)")
     }
-  
-    lapply(names(warns), function(item) {
-        if (item == "check_alleles")
-        {
-            warning("Position(s) with multiple ",
-                    "alternative alleles are excluded\n",
-                    paste0(capture.output(warns$check_allele), collapse = "\n"),
+    
+    if (!is.null(warns)){
+      lapply(names(warns), function(item) {
+          if (item == "check_alleles")
+          {
+              warning("Position(s) with multiple ",
+                      "alternative alleles are excluded\n",
+                      paste0(capture.output(warns$check_allele), collapse = "\n"),
+                      immediate. = TRUE)
+          } else if (item == "dbs")
+          {
+            warning("Position(s) excluded that form ", 
+                    "multiple nucleotide variants ", 
+                    "of length more than 2.\n",
+                    paste0(capture.output(warns$dbs), collapse = "\n"),
                     immediate. = TRUE)
-        } else if (item == "dbs")
-        {
-          warning("Position(s) excluded that form ", 
-                  "multiple nucleotide variants ", 
-                  "of length more than 2.\n",
-                  paste0(capture.output(warns$dbs), collapse = "\n"),
-                  immediate. = TRUE)
-        } else if (item == "indel")
-        {
-          warning("Indels not according to VCF format ",
-                  "4.2 or higher, all indels are excluded from:\n ",
-                  paste(warns$indel, collapse=", "),
-                  immediate. = TRUE)
-        }
-    })
+          } else if (item == "indel")
+          {
+            warning("Indels not according to VCF format ",
+                    "4.2 or higher, all indels are excluded from:\n",
+                    paste0(capture.output(warns$indel), collapse = "\n"),
+                    immediate. = TRUE)
+          }
+      })
+    }
     
     vcf_list <- GRangesList(do.call(rbind, vcf_list)[,1])
     

@@ -50,7 +50,7 @@
 
 strand_bias_test = function(strand_occurrences, type, method = "split")
 {
-    if(class(strand_occurrences) == "data.frame")
+    if(is(strand_occurrences, "data.frame"))
     {
       if(length(unique(strand_occurrences$mutation)) > 1)
         warning(paste("No named list found for 'strand_occurrences'.",

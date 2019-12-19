@@ -41,12 +41,9 @@ extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "spli
       stop("Provide a named list for 'mut_matrix' with at least one mutation type")
     }
   
-    # Check mutation type
-    type = check_mutation_type(type)
-    
     # If "mut_matrix" is a matrix, then search for the right mutation type. If not found
     # mutation matrix is treated as combination of mutation types
-    if (class(mut_matrix) == "matrix")
+    if (is(mut_matrix, "matrix"))
     {
       if (all(rownames(mut_matrix) %in% TRIPLETS_96)) 
       { 
@@ -65,7 +62,7 @@ extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "spli
       }
     }
     
-    if (class(mut_matrix) == "matrix") 
+    if (is(mut_matrix, "matrix"))
     { 
       warning("Mutation type of 'mut_matrix' is unknown. Treated as combined mutation types")
       method = "combine"
@@ -73,6 +70,8 @@ extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "spli
     
     if (method == "split")
     {
+      # Check mutation type
+      type = check_mutation_type(type, mut_matrix)
       mut_matrix = mut_matrix[type]
       
       if (length(names(rank)) == 0 & length(rank) == 1)
@@ -147,8 +146,9 @@ extract_signatures = function(mut_matrix, type, rank, nrun = 200, method = "spli
     } else if (method == "combine")
     {
       # Check if mut_matrix is a list or already combined to a matrix
-      if (class(mut_matrix) == "list") 
+      if (is(mut_matrix, "list"))
       { 
+        type = check_mutation_type(type, mut_matrix)
         mut_matrix = mut_matrix[type]
         rank = rank[type]
         

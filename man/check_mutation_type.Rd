@@ -4,7 +4,7 @@
 \alias{check_mutation_type}
 \title{Check the mutation type argument}
 \usage{
-check_mutation_type(type)
+check_mutation_type(type, matrix)
 }
 \arguments{
 \item{type}{(Optional) Character vector stating the mutation types to be processed.

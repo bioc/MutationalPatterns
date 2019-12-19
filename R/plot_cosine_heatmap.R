@@ -71,13 +71,13 @@ plot_cosine_heatmap = function(cos_sim_matrix,
                                method = "complete", 
                                plot_values = FALSE)
 {
-  if(class(cos_sim_matrix) == "list")
+  if(is(cos_sim_matrix, "list"))
   {
     cos_sim_matrix = do.call(cbind, cos_sim_matrix)
   }
   
   # check explained argument
-  if(class(cos_sim_matrix) != "matrix")
+  if(!is(cos_sim_matrix, "matrix"))
   {stop("cos_sim_matrix must be a matrix")}
   # matrix should have row and colnames
   if(length(colnames(cos_sim_matrix)) == 0)
@@ -90,7 +90,7 @@ plot_cosine_heatmap = function(cos_sim_matrix,
     col_order = colnames(cos_sim_matrix)
   }
   # check col_order argument
-  if(class(col_order) != "character")
+  if(!is(col_order,"character"))
   {stop("col_order must be a character vector")}
   if(length(col_order) != ncol(cos_sim_matrix))
   {stop("col_order must have the same length as the number of signatures in the explained matrix")}

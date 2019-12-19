@@ -60,9 +60,10 @@ indel_mutation_type <- function(indel)
   unlockBinding("INDEL_CONTEXT",e)
   unlockBinding("INDEL_CLASS",e)
   unlockBinding("INDEL_CLASS_HEADER",e)
+  unlockBinding("INDEL_MATRIX",e)
   unlockBinding("COLORS_INDEL",e)
   
-  if (class(indel) == "character")
+  if (is(indel, "character"))
   {
     if (indel == "cosmic"){
       if (e$INDEL != "cosmic")
@@ -82,7 +83,7 @@ indel_mutation_type <- function(indel)
     } else { stop(print("Unknown option for indel mutation types",
                         "Provide either 'predefined' or 'cosmic' character or",
                         "list with indel classes and contexts")) }
-  } else if (class(indel) == "list")
+  } else if (is(indel, "list"))
   {
     # If a list is given, then obligatory elements of list are 
     # the mutation count matrix, the classes and contexts of the indels

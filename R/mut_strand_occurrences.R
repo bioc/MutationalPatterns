@@ -49,7 +49,7 @@ mut_strand_occurrences = function(type_context, strand, type)
   }
   
   # get possible strand values
-  if (class(strand) != "list")
+  if (!is(strand, "list"))
   {
     values = levels(strand)
     
