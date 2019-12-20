@@ -70,7 +70,7 @@ strand_bias_test = function(strand_occurrences, type, method = "split")
     if (method == "split")
     {
       # Get the asked mutation types
-      type = check_mutation_type(strand_occurrences)
+      type = check_mutation_type(type, strand_occurrences)
       strand_occurrences = strand_occurrences[type]
       
       df_result = list()

@@ -170,25 +170,22 @@ plot_strand_profiles = function(mut_matrix, colors, ymax, type, mode, method="sp
     }))
     
     # Set context and substitutions of the indels, along with plot values
-    if (exists("indel_name"))
+    if (INDEL == "cosmic")
     {
-      if (indel_name == "cosmic")
-      {
-        context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
-                                 each = 2)
-        df = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,c(1:4)]
-        indel_class_value = paste(df[,1],df[,2],df[,3],df[,4], sep=".")
-        substitution[["indel"]] = rep(indel_class_value, each = 2)
-        labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
-        names(labels) = unique(substitution[["indel"]])
-      } else if (indel_name == "predefined") {
-        context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
-                                 each = 2)
-        substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
-      } else {
-        context[["indel"]] = rep(INDEL_CONTEXT, each = 2)
-        substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
-      }
+      context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
+                               each = 2)
+      df = do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,c(1:4)]
+      indel_class_value = paste(df[,1],df[,2],df[,3],df[,4], sep=".")
+      substitution[["indel"]] = rep(indel_class_value, each = 2)
+      labels = c("C","T","C","T","2","3","4","5+","2","3","4","5+","2","3","4","5+")
+      names(labels) = unique(substitution[["indel"]])
+    } else if (INDEL == "predefined") {
+      context[["indel"]] = rep(do.call(rbind, strsplit(INDEL_CONTEXT, "\\."))[,lengths(strsplit(INDEL_CONTEXT, "\\."))[1]],
+                               each = 2)
+      substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
+    } else {
+      context[["indel"]] = rep(INDEL_CONTEXT, each = 2)
+      substitution[["indel"]] = rep(INDEL_CLASS, each = 2)
     }
     
     context = context[type]
