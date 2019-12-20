@@ -211,7 +211,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
                               nchar(as.character(unlist(vcf$ALT))) == 2)
           if (length(check_dbs) > 0) 
             stop(paste("Variants found with REF and ALT of length 2.\n ",
-                       "Please use 'dbs-format = \"sequential\"' or give",
+                       "Please use 'dbs-format = \"one-line\"' or give",
                        "a new vcf file"))
           
           # Search for DBS which are given as two sequential locations

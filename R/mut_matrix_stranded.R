@@ -133,7 +133,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
       # Combine the rows in one dataframe
       for (row in rows)
       {
-        if (class (row) == "try-error") stop (row)
+        if (is(row, "try-error")) stop (row)
         df[[m]] = rbind (df[[m]], row)
       }
     }

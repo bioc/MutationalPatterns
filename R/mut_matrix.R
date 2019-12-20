@@ -113,7 +113,7 @@ mut_matrix = function(vcf_list, ref_genome, type, method = "split", num_cores)
       rnames = c()
       for (i in 1:length(rows))
       {
-        if (class (row) == "try-error") stop (row)
+        if (is(row, "try-error")) stop (row)
         if (length(rows[[i]][[m]]) > 0)
         {
           rnames = c(rnames, names(vcf_list)[i])
