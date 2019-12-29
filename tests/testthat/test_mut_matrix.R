@@ -11,6 +11,7 @@ sample_names <- c ( "colon1", "colon2", "colon3",
 
 vcfs <- list.files (system.file("extdata", package="MutationalPatterns"),
                     pattern = ".vcf", full.names = TRUE)
+vcfs <- vcfs[4:12]
 
 input <- read_vcfs_as_granges(vcfs, sample_names,
                               "BSgenome.Hsapiens.UCSC.hg19")
