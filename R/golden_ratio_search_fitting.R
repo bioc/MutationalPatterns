@@ -1,11 +1,11 @@
 #' Find optimal nonnegative linear combination of mutation signatures to
 #' reconstruct the mutation matrix.
-#' 
+#'
 #' Find the linear combination of mutation signatures that most closely
 #' reconstructs the mutation matrix by using the golden ratio search
 #' algorithm implemented in the \link{deconstructSigs} package (Rosenthal et al. 2016).
-#' 
-#' @param mut_matrix Named list of count matrices 
+#'
+#' @param mut_matrix Named list of count matrices
 #' @param signatures Named list of signature matrices (number of mutational features
 #' for each signature matrix must be the same as in the corresponding count matrix)
 #' @param ... Other arguments passed to whichSignatures()
@@ -23,12 +23,12 @@
 #'
 #' ## You can download the signatures from the COSMIC website:
 #' # http://cancer.sanger.ac.uk/cancergenome/assets/signatures_probabilities.txt
-#' 
+#'
 #' ## We copied the file into our package for your convenience.
 #' filename <- system.file("extdata/signatures_probabilities.txt",
 #'                         package="MutationalPatterns")
 #' cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
-#' 
+#'
 #' ## Match the order to MutationalPatterns standard of mutation matrix
 #' order = match(row.names(mut_mat), cancer_signatures$Somatic.Mutation.Type)
 #' ## Reorder cancer signatures dataframe
@@ -50,7 +50,7 @@
 #' \code{\link{whichSignatures}}
 #'
 #' @export
- 
+
 golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
 {
     # Check if mut_matrix and signatures are both lists
@@ -58,54 +58,54 @@ golden_ratio_search_fitting <- function(mut_matrix, signatures, ...)
       stop("'mut_matrix' is not a list or some elements are not named")
     if (!is(signatures, "list") | isEmpty(names(signatures)) | any(names(signatures) == ""))
       stop("'signatures' is not a list or some elements are not named")
-  
+
     mut_matrix_transposed = list()
     signatures_transposed = list()
     contribution = list()
     reconstructed = list()
     unknown = list()
-    
+
     # For each mutation type in mut_matrix
     for (m in names(mut_matrix))
     {
       # Transpose the mutation matrix and signature matrix
       mut_matrix_transposed[[m]] = as.data.frame(t(mut_matrix[[m]]))
       signatures_transposed[[m]] = as.data.frame(t(signatures[[m]]))
-      
+
       # For each sample get results from the golden ratio search
       result = sapply(rownames(mut_matrix_transposed[[m]]), function(n)
-        whichSignatures(mut_matrix_transposed[[m]], sample.id = n, 
-                        signatures_transposed[[m]], 
+        whichSignatures(mut_matrix_transposed[[m]], sample.id = n,
+                        signatures_transposed[[m]],
                         contexts.needed = TRUE, ...))
-      
-      # Write results of contribution, reconstructed and unknown as lists 
+
+      # Write results of contribution, reconstructed and unknown as lists
       # of mutation types
-      contribution[[m]] = as.matrix(do.call(cbind, 
+      contribution[[m]] = as.matrix(do.call(cbind,
                                             lapply(1:ncol(result), function(i)
                                               data.frame(unlist(result[1,i])))))
       colnames(contribution[[m]]) = colnames(result)
-      
-      reconstructed[[m]] = as.matrix(do.call(cbind, 
-                                             lapply(1:ncol(result), function(i) 
+
+      reconstructed[[m]] = as.matrix(do.call(cbind,
+                                             lapply(1:ncol(result), function(i)
                                                data.frame(unlist(result[3,i])))))
       colnames(reconstructed[[m]]) = colnames(result)
       rownames(reconstructed[[m]]) = colnames(result[3][[1]])
-      
+
       unknown[[m]] = as.matrix(do.call(cbind, lapply(1:ncol(result), function(i)
         data.frame(unlist(result[5,i])))))
       colnames(unknown[[m]]) = colnames(result)
     }
-    
+
     if (length(contribution) == 1)
     {
       contribution = contribution[[1]]
       reconstructed = reconstructed[[1]]
       unknown = unknown[[1]]
     }
-    
-    res = list("contribution"=contribution, 
-               "reconstructed"=reconstructed, 
+
+    res = list("contribution"=contribution,
+               "reconstructed"=reconstructed,
                "unknown"=unknown)
-    
+
     return(res)
 }

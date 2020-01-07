@@ -23,12 +23,12 @@ indel_seq_flanks_start_end <- function(chrom, pos, indel.len, indel.type, n.inde
       r_end = pos + indel.len*n.indel.lengths.r
     )
   }
-  
+
   l_flank <- c(
     l_start = pos - indel.len*n.indel.lengths.l + 1,
     l_end = pos
   )
-  
+
   out <- l_flank
   out <- c(out, r_flank)
   return(out)

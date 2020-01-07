@@ -17,11 +17,11 @@
 n_bases_mh <- function(indel.seq, flank.seq){
   #indel.sequence = "CTA"
   #flank.sequence = "C"
-  
+
   indel_len <- nchar(indel.seq)
   indel.seq <- unlist(strsplit(indel.seq, ''))
   flank.seq <- unlist(strsplit(flank.seq, ''))[1:indel_len]
-  
+
   n_bases <- 0
   for(i in 1:length(indel.seq)){
     if(indel.seq[i] != flank.seq[i]){

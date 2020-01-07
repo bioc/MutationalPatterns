@@ -16,10 +16,10 @@
 n_copies_along_flank <- function(indel.seq, flank.seq){
   # indel.seq = "T"
   # flank.seq = "TTTTGCG"
-  
+
   indel_length <- nchar(indel.seq)
   rail_seq <- paste0(indel.seq, flank.seq)
-  
+
   count <- 0
   seq_window <- substr(rail_seq, 1, indel_length)
   while(indel.seq == seq_window){
@@ -30,6 +30,6 @@ n_copies_along_flank <- function(indel.seq, flank.seq){
       count*indel_length + indel_length
     )
   }
-  
+
   return(count)
 }

@@ -10,7 +10,7 @@
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
 #' @param mode (Optional) "transcription" or "replication", default = "transcription"
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
 #' @param num_cores Number of cores used for parallel processing. If no value
@@ -105,7 +105,7 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
       }, mc.cores = num_cores)
       
       df[[m]] = data.frame()
-      
+
       # Combine the rows in one dataframe
       for (row in rows)
         df[[m]] = rbind (df[[m]], row)
@@ -125,11 +125,11 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
         row = mut_strand_occurrences(type_context, strand, type = m)
         return(row)
       }, mc.cores = num_cores, mc.silent = FALSE)
-      
+
       if (isEmpty(do.call(rbind, rows))) { next }
-      
+
       df[[m]] = data.frame()
-      
+
       # Combine the rows in one dataframe
       for (row in rows)
       {
@@ -146,6 +146,6 @@ mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcripti
   
   if (length(df) == 1)
     return(df[[1]])
-  else 
+  else
     return(df)
 }

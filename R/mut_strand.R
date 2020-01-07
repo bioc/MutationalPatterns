@@ -89,9 +89,8 @@
 
 mut_strand = function(vcf, ranges, type, mode = "transcription")
 {
-  
   type = check_mutation_type(type)
-  
+
   # Transcription mode
   if(mode == "transcription")
   {

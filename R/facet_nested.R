@@ -1,15 +1,15 @@
 #' Plot merged facets
 #'
-#' @description Helper function for ggplot to merge facets 
-#' 
+#' @description Helper function for ggplot to merge facets
+#'
 #' @param rows Variables on the rows
 #' @param cols Variables on the columns
 #' @param scales Character string indicating if scale of x or y axis is fixed or free
 #' @param labeller Character vector with the labels of the facets
-#' 
+#'
 #' @import gtable
 #' @importFrom grid linesGrob
-#' 
+#'
 #' @export
 
 facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", labeller = "label_value")
@@ -24,7 +24,7 @@ facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", labeller = 
   nest_line = FALSE
   resect = unit(0, "mm")
   bleed = FALSE
-  
+
   if (!is.null(facets)) {
     rows <- facets
   }
@@ -35,15 +35,15 @@ facet_nested <- function(rows = NULL, cols = NULL, scales = "fixed", labeller = 
   scales <- match.arg(scales, c("fixed", "free_x", "free_y", "free"))
   free <- list(x = any(scales %in% c("free_x", "free")),
                y = any(scales %in% c("free_y", "free")))
-  
+
   space <- match.arg(space, c("fixed","free_x","free_y","free"))
   space_free <- list(x = any(space %in% c("free_x", "free")),
                      y = any(space %in% c("free_y", "free")))
-  
+
   if (!is.null(switch) && !switch %in% c("both","x","y")) {
     stop("switch must be either 'both', 'x', or 'y'", call. = FALSE)
   }
-  
+
   facets_list <- ggplot2:::grid_as_facets_list(rows, cols)
   n <- length(facets_list)
   if (n > 2L) {
@@ -90,15 +90,15 @@ FacetNested <- ggplot2::ggproto(
     # Setup variables
     rows <- params$rows
     cols <- params$cols
-    
+
     vars <- c(names(rows), names(cols))
     margin_vars <- list(intersect(names(rows), names(data)),
                         intersect(names(cols), names(data)))
-    
+
     # Add variables
     data <- reshape2::add_margins(data, margin_vars, params$margins)
     facet_vals <- ggplot2:::eval_facets(c(rows, cols), data, params$plot$env)
-    
+
     # Only set as missing if it has no variable in that direction
     missing_facets <- character(0)
     if (!any(names(rows) %in% names(facet_vals))){
@@ -107,7 +107,7 @@ FacetNested <- ggplot2::ggproto(
     if (!any(names(cols) %in% names(facet_vals))){
       missing_facets <- c(missing_facets, setdiff(names(cols), names(facet_vals)))
     }
-    
+
     # Fill in missing values
     if (length(missing_facets) > 0) {
       to_add <- unique(layout[missing_facets])
@@ -119,7 +119,7 @@ FacetNested <- ggplot2::ggproto(
               to_add[facet_rep, , drop = FALSE])
       )
     }
-    
+
     # Match columns to facets
     if (nrow(facet_vals) == 0) {
       data$PANEL <- NO_PANEL
@@ -181,7 +181,7 @@ FacetNested <- ggplot2::ggproto(
   {
     panel_table <- FacetGrid$draw_panels(panels, layout, x_scales, y_scales,
                                          ranges, coord, data, theme, params)
-    
+
     # Setup strips
     col_vars  <- unique(layout[names(params$cols)])
     row_vars  <- unique(layout[names(params$rows)])
@@ -189,16 +189,16 @@ FacetNested <- ggplot2::ggproto(
     attr(col_vars, "facet") <- "grid"
     attr(row_vars, "type")  <- "rows"
     attr(row_vars, "facet") <- "grid"
-    
+
     # Build strips
     strips <- render_strips(col_vars, row_vars, params$labeller, theme)
     switch_x <- !is.null(params$switch) && params$switch %in% c("both", "x")
     switch_y <- !is.null(params$switch) && params$switch %in% c("both", "y")
-    
+
     # Merging strips
     merge_cols <- apply(col_vars, 2, function(x) any(rle(x)$lengths > 1))
     merge_rows <- apply(row_vars, 2, function(x) any(rle(x)$lengths > 1))
-    
+
     if (any(merge_cols)) {
       if (switch_x) {
         panel_table <- merge_strips(panel_table, strips$x$bottom,
@@ -208,7 +208,7 @@ FacetNested <- ggplot2::ggproto(
                                     col_vars, switch_x, params, theme, "x")
       }
     }
-    
+
     if (any(merge_rows)) {
       if (switch_y) {
         panel_table <- merge_strips(panel_table, strips$y$left,
@@ -272,9 +272,9 @@ merge_strips <- function(panel_table, strip, vars, switch, params, theme, orient
     switch(orient,
            x = lapply(strip, function(x) x[i, ]),
            y = lapply(strip, function(x) x[, i]))
-    
+
   })
-  
+
   if (params$bleed) {
     merge <- apply(vars, 2, function(x) any(rle(x)$lengths > 1))
   } else {
@@ -283,7 +283,7 @@ merge_strips <- function(panel_table, strip, vars, switch, params, theme, orient
       return(any(rle(x)$lengths > 1))
     })
   }
-  
+
   if (orient == "y" && !switch) {
     vars <- rev(vars)
     merge <- rev(merge)
@@ -293,32 +293,31 @@ merge_strips <- function(panel_table, strip, vars, switch, params, theme, orient
     merge <- rev(merge)
     splitstrip <- rev(splitstrip)
   }
-  
+
   sizes <- switch(orient,
                   x = do.call(unit.c, lapply(splitstrip, max_height)),
                   y = do.call(unit.c, lapply(splitstrip, max_width)))
-  
+
   assign("panel_table", panel_table, 1)
-  
+
   grabwhat <- switch(orient,
                      x = grepl("strip-t|strip-b", panel_table$layout$name),
                      y = grepl("strip-r|strip-l", panel_table$layout$name))
-  
+
   pos_y <- unique(panel_table$layout$t[grabwhat])
   pos_x <- unique(panel_table$layout$l[grabwhat])
   panel_pos <- find_panel(panel_table)
-  
+
   if (orient == "x") {
     nudge <- if (pos_y < panel_pos$t) -1 else -1
     panel_table <- panel_table[-pos_y,]
     panel_table <- gtable_add_rows(panel_table, sizes, pos_y + nudge)
-    
   } else {
     nudge <- if (pos_x < panel_pos$l) -1 else 0
     panel_table <- panel_table[, -pos_x]
     panel_table <- gtable_add_cols(panel_table, sizes, pos_x + nudge)
   }
-  
+
   for(i in seq_len(n_levels)) {
     if (!merge[i]) {
       panel_table <- gtable_add_grob(
@@ -341,7 +340,7 @@ merge_strips <- function(panel_table, strip, vars, switch, params, theme, orient
         z = 2, clip = "on",
         name = paste0("strip-", orient, "-", seq_along(splitstrip[[i]][starts]))
       )
-      
+
       if(params$nest_line && any(starts != ends)) {
         insert_here <- which(starts != ends)
         indicator <- linesGrob(

@@ -1,9 +1,9 @@
-#' Count occurrences of mutations 
-#' 
+#' Count occurrences of mutations
+#'
 #' A function to count the occurrences of mutations for all mutation types
-#'  
+#'
 #' @param type_context result of mutations from type_context function
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
 #' @importFrom S4Vectors isEmpty
@@ -15,7 +15,7 @@ mut_occurrences = function(type_context, type)
 {
   # Check mutation type
   type = check_mutation_type(type)
-  
+
   # If type_context only exists of one mutation type, try to find
   # which one
   if (all(names(type_context) %in% c("context", "types")))
@@ -44,9 +44,9 @@ mut_occurrences = function(type_context, type)
       type = "indel"
     }
   }
-  
+
   count = list()
- 
+
   for (m in type)
   {
     # For each mutation type, count the context occurrences
@@ -54,50 +54,50 @@ mut_occurrences = function(type_context, type)
     {
       count[[m]] = rep(0,96)
       names(count[[m]]) = TRIPLETS_96
-      
+
       if (all(isEmpty(type_context[[m]])))
         next
-      
-      context = sprintf("%s[%s]%s", 
+
+      context = sprintf("%s[%s]%s",
                         substr(type_context[[m]][["context"]], 1, 1),
                         type_context[[m]][["types"]],
                         substr(type_context[[m]][["context"]], 3, 3))
       context = table(context)
-    } else if (m == "dbs") 
+    } else if (m == "dbs")
     {
       count[[m]] = rep(0,78)
       names(count[[m]]) = DBS
-      
+
       if (all(isEmpty(type_context[[m]])))
         next
-      
+
       context = table(type_context[[m]][["types"]])
     } else if (m == "indel")
     {
       if (INDEL == "cosmic")
-      { 
-        count[[m]] = rep(0,83) 
+      {
+        count[[m]] = rep(0,83)
         names(count[[m]]) = INDEL_CONTEXT
       } else if (INDEL == "predefined")
-      { 
+      {
         count[[m]]=rep(0,30)
         names(count[[m]]) = INDEL_CONTEXT
       }
-      
+
       if (all(isEmpty(type_context[[m]])))
         break
-      
+
       context = table(type_context[[m]][["context"]])
     }
-    
-    # Give counts to all mutations found. 
+
+    # Give counts to all mutations found.
     # Some contexts can have a count of 0
     count[[m]][names(context)] = context
   }
-  
+
   if (length(count) == 1){
     count = unlist(unname(count))
   }
-  
+
   return(count)
 }

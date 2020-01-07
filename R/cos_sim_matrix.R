@@ -4,13 +4,13 @@
 #' The cosine similarity is a value between 0 (distinct) and 1 (identical) and indicates how much two vectors are alike.
 #' 
 #' @param mut_matrix1 Named list of mutation count matrices (dimensions: n mutations X m samples). \cr
-#' It is possible to give a matrix. If both 'mut_matrix1' and 'mut_matrix2' are matrices, 
-#' cosine similarity between the two is calculated. If one of them is a list, only the cosine 
+#' It is possible to give a matrix. If both 'mut_matrix1' and 'mut_matrix2' are matrices,
+#' cosine similarity between the two is calculated. If one of them is a list, only the cosine
 #' similarity of the mutation type in the matrix is calculated
 #' @param mut_matrix2 Named list of mutation count matrices (dimensions: n mutations X m samples)
-#' @return Named list of matrices with pairwise cosine similarities 
+#' @return Named list of matrices with pairwise cosine similarities
 #' (dimensions: n mutational profiles X m mutational profiles)
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' For named lists, default is 'snv', else default is mutation type of the matrix
 #'
@@ -61,23 +61,23 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
     if (!type_default)
       stop(paste("Mutation type of matrices is unknown, type can not be chosen.",
                  "Remove type argument or give named lists as mutation matrices"))
-  
-  # Check "type" argument   
+
+  # Check "type" argument
   type = check_mutation_type(type)
-  
+
   # If "mut_matrix1" is matrix and "mut_matrix2" is list, then type
   # of "mut_matrix1" is same as type of matrix in "mut_matrix2" with
   # same rownames
   if (is(mut_matrix1, "matrix") & is(mut_matrix2, "list"))
-  { 
+  {
     row_list = list()
     for (m in names(mut_matrix2))
     {
-      if (all(rownames(mut_matrix2[[m]]) %in% rownames(mut_matrix1))) 
-      { 
+      if (all(rownames(mut_matrix2[[m]]) %in% rownames(mut_matrix1)))
+      {
         row_list[[m]] = mut_matrix1
         mut_matrix1 = row_list
-        break 
+        break
       }
     }
   } else if (is(mut_matrix1, "list") & is(mut_matrix2, "matrix"))
@@ -85,11 +85,11 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
     row_list = list()
     for (m in names(mut_matrix1))
     {
-      if (all(rownames(mut_matrix1[[m]]) %in% rownames(mut_matrix2))) 
-      { 
+      if (all(rownames(mut_matrix1[[m]]) %in% rownames(mut_matrix2)))
+      {
         row_list[[m]] = mut_matrix2
         mut_matrix2 = row_list
-        break 
+        break
       }
     }
   }
@@ -99,7 +99,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
     mut_matrix1 = list("snv"=mut_matrix1)
     mut_matrix2 = list("snv"=mut_matrix2)
   }
-  
+
   res_matrix_list = list()
   
   # Find corresponding types in both arguments
@@ -108,14 +108,14 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
   if (length(names_lists) < length(names(mut_matrix1)) |
       length(names_lists) < length(names(mut_matrix2)))
     warning("Only cosine similarity matrices for matching mutation types will be computed")
-  
+
   # For each mutation type, calculate the cosine similarity of the matrices
   for (m in names_lists)
   {
     n_samples1 = ncol(mut_matrix1[[m]])
     n_samples2 = ncol(mut_matrix2[[m]])
     res_matrix = matrix(nrow = n_samples1, ncol = n_samples2)
-    
+
     for(s in 1:n_samples1)
     {
       signal1 = mut_matrix1[[m]][,s]
@@ -129,7 +129,7 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2, type)
     }
     rownames(res_matrix) = colnames(mut_matrix1[[m]])
     colnames(res_matrix) = colnames(mut_matrix2[[m]])
-    
+
     res_matrix_list[[m]] = res_matrix
   }
 

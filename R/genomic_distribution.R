@@ -8,7 +8,7 @@
 #' the genome that have been surveyed (e.g. determined using GATK CallableLoci).
 #' @param region_list A GRangesList or a list with GRanges objects containing
 #' locations of genomic regions.
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
 #'
@@ -144,9 +144,9 @@ genomic_distribution = function(vcf_list, surveyed_list, region_list, type)
         stop(paste( "Please set the names of region_list using:",
                     "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
                     sep="\n"))
-    
+
     type = check_mutation_type(type)
-  
+
     df = data.frame()
     for(j in 1:length(region_list) )
     {

@@ -22,8 +22,8 @@ COLORS10 = c(
 )
 
 COLORS_INDEL_PREDEF = c(
-    "#F7BF80", "#ED8212", 
-    "#B5D988", "#31A12C", 
+    "#F7BF80", "#ED8212",
+    "#B5D988", "#31A12C",
     "#E44A39", "#B81C20"
 )
 
@@ -66,14 +66,14 @@ TRIPLETS_192_trans = paste(rep(TRIPLETS_96, each=2), c("transcribed", "untranscr
 TRIPLETS_192_rep = paste(rep(TRIPLETS_96, each=2), c("left", "right"), sep="-")
 
 DBS = c(
-  'AC>CA', 'AC>CG', 'AC>CT', 'AC>GA', 'AC>GG', 'AC>GT', 'AC>TA', 'AC>TG', 'AC>TT', 
-  'AT>CA', 'AT>CC', 'AT>CG', 'AT>GA', 'AT>GC', 'AT>TA', 
+  'AC>CA', 'AC>CG', 'AC>CT', 'AC>GA', 'AC>GG', 'AC>GT', 'AC>TA', 'AC>TG', 'AC>TT',
+  'AT>CA', 'AT>CC', 'AT>CG', 'AT>GA', 'AT>GC', 'AT>TA',
   'CC>AA', 'CC>AG', 'CC>AT', 'CC>GA', 'CC>GG', 'CC>GT', 'CC>TA', 'CC>TG', 'CC>TT',
-  'CG>AT', 'CG>GC', 'CG>GT', 'CG>TA', 'CG>TC', 'CG>TT', 
+  'CG>AT', 'CG>GC', 'CG>GT', 'CG>TA', 'CG>TC', 'CG>TT',
   'CT>AA', 'CT>AC', 'CT>AG', 'CT>GA', 'CT>GC', 'CT>GG', 'CT>TA', 'CT>TC', 'CT>TG',
-  'GC>AA', 'GC>AG', 'GC>AT', 'GC>CA', 'GC>CG', 'GC>TA', 
+  'GC>AA', 'GC>AG', 'GC>AT', 'GC>CA', 'GC>CG', 'GC>TA',
   'TA>AT', 'TA>CG', 'TA>CT', 'TA>GC', 'TA>GG', 'TA>GT',
-  'TC>AA', 'TC>AG', 'TC>AT', 'TC>CA', 'TC>CG', 'TC>CT', 'TC>GA', 'TC>GG', 'TC>GT', 
+  'TC>AA', 'TC>AG', 'TC>AT', 'TC>CA', 'TC>CG', 'TC>CT', 'TC>GA', 'TC>GG', 'TC>GT',
   'TG>AA', 'TG>AC', 'TG>AT', 'TG>CA', 'TG>CC', 'TG>CT', 'TG>GA', 'TG>GC', 'TG>GT',
   'TT>AA', 'TT>AC', 'TT>AG', 'TT>CA', 'TT>CC', 'TT>CG', 'TT>GA', 'TT>GC', 'TT>GG')
 
@@ -142,7 +142,7 @@ INDEL_CONTEXT_COSMIC = c(
 )
 
 INDEL_CLASS = c(
-  rep("C", 6), rep("T", 6), 
+  rep("C", 6), rep("T", 6),
   rep("C", 6), rep("T", 6),
   rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
   rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
@@ -156,7 +156,7 @@ INDEL_CLASS_HEADER = c(
 )
 
 INDEL_CLASS_COSMIC = c(
-  rep("C", 6), rep("T", 6), 
+  rep("C", 6), rep("T", 6),
   rep("C", 6), rep("T", 6),
   rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
   rep("2", 6), rep("3", 6), rep("4", 6), rep("5+", 6),
@@ -171,7 +171,7 @@ INDEL_CLASS_HEADER_COSMIC = c(
 
 INDEL_MATRIX = NULL
 
-# Strand information 
+# Strand information
 STRAND = rep(c("U","T"), 96)
 STRAND_DBS = rep(c("U","T"), 78)
 DNA_BASES = c("A", "C", "G", "T")

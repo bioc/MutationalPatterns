@@ -5,7 +5,7 @@
 #' mutation types of the DBS from COSMIC.
 #' 
 #' @param vcf A CollapsedVCF object
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
 #' @return List with character vector for each mutation type
@@ -23,22 +23,22 @@
 #'
 #' @export
 
-mut_type = function(vcf, type) 
+mut_type = function(vcf, type)
 {
     # Check the mutation type argument
     type = check_mutation_type(type)
-    
+
     # Get the mutations from the vcf
     muts = mutations_from_vcf(vcf, type)
-    
+
     if (!is(muts, "list"))
     {
       muts = list(muts)
       names(muts) = type
     }
-    
+
     converted = list()
-    
+
     # For snv and dbs, convert the mutations to reverse complement
     # when needed for the context
     for (n in names(muts))
@@ -52,7 +52,7 @@ mut_type = function(vcf, type)
         types = gsub('A>T', 'T>A', types)
         types = gsub('A>G', 'T>C', types)
         types = gsub('A>C', 'T>G', types)
-        
+
         converted = c(converted,list("snv"=types))
       }
       else if (n == "dbs")
@@ -67,14 +67,14 @@ mut_type = function(vcf, type)
         types = gsub('GT>TA', 'AC>TA', types)
         types = gsub('GT>CA', 'AC>TG', types)
         types = gsub('GT>AA', 'AC>TT', types)
-        
+
         types = gsub('AT>TG', 'AT>CA', types)
         types = gsub('AT>GG', 'AT>CC', types)
         types = gsub('AT>CG', 'AT>CG', types)
         types = gsub('AT>TC', 'AT>GA', types)
         types = gsub('AT>GC', 'AT>GC', types)
         types = gsub('AT>TA', 'AT>TA', types)
-        
+
         types = gsub('GG>TT', 'CC>AA', types)
         types = gsub('GG>CT', 'CC>AG', types)
         types = gsub('GG>AT', 'CC>AT', types)
@@ -84,14 +84,14 @@ mut_type = function(vcf, type)
         types = gsub('GG>TA', 'CC>TA', types)
         types = gsub('GG>CA', 'CC>TG', types)
         types = gsub('GG>AA', 'CC>TT', types)
-        
+
         types = gsub('CG>AT', 'CG>AT', types)
         types = gsub('CG>GC', 'CG>GC', types)
         types = gsub('CG>AC', 'CG>GT', types)
         types = gsub('CG>TA', 'CG>TA', types)
         types = gsub('CG>GA', 'CG>TC', types)
         types = gsub('CG>AA', 'CG>TT', types)
-        
+
         types = gsub('AG>TT', 'CT>AA', types)
         types = gsub('AG>GT', 'CT>AC', types)
         types = gsub('AG>CT', 'CT>AG', types)
@@ -101,21 +101,21 @@ mut_type = function(vcf, type)
         types = gsub('AG>TA', 'CT>TA', types)
         types = gsub('AG>GA', 'CT>TC', types)
         types = gsub('AG>CA', 'CT>TG', types)
-        
+
         types = gsub('GC>TT', 'GC>AA', types)
         types = gsub('GC>CT', 'GC>AG', types)
         types = gsub('GC>AT', 'GC>AT', types)
         types = gsub('GC>TG', 'GC>CA', types)
         types = gsub('GC>CG', 'GC>CG', types)
         types = gsub('GC>TA', 'GC>TA', types)
-        
+
         types = gsub('TA>AT', 'TA>AT', types)
         types = gsub('TA>CG', 'TA>CG', types)
         types = gsub('TA>AG', 'TA>CT', types)
         types = gsub('TA>GC', 'TA>GC', types)
         types = gsub('TA>CC', 'TA>GG', types)
         types = gsub('TA>AC', 'TA>GT', types)
-        
+
         types = gsub('GA>TT', 'TC>AA', types)
         types = gsub('GA>CT', 'TC>AG', types)
         types = gsub('GA>AT', 'TC>AT', types)
@@ -125,7 +125,7 @@ mut_type = function(vcf, type)
         types = gsub('GA>TC', 'TC>GA', types)
         types = gsub('GA>CC', 'TC>GG', types)
         types = gsub('GA>AC', 'TC>GT', types)
-        
+
         types = gsub('CA>TT', 'TG>AA', types)
         types = gsub('CA>GT', 'TG>AC', types)
         types = gsub('CA>AT', 'TG>AT', types)
@@ -135,7 +135,7 @@ mut_type = function(vcf, type)
         types = gsub('CA>TC', 'TG>GA', types)
         types = gsub('CA>GC', 'TG>GC', types)
         types = gsub('CA>AC', 'TG>GT', types)
-        
+
         types = gsub('AA>TT', 'TT>AA', types)
         types = gsub('AA>GT', 'TT>AC', types)
         types = gsub('AA>CT', 'TT>AG', types)
@@ -148,15 +148,15 @@ mut_type = function(vcf, type)
         converted = c(converted,list("dbs"=types))
       }
       else if (n == "indel")
-      { 
+      {
         converted = c(converted, list("indel"=muts[[n]]))
       }
     }
-    
+
     # Return a vector when there is only 1 mutation type
     if(length(names(converted)) == 1)
       converted = converted[[1]]
-    
+
     return(converted)
 }
 
