@@ -8,12 +8,12 @@ indel_mutation_type(indel)
 }
 \arguments{
 \item{indel}{(Optional) List of vectors for context, class and color of indels.
-Color vector must have the same length as the class vector, 
+Color vector must have the same length as the class vector,
 because in plotting profiles, each class is represented by one color.\cr\cr
 It is also possible to give a character for predefined variables:
 \itemize{
-  \item{"predefined"} {Represents a indel context of 3 classes per 
-  deletion and indel: "repetitive region", "microhomology" and 
+  \item{"predefined"} {Represents a indel context of 3 classes per
+  deletion and indel: "repetitive region", "microhomology" and
   "none" of these two. Indels have lengths 1 to 5+}
   \item{"cosmic"} {Represents the indel context according to the
   COSMIC database}
@@ -25,9 +25,9 @@ This function changes internal variables used by the package
 to analyse indels.
 }
 \description{
-A function to set the global values of the context variable, 
+A function to set the global values of the context variable,
 the class variable and the color variable of indels. For indels
-there is no single intuitive and naturally constrained set of 
+there is no single intuitive and naturally constrained set of
 mutation types, so a custom set of mutation types can be used
 }
 \examples{
@@ -47,8 +47,8 @@ rep('del.mh', 5), rep('ins.mh', 5),
 rep('del.none', 5), rep('ins.none', 5)
 ),
              "colors" = c(
-"#F7BF80", "#ED8212", 
-"#B5D988", "#31A12C", 
+"#F7BF80", "#ED8212",
+"#B5D988", "#31A12C",
 "#E44A39", "#B81C20"
 ))
 

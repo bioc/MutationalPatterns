@@ -11,7 +11,7 @@ mut_context(vcf, ref_genome, type)
 
 \item{ref_genome}{Reference genome}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 }

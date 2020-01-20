@@ -4,8 +4,12 @@
 \alias{get_contexts_indel}
 \title{Extract indel sequence, type and length}
 \usage{
-get_contexts_indel(bed, ref_genome = DEFAULT_GENOME,
-  get_other_indel_allele = FALSE, verbose = FALSE)
+get_contexts_indel(
+  bed,
+  ref_genome = DEFAULT_GENOME,
+  get_other_indel_allele = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{bed}{A dataframe containing the columns: chrom, pos, ref, alt}

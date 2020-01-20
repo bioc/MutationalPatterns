@@ -4,8 +4,17 @@
 \alias{plot_rainfall}
 \title{Plot genomic rainfall}
 \usage{
-plot_rainfall(vcf, chromosomes, type, method = "split", title = "",
-  colors, cex = 2.5, cex_text = 3, ylim = 1e+08)
+plot_rainfall(
+  vcf,
+  chromosomes,
+  type,
+  method = "split",
+  title = "",
+  colors,
+  cex = 2.5,
+  cex_text = 3,
+  ylim = 1e+08
+)
 }
 \arguments{
 \item{vcf}{CollapsedVCF object}
@@ -13,18 +22,18 @@ plot_rainfall(vcf, chromosomes, type, method = "split", title = "",
 \item{chromosomes}{Vector of chromosome/contig names of the reference
 genome to be plotted}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
-\item{method}{(Optional) Character stating how to plot the results. method = "split" will give 
+\item{method}{(Optional) Character stating how to plot the results. method = "split" will give
 seperate plots for each mutation type, whereas method = "combine" will give one plot with all
 mutation types.\cr
 Default is "split"}
 
 \item{title}{(Optional) Plot title}
 
-\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv, 
+\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv,
 10 value color vector "dbs" for dbs.
 For indels give same number of colors as there are classes. \cr}
 

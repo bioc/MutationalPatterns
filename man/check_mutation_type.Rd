@@ -14,7 +14,7 @@ If no argument is given, then the function will return 'snv'}
 Vector of all possible mutation types from 'type'
 }
 \description{
-A function to check if the mutation type argument contains real 
+A function to check if the mutation type argument contains real
 mutation types which can be processed by this package
 }
 \examples{

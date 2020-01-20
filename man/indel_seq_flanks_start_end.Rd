@@ -4,8 +4,14 @@
 \alias{indel_seq_flanks_start_end}
 \title{Get the start/end positions for the left/right flanks of an indel}
 \usage{
-indel_seq_flanks_start_end(chrom, pos, indel.len, indel.type,
-  n.indel.lengths.l = 1, n.indel.lengths.r = 1)
+indel_seq_flanks_start_end(
+  chrom,
+  pos,
+  indel.len,
+  indel.type,
+  n.indel.lengths.l = 1,
+  n.indel.lengths.r = 1
+)
 }
 \arguments{
 \item{chrom}{A character stating the chromosome}

@@ -12,12 +12,12 @@ strand_occurrences(mut_mat_s, by, type, method = "split")
 
 \item{by}{(Optional) Character vector with grouping info}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
 \item{method}{(Optional) Character stating if all mutation types should be combined
-(='combine') in relative contribution or taking apart (= 'split'). 
+(='combine') in relative contribution or taking apart (= 'split').
 Default is 'split'}
 }
 \value{

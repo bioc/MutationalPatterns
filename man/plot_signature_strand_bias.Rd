@@ -9,7 +9,7 @@ plot_signature_strand_bias(signatures_strand_bias, type, colors)
 \arguments{
 \item{signatures_strand_bias}{Named list of signatures matrices}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
