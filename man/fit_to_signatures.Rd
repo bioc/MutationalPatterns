@@ -5,14 +5,36 @@
 \title{Find optimal nonnegative linear combination of mutation signatures to
 reconstruct the mutation matrix.}
 \usage{
-fit_to_signatures(mut_matrix, signatures)
+fit_to_signatures(
+  mut_matrix,
+  signatures,
+  type,
+  cutoff,
+  method = "least-squares",
+  ...
+)
 }
 \arguments{
-\item{mut_matrix}{96 mutation count matrix (dimensions: 96 mutations
-X n samples)}
+\item{mut_matrix}{Named list of count matrices}
 
-\item{signatures}{Signature matrix (dimensions: 96 mutations
-X n signatures)}
+\item{signatures}{Named list of signature matrices (number of mutational features
+for each signature matrix must be the same as in the corresponding count matrix)}
+
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+Default is 'snv'}
+
+\item{cutoff}{(Optional) Numeric value of absolute signature contribution. Signatures
+greater than or equal to the given value are returned. Default = 0}
+
+\item{method}{(Optional) Character to select the method used to fit the signatures:
+\itemize{
+  \item{'least-squares'} {Solve the nonnegative least-squares constraints problem}
+  \item{'golden-ratio-search'} {Perform gold ratio search algortihm from deconstructSigs package}
+}
+Default is 'least-squares'}
+
+\item{...}{Other arguments passed to whichSignatures() when using method = 'golden-ratio-search'}
 }
 \value{
 Named list with signature contributions and reconstructed
@@ -20,8 +42,8 @@ mutation matrix
 }
 \description{
 Find the linear combination of mutation signatures that most closely
-reconstructs the mutation matrix by solving the nonnegative least-squares
-constraints problem.
+reconstructs the mutation matrix by solving either the nonnegative least-squares
+constraints problem or the golden ratio search problem.
 }
 \examples{
 
@@ -35,7 +57,7 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\\t", header = TRUE)
+cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## Match the order to MutationalPatterns standard of mutation matrix
 order = match(row.names(mut_mat), cancer_signatures$Somatic.Mutation.Type)
@@ -55,4 +77,6 @@ fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
 }
 \seealso{
 \code{\link{mut_matrix}}
+\code{\link{least_squares_error_fitting}}
+\code{\link{golden_ratio_search_fitting}}
 }

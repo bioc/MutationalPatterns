@@ -7,10 +7,10 @@
 cluster_signatures(signatures, method = "complete")
 }
 \arguments{
-\item{signatures}{Matrix with 96 trinucleotides (rows) and any number of
+\item{signatures}{Matrix of all variants from a mutation type (rows) and any number of
 signatures (columns)}
 
-\item{method}{The agglomeration method to be used for hierarchical
+\item{method}{(Optional) The agglomeration method to be used for hierarchical
 clustering. This should be one of "ward.D", "ward.D2", "single", "complete",
 "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) or
 "centroid" (= UPGMC). Default = "complete".}
@@ -24,12 +24,12 @@ Hierarchical clustering of signatures based on cosine similarity
 \examples{
 ## You can download mutational signatures from the COSMIC database:
 # sp_url = http://cancer.sanger.ac.uk/cancergenome/assets/signatures_probabilities.txt
-# cancer_signatures = read.table(sp_url, sep = "\\t", header = T)
+# cancer_signatures = read.table(sp_url, sep = "\t", header = T)
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\\t", header = TRUE)
+cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",

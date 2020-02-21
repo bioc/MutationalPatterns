@@ -5,6 +5,7 @@ genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
                         pattern = ".vcf", full.names = TRUE)
+vcf_files <- vcf_files[4:12]
 
 sample_names <- c("colon1", "colon2", "colon3",
                   "intestine1", "intestine2", "intestine3",

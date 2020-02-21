@@ -4,15 +4,23 @@
 \alias{cos_sim_matrix}
 \title{Compute all pairwise cosine similarities between mutational profiles/signatures}
 \usage{
-cos_sim_matrix(mut_matrix1, mut_matrix2)
+cos_sim_matrix(mut_matrix1, mut_matrix2, type)
 }
 \arguments{
-\item{mut_matrix1}{96 mutation count matrix (dimensions: 96 mutations X n samples)}
+\item{mut_matrix1}{Named list of mutation count matrices (dimensions: n mutations X m samples). \cr
+It is possible to give a matrix. If both 'mut_matrix1' and 'mut_matrix2' are matrices,
+cosine similarity between the two is calculated. If one of them is a list, only the cosine
+similarity of the mutation type in the matrix is calculated}
 
-\item{mut_matrix2}{96 mutation count matrix (dimensions: 96 mutations X m samples)}
+\item{mut_matrix2}{Named list of mutation count matrices (dimensions: n mutations X m samples)}
+
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
+For named lists, default is 'snv', else default is mutation type of the matrix}
 }
 \value{
-Matrix with pairwise cosine similarities (dimensions: n mutational profiles X m mutational profiles)
+Named list of matrices with pairwise cosine similarities
+(dimensions: n mutational profiles X m mutational profiles)
 }
 \description{
 Computes all pairwise cosine similarities between the mutational profiles provided in the two mutation count matrices. 
@@ -21,12 +29,12 @@ The cosine similarity is a value between 0 (distinct) and 1 (identical) and indi
 \examples{
 ## You can download mutational signatures from the COSMIC database:
 # sp_url = http://cancer.sanger.ac.uk/cancergenome/assets/signatures_probabilities.txt
-# cancer_signatures = read.table(sp_url, sep = "\\t", header = T)
+# cancer_signatures = read.table(sp_url, sep = "\t", header = T)
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\\t", header = TRUE)
+cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",

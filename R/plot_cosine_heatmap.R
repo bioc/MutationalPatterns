@@ -1,16 +1,18 @@
 #' Plot cosine similarity heatmap
 #' 
 #' Plot pairwise cosine similarities in a heatmap.
-#' 
-#' 
+#'
 #' @param cos_sim_matrix Matrix with pairwise cosine similarities.
 #'                       Result from \code{\link{cos_sim_matrix}}
-#' @param col_order Character vector with the desired order of the columns names for plotting. Optional.
-#' @param cluster_rows Hierarchically cluster rows based on eucledian distance. Default = TRUE.
-#' @param method The agglomeration method to be used for hierarchical clustering. This should be one of 
-#' "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
-#' or "centroid" (= UPGMC). Default = "complete".
-#' @param plot_values Plot cosine similarity values in heatmap. Default = FALSE.
+#' @param col_order (OptionaL) Character vector with the desired order of the columns names for plotting.
+#' @param cluster_rows (Optional) Hierarchically cluster rows based on eucledian distance.\cr
+#' Default = TRUE
+#' @param method (Optional) The agglomeration method to be used for hierarchical clustering. This should be one of
+#' "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC)
+#' or "centroid" (= UPGMC).\cr
+#' Default = "complete"
+#' @param plot_values (Optional) Plot cosine similarity values in heatmap.\cr
+#' Default = FALSE
 #'
 #' @return Heatmap with cosine similarities
 #'
@@ -63,10 +65,17 @@
 #' 
 #' @export
 
-plot_cosine_heatmap = function(cos_sim_matrix, col_order, cluster_rows = TRUE, method = "complete", plot_values = FALSE)
+plot_cosine_heatmap = function(cos_sim_matrix,
+                               col_order,
+                               cluster_rows = TRUE,
+                               method = "complete",
+                               plot_values = FALSE)
 {
+  if(is(cos_sim_matrix, "list"))
+    cos_sim_matrix = do.call(cbind, cos_sim_matrix)
+
   # check explained argument
-  if(class(cos_sim_matrix) != "matrix")
+  if(!is(cos_sim_matrix, "matrix"))
   {stop("cos_sim_matrix must be a matrix")}
   # matrix should have row and colnames
   if(length(colnames(cos_sim_matrix)) == 0)
@@ -79,7 +88,7 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order, cluster_rows = TRUE, m
     col_order = colnames(cos_sim_matrix)
   }
   # check col_order argument
-  if(class(col_order) != "character")
+  if(!is(col_order,"character"))
   {stop("col_order must be a character vector")}
   if(length(col_order) != ncol(cos_sim_matrix))
   {stop("col_order must have the same length as the number of signatures in the explained matrix")}
@@ -116,7 +125,7 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order, cluster_rows = TRUE, m
   # plot heatmap
   heatmap = ggplot(cos_sim_matrix.m, aes(x=Signature, y=Sample, fill=Cosine.sim, order=Sample)) + 
     geom_tile(color = "white") +
-    scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Cosine \nsimilarity", limits = c(0,1)) +
+    scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Cosine \nsimilarity", limits = c(0,1.000001)) +
     theme_bw() + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(x=NULL, y=NULL)
