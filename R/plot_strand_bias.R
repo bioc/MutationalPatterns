@@ -1,7 +1,7 @@
 #' Plot strand bias per base substitution type per group
 #'
 #' @param strand_bias A data.frame, result from strand_bias function
-#' @param colors (Optional) Named list with 6 value color vector "snv" for snv,
+#' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 
 #' 10 value color vector "dbs" for dbs.
 #' For indels give same number of colors as there are classes.
 #' @param max_yaxis (Optional) Binary option to set y axis to maximum value of all
@@ -42,8 +42,8 @@
 plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
 {
   if (is(strand_bias, "list"))
-  {
-    strand_bias = do.call(rbind, strand_bias)
+  { 
+    strand_bias = do.call(rbind, strand_bias) 
     method = "split"
   } else { method = "combine" }
   
@@ -53,10 +53,10 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
     colors = c()
     if (any(grepl("snv", strand_bias$mutation))) { colors = c(colors, COLORS6) }
     if (any(grepl("dbs", strand_bias$mutation))) { colors = c(colors, COLORS10) }
-      if (any(grepl("indel", strand_bias$mutation)))
+      if (any(grepl("indel", strand_bias$mutation))) 
         colors = c(colors, COLORS_INDEL)
   }
-
+  
   # get variable names
   var_names = colnames(strand_bias)[4:5]
   
@@ -85,7 +85,7 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
   
   strand_bias$mutation = factor(strand_bias$mutation, levels = unique(strand_bias$mutation))
   strand_bias$type = factor(strand_bias$type, levels = unique(strand_bias$type))
-
+  
   # plot strand bias with poisson test results
   plot = ggplot(strand_bias, aes( x = type,
                                   y = log2((strand_bias[,4]+0.1) /
@@ -112,9 +112,9 @@ plot_strand_bias = function(strand_bias, colors, max_yaxis = FALSE)
   
   # If max_yaxis is TRUE, set max yaxis to maximum of all mutation types
   if (max_yaxis) { plot = plot + scale_y_continuous(limits = c(-max, max)) }
-
+  
   # If different graphs for each mutation types is wanted, use method = "split"
-  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group,
+  if (method == "split"){ plot = plot + facet_wrap(mutation ~ group, 
                                                    scales = "free_x",
                                                    nrow = length(levels(strand_bias$mutation)) )}
   else if (method == "combine"){ plot = plot + facet_wrap( ~ group, nrow = 1 )}

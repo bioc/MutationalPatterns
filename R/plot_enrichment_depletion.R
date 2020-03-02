@@ -69,10 +69,10 @@ plot_enrichment_depletion = function(df)
         xlab("") +
         ylab("No. mutations") +
         scale_x_discrete(breaks=NULL)
-
+    
     if (mutation)
       plot1 = plot1 + facet_grid(mutation ~ region, scales = "free")
-    else
+    else 
       plot1 = plot1 + facet_grid(. ~ region, scales = "free")
 
     # determine max y value for plotting
@@ -86,7 +86,7 @@ plot_enrichment_depletion = function(df)
       }
       max_df$max = rep(maximum, nrow(max_df) / length(maximum))
       max_df$mutation = factor(max_df$mutation, levels = c("snv","dbs","indel"))
-
+    
       df$mutation = factor(df$mutation, levels = c("snv","dbs","indel"))
     } else {
       maximum = ceiling(max(abs(log2((df$observed+0.1) / (df$expected+0.1)))))
@@ -117,7 +117,7 @@ plot_enrichment_depletion = function(df)
         scale_x_discrete(breaks = NULL) +
         geom_blank(data=max_df, aes(y=-max)) +
         geom_blank(data=max_df, aes(y=max))
-
+    
     if(mutation)
       plot2 = plot2 + facet_grid(mutation ~ region, scales = "free")
     else

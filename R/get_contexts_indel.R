@@ -15,30 +15,30 @@
 #'
 #' @return A dataframe in the same structure as a bed file
 #' @export
-get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME,
+get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME, 
                                get_other_indel_allele=FALSE, verbose=FALSE){
-
+  
   bed_colnames <- c('chrom','pos','ref','alt')
   if(!(identical(colnames(bed)[1:4], bed_colnames))){
     warning("colnames(bed)[1:4] != c('chrom','pos','ref','alt'). Assuming first 4 columns are these columns")
     colnames(bed)[1:4] <- bed_colnames
   }
-
+  
   bed$chrom = as.character(bed$chrom)
   bed$ref = as.character(bed$ref)
   bed$alt = as.character(bed$alt)
-
+  
   if(verbose){ message('Converting chrom name style to style in ref_genome...') }
   seqlevelsStyle(bed$chrom) <- seqlevelsStyle(eval(parse(text=ref_genome)))
-
+  
   if(verbose){ message('Determining indel type...') }
   ## Calc sequence lengths
   bed$ref_len <- nchar(bed$ref)
   bed$alt_len <- nchar(bed$alt)
-
+  
   ## Remove snvs
   bed <- bed[!(bed$ref_len==1 & bed$alt_len==1),]
-
+  
   ## Determine indel type
   bed$indel_type <- with(bed,{
     unlist(Map(function(ref_len, alt_len){
@@ -53,14 +53,14 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME,
       }
     },ref_len, alt_len, USE.NAMES=FALSE))
   })
-
+  
   if(get_other_indel_allele==TRUE){
     if(verbose){ message('Retrieving other indel allele...') }
     bed_split <- lapply(
       list(del_type=c('del','mnv_del'),ins_type=c('ins','mnv_ins'),mnv_neutral='mnv_neutral'),
       function(i){ bed[bed$indel_type %in% i, ] }
     )
-
+    
     if(nrow(bed_split$del_type)!=0){
       ## Deletions
       ## ref:   'AGAACTACCATATGACCCAGCAGTCCCATTCTGGGTATATATCCAC'
@@ -81,7 +81,7 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME,
       bed_split$del_type$ref <- with(bed_split$del_type, { paste0(alt, ref) })
       bed_split$del_type$pos <- bed_split$del_type$pos-1
     }
-
+    
     if(nrow(bed_split$ins_type)!=0){
       ## Insertions
       ## ref:  ''
@@ -103,20 +103,20 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME,
       bed_split$ins_type$alt <- with(bed_split$ins_type, { paste0(ref,alt) })
       bed_split$ins_type$pos <- bed_split$ins_type$pos-1
     }
-
+    
     ## Unsplit bed
     bed <- do.call(rbind, bed_split)
     rownames(bed) <- NULL
-
+    
     ## Recalculate ref/alt length
     bed$ref_len <- nchar(bed$ref)
     bed$alt_len <- nchar(bed$alt)
   }
-
+  
   if(verbose){ message('Determining indel length and sequence...') }
   ## Determine indel length
   bed$indel_len <- abs(bed$alt_len-bed$ref_len)
-
+  
   ## Determine indel seq
   bed$indel_seq <- with(bed,{
     unlist(Map(function(ref,alt,indel_type,indel_len){
@@ -130,7 +130,7 @@ get_contexts_indel <- function(bed, ref_genome=DEFAULT_GENOME,
       }
     },ref,alt,indel_type,indel_len, USE.NAMES=FALSE))
   })
-
+  
   ## Output
   if(verbose){ message('Returning indel characteristics...') }
   out <- bed[bed$indel_type %in% c('ins','del'),]

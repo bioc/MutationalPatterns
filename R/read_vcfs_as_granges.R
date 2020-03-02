@@ -25,13 +25,13 @@
 #'              up processing time only if the input vcf does not contain any
 #'              of such positions, as these will cause obscure errors.
 #' @param dbs_format (Optional) A string to give the format of the double base substitutions
-#'              present in the vcf files. Options are 'one-line' for variants where REF and
-#'              ALT are both length 2, or 'sequential' when DBS consist of 2 sequential
+#'              present in the vcf files. Options are 'one-line' for variants where REF and 
+#'              ALT are both length 2, or 'sequential' when DBS consist of 2 sequential 
 #'              SNVs.\cr
 #'              Default is 'sequential'.
 #' @param n_cores (Optional) numeric. Number of cores used for parallel processing. If no
 #'              value is given, then the number of available cores is autodetected.
-#'
+#' 
 #' @return A GRangesList containing the GRanges obtained from 'vcf_files'
 #'
 #' @importFrom BiocGenerics match
@@ -71,7 +71,7 @@
 #' @export
 
 read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
-                                 group = "auto+sex", check_alleles = TRUE,
+                                 group = "auto+sex", check_alleles = TRUE, 
                                  dbs_format = "sequential", n_cores)
 {
     # Check sample names
@@ -90,8 +90,8 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     if (!is(ref_genome, "BSgenome"))
         stop("Please provide the name of a BSgenome object.")
 
-    # If number of cores is not provided, detect the number of available cores.
-    # Windows does not support forking, only threading, so unfortunately, we
+    # If number of cores is not provided, detect the number of available cores.  
+    # Windows does not support forking, only threading, so unfortunately, we 
     # have to set it to 1.
     # On confined OS environments, this value can be NA, and in such
     # situations we need to fallback to 1 core.
@@ -133,10 +133,10 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         # GRanges information in memory.  This speeds up the
         # loading significantly.
         vcf <- rowRanges(readVcf (file, genome_name))
-
+        
         if (length(vcf) == 0)
           stop(sprintf("Vcf file %s is empty", file))
-
+        
         # Convert to a single naming standard.
         seqlevelsStyle(vcf) <- ref_style[1]
 
@@ -198,22 +198,22 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             if (length(rem) > 0)
             {
                 vcf = vcf[-rem]
-                warnings$check_allele <-
+                warnings$check_allele <- 
                   rbind(warnings$check_allele,
                         c(sample_names[[index]], length(rem)))
             }
         }
-
+        
         if (dbs_format == "sequential")
         {
           # Check if no variants with REF and ALT of length 2
           check_dbs = which(nchar(as.character(vcf$REF)) == 2 &
                               nchar(as.character(unlist(vcf$ALT))) == 2)
-          if (length(check_dbs) > 0)
+          if (length(check_dbs) > 0) 
             stop(paste("Variants found with REF and ALT of length 2.\n ",
                        "Please use 'dbs-format = \"one-line\"' or give",
                        "a new vcf file"))
-
+          
           # Search for DBS which are given as two sequential locations
           dbs = which(diff(start(vcf)) == 1)
           dbs1 = which(nchar(as.character(vcf$REF)[dbs]) == 1 &
@@ -231,13 +231,14 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
               # Remove multi nucleotide variants
               rem = which(diff(dbs) == 1)
               mnv = unique(sort(c(dbs[rem],dbs[rem]+1,dbs[rem]+2)))
-
+              
               rem <- unique(c(rem,rem+1))
               dbs <- dbs[-rem]
               warnings$dbs <- rbind(warnings$dbs,
                                     c(sample_names[[index]], length(mnv)))
             }
-
+          
+          
           # If there are DBS, then change end position of variant,
           # add second ref and second alt base and delete next variant from vcf
           if (length(dbs) > 0)
@@ -250,14 +251,14 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
             vcf = vcf[-c(mnv,(dbs+1)),]
           }
         }
-
+        
         indel = which((nchar(as.character(vcf$REF)) == 1 &
                         nchar(as.character(unlist(vcf$ALT))) > 1) |
                         (nchar(as.character(vcf$REF)) > 1 &
                            nchar(as.character(unlist(vcf$ALT))) == 1))
-
+        
         rem_indel = unique(c(grep("[^ACGTN]",as.character(vcf$REF[indel])),
-                             grep("[^ACGTN]",as.character(unlist(vcf$ALT))[indel])))
+                             grep("[^ACGTN]",as.character(unlist(vcf$ALT))[indel])))   
         if (length(rem_indel) > 0){
           vcf = vcf[-indel[rem_indel],]
           warnings$indel <- rbind(warnings$indel,
@@ -280,21 +281,22 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
     # The return values of the mclapply output are packed as
     # list(<GRanges>, <warnings>).  The function below unpacks the GRanges
     # and displays the warnings.
-
+    
     # Handle errors and give read-in summary
     summ <- lapply(vcf_list, function(item) {
         if (is(item, "try-error")) stop (item)
         ref = as.character(item[[1]]$REF)
         alt = as.character(unlist(item[[1]]$ALT))
-
+        
         nsnvs = length(which(nchar(ref) == 1 & nchar(alt) == 1))
         ndbs = length(which(nchar(ref) == 2 & nchar(alt) == 2))
-        nindel = length(which((nchar(ref) == 1 & nchar(alt) != 1) |
+        nindel = length(which((nchar(ref) == 1 & nchar(alt) != 1) | 
                                 (nchar(ref) != 1 & nchar(alt) == 1)))
-
+        
         return(c(nsnvs, ndbs, nindel))
     })
-
+    
+    
     # Handle warnings
     warnings <- do.call(rbind, vcf_list)[,2]
     warnings <- sapply(warnings, function(item) {
@@ -308,7 +310,7 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
         if (is.null(warns)) next
         else colnames(warns[[rownames(warnings)[i]]]) <- c("Sample", "Position(s)")
     }
-
+    
     if (!is.null(warns)){
       lapply(names(warns), function(item) {
           if (item == "check_alleles")
@@ -319,8 +321,8 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
                       immediate. = TRUE)
           } else if (item == "dbs")
           {
-            warning("Position(s) excluded that form ",
-                    "multiple nucleotide variants ",
+            warning("Position(s) excluded that form ", 
+                    "multiple nucleotide variants ", 
                     "of length more than 2.\n",
                     paste0(capture.output(warns$dbs), collapse = "\n"),
                     immediate. = TRUE)
@@ -333,17 +335,17 @@ read_vcfs_as_granges <- function(vcf_files, sample_names, genome,
           }
       })
     }
-
+    
     vcf_list <- GRangesList(do.call(rbind, vcf_list)[,1])
-
+    
     # Set the provided names for the samples.
     names(vcf_list) <- sample_names
-
+    
     # Print a summary of mutations found
     summ <- do.call(rbind, summ)
     colnames(summ) <- c("Number of SNV", "Number of DBS", "Number of indel")
     rownames(summ) <- names(vcf_list)
     print(summ)
-
+    
     return(vcf_list)
 }

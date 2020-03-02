@@ -59,12 +59,12 @@ plot_compare_profiles = function(profile1,
     # Check if both profiles are from the same mutation type
     if (any(is.na(match(names(profile1), names(profile2)))) | any(is.na(match(names(profile1), names(profile2)))))
     { stop("Mutations of profiles do not match. Is the same mutation type given?")}
-
+    
     # Find the mutation type(s) for coloring and plotting the contexts
     if (all(names(profile1) %in% TRIPLETS_96)) { type = "snv" }
     else if (all(names(profile1) %in% DBS)) { type = "dbs" }
     else if (all(names(profile1) %in% c(TRIPLETS_96, DBS))) { type = c("snv", "dbs")}
-    else
+    else 
     {
         if (all(names(profile1) %in% INDEL_CONTEXT)) { type = "indel" }
         else if (all(names(profile1) %in% c(TRIPLETS_96, INDEL_CONTEXT)))
@@ -85,7 +85,7 @@ plot_compare_profiles = function(profile1,
             stop("Mutations in profile 1 are not found in preset SNV and DBS or in given INDEL context")
         }
     }
-
+  
     # if colors parameter not provided, set to default colors
     if(missing(colors))
     {
@@ -94,7 +94,7 @@ plot_compare_profiles = function(profile1,
       if ("dbs" %in% type) { colors[["dbs"]] = COLORS10 }
       if ("indel" %in% type) { colors[["indel"]] = COLORS_INDEL }
     }
-
+  
     # Get relative profiles and difference
     s1_relative = profile1 / sum(profile1)
     s2_relative = profile2 / sum(profile2)
@@ -111,11 +111,11 @@ plot_compare_profiles = function(profile1,
     
     x = cbind(s1_relative, s2_relative, diff)
     colnames(x) = c(profile_names, "Difference")
-
+    
     # Get context and substitutions info of mutation types
     substitutions = list()
     context = list()
-
+    
     if ("snv" %in% type)
     {
       substitutions[["snv"]] = SUBSTITUTIONS_96
@@ -123,11 +123,11 @@ plot_compare_profiles = function(profile1,
                 rep(4,1,16), rep(5,1,16), rep(6,1,16))
       # Context
       context_snv = CONTEXTS_96
-
+      
       # Replace mutated base with dot
       substring(context_snv,2,2) = "."
       context[["snv"]] = context_snv
-    }
+    } 
     if ("dbs" %in% type)
     {
       substitutions[["dbs"]] = unlist(lapply(as.list(SUBSTITUTIONS_DBS), function(sub)
@@ -156,22 +156,22 @@ plot_compare_profiles = function(profile1,
         substitutions[["indel"]] = INDEL_CLASS
       }
     }
-
+    
     # Translate lists into vector
     colors = unname(unlist(colors))
     substitutions = unname(unlist(substitutions))
     context = unname(unlist(context))
-
+    
     # Construct dataframe for plotting
     df = data.frame(substitution = substitutions, context = context)
     rownames(x) = NULL
-
+    
     if ("indel" %in% type & !isEmpty(INDEL_CLASS_HEADER))
     {
       df2 = cbind(df, "header"=INDEL_CLASS_HEADER, as.data.frame(x))
       df3 = melt(df2, id.vars = c("header","substitution", "context"))
       df3$header = factor(df3$header, levels = unique(INDEL_CLASS_HEADER))
-    } else
+    } else 
     {
       df2 = cbind(df, as.data.frame(x))
       df3 = melt(df2, id.vars = c("substitution", "context"))
@@ -263,16 +263,16 @@ plot_compare_profiles = function(profile1,
                 strip.text.y=element_text(size=14),
                 panel.grid.major.x = element_blank())
     }
-
+    
     if ("indel" %in% type & !isEmpty(INDEL_CLASS_HEADER)){
-      plot = plot +
-        facet_nested(variable ~ header + substitution,
-                     scales = "free",
-                     labeller = labeller(substitution=labels)) +
+      plot = plot + 
+        facet_nested(variable ~ header + substitution, 
+                     scales = "free", 
+                     labeller = labeller(substitution=labels)) + 
         xlab("length")
     } else {
       plot = plot + facet_grid(variable ~ substitution, scales = "free_y") + xlab("length")
     }
-
+    
     return(plot)
 }

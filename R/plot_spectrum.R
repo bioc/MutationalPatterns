@@ -90,7 +90,7 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
     empty_rows = which(rowSums(type_occurrences) == 0)
     if (!isEmpty(empty_rows))
       type_occurrences = type_occurrences[-empty_rows,]
-
+    
     # Relative contribution per sample
     df2 = type_occurrences / rowSums(type_occurrences)
 

@@ -1,7 +1,7 @@
 #' Plot profiles for mutations found in mutation matrix
 #'
 #' Plot relative contribution of mutational profiles
-#' @param mut_matrix Name list of mutation count matrices for mutation types.
+#' @param mut_matrix Name list of mutation count matrices for mutation types. 
 #' @param colors (Optional) Named list with 6 value color vector "snv" for snv, 10 value color vector "dbs" for dbs.
 #' For indels give same number of colors as there are classes. \cr
 #' The "predefined" context contains 6 classes and the "cosmic" context contains 16 classes
@@ -11,16 +11,16 @@
 #' Set "ymax = maximum" to use the maximal signature contribution for each mutation type as maximum
 #' for the Y axis.\cr
 #' By default, "ymax" is c("snv"=0.2, "dbs"=0.5, "indel"=0.5)
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
+#' @param type (Optional) A character vector stating which type of mutation is to be extracted: 
 #' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 #' Default is 'snv'
-#' @param method (Optional) Character stating how to use the data.
+#' @param method (Optional) Character stating how to use the data. 
 #' \itemize{
 #'   \item{"split":} { Each mutation type has seperate profile plot}
 #'   \item{"combine":} { Combined profile plots of all mutation types}
-#' }
+#' }   
 #' Default is "split"
-#' @param condensed (Optional) More condensed plotting format. \cr
+#' @param condensed (Optional) More condensed plotting format. \cr 
 #' Default = FALSE
 #' @return The profile plot(s) of mutations for the given mutation types
 #'
@@ -53,7 +53,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   }
 
   # Check mutation matrix when type is not given
-
+  
   if (is(mut_matrix, "matrix"))
   {
     if (all(rownames(mut_matrix) %in% TRIPLETS_96)){
@@ -88,24 +88,24 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
     } else {
       stop("Mutation matrix is not a list and mutation types could not be derived")
     }
-
+    
     # # Check if asked mutation types are present in the mutation matrices
     # if (!(type %in% names(mut_matrix)))
     #   stop("Given mutation type(s) not found in mutation matrix")
   }
-
+  
   # Check names of list of mutation matrices
   if (isEmpty(names(mut_matrix)) | any(!(names(mut_matrix) %in% c("snv","dbs","indel")))){
     stop("Provide the right names to the list of mutation matrices. Options are 'snv', 'dbs' and 'indel'")
   }
-
+  
   # Check the mutation type argument
   type = check_mutation_type(type, mut_matrix)
   mut_matrix = mut_matrix[type]
-
+  
   # Check color vector length
   # Colors for plotting
-  if(missing(colors))
+  if(missing(colors)) 
     colors=c(list("snv"=COLORS6),list("dbs"=COLORS10),list("indel"=COLORS_INDEL))
 
   indel_color_number = 1
@@ -117,25 +117,25 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
   if(length(colors$dbs) != 10){stop("Provide dbs colors vector with length 10")}
   if(length(unique(colors$indel)) != indel_color_number)
     stop("Provide indel colors vector with length same number of classes")
-
+  
   # Create context and classes lists
   context = list()
   substitution = list()
-
+  
   # Replace mutated base with dot to get context
   substr(CONTEXTS_96, 2, 2) = "."
   context[["snv"]] = CONTEXTS_96
   substitution[["snv"]] = rep(SUBSTITUTIONS, each=16)
-
+  
   # Replace alt with NN in dbs classes
-  context[["dbs"]] = ALT_DBS
+  context[["dbs"]] = ALT_DBS 
   substitution[["dbs"]] <- unlist(lapply(as.list(SUBSTITUTIONS_DBS), function(sub)
   {
     sub <- unlist(strsplit(sub, ">"))[1]
     l <- length(which(startsWith(DBS, sub)))
     return(rep(paste0(sub,">NN"), l))
   }))
-
+  
   # Set context and substitutions of the indels, along with plot values
   if (INDEL == "cosmic")
   {
@@ -152,14 +152,14 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
     context[["indel"]] = INDEL_CONTEXT
     substitution[["indel"]] = INDEL_CLASS
   }
-
+  
   context = context[type]
   substitution = substitution[type]
-
+  
   # These variables will be available at run-time, but not at compile-time.
   # To avoid compiling trouble, we initialize them to NULL.
   value = NULL
-
+  
   # Check ymax argument
   if (missing(ymax)) {ymax = c("snv"=0.2,"dbs"=0.5,"indel"=0.5)}
   else if (ymax == "maximum") { ymax = c("snv"=NA, "dbs"=NA, "indel"=NA)}
@@ -176,28 +176,29 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
     warning(paste("No names given for ymax, order used is 'snv', 'dbs', 'indel'",
                   "and default ymax is calculated for missing names.",
                   "When 'method'='combine', first value of ymax is used"), call. = TRUE, immediate.=TRUE)
-
-  }
-  else if (all(names(mut_matrix) %in% names(ymax))) { ymax = ymax[names(mut_matrix)] }
+    
+  } 
+  else if (all(names(mut_matrix) %in% names(ymax))) { ymax = ymax[names(mut_matrix)] } 
   else { stop("None of unknown names found for 1 or more values of ymax, give names of mutation types in 'mut_matrix'") }
-
+    
   if (method == "split")
   {
+    
     df3 = list()
     scale_y = c()
-
+    
     for (m in names(mut_matrix))
     {
       # Relative contribution
       norm_mut_matrix = apply(mut_matrix[[m]], 2, function(x) x / sum(x) )
-
+      
       # If ymax is not given, then ymax is the maximum of the relative contribution
       if (is.na(ymax[m])) { ymax[m] = max(norm_mut_matrix) }
-
+      
       # If ymax <= 0.1, then yaxis of plot has steps of 0.02
       if (ymax[m] <= 0.1) { scale_y[m] = 0.02 }
       else { scale_y[m] = 0.1 }
-
+      
       # Construct dataframe
       df = data.frame(substitution = substitution[[m]], context = context[[m]])
       rownames(norm_mut_matrix) = NULL
@@ -207,16 +208,16 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
         df3[[m]] = melt(df2, id.vars = c("header","substitution", "context"))
         df3[[m]]$header = factor(df3[[m]]$header, levels = unique(INDEL_CLASS_HEADER))
       }
-      else
+      else 
       {
         df2 = cbind(df, as.data.frame(norm_mut_matrix))
         df3[[m]] = melt(df2, id.vars = c("substitution", "context"))
       }
       df3[[m]]$substitution = factor(df3[[m]]$substitution, levels = unique(df3[[m]]$substitution))
     }
-
+    
     plots = list()
-
+    
     for (m in names(mut_matrix))
     {
       if (condensed)
@@ -248,9 +249,9 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
                                     y=value,
                                     fill=substitution,
                                     width=0.6)) +
-          geom_bar(stat="identity", colour="black", size=.2) +
-          scale_fill_manual(values=colors[[m]]) +
-          ylab("Relative contribution") +
+          geom_bar(stat="identity", colour="black", size=.2) + 
+          scale_fill_manual(values=colors[[m]]) + 
+          ylab("Relative contribution") + 
           coord_cartesian(ylim=c(0,ymax[m])) +
           scale_y_continuous(breaks=seq(0, ymax[m], scale_y[m])) +
           # no legend
@@ -266,7 +267,7 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
                 strip.text.y=element_text(size=9),
                 panel.grid.major.x = element_blank())
       }
-
+      
       # Set xaxis labels
       if (m == "snv"){
         plot = plot + facet_grid(variable ~ substitution, scales = "free_x")
@@ -274,43 +275,44 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
         plot = plot + facet_grid(variable ~ substitution, scales = "free_x") + xlab("alternative")
       } else if (m == "indel" & !isEmpty(INDEL_CLASS_HEADER)){
         # When there is a class header present, use facet_nested() to plot with merged labels
-        plot = plot +
-          facet_nested(variable ~ header + substitution,
-                     scales = "free_x",
-                     labeller = labeller(substitution=labels)) +
+        plot = plot + 
+          facet_nested(variable ~ header + substitution, 
+                     scales = "free_x", 
+                     labeller = labeller(substitution=labels)) + 
           xlab("length")
       } else {
         plot = plot + facet_grid(variable ~ substitution, scales = "free_x") + xlab("length")
       }
-
+      
       plots = c(plots, list(plot))
+      
     }
-
-    plot = plot_grid(plotlist = plots, ncol = 1, align = "v", axis = "lr")
+    
+    plot = plot_grid(plotlist = plots, ncol = 1, align = "v", axis = "lr") 
 
   } else if (method == "combine")
   {
     mut_matrix = do.call(rbind, mut_matrix)
-
+    
     # Relative contribution
-    norm_mut_matrix = apply(mut_matrix, 2, function(x) x / sum(x))
-
+    norm_mut_matrix = apply(mut_matrix, 2, function(x) x / sum(x) )
+    
     if (is.na(ymax[1])) { ymax = max(norm_mut_matrix) }
     else { ymax = ymax[1] }
     if (ymax <= 0.1) { scale_y = 0.02 }
     else { scale_y = 0.1 }
-
+    
     # Construct dataframe
-    df = data.frame(substitution = unname(unlist(substitution)),
+    df = data.frame(substitution = unname(unlist(substitution)), 
                     context = unname(unlist(context)))
     rownames(norm_mut_matrix) = NULL
     df2 = cbind(df, as.data.frame(norm_mut_matrix))
     df3 = melt(df2, id.vars = c("substitution", "context"))
-
+    
     df3$substitution = factor(df3$substitution, levels = unique(unname(unlist(substitution))))
-
+    
     colors = unname(unlist(colors[type]))
-
+    
     if (condensed)
     {
       plot = ggplot(data=df3, aes(x=context,
@@ -341,10 +343,10 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
                                        y=value,
                                        fill=substitution,
                                        width=0.6)) +
-        geom_bar(stat="identity", colour="black", size=.2) +
-        scale_fill_manual(values=colors) +
-        facet_grid(variable ~ substitution, scales = "free_x") +
-        ylab("Relative contribution") +
+        geom_bar(stat="identity", colour="black", size=.2) + 
+        scale_fill_manual(values=colors) + 
+        facet_grid(variable ~ substitution, scales = "free_x") + 
+        ylab("Relative contribution") + 
         coord_cartesian(ylim=c(0,ymax)) +
         scale_y_continuous(breaks=seq(0, ymax, scale_y)) +
         # no legend
@@ -361,6 +363,6 @@ plot_profiles = function(mut_matrix, colors, ymax, type, method = "split", conde
               panel.grid.major.x = element_blank())
     }
   }
-
+  
   return(plot)
 }

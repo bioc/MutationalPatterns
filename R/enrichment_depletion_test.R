@@ -48,7 +48,7 @@ enrichment_depletion_test = function(x, by = c())
                                         surveyed_region_length,
                                         observed) ~ by + region + mutation,
                                   data = x, sum)
-        } else
+        } else 
         {
           res2 = stats::aggregate(cbind(n_muts,
                                         surveyed_length,
@@ -62,6 +62,7 @@ enrichment_depletion_test = function(x, by = c())
         res2 = x
         # In this case, the 'by' variable is 'sample' variable.
         res2$by = res2$sample
+        
         # Select output columns
         if("mutation" %in% names(res2))
           res2 = res2[,c(10,3,1,4,5,7,9)]

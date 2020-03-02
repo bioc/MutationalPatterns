@@ -1,17 +1,17 @@
 #' Set global context, class and color values for indels
-#'
-#' A function to set the global values of the context variable,
+#' 
+#' A function to set the global values of the context variable, 
 #' the class variable and the color variable of indels. For indels
-#' there is no single intuitive and naturally constrained set of
+#' there is no single intuitive and naturally constrained set of 
 #' mutation types, so a custom set of mutation types can be used
 #'
 #' @param indel (Optional) List of vectors for context, class and color of indels.
-#' Color vector must have the same length as the class vector,
+#' Color vector must have the same length as the class vector, 
 #' because in plotting profiles, each class is represented by one color.\cr\cr
 #' It is also possible to give a character for predefined variables:
 #' \itemize{
-#'   \item{"predefined"} {Represents a indel context of 3 classes per
-#'   deletion and indel: "repetitive region", "microhomology" and
+#'   \item{"predefined"} {Represents a indel context of 3 classes per 
+#'   deletion and indel: "repetitive region", "microhomology" and 
 #'   "none" of these two. Indels have lengths 1 to 5+}
 #'   \item{"cosmic"} {Represents the indel context according to the
 #'   COSMIC database}
@@ -19,8 +19,9 @@
 #' Default is "cosmic"
 #' @return This function changes internal variables used by the package
 #' to analyse indels.
+#' 
 #'
-#' @examples
+#' @examples 
 #' ## For custom input of predefined context
 #' indel = list("matrix" = mut_matrix,
 #'              "context" =c(
@@ -37,11 +38,11 @@
 #' rep('del.none', 5), rep('ins.none', 5)
 #' ),
 #'              "colors" = c(
-#' "#F7BF80", "#ED8212",
-#' "#B5D988", "#31A12C",
+#' "#F7BF80", "#ED8212", 
+#' "#B5D988", "#31A12C", 
 #' "#E44A39", "#B81C20"
 #' ))
-#'
+#' 
 #' indel_mutation_type(indel)
 #'
 #' @export
@@ -50,7 +51,7 @@ indel_mutation_type <- function(indel)
 {
   # Default indel context is "cosmic"
   if (missing(indel)) { indel = "cosmic" }
-
+  
   # If a character is given, check for "predefined" or "cosmic"
   # and set global variables accordingly
 
@@ -61,7 +62,7 @@ indel_mutation_type <- function(indel)
   unlockBinding("INDEL_CLASS_HEADER",e)
   unlockBinding("INDEL_MATRIX",e)
   unlockBinding("COLORS_INDEL",e)
-
+  
   if (is(indel, "character"))
   {
     if (indel == "cosmic"){
@@ -84,17 +85,17 @@ indel_mutation_type <- function(indel)
                         "list with indel classes and contexts")) }
   } else if (is(indel, "list"))
   {
-    # If a list is given, then obligatory elements of list are
+    # If a list is given, then obligatory elements of list are 
     # the mutation count matrix, the classes and contexts of the indels
     needed = c("matrix", "class","context")
     if (all(needed %in% names(indel)))
     {
       if ("header" %in% names(indel)) { e$INDEL_CLASS_HEADER = indel$header }
       else { e$INDEL_CLASS_HEADER = NULL }
-
+      
       # Colors can be given in the list, else default colors are chosen
       if ("colors" %in% names(indel)) { e$COLORS_INDEL = indel$colors }
-      else
+      else 
       {
         e$COLORS_INDEL = default_colors_ggplot(length(unique(indel$class)))
       }
@@ -102,14 +103,14 @@ indel_mutation_type <- function(indel)
       e$INDEL_CONTEXT = indel$context
       e$INDEL_CLASS = indel$class
       e$INDEL = "custom"
-    } else
+    } else 
     {
       # Stop when one or more obligatory elements are missing
-      stop(sprintf("Custom indel list misses information about: %s",
-                   needed[which(!(needed %in% names(indel)))]))
+      stop(sprintf("Custom indel list misses information about: %s", 
+                   needed[which(!(needed %in% names(indel)))] ))
     }
   }
-
+  
   lockBinding("INDEL",e)
   lockBinding("INDEL_CONTEXT",e)
   lockBinding("INDEL_CLASS",e)
