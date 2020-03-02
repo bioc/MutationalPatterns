@@ -7,7 +7,7 @@
 cosmic_indel_context(indel)
 }
 \arguments{
-\item{indel}{A data frame with information about a indel. Columns
+\item{indel}{A data frame with information about a indel. Columns 
 needed in data.frame are: \cr
 \itemize{
 \item{indel_len:} {  Length of an indel sequence}
@@ -21,7 +21,7 @@ needed in data.frame are: \cr
 Character vector with the context of the indel
 }
 \description{
-A function to extract the indel context from a data.frame,
+A function to extract the indel context from a data.frame, 
 specified by the context according to the COSMIC database
 }
 \examples{

@@ -10,15 +10,15 @@ strand_bias_test(strand_occurrences, type, method = "split")
 \item{strand_occurrences}{Dataframe with mutation count per strand, result
 from strand_occurrences()}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
-\item{method}{(Optional) Character stating how to use the data.
+\item{method}{(Optional) Character stating how to use the data. 
 \itemize{
   \item{"split":} { Each mutation type has a seperate strand bias test}
   \item{"combine":} { Combined strand bias test for all mutation types}
-}
+}   
 Default is "split"}
 }
 \value{

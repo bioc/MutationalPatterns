@@ -36,7 +36,7 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
+cancer_signatures <- read.table(filename, sep = "\\t", header = TRUE)
 
 ## Match the order to MutationalPatterns standard of mutation matrix
 order = match(row.names(mut_mat), cancer_signatures$Somatic.Mutation.Type)

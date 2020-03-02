@@ -4,23 +4,16 @@
 \alias{plot_contribution}
 \title{Plot signature contribution barplot}
 \usage{
-plot_contribution(
-  contribution,
-  signatures,
-  type,
-  index = c(),
-  coord_flip = FALSE,
-  mode = "relative",
-  method = "split",
-  palette = c()
-)
+plot_contribution(contribution, signatures, type, index = c(),
+  coord_flip = FALSE, mode = "relative", method = "split",
+  palette = c())
 }
 \arguments{
 \item{contribution}{List of signature contribution matrices}
 
 \item{signatures}{List of signature matrices}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
@@ -29,14 +22,14 @@ Default is 'snv'}
 \item{coord_flip}{(Optional) Flip X and Y coordinates, default = FALSE}
 
 \item{mode}{(Optional) Character stating to "relative" or "absolute" contribution of
-mutations. Also possible to plot "both".\cr
+mutations. Also possible to plot "both".\cr 
 Default = "relative"}
 
-\item{method}{(Optional) Character stating how to use the data.
+\item{method}{(Optional) Character stating how to use the data. 
 \itemize{
   \item{"split":} { Each mutation type has seperate count matrix}
   \item{"combine":} { Combined count matrix of all mutation types}
-}
+}   
 Default is "split"}
 
 \item{palette}{(Optional) A list of color palette like c("#FF0000", "#00FF00", "9999CC")

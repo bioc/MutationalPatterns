@@ -9,7 +9,7 @@ mutations_from_vcf(vcf, type)
 \arguments{
 \item{vcf}{A CollapsedVCF object}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 }

@@ -15,7 +15,7 @@ the genome that have been surveyed (e.g. determined using GATK CallableLoci).}
 \item{region_list}{A GRangesList or a list with GRanges objects containing
 locations of genomic regions.}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 }

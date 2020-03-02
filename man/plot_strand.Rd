@@ -9,11 +9,11 @@ plot_strand(strand_counts, mode = "relative", colors)
 \arguments{
 \item{strand_counts}{A data.frame, result from strand_occurrences function}
 
-\item{mode}{(Optional) Either "absolute" for absolute number of mutations,
+\item{mode}{(Optional) Either "absolute" for absolute number of mutations, 
 "relative" for relative contribution or "both" for both.\cr
 Default = "relative"}
 
-\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv,
+\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv, 
 10 value color vector "dbs" for dbs.
 For indels give same number of colors as there are classes.}
 }

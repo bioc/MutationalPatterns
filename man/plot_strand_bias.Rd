@@ -9,7 +9,7 @@ plot_strand_bias(strand_bias, colors, max_yaxis = FALSE)
 \arguments{
 \item{strand_bias}{A data.frame, result from strand_bias function}
 
-\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv,
+\item{colors}{(Optional) Named list with 6 value color vector "snv" for snv, 
 10 value color vector "dbs" for dbs.
 For indels give same number of colors as there are classes.}
 

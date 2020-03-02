@@ -4,14 +4,15 @@
 \alias{extract_signatures}
 \title{Extract mutational signatures from mutation matrix using NMF}
 \usage{
-extract_signatures(mut_matrix, type, rank, nrun = 200, method = "split")
+extract_signatures(mut_matrix, type, rank, nrun = 200,
+  method = "split")
 }
 \arguments{
 \item{mut_matrix}{Named list with mutation matrix of single or double substitution and/or indels.
-Optional to give a matrix object as mutation count matrix. When two mutation types are given in
+Optional to give a matrix object as mutation count matrix. When two mutation types are given in 
 the same matrix, the data is treated as "combined" and combined signatures will be returned.}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
@@ -19,8 +20,8 @@ Default is 'snv'}
 
 \item{nrun}{(Optional) Number of iterations, default = 200}
 
-\item{method}{(Optional) Character stating how to use the data. method = "split" will give
-results for each mutation type seperately, whereas method = "combine" will give
+\item{method}{(Optional) Character stating how to use the data. method = "split" will give 
+results for each mutation type seperately, whereas method = "combine" will give 
 combined signatures.\cr
 Default is "split"}
 }

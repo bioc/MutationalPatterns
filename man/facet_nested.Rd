@@ -6,12 +6,8 @@
 \alias{FacetNested}
 \title{Plot merged facets}
 \usage{
-facet_nested(
-  rows = NULL,
-  cols = NULL,
-  scales = "fixed",
-  labeller = "label_value"
-)
+facet_nested(rows = NULL, cols = NULL, scales = "fixed",
+  labeller = "label_value")
 }
 \arguments{
 \item{rows}{Variables on the rows}

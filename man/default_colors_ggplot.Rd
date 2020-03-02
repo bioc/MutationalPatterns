@@ -13,8 +13,8 @@ default_colors_ggplot(n)
 Character vector with colornames in HEX format
 }
 \description{
-Get the default colors in HEX format which are used by the ggplot2
-package, such that the colors can be used for the same signatures,
+Get the default colors in HEX format which are used by the ggplot2 
+package, such that the colors can be used for the same signatures, 
 even if the order or number of signatures differs. \cr\cr
 Colors are chosen by equal distribution of the range [0,360]
 over the number of colors wanted. 0 yields red, 120 yields green,

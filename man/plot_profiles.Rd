@@ -4,14 +4,8 @@
 \alias{plot_profiles}
 \title{Plot profiles for mutations found in mutation matrix}
 \usage{
-plot_profiles(
-  mut_matrix,
-  colors,
-  ymax,
-  type,
-  method = "split",
-  condensed = FALSE
-)
+plot_profiles(mut_matrix, colors, ymax, type, method = "split",
+  condensed = FALSE)
 }
 \arguments{
 \item{mut_matrix}{Name list of mutation count matrices for mutation types.}
@@ -27,18 +21,18 @@ Set "ymax = maximum" to use the maximal signature contribution for each mutation
 for the Y axis.\cr
 By default, "ymax" is c("snv"=0.2, "dbs"=0.5, "indel"=0.5)}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
-\item{method}{(Optional) Character stating how to use the data.
+\item{method}{(Optional) Character stating how to use the data. 
 \itemize{
   \item{"split":} { Each mutation type has seperate profile plot}
   \item{"combine":} { Combined profile plots of all mutation types}
-}
+}   
 Default is "split"}
 
-\item{condensed}{(Optional) More condensed plotting format. \cr
+\item{condensed}{(Optional) More condensed plotting format. \cr 
 Default = FALSE}
 }
 \value{

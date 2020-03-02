@@ -5,14 +5,8 @@
 \title{Make mutation count matrix of 96 trinucleotides with 
 strand information}
 \usage{
-mut_matrix_stranded(
-  vcf_list,
-  ref_genome,
-  ranges,
-  mode = "transcription",
-  type,
-  num_cores
-)
+mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription",
+  type, num_cores)
 }
 \arguments{
 \item{vcf_list}{List of collapsed vcf objects}
@@ -25,7 +19,7 @@ mut_matrix_stranded(
 
 \item{mode}{(Optional) "transcription" or "replication", default = "transcription"}
 
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
+\item{type}{(Optional) A character vector stating which type of mutation is to be extracted: 
 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
 Default is 'snv'}
 
