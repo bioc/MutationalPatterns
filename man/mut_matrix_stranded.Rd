@@ -5,14 +5,7 @@
 \title{Make mutation count matrix of 96 trinucleotides with 
 strand information}
 \usage{
-mut_matrix_stranded(
-  vcf_list,
-  ref_genome,
-  ranges,
-  mode = "transcription",
-  type,
-  num_cores
-)
+mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
 }
 \arguments{
 \item{vcf_list}{List of collapsed vcf objects}
@@ -23,18 +16,10 @@ mut_matrix_stranded(
 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
-\item{mode}{(Optional) "transcription" or "replication", default = "transcription"}
-
-\item{type}{(Optional) A character vector stating which type of mutation is to be extracted:
-'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
-Default is 'snv'}
-
-\item{num_cores}{Number of cores used for parallel processing. If no value
-is given, then the number of available cores is autodetected.}
+\item{mode}{"transcription" or "replication", default = "transcription"}
 }
 \value{
-List of mutation count matrices for each mutation type. Number of different mutations
-for all types all doubled, because there are 2 strands
+192 mutation count matrix (96 X 2 strands)
 }
 \description{
 Make a mutation count matrix with 192 features: 96 trinucleotides and 2 strands,
@@ -53,8 +38,9 @@ library(ref_genome, character.only = TRUE)
 ## Transcription strand analysis:
 ## You can obtain the known genes from the UCSC hg19 dataset using
 ## Bioconductor:
-# source("https://bioconductor.org/biocLite.R")
-# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+# if (!requireNamespace("BiocManager", quietly=TRUE))
+    # install.packages("BiocManager")
+# BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 # library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 
 ## For this example, we preloaded the data for you:

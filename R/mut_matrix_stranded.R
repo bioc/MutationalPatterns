@@ -9,15 +9,9 @@
 #' @param ranges GRanges object with the genomic ranges of:
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
-#' @param mode (Optional) "transcription" or "replication", default = "transcription"
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
-#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
-#' Default is 'snv'
-#' @param num_cores Number of cores used for parallel processing. If no value
-#'                  is given, then the number of available cores is autodetected.
+#' @param mode "transcription" or "replication", default = "transcription"
 #'
-#' @return List of mutation count matrices for each mutation type. Number of different mutations
-#' for all types all doubled, because there are 2 strands
+#' @return 192 mutation count matrix (96 X 2 strands)
 #'
 #' @import GenomicRanges
 #' @importFrom parallel detectCores
@@ -36,8 +30,9 @@
 #' ## Transcription strand analysis:
 #' ## You can obtain the known genes from the UCSC hg19 dataset using
 #' ## Bioconductor:
-#' # source("https://bioconductor.org/biocLite.R")
-#' # biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+#' # if (!requireNamespace("BiocManager", quietly=TRUE))
+    #' # install.packages("BiocManager")
+#' # BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 #' # library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 #'
 #' ## For this example, we preloaded the data for you:
@@ -73,79 +68,58 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", type, num_cores)
+mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription")
 {
-  # Check the mutation type
-  type = check_mutation_type(type)
-  
-  df = list()
+  df = data.frame()
   
   # Detect number of cores available for parallelization
-  if (missing(num_cores))
-  {
-      num_cores = detectCores()
-      if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
-          num_cores <- detectCores()
-      else
-          num_cores = 1
-  }
-
-  for (m in type)
-  {
-    # Transcription mode
-    if(mode == "transcription")
-    {
-      # For each vcf in vcf_list count the mutational features with strand info
-      rows <- mclapply (as.list(vcf_list), function (vcf)
-      {
-        type_context = type_context(vcf, ref_genome, type = m)
-        strand = mut_strand(vcf, ranges, type = m, mode = "transcription")
-        row = mut_strand_occurrences(type_context, strand, type = m)
-        return(row)
-      }, mc.cores = num_cores)
-      
-      df[[m]] = data.frame()
-
-      # Combine the rows in one dataframe
-      for (row in rows)
-        df[[m]] = rbind (df[[m]], row)
-    }
+  num_cores = detectCores()
+  if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
+    num_cores <- detectCores()
+  else
+    num_cores = 1
   
-    # Replication mode
-    if(mode == "replication")
+  # Transcription mode
+  if(mode == "transcription")
     {
       # For each vcf in vcf_list count the 192 features
       rows <- mclapply (as.list(vcf_list), function (vcf)
       {
-        type_context = type_context(vcf, ref_genome, type = m)
-        if(is.null(type_context$types))
-          strand = factor(c(),levels = c("left","right","-"))
-        else
-          strand = mut_strand(vcf, ranges, type = m, mode = "replication")
-        row = mut_strand_occurrences(type_context, strand, type = m)
+        type_context = type_context(vcf, ref_genome)
+        strand = mut_strand(vcf, ranges, mode = "transcription")
+        row = mut_192_occurrences(type_context, strand)
         return(row)
-      }, mc.cores = num_cores, mc.silent = FALSE)
-
-      if (isEmpty(do.call(rbind, rows))) { next }
-
-      df[[m]] = data.frame()
-
+      }, mc.cores = num_cores)
+      
       # Combine the rows in one dataframe
       for (row in rows)
-      {
-        if (is(row, "try-error")) stop (row)
-        df[[m]] = rbind (df[[m]], row)
-      }
+        df = rbind (df, row)
     }
   
-    # Add row names to data.frame
-    names(df[[m]]) = names(row)
-    row.names(df[[m]]) = names(vcf_list)
-    df[[m]] = t(df[[m]])
+  # Replication mode
+  if(mode == "replication")
+  {
+    # For each vcf in vcf_list count the 192 features
+    rows <- mclapply (as.list(vcf_list), function (vcf)
+    {
+      type_context = type_context(vcf, ref_genome)
+      strand = mut_strand(vcf, ranges, mode = "replication")
+      row = mut_192_occurrences(type_context, strand)
+      return(row)
+    }, mc.cores = num_cores, mc.silent = FALSE)
+    
+    # Combine the rows in one dataframe
+    for (row in rows)
+    {
+      if (class (row) == "try-error") stop (row)
+      df = rbind (df, row)
+    }
   }
   
-  if (length(df) == 1)
-    return(df[[1]])
-  else
-    return(df)
+  # Add row names to data.frame
+  names(df) = names(row)
+  row.names(df) = names(vcf_list)
+  
+  # Transpose and return
+  return(t(df))
 }

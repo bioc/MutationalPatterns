@@ -362,8 +362,9 @@ dev.off()
 # ------- TRANSCRIPTIONAL STRAND BIAS ------
 
 # get known genes table from UCSC for hg19 using
-# source("https://bioconductor.org/biocLite.R")
-# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+# if (!requireNamespace("BiocManager", quietly=TRUE))
+    # install.packages("BiocManager")
+# BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 # reduce

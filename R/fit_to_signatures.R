@@ -2,27 +2,18 @@
 #' reconstruct the mutation matrix.
 #' 
 #' Find the linear combination of mutation signatures that most closely
-#' reconstructs the mutation matrix by solving either the nonnegative least-squares
-#' constraints problem or the golden ratio search problem.
+#' reconstructs the mutation matrix by solving the nonnegative least-squares
+#' constraints problem.
 #' 
-#' @param mut_matrix Named list of count matrices
-#' @param signatures Named list of signature matrices (number of mutational features
-#' for each signature matrix must be the same as in the corresponding count matrix)
-#' @param cutoff (Optional) Numeric value of absolute signature contribution. Signatures
-#' greater than or equal to the given value are returned. Default = 0
-#' @param type (Optional) A character vector stating which type of mutation is to be extracted:
-#' 'snv', 'dbs' and/or 'indel'. All mutation types can also be chosen by 'type = all'.\cr
-#' Default is 'snv'
-#' @param method (Optional) Character to select the method used to fit the signatures:
-#' \itemize{
-#'   \item{'least-squares'} {Solve the nonnegative least-squares constraints problem}
-#'   \item{'golden-ratio-search'} {Perform gold ratio search algortihm from deconstructSigs package}
-#' }
-#' Default is 'least-squares'
-#' @param ... Other arguments passed to whichSignatures() when using method = 'golden-ratio-search'
+#' @param mut_matrix 96 mutation count matrix (dimensions: 96 mutations
+#' X n samples)
+#' @param signatures Signature matrix (dimensions: 96 mutations
+#' X n signatures)
 #'
 #' @return Named list with signature contributions and reconstructed
 #' mutation matrix
+#'
+#' @importFrom pracma lsqnonneg
 #'
 #' @examples
 #'
@@ -55,81 +46,46 @@
 #'
 #' @seealso
 #' \code{\link{mut_matrix}}
-#' \code{\link{least_squares_error_fitting}}
-#' \code{\link{golden_ratio_search_fitting}}
 #'
 #' @export
 
-fit_to_signatures = function(mut_matrix, signatures, type, cutoff, method = "least-squares", ...)
+fit_to_signatures = function(mut_matrix, signatures)
 {
-    # If signature object is a matrix, then look at "mut_matrix" for mutation type
-    if (is(signatures, "matrix"))
-    {
-      if (is(mut_matrix,"matrix"))
-      {
-        signatures = list("snv"=signatures)
-        mut_matrix = list("snv"=mut_matrix)
-      }
-      else
-      {
-        signatures_list = list()
-        for (m in names(mut_matrix))
-        {
-          if (all(rownames(mut_matrix[[m]]) %in% rownames(signatures)))
-          {
-            signatures_list[[m]] = signatures
-            signatures = signatures_list
-            break
-          }
-        }
-      }
+    # make sure dimensions of input matrix are correct
+    if (dim(mut_matrix)[1] != 96)
+        stop( paste("Mutation count matrix input should have",
+                    "dimensions 96 X n samples") )
 
-    # If count matrix object is a matrix, then look at "signatures" for mutation type
-    } else if (is(signatures, "list"))
+    if (dim(signatures)[1] != 96)
+        stop("Signatures input should have dimensions 96 X n signatures")
+
+    n_samples = dim(mut_matrix)[2]
+    n_signatures = dim(signatures)[2]
+    lsq_contribution = matrix(NA, nrow=n_signatures, ncol=n_samples)
+    lsq_reconstructed = matrix(NA, nrow=96, ncol=n_samples)
+
+    # Process each sample
+    for (i in 1:ncol(mut_matrix))
     {
-      if (is(mut_matrix,"matrix"))
-      {
-        mut_list = list()
-        for (m in names(signatures))
-        {
-          if (all(rownames(signatures[[m]]) %in% rownames(mut_matrix)))
-          {
-            mut_list[[m]] = mut_matrix
-            mut_matrix = mut_list
-            break
-          }
-        }
-      }
+        y = mut_matrix[,i]
+        lsq = lsqnonneg(signatures, y)
+        lsq_contribution[,i] = lsq$x
+        lsq_reconstructed[,i] = signatures %*% as.matrix(lsq$x) 
     }
 
-    if (!is(mut_matrix, "list"))
-      stop(paste("No list is given for 'mut_matrix' and mutation type",
-                 "could not be found in signature list"))
+    # Add row and col names
+    sample_names = colnames(mut_matrix)
+    signature_names = colnames(signatures)
+    mut_type_names = rownames(signatures)
 
-    # Get the mutation types asked for
-    type = check_mutation_type(type, mut_matrix)
-    mut_matrix = mut_matrix[type]
-    signatures = signatures[type]
+    colnames(lsq_contribution) = sample_names
+    rownames(lsq_contribution) = signature_names
 
-    # Extra arguments for whichSignatures()
-    dots = list(...)
+    colnames(lsq_reconstructed) = sample_names
+    rownames(lsq_reconstructed) = mut_type_names
 
-    # Solve the least squares error problem
-    if (method == "least-squares")
-    {
-      if (missing(cutoff)) { cutoff = 0 }
-      res = least_squares_error_fitting(mut_matrix, signatures, cutoff)
-
-    # Solve the golden ratio search problem
-    } else if (method == "golden-ratio-search")
-    {
-      # If signature.cutoff is not given, but cutoff is, then use
-      # signature.cutoff = cutoff in whichSignatures()
-      if (!("signature.cutoff" %in% names(dots)) & !missing(cutoff))
-        { res = golden_ratio_search_fitting(mut_matrix, signatures, signature.cutoff = cutoff, ...) }
-      else
-        { res = golden_ratio_search_fitting(mut_matrix, signatures, ...) }
-    }
+    res = list(lsq_contribution, lsq_reconstructed)
+    names(res) = c("contribution", "reconstructed")
 
     return(res)
 }
