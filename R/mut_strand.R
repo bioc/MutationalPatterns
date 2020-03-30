@@ -156,15 +156,21 @@ mut_strand = function(vcf, ranges, mode = "transcription")
     # make factor 
     strand2 = factor(strand2, levels = c("untranscribed", "transcribed", "-"))
   }
-  
+
   # Replication mode
   if (mode == "replication") {
     if (is.null(ranges$strand_info)) {
       stop("GRanges object with genomic regions does not contain 'strand_info' factor as metadata.")
     }
-    if (length(levels(ranges$strand_info)) != 2) {
-      stop("GRanges object metadata: 'strand_info' factor should contain exactly two different levels\n, 
-           such as 'left' and 'right'.")
+
+    # Manually set the levels of the factor.
+    levels(ranges$strand_info) <- unique(ranges$strand_info)
+
+    # Check that only two different annotations 
+    if(length(levels(ranges$strand_info)) != 2)
+    {
+      stop("GRanges object metadata: 'strand_info' factor should contain exactly two different 
+           levels, such as 'left' and 'right'.")
     }
     overlap = findOverlaps(vcf, ranges)
     overlap = as.data.frame(as.matrix(overlap))
