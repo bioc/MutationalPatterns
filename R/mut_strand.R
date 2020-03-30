@@ -158,51 +158,39 @@ mut_strand = function(vcf, ranges, mode = "transcription")
   }
   
   # Replication mode
-  if(mode == "replication")
-  {
-    # Check for presence strand_info metadata
-    if(is.null(ranges$strand_info))
-    {
+  if (mode == "replication") {
+    if (is.null(ranges$strand_info)) {
       stop("GRanges object with genomic regions does not contain 'strand_info' factor as metadata.")
     }
-    # Check that only two different annotations 
-    if(length(levels(ranges$strand_info)) != 2)
-    {
-      stop("GRanges object metadata: 'strand_info' factor should contain exactly two different 
-           levels, such as 'left' and 'right'.")
+    if (length(levels(ranges$strand_info)) != 2) {
+      stop("GRanges object metadata: 'strand_info' factor should contain exactly two different levels\n, 
+           such as 'left' and 'right'.")
     }
-    
-    # Determine overlap between vcf positions and genomic regions
     overlap = findOverlaps(vcf, ranges)
     overlap = as.data.frame(as.matrix(overlap))
-    colnames(overlap) = c('vcf_id', 'region_id')
-    
-    # remove mutations that overlap with multiple regions
+    colnames(overlap) = c("vcf_id", "region_id")
     dup_pos = overlap$vcf_id[duplicated(overlap$vcf_id)]
-    # Index of duplicated mutations
-    
     dup_idx = which(overlap$vcf_id %in% dup_pos)
-    # Remove all duplicated (non-unique mapping) mutations
-    if (length(dup_idx) > 0)
-    {
-      overlap = overlap[-dup_idx,]
-      warning("Some variants overlap with multiple genomic regions in the GRanges object. 
-              These variants are assigned '-', as the strand cannot be determined.
-              To avoid this, make sure no genomic regions are overlapping in your GRanges 
-              object.")
+    if (length(dup_idx) > 0) {
+      overlap = overlap[-dup_idx, ]
+      warning("Some variants overlap with multiple genomic regions in the GRanges object.\n
+              These variants are assigned '-', as the strand cannot be determined.\n
+              To avoid this, make sure no genomic regions are overlapping in your GRanges object.")
     }
     
-    # get strand info of region
-    strand = ranges[overlap$region_id]$strand_info
-    # Make vector with all positions in input vcf for positions that do
-    # not overlap with gene bodies, report "-"
+    #Combine the strand info from the mutation and the ranges.
+    strand_repli = ranges[overlap$region_id]$strand_info
+    strand_mut = ifelse(vcf$REF[overlap$vcf_id] %in% c("C", "T"), "+", "-")
+    strand_levels = levels(ranges$strand_info)
+    strand_f = (strand_mut == "+" & strand_repli == strand_levels[1]) | (strand_mut == "-" & strand_repli == strand_levels[2])
+    strand = ifelse(strand_f, strand_levels[1], strand_levels[2])
+    
+    #Fill in the strand info where possible
     strand2 = rep("-", length(vcf))
-    strand2[overlap$vcf_id] = as.character(strand)
-    # make factor, levels defines by levels in ranges object
+    strand2[overlap$vcf_id] = strand
     levels = c(levels(ranges$strand_info), "-")
     strand2 = factor(strand2, levels = levels)
   }
- 
   return(strand2)
 }
 
