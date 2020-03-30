@@ -166,6 +166,10 @@ mut_strand = function(vcf, ranges, mode = "transcription")
     {
       stop("GRanges object with genomic regions does not contain 'strand_info' factor as metadata.")
     }
+
+    # Manually set the levels of the factor.
+    levels(ranges$strand_info) <- unique(ranges$strand_info)
+
     # Check that only two different annotations 
     if(length(levels(ranges$strand_info)) != 2)
     {
