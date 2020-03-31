@@ -18,6 +18,7 @@
 #' 
 #' @examples 
 #' 
+#' @importFrom magrittr %>%
 #' @family Indels
 #' @seealso \code{\link{get_indel_context_gr}}
 #' 
@@ -40,13 +41,13 @@ get_1bp_dels = function(gr, mut_size, ref_genome){
     seq = get_extended_sequence(gr, 19, ref_genome)
     
     #Check homopolymer length
-    seq_z = str_replace_all(as.character(seq), del_bases, rep("Z", length(seq))) #For each mut replace the deleted basetype in the flanking sequence with Zs.
+    seq_z = stringr::str_replace_all(as.character(seq), del_bases, rep("Z", length(seq))) #For each mut replace the deleted basetype in the flanking sequence with Zs.
     homopolymer_length = gsub("[^Z].*", "", as.character(seq_z)) %>% nchar() + 1 #Remove all bases after the Zs and count how many bases are left. Add one for the deleted base itself.
     del_bases[del_bases == "A"] = "T"
     del_bases[del_bases == "G"] = "C"
     
     #Return the results
-    gr$muttype = str_c(del_bases, "_deletion")
+    gr$muttype = stringr::str_c(del_bases, "_deletion")
     gr$muttype_sub = homopolymer_length
     return(gr)
 }

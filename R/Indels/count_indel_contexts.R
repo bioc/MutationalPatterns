@@ -19,7 +19,7 @@
 
 
 count_indel_contexts = function(grl){
-    categories = tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
+    categories = dplyr::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
                                       rep("T_insertion", 6), rep("2bp_deletion", 6), rep("3bp_deletion", 6), 
                                       rep("4bp_deletion", 6), rep("5+bp_deletion", 6), rep("2bp_insertion", 6),
                                       rep("3bp_insertion", 6),rep("4bp_insertion", 6),rep("5+bp_insertion", 6), 
@@ -44,7 +44,7 @@ count_indel_contexts = function(grl){
     }
     counts = cbind(categories, counts)
     counts[is.na(counts)] = 0
-    counts = as_tibble(counts)
+    counts = dplyr::as_tibble(counts)
     counts$muttype = factor(counts$muttype, levels = unique(counts$muttype))
     return(counts)
 }

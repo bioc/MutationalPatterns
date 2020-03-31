@@ -11,6 +11,7 @@
 #' 
 #' @examples 
 #' 
+#' @importFrom magrittr %>%
 #' @family Indels
 #' 
 #' @seealso \code{\link{count_indel_contexts}}, \code{\link{get_indel_context}}
@@ -19,7 +20,7 @@
 count_indel_contexts_gr = function(gr, categories){
     if (length(gr) == 0){
         categories = categories %>%
-            mutate(count = 0) %>% 
+            dplyr::mutate(count = 0) %>% 
             dplyr::select(-muttype, -muttype_sub)
         return(categories)
     }
@@ -41,9 +42,9 @@ count_indel_contexts_gr = function(gr, categories){
     id_context$muttype = ifelse(mut_size_f, gsub("[0-9]+bp", "5+bp", id_context$muttype, perl = T), id_context$muttype)
     
     id_context_count = id_context %>% 
-        group_by(muttype, muttype_sub) %>% 
-        dplyr::summarise(count = n())
-    id_context_count_full = left_join(categories, id_context_count, by = c("muttype", "muttype_sub")) %>% 
+        dplyr::group_by(muttype, muttype_sub) %>% 
+        dplyr::summarise(count = dplyr::n())
+    id_context_count_full = dplyr::left_join(categories, id_context_count, by = c("muttype", "muttype_sub")) %>% 
         dplyr::select(-muttype, -muttype_sub)
     #colnames(id_context_count_full)[3] = name
     return(id_context_count_full)
