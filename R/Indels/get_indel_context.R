@@ -25,7 +25,7 @@ get_indel_context = function(grl, ref_genome){
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
         gr_list = purrr::map(gr_l, function(x) get_indel_context_gr(x, ref_genome))
-        grl = GRangesList(gr_list)
+        grl = GenomicRanges::GRangesList(gr_list)
         return(grl)
     } else if (inherits(grl, "GRanges")){
         gr = get_indel_context_gr(grl, ref_genome)

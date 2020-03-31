@@ -14,6 +14,8 @@
 #' 
 #' @examples 
 #' 
+#' @import ggplot2
+#' @importFrom magrittr %>%
 #' @family Indels
 #' 
 #' @seealso \code{\link{count_indel_contexts}}, \code{\link{plot_indel_contexts}}
@@ -24,12 +26,12 @@
 plot_main_indel_contexts = function(counts, same_y = F){
     counts_main = counts %>% 
         dplyr::select(-muttype_sub) %>% 
-        group_by(muttype) %>% 
-        summarise_all(list( ~sum(.)))
+        dplyr::group_by(muttype) %>% 
+        dplyr::summarise_all(list( ~sum(.)))
     counts_main = counts_main %>% 
-        gather(key = "sample", value = "count", -muttype)
+        tidyr::gather(key = "sample", value = "count", -muttype)
     nr_muts = counts_main %>% 
-        group_by(sample) %>% 
+        dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = sum(count))
     facet_labs_y = str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
     names(facet_labs_y) = nr_muts$sample

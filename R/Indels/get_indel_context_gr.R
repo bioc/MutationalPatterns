@@ -14,6 +14,7 @@
 #' 
 #' @examples 
 #' 
+#' @importFrom magrittr %>%
 #' @family Indels
 #' 
 #' @seealso \code{\link{get_indel_context}},
@@ -39,6 +40,6 @@ get_indel_context_gr = function(gr, ref_genome){
     gr_big_ins = get_big_ins(gr, mut_size, ref_genome)
     
     gr = c(gr_1b_dels, gr_1b_ins, gr_big_dels, gr_big_ins) %>%
-        sort()
+        BiocGenerics::sort()
     return(gr)
 }

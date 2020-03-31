@@ -18,6 +18,7 @@
 #' 
 #' @examples 
 #' 
+#' @importFrom magrittr %>%
 #' @family Indels
 #' @seealso \code{\link{get_indel_context_gr}}
 #' 
@@ -46,11 +47,12 @@ get_big_ins = function(gr, mut_size, ref_genome){
     seq = get_extended_sequence(gr, flank_dist, ref_genome)
     
     #Determine nr. repeats.
-    seq_z = str_replace_all(as.character(seq), ins_bases, rep("Z", length(seq))) #For each mut replace the deleted basetype in the flanking sequence with Zs.
-    n_repeats = gsub("[^Z].*", "", as.character(seq_z)) %>% nchar() #Remove all bases after the Zs and count how many bases are left.
+    seq_z = stringr::str_replace_all(as.character(seq), ins_bases, rep("Z", length(seq))) #For each mut replace the deleted basetype in the flanking sequence with Zs.
+    n_repeats = gsub("[^Z].*", "", as.character(seq_z)) 
+    %>% nchar() #Remove all bases after the Zs and count how many bases are left.
     
     #Return results
-    gr$muttype = str_c(mut_size, "bp_insertion")
+    gr$muttype = stringr::str_c(mut_size, "bp_insertion")
     gr$muttype_sub = n_repeats
     return(gr)
 }

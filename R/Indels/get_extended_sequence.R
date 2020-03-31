@@ -23,12 +23,12 @@
 
 get_extended_sequence = function(gr, flank_dist, ref_genome){
     withCallingHandlers({#Flank the granges object, to get a sequence, that can be searched for repeats. This can result in a warning message, when the flanked range extends beyond the chrom lenght. This message is suppressed.
-        gr_extended = flank(gr, flank_dist, start = F)
+        gr_extended = GenomicRanges::flank(gr, flank_dist, start = F)
     }, warning = function(w) {
         if (grepl("out-of-bound range located on sequence", conditionMessage(w)))
             invokeRestart("muffleWarning")
     })
-    gr_extended = trim(gr_extended) #Trim the ranges that are extended beyond the actual length of the chromosome.
-    seq = getSeq(eval(as.symbol(ref_genome)), gr_extended)
+    gr_extended = GenomicRanges::trim(gr_extended) #Trim the ranges that are extended beyond the actual length of the chromosome.
+    seq = BSgenome::getSeq(eval(as.symbol(ref_genome)), gr_extended)
     return(seq)
 }
