@@ -962,8 +962,7 @@ see the  \Biocpkg{biomaRt} documentation \citep{Durinck2005}.
 
 To install \Biocpkg{biomaRt}, uncomment the following lines:
 <<install_biomaRt, eval=FALSE>>=
-source("https://bioconductor.org/biocLite.R")
-biocLite("biomaRt")
+BiocManager::install("biomaRt")
 @
 
 Load the \Biocpkg{biomaRt} package.
