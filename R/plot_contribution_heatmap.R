@@ -58,7 +58,7 @@
 plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = TRUE, method = "complete", plot_values = FALSE)
 {
   # check contribution argument
-  if(class(contribution) != "matrix")
+  if(! inherits(contribution, "matrix"))
     {stop("contribution must be a matrix")}
   # check if there are signatures names in the contribution matrix
   if(is.null(row.names(contribution)))
