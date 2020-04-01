@@ -73,7 +73,6 @@ plot_strand_bias = function(strand_bias, colors)
     geom_text(
       aes(x = type,
           y = log2((strand_bias[,3]) / (strand_bias[,4]+0.1)),
-          ymax = log2((strand_bias[,3]) / (strand_bias[,4]+0.1)), 
           label = significant,
           vjust = ifelse(sign(log2((strand_bias[,3]) /
                                      (strand_bias[,4]+0.1))) > 0, 0.5, 1)),
