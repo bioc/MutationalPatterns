@@ -66,7 +66,7 @@
 plot_cosine_heatmap = function(cos_sim_matrix, col_order, cluster_rows = TRUE, method = "complete", plot_values = FALSE)
 {
   # check explained argument
-  if(class(cos_sim_matrix) != "matrix")
+  if(! inherits(cos_sim_matrix, "matrix"))
   {stop("cos_sim_matrix must be a matrix")}
   # matrix should have row and colnames
   if(length(colnames(cos_sim_matrix)) == 0)

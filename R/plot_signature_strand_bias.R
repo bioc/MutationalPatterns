@@ -132,7 +132,6 @@ plot_signature_strand_bias = function(signatures_strand_bias)
         geom_text(
             aes(x = type,
                 y = log2(value),
-                ymax = log2(value), 
                 label = significant,
                 vjust = ifelse(sign(log2(value)) > 0, 0.5, 1)), 
             size = 8, position = ggplot2::position_dodge(width=1))
