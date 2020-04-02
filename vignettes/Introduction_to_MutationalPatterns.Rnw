@@ -16,7 +16,7 @@ BiocStyle::latex(use.unsrturl=FALSE)
 \affil{University Medical Center Utrecht, Utrecht, The Netherlands}
 \date{\today}
 
-\begin{document} 
+\begin{document}
 
 \maketitle
 
@@ -57,7 +57,7 @@ MutationalPatterns article, of which a preprint is available at bioRxiv:
 To perform the mutational pattern analyses, you need to load one or multiple
 VCF files with single-nucleotide variant calls and the corresponding reference
 genome.
- 
+
 \subsection{List reference genome}
 
 List available genomes using \Biocpkg{BSgenome}:
@@ -83,14 +83,16 @@ tissues \citep{Blokzijl2016}.
 Load the MutationalPatterns package:
 
 <<load_package>>=
-library(MutationalPatterns)
+#library(MutationalPatterns)
+library(devtools)
+load_all()
 @
 
 Locate the VCF files of the example data:
 <<locate_files>>=
 vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
                         pattern = ".vcf", full.names = TRUE)
-@ 
+@
 
 Define corresponding sample names for the VCF files:
 <<set_sample_names>>=
@@ -222,9 +224,9 @@ p5 <- plot_spectrum(type_occurrences, CT=TRUE, legend=TRUE, colors=palette)
 @
 
 <<combine_plot_spectrum_2_noeval, echo=FALSE>>=
-ggsave("combine_plot_spectrum_2.pdf", 
-       grid.arrange(p4, p5, ncol=2, widths=c(4,2.3)), 
-       width=10, 
+ggsave("combine_plot_spectrum_2.pdf",
+       grid.arrange(p4, p5, ncol=2, widths=c(4,2.3)),
+       width=10,
        height=3)
 @
 
@@ -432,8 +434,8 @@ plot_compare_profiles(mut_mat[,1],
 \begin{figure}[H]
 \begin{center}
 <<plot_compare_profiles, fig=TRUE, width=6, height=5.5, echo=FALSE>>=
-plot_compare_profiles(mut_mat[,1], 
-                        nmf_res$reconstructed[,1], 
+plot_compare_profiles(mut_mat[,1],
+                        nmf_res$reconstructed[,1],
                         profile_names = c("Original", "Reconstructed"),
                         condensed = TRUE)
 @
@@ -459,7 +461,7 @@ cancer_signatures = cancer_signatures[as.vector(new_order),]
 row.names(cancer_signatures) = cancer_signatures$Somatic.Mutation.Type
 # Keep only 96 contributions of the signatures in matrix
 cancer_signatures = as.matrix(cancer_signatures[,4:33])
-@ 
+@
 
 Plot mutational profile of the first two COSMIC signatures:
 <<plot_96_profile_COSMIC_e, eval=FALSE>>=
@@ -528,7 +530,7 @@ Fit mutation matrix to the COSMIC mutational signatures:
 
 <<fit_to_signatures>>=
 fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
-@ 
+@
 
 Plot the optimal contribution of the COSMIC signatures in each sample as a
 stacked barplot.
@@ -682,7 +684,7 @@ than one gene body on different strands.
 Get gene definitions for your reference genome:
 
 <<get_genes>>=
-# For example get known genes table from UCSC for hg19 using 
+# For example get known genes table from UCSC for hg19 using
 # biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -697,7 +699,7 @@ gene on different strands.
 <<mut_strand>>=
 strand = mut_strand(vcfs[[1]], genes_hg19)
 head(strand, 10)
-@ 
+@
 
 Make mutation count matrix with transcriptional strand information (96
 trinucleotides * 2 strands = 192 features). NB: only those mutations that are
@@ -706,14 +708,14 @@ located within gene bodies are counted.
 <<mut_matrix_stranded>>=
 mut_mat_s <- mut_matrix_stranded(vcfs, ref_genome, genes_hg19)
 mut_mat_s[1:5,1:5]
-@ 
+@
 
 Count the number of mutations on each strand, per tissue, per mutation type:
 
 <<strand_occurrences>>=
 strand_counts <- strand_occurrences(mut_mat_s, by=tissue)
 head(strand_counts)
-@ 
+@
 
 Perform Poisson test for strand asymmetry significance testing:
 
@@ -725,7 +727,7 @@ strand_bias
 Plot the mutation spectrum with strand distinction:
 <<plot_strand>>=
 ps1 <- plot_strand(strand_counts, mode = "relative")
-@ 
+@
 
 Plot the effect size (log2(untranscribed/transcribed) of the strand bias.
 Asteriks indicate significant strand bias.
@@ -832,8 +834,8 @@ Plot the mutation spectrum with strand distinction:
 ps1 <- plot_strand(strand_counts_rep, mode = "relative")
 @
 
-Plot the effect size (log2(untranscribed/transcribed) of the strand bias. 
-Asteriks indicate significant strand bias. 
+Plot the effect size (log2(untranscribed/transcribed) of the strand bias.
+Asteriks indicate significant strand bias.
 
 <<plot_strand_bias_rep2>>=
 ps2 <- plot_strand_bias(strand_bias_rep)
@@ -848,7 +850,7 @@ grid.arrange(ps1, ps2)
 \begin{center}
 <<plot_strand_bias_rep, fig=TRUE, width=7.5, height=5.5, echo=FALSE>>=
 grid.arrange(ps1, ps2)
-@ 
+@
 \end{center}
 \end{figure}
 
@@ -861,7 +863,7 @@ nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
 
 # Provide signature names
 colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
-@ 
+@
 
 Plot signatures with 192 features:
 
@@ -880,7 +882,7 @@ grid.arrange(a, b, ncol = 2, widths = c(5, 1.8))
 @
 
 <<plot_192_profile, echo=FALSE>>=
-ggsave("plot_192_profile.pdf", 
+ggsave("plot_192_profile.pdf",
        grid.arrange(a, b, ncol = 2, widths = c(5, 1.8)),
        width = 10,
        height = 5)
@@ -952,10 +954,10 @@ use your own genomic region definitions (based on e.g. ChipSeq experiments)
 specify your genomic regions in a named list of GRanges objects.  Alternatively,
 use publicly available genomic annotation data, like in the example below.
 
-\subsubsection{Example: regulation annotation data from Ensembl using 
+\subsubsection{Example: regulation annotation data from Ensembl using
     \Biocpkg{biomaRt}}
 
-The following example displays how to download promoter, CTCF binding sites and 
+The following example displays how to download promoter, CTCF binding sites and
 transcription factor binding sites regions for
 genome build hg19 from Ensembl using \Biocpkg{biomaRt}.  For other datasets,
 see the  \Biocpkg{biomaRt} documentation \citep{Durinck2005}.
@@ -969,10 +971,10 @@ biocLite("biomaRt")
 Load the \Biocpkg{biomaRt} package.
 <<load_biomart>>=
 library(biomaRt)
-@ 
+@
 
-Download genomic regions. NB: Here we take some shortcuts by loading the results 
-from our example data. The corresponding code for downloading this data can be 
+Download genomic regions. NB: Here we take some shortcuts by loading the results
+from our example data. The corresponding code for downloading this data can be
 found above the command we run:
 
 <<download_using_biomaRt>>=
@@ -987,8 +989,8 @@ found above the command we run:
 #                             'chromosome_end',
 #                             'feature_type_name',
 #                             'cell_type_name'),
-#              filters = "regulatory_feature_type_name", 
-#              values = "CTCF Binding Site", 
+#              filters = "regulatory_feature_type_name",
+#              values = "CTCF Binding Site",
 #              mart = regulatory)
 #
 # CTCF_g <- reduce(GRanges(CTCF$chromosome_name,
@@ -1002,8 +1004,8 @@ CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
 
 # promoter = getBM(attributes = c('chromosome_name', 'chromosome_start',
 #                                 'chromosome_end', 'feature_type_name'),
-#                  filters = "regulatory_feature_type_name", 
-#                  values = "Promoter", 
+#                  filters = "regulatory_feature_type_name",
+#                  values = "Promoter",
 #                  mart = regulatory)
 # promoter_g = reduce(GRanges(promoter$chromosome_name,
 #                     IRanges(promoter$chromosome_start,
@@ -1018,8 +1020,8 @@ promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
 #                                 'chromosome_start',
 #                                 'chromosome_end',
 #                                 'feature_type_name'),
-#                  filters = "regulatory_feature_type_name", 
-#                  values = "Promoter Flanking Region", 
+#                  filters = "regulatory_feature_type_name",
+#                  values = "Promoter Flanking Region",
 #                  mart = regulatory)
 # flanking_g = reduce(GRanges(
 #                        flanking$chromosome_name,
@@ -1028,7 +1030,7 @@ promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
 
 flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
                                     package="MutationalPatterns"))
-@ 
+@
 
 Combine all genomic regions (GRanges objects) in a named list:
 
@@ -1036,13 +1038,13 @@ Combine all genomic regions (GRanges objects) in a named list:
 regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
 
 names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
-@ 
+@
 
 Use the same chromosome naming convention consistently:
 
 <<combine_genomic_regions_2>>=
 seqlevelsStyle(regions) <- "UCSC"
-@ 
+@
 
 \subsection{Test for significant depletion or enrichment in genomic regions}
 
@@ -1055,8 +1057,8 @@ mutations in a certain genomic region that is solely a result from a low
 coverage in that region, and therefore does not represent an actual depletion
 of mutations.
 
-We provided an example surveyed region data file with the package. For simplicity, 
-here we use the same surveyed file for each sample. For a proper analysis, determine 
+We provided an example surveyed region data file with the package. For simplicity,
+here we use the same surveyed file for each sample. For a proper analysis, determine
 the surveyed area per sample and use these in your analysis.
 
 Download the example surveyed region data:
@@ -1073,7 +1075,7 @@ seqlevelsStyle(surveyed) <- "UCSC"
 
 ## For this example we use the same surveyed file for each sample.
 surveyed_list <- rep(list(surveyed), 9)
-@ 
+@
 
 Test for enrichment or depletion of mutations in your defined genomic
 regions using a binomial test.  For this test, the chance of observing a
@@ -1084,13 +1086,13 @@ total number of surveyed bases.
 ## Calculate the number of observed and expected number of mutations in
 ## each genomic regions for each sample.
 distr <- genomic_distribution(vcfs, surveyed_list, regions)
-@ 
+@
 
 <<enrichment_depletion_test>>=
 ## Perform the enrichment/depletion test by tissue type.
 distr_test <- enrichment_depletion_test(distr, by = tissue)
 head(distr_test)
-@ 
+@
 
 <<plot_enrichment_depletion_e, eval=FALSE>>=
 plot_enrichment_depletion(distr_test)

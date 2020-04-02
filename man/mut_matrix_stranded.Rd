@@ -5,7 +5,13 @@
 \title{Make mutation count matrix of 96 trinucleotides with 
 strand information}
 \usage{
-mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
+mut_matrix_stranded(
+  vcf_list,
+  ref_genome,
+  ranges,
+  mode = "transcription",
+  num_cores = 1
+)
 }
 \arguments{
 \item{vcf_list}{List of collapsed vcf objects}
@@ -17,6 +23,9 @@ mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
+
+\item{num_cores}{Number of cores used for parallel processing. If no value
+is given, then the number of available cores is autodetected.}
 }
 \value{
 192 mutation count matrix (96 X 2 strands)
@@ -63,7 +72,10 @@ seqlevelsStyle(repli_strand_granges) = "UCSC"
 # The levels determine the order in which the features 
 # will be countend and plotted in the downstream analyses
 # You can specify your preferred order of the levels:
-repli_strand_granges$strand_info = factor(repli_strand_granges$strand_info, levels = c("left", "right"))
+repli_strand_granges$strand_info = factor(
+  repli_strand_granges$strand_info, 
+  levels = c("left", "right")
+  )
 
 mut_mat_s_rep = mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
                                 mode = "replication")

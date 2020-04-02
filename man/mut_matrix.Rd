@@ -4,12 +4,15 @@
 \alias{mut_matrix}
 \title{Make mutation count matrix of 96 trinucleotides}
 \usage{
-mut_matrix(vcf_list, ref_genome)
+mut_matrix(vcf_list, ref_genome, num_cores = 1)
 }
 \arguments{
 \item{vcf_list}{List of collapsed vcf objects}
 
 \item{ref_genome}{BSGenome reference genome object}
+
+\item{num_cores}{Number of cores used for parallel processing. If no value
+is given, then the number of available cores is autodetected.}
 }
 \value{
 96 mutation count matrix

@@ -57,7 +57,10 @@
 #' # The levels determine the order in which the features 
 #' # will be countend and plotted in the downstream analyses
 #' # You can specify your preferred order of the levels:
-#' repli_strand_granges$strand_info = factor(repli_strand_granges$strand_info, levels = c("left", "right"))
+#' repli_strand_granges$strand_info = factor(
+#'   repli_strand_granges$strand_info, 
+#'   levels = c("left", "right")
+#'   )
 #' 
 #' mut_mat_s_rep = mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
 #'                                 mode = "replication")
@@ -69,19 +72,10 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", num_cores)
+mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", num_cores = 1)
 {
   df = data.frame()
   
-  # Detect number of cores available for parallelization
-  if (missing(num_cores))
-  {
-      num_cores = detectCores()
-      if (!(.Platform$OS.type == "windows" || is.na(num_cores)))
-          num_cores <- detectCores()
-      else
-          num_cores = 1
-  }
 
   # Transcription mode
   if(mode == "transcription")

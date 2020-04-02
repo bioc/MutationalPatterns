@@ -4,8 +4,14 @@
 \alias{read_vcfs_as_granges}
 \title{Read VCF files into a GRangesList}
 \usage{
-read_vcfs_as_granges(vcf_files, sample_names, genome, group = "auto+sex",
-  check_alleles = TRUE)
+read_vcfs_as_granges(
+  vcf_files,
+  sample_names,
+  genome,
+  group = "auto+sex",
+  check_alleles = TRUE,
+  n_cores = 1
+)
 }
 \arguments{
 \item{vcf_files}{Character vector of VCF file names}
@@ -31,6 +37,9 @@ from the vcf object, since these positions cannot be analysed
 with this package.  This setting can be set to FALSE to speed
 up processing time only if the input vcf does not contain any
 of such positions, as these will cause obscure errors.}
+
+\item{n_cores}{numeric. Number of cores used for parallel processing. If no
+value is given, then the number of available cores is autodetected.}
 }
 \value{
 A GRangesList containing the GRanges obtained from 'vcf_files'
