@@ -21,12 +21,12 @@ The cosine similarity is a value between 0 (distinct) and 1 (identical) and indi
 \examples{
 ## You can download mutational signatures from the COSMIC database:
 # sp_url = http://cancer.sanger.ac.uk/cancergenome/assets/signatures_probabilities.txt
-# cancer_signatures = read.table(sp_url, sep = "\\t", header = T)
+# cancer_signatures = read.table(sp_url, sep = "\t", header = T)
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\\t", header = TRUE)
+cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",

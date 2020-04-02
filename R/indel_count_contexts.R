@@ -1,0 +1,111 @@
+
+#' Count indel contexts
+#' 
+#' @details
+#' Counts the number of indels per COSMIC context from a GRanges or GRangesList object containing Indel mutations.
+#' This function applies the count_indel_contexts_gr function to each gr in its input.
+#' It then combines the results in a single tibble and returns this.
+#' 
+#' @param grl GRanges or GRangesList object containing Indel mutations in which the context was added with get_indel_context.
+#' 
+#' @return A tibble containing the number of indels per COSMIC context per gr.
+#' 
+#' @examples 
+#' 
+#' @family Indels
+#' 
+#' @seealso \code{\link{count_indel_contexts_gr}}, \code{\link{get_indel_context}}
+#' 
+#' @export
+
+
+count_indel_contexts = function(grl){
+    categories = dplyr::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
+                                      rep("T_insertion", 6), rep("2bp_deletion", 6), rep("3bp_deletion", 6), 
+                                      rep("4bp_deletion", 6), rep("5+bp_deletion", 6), rep("2bp_insertion", 6),
+                                      rep("3bp_insertion", 6),rep("4bp_insertion", 6),rep("5+bp_insertion", 6), 
+                                      rep("2bp_deletion_with_microhomology", 1), rep("3bp_deletion_with_microhomology", 2), 
+                                      rep("4bp_deletion_with_microhomology", 3), rep("5+bp_deletion_with_microhomology", 5)),
+                        "muttype_sub" =  c(rep(c(1:5, "6+"), 2), 
+                                           rep(c(0:4, "5+"), 2), 
+                                           rep(c(1:5, "6+"), 4), 
+                                           rep(c(0:4, "5+"), 4), 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, "5+"))
+    
+    if (inherits(grl, "CompressedGRangesList")){
+        gr_l = as.list(grl)
+        counts_l = purrr::map(gr_l, count_indel_contexts_gr, categories)
+        counts = do.call(cbind, counts_l)
+        colnames(counts) = names(grl)
+        
+    } else if (inherits(grl, "GRanges")){
+        counts = count_indel_contexts_gr(grl)
+        colnames(counts) = "My_sample"
+    } else{
+        not_gr_or_grl(grl)
+    }
+    counts = cbind(categories, counts)
+    counts[is.na(counts)] = 0
+    counts = dplyr::as_tibble(counts)
+    counts$muttype = factor(counts$muttype, levels = unique(counts$muttype))
+    return(counts)
+}
+
+#' Count indel contexts from a single gr.
+#' 
+#' @details
+#' Counts the number of indels per COSMIC context from a GRanges object containing Indel mutations.
+#' The function is called by count_indel_contexts_gr
+#' 
+#' @param gr GRanges object containing Indel mutations in which the context was added with get_indel_context.
+#' @param categories A tibble containing all possible indel context categories
+#' 
+#' @return A single column tibble containing the number of indels per COSMIC context.
+#' 
+#' @examples 
+#' 
+#' @importFrom magrittr %>%
+#' @family Indels
+#' 
+#' @seealso \code{\link{count_indel_contexts}}, \code{\link{get_indel_context}}
+
+
+count_indel_contexts_gr = function(gr, categories){
+    #Check gr is not empty
+    if (length(gr) == 0){
+        categories = categories %>%
+            dplyr::mutate(count = 0) %>% 
+            dplyr::select(-muttype, -muttype_sub)
+        return(categories)
+    }
+    
+    #Check context has previously been set.
+    gr_colnames = colnames(mcols(gr))
+    if (!all(c("muttype", "muttype_sub") %in% gr_colnames)){
+        stop("The GRanges object does not contain the columns `muttype`` and `muttype_sub`.
+             Did you forget to run `get_indel_context`?", call. = F)
+    }
+    
+    id_context = dplyr::tibble("muttype" = gr$muttype, "muttype_sub" = gr$muttype_sub)
+    
+    #Classify the number of repeat units/ homopolymer length / microhomology length to either 5+ or 6+ depending on whether the indel is a ins or del.
+    id_context[id_context$muttype_sub >= 6, "muttype_sub"] = "6+"
+    id_context[grepl("insertion|microhomology", id_context$muttype) & id_context$muttype_sub >= 5, "muttype_sub"] = "5+"
+    
+    #Classify large indels as size 5+
+    ref_sizes = gr$REF %>%
+        width()
+    alt_sizes = gr$ALT %>% 
+        unlist() %>% 
+        width()
+    mut_size = abs(alt_sizes - ref_sizes)
+    mut_size_f = mut_size >= 5
+    id_context$muttype = ifelse(mut_size_f, gsub("[0-9]+bp", "5+bp", id_context$muttype, perl = T), id_context$muttype)
+    
+    id_context_count = id_context %>% 
+        dplyr::group_by(muttype, muttype_sub) %>% 
+        dplyr::summarise(count = dplyr::n())
+    id_context_count_full = dplyr::left_join(categories, id_context_count, by = c("muttype", "muttype_sub")) %>% 
+        dplyr::select(-muttype, -muttype_sub)
+    #colnames(id_context_count_full)[3] = name
+    return(id_context_count_full)
+}

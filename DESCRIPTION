@@ -48,5 +48,5 @@ Suggests:
 biocViews: Genetics, SomaticMutation
 ZipData: NA
 LazyData: false
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.0
 Encoding: UTF-8

@@ -4,8 +4,15 @@
 \alias{plot_rainfall}
 \title{Plot genomic rainfall}
 \usage{
-plot_rainfall(vcf, chromosomes, title = "", colors, cex = 2.5,
-  cex_text = 3, ylim = 1e+08)
+plot_rainfall(
+  vcf,
+  chromosomes,
+  title = "",
+  colors,
+  cex = 2.5,
+  cex_text = 3,
+  ylim = 1e+08
+)
 }
 \arguments{
 \item{vcf}{CollapsedVCF object}
