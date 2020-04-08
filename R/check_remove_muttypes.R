@@ -135,7 +135,7 @@ remove_multi_alts_variants = function(grl){
 
 remove_multi_alts_variants_gr = function(gr){
     alt = gr$ALT
-    gr = gr[elementNROWS(alt) == 1]
+    gr = gr[IRanges::elementNROWS(alt) == 1]
     return(gr)
 }
 
