@@ -246,7 +246,7 @@ check_chroms = function(gr, ref_genome){
     gr_seqlevels = levels(seqnames(gr))
     gr_seqlevels_notref = unique(gr_seqlevels[!gr_seqlevels %in% ref_seqnames])
     gr_seqlevels_notref = stringr::str_c(gr_seqlevels_notref, collapse = ", ")
-    if(length(gr_seqnames_notref)){
+    if(length(gr_seqlevels_notref)){
         stop(stringr::str_c("The following seqlevels (chromosome names) occur in the input GRanges,
         but are not present in the ref_genome: ", gr_seqlevels_notref, ". An example of how to fix this is show below.
         First select the chromosomes you want to keep with: 
