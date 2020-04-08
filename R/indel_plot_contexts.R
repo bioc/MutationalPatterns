@@ -42,7 +42,9 @@ plot_indel_contexts = function(counts, same_y = F){
     names(facet_labs_y) = nr_muts$sample
     facet_labs_x = c("1: C", "1: T", "1: C", "1: T", 2 ,3, 4, "5+", 2, 3, 4, "5+", 2, 3, 4, "5+")
     names(facet_labs_x) = levels(counts$muttype)
-    colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5", "#FC8A6A", "#F14432", "#BC141A", "#D0E1F2", "#94C4DF", "#4A98C9", "#1764AB", "#E2E2EF", "#B6B6D8", "#8683BD", "#61409B")
+    colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5","#FC8A6A", 
+               "#F14432", "#BC141A", "#D0E1F2", "#94C4DF", "#4A98C9", "#1764AB", 
+               "#E2E2EF", "#B6B6D8", "#8683BD", "#61409B")
     fig = ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ muttype, 

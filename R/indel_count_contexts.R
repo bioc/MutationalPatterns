@@ -38,7 +38,7 @@ count_indel_contexts = function(grl){
         colnames(counts) = names(grl)
         
     } else if (inherits(grl, "GRanges")){
-        counts = count_indel_contexts_gr(grl)
+        counts = count_indel_contexts_gr(grl, categories)
         colnames(counts) = "My_sample"
     } else{
         not_gr_or_grl(grl)
