@@ -24,16 +24,22 @@
 
 
 plot_main_indel_contexts = function(counts, same_y = F){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    count = muttype = muttype_sub = NULL
+    
+    
     counts_main = counts %>% 
         dplyr::select(-muttype_sub) %>% 
         dplyr::group_by(muttype) %>% 
         dplyr::summarise_all(list( ~sum(.)))
     counts_main = counts_main %>% 
-        tidyr::gather(key = "sample", value = "count", -muttype)
+        tidyr::gather(key = "sample", value = "count", -.data$muttype)
     nr_muts = counts_main %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = sum(count))
-    facet_labs_y = str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
+    facet_labs_y = stringr::str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
     names(facet_labs_y) = nr_muts$sample
     colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5","#FC8A6A",
                "#F14432", "#BC141A", "#D0E1F2", "#94C4DF","#4A98C9", "#1764AB", 
@@ -45,7 +51,7 @@ plot_main_indel_contexts = function(counts, same_y = F){
     }
     fig = ggplot(counts_main, aes(x = muttype, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
-        facet_grid(sample ~ ., labeller = labeller(sample = facet_labs_y), scale = facet_scale) +
+        facet_grid(sample ~ ., labeller = labeller(sample = facet_labs_y), scales = facet_scale) +
         labs(x = "", y = "Nr of indels") +
         scale_fill_manual(guide=FALSE, values = colors) +
         theme(axis.text.x = element_text(angle = 90))

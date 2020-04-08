@@ -23,6 +23,10 @@
 
 
 plot_indel_contexts = function(counts, same_y = F){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    count = muttype = muttype_sub = NULL
+    
     counts = tidyr::gather(counts, key = "sample", value = "count", -muttype, -muttype_sub)
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
@@ -42,7 +46,7 @@ plot_indel_contexts = function(counts, same_y = F){
     fig = ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ muttype, 
-                   scale = facet_scale, space = "free_x", 
+                   scales = facet_scale, space = "free_x", 
                    labeller = labeller(muttype = facet_labs_x, sample = facet_labs_y)) +
         theme_minimal() +
         scale_fill_manual(values = colors) +

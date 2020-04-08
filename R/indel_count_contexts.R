@@ -70,6 +70,10 @@ count_indel_contexts = function(grl){
 
 
 count_indel_contexts_gr = function(gr, categories){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    muttype = muttype_sub = NULL
+    
     #Check gr is not empty
     if (length(gr) == 0){
         categories = categories %>%
