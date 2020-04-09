@@ -18,6 +18,3 @@ Removes variants with multiple alt alleles.
 \details{
 This function removes variants with multiple alternative alleles for a single GRanges object.
 }
-\examples{
-
-}

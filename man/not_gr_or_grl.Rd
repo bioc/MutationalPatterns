@@ -16,10 +16,3 @@ Throw an error for when an argument should be a GRanges/GRangesList object.
 This function is called by other functions, when an argument should be a GRanges/GrangesList object, but isn't.
 It throws an error showing the actual class of the argument.
 }
-\examples{
-\dontrun{
-a = 1
-not_gr_or_grl(a)
-}
-
-}

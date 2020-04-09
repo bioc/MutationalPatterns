@@ -20,6 +20,3 @@ This function checks for a single GRanges object, that there are no variants wit
 It works by checking that the number of variants is equal to the number of alternative alleles.
 It trows an error when this is not the case.
 }
-\examples{
-
-}

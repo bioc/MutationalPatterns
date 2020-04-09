@@ -18,6 +18,3 @@ Check that the seqnames of a GRanges object are present in a ref_genome
 This function tests that the variants in a GRanges object have seqnames, that match the supplied ref_genome.
 If this is not the case an error is thrown, with suggestions how to fix this.
 }
-\examples{
-
-}

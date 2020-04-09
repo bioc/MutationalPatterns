@@ -18,6 +18,3 @@ Identifies SNVs/MNVs
 \details{
 This function finds SNVs/MNVs for a single GRanges object.
 }
-\examples{
-
-}
