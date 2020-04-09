@@ -11,6 +11,13 @@
 #' @return A tibble containing the number of indels per COSMIC context per gr.
 #' 
 #' @examples 
+#' ## Get a GRangesList or GRanges object with indel contexts.
+#' ## See 'indel_get_context' for more info on how to do this.
+#' grl_indel_context <- readRDS(system.file("states/blood_grl_indel_context.rds",
+#'                 package="MutationalPatterns"))
+#' 
+#' #Count the indel contexts
+#' count_indel_contexts(grl_indel_context)
 #' 
 #' @family Indels
 #' 
@@ -60,8 +67,6 @@ count_indel_contexts = function(grl){
 #' @param categories A tibble containing all possible indel context categories
 #' 
 #' @return A single column tibble containing the number of indels per COSMIC context.
-#' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels

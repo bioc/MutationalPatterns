@@ -14,10 +14,22 @@
 #' 
 #' @examples 
 #' 
+#' ## Get a GRangesList or GRanges object with only indels.
+#' ## See 'read_vcfs_as_granges' or 'get_mut_type' for more info on how to do this.
+#' grl_indel <- readRDS(system.file("states/blood_grl_indel.rds",
+#'                 package="MutationalPatterns"))
+#' 
+#' ## Load the corresponding reference genome.
+#' ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+#' library(ref_genome, character.only = TRUE)
+#' 
+#' ## Get the indel contexts
+#' get_indel_context(grl_indel, ref_genome)
+#' 
 #' @family Indels
 #' 
 #' @seealso
-#' \code{\link{get_indel_context_gr}},
+#' \code{\link{get_indel_context_gr}}, \code{\link{read_vcfs_as_granges}}, \code{\link{get_mut_type}}
 #' 
 #' @export
 
@@ -49,7 +61,6 @@ get_indel_context = function(grl, ref_genome){
 #' "muttype" showing the main indel type and "muttype_sub" which shows the subtype. 
 #' The subtype is either the number of repeats or the microhomology length. 
 #' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels

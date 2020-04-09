@@ -13,6 +13,16 @@
 #' @return A ggplot figure.
 #' 
 #' @examples 
+#' ## Get The indel counts
+#' ## See 'count_indel_contexts()' for more info on how to do this.
+#' indel_counts <- readRDS(system.file("states/blood_indel_counts.rds",
+#'                 package="MutationalPatterns"))
+#' 
+#' ## Plot contexts
+#' plot_main_indel_contexts(indel_counts)
+#' 
+#' ## Use the same y axis for all samples.
+#' plot_main_indel_contexts(indel_counts, same_y = T)
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
