@@ -3,20 +3,8 @@ library(VariantAnnotation)
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
-
-#Read vcfs into granges
-vcf_fnames = list.files("inst/extdata/", pattern = "blood.*.vcf", full.names = T)
-
-vcf_l = purrr::map(vcf_fnames, readVcf, "hg19")
-sample_names = basename(vcf_fnames) %>% 
-    str_remove("blood-") %>% 
-    str_remove(".vcf")
-names(vcf_l) = sample_names
-grl = purrr::map(vcf_l, granges) %>% 
-    GRangesList()
-seqlevelsStyle(grl) = "UCSC"
-seqlevels(grl, pruning.mode = "fine") = str_c("chr", c(1:22, "X"))
-saveRDS(grl, "inst/states/blood_grl.rds")
+#Get grl
+grl = readRDS("inst/states/blood_grl.rds")
 
 #Get indels
 grl_indel = get_mut_type(grl, "indel")

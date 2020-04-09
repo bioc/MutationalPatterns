@@ -34,3 +34,17 @@ vcf_l = vcf_l %>%
 #Write vcfs
 out_vcf_fnames = str_c("inst/extdata/blood-", names(vcf_l), ".vcf")
 purrr::map2(vcf_l, out_vcf_fnames, writeVcf)
+
+
+#Create granges object from the vcfs
+vcf_fnames = list.files("inst/extdata/", pattern = "blood.*.vcf", full.names = T)
+vcf_l = purrr::map(vcf_fnames, readVcf, "hg19")
+sample_names = basename(vcf_fnames) %>% 
+    str_remove("blood-") %>% 
+    str_remove(".vcf")
+names(vcf_l) = sample_names
+grl = purrr::map(vcf_l, granges) %>% 
+    GRangesList()
+seqlevelsStyle(grl) = "UCSC"
+seqlevels(grl, pruning.mode = "fine") = str_c("chr", c(1:22, "X"))
+saveRDS(grl, "inst/states/blood_grl.rds")
