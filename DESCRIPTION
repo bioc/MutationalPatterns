@@ -6,8 +6,8 @@ Description: An extensive toolset for the characterization and visualization
 Version: 1.99.3
 Date: 2018-10-19
 Author: Francis Blokzijl, Roel Janssen, Ruben van Boxtel, Edwin Cuppen
-Maintainer: Roel Janssen <R.R.E.Janssen-10@umcutrecht.nl>,
-    Francis Blokzijl <f.blokzijl@hubrecht.eu>
+Maintainer: Rurika Oka <R.Oka@prinsesmaximacentrum.nl>,
+    Freek Manders <F.M.Manders@prinsesmaximacentrum.nl>
 License: MIT + file LICENSE
 URL: https://doi.org/10.1186/s13073-018-0539-0
 Imports:
