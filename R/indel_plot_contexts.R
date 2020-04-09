@@ -21,7 +21,7 @@
 #' plot_indel_contexts(indel_counts)
 #' 
 #' ## Use the same y axis for all samples.
-#' plot_indel_contexts(indel_counts, same_y = T)
+#' plot_indel_contexts(indel_counts, same_y = TRUE)
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
