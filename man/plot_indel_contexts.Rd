@@ -24,6 +24,16 @@ Each sample is plotted in a separate facet.
 The same y axis can be used for all samples or a separate y axis can be used.
 }
 \examples{
+## Get The indel counts
+## See 'count_indel_contexts()' for more info on how to do this.
+indel_counts <- readRDS(system.file("states/blood_indel_counts.rds",
+                package="MutationalPatterns"))
+
+## Plot contexts
+plot_indel_contexts(indel_counts)
+
+## Use the same y axis for all samples.
+plot_indel_contexts(indel_counts, same_y = T)
 
 }
 \seealso{

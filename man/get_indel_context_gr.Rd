@@ -24,9 +24,6 @@ Get indel contexts from a single gr
 Determines the COSMIC context from a GRanges object containing Indel mutations.
 It throws an error if there are any variants with multiple alternative alleles or SNVs.
 }
-\examples{
-
-}
 \seealso{
 \code{\link{get_indel_context}},
 

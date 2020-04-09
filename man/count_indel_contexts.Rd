@@ -21,6 +21,13 @@ This function applies the count_indel_contexts_gr function to each gr in its inp
 It then combines the results in a single tibble and returns this.
 }
 \examples{
+## Get a GRangesList or GRanges object with indel contexts.
+## See 'indel_get_context' for more info on how to do this.
+grl_indel_context <- readRDS(system.file("states/blood_grl_indel_context.rds",
+                package="MutationalPatterns"))
+
+#Count the indel contexts
+count_indel_contexts(grl_indel_context)
 
 }
 \seealso{

@@ -62,7 +62,7 @@ sample_names <- c ( "colon1", "colon2", "colon3",
 # sample names defined above.
 vcf_files <- list.files(system.file("extdata", 
                                     package="MutationalPatterns"),
-                                    pattern = ".vcf", full.names = TRUE)
+                                    pattern = "sample.vcf", full.names = TRUE)
 
 # Get a reference genome BSgenome object.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"

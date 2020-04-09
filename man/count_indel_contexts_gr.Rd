@@ -21,9 +21,6 @@ Count indel contexts from a single gr.
 Counts the number of indels per COSMIC context from a GRanges object containing Indel mutations.
 The function is called by count_indel_contexts_gr
 }
-\examples{
-
-}
 \seealso{
 \code{\link{count_indel_contexts}}, \code{\link{get_indel_context}}
 
