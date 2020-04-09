@@ -187,7 +187,7 @@ mut_strand = function(vcf, ranges, mode = "transcription")
     #Combine the strand info from the mutation and the ranges.
     strand_repli = ranges[overlap$region_id]$strand_info
     match_f = BiocGenerics::match(vcf$REF[overlap$vcf_id], c("C", "T"), nomatch = 0L) > 0L
-    strand_mut = ifelse(match_f %in% c("C", "T"), "+", "-")
+    strand_mut = ifelse(match_f, "+", "-")
     strand_levels = levels(ranges$strand_info)
     strand_f = (strand_mut == "+" & strand_repli == strand_levels[1]) | (strand_mut == "-" & strand_repli == strand_levels[2])
     strand = ifelse(strand_f, strand_levels[1], strand_levels[2])
