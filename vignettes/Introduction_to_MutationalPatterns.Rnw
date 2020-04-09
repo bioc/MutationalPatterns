@@ -91,7 +91,7 @@ load_all()
 Locate the VCF files of the example data:
 <<locate_files>>=
 vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
-                        pattern = ".vcf", full.names = TRUE)
+                        pattern = "sample.vcf", full.names = TRUE)
 @
 
 Define corresponding sample names for the VCF files:
