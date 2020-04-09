@@ -9,7 +9,7 @@ sample_names <- c ( "colon1", "colon2", "colon3",
                    "liver1", "liver2", "liver3" )
 
 vcfs <- list.files (system.file("extdata", package="MutationalPatterns"),
-                    pattern = ".vcf", full.names = TRUE)
+                    pattern = "sample.vcf", full.names = TRUE)
 
 test_that("loads multiple samples", {
     input <- read_vcfs_as_granges(vcfs, sample_names, ref_genome)
