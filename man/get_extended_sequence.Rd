@@ -25,9 +25,6 @@ This function retreives the flanking sequence from a GRanges object.
 The size of the flanking sequence is supplied as an argument to the function.
 This function works by first extending the ranges and then retreiving the sequence.
 }
-\examples{
-
-}
 \seealso{
 Other Indels: 
 \code{\link{count_indel_contexts_gr}()},

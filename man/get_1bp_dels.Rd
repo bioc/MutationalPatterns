@@ -28,9 +28,6 @@ Get contexts from 1bp deletions
 Determines the COSMIC context for the 1bp deletions in a GRanges object containing Indel mutations.
 This function is called by get_indel_context_gr.
 }
-\examples{
-
-}
 \seealso{
 \code{\link{get_indel_context_gr}}
 

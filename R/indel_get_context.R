@@ -113,7 +113,6 @@ get_indel_context_gr = function(gr, ref_genome){
 #' "muttype" showing the main indel type and "muttype_sub" which shows the subtype. 
 #' The subtype is the number of repeats.
 #' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -167,7 +166,6 @@ get_1bp_dels = function(gr, mut_size, ref_genome){
 #' "muttype" showing the main indel type and "muttype_sub" which shows the subtype. 
 #' The subtype is the number of repeats.
 #' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -222,7 +220,6 @@ get_1bp_ins = function(gr, mut_size, ref_genome){
 #' "muttype" showing the main indel type and "muttype_sub" which shows the subtype. 
 #' The subtype is the number of repeats.
 #' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -281,7 +278,6 @@ get_big_ins = function(gr, mut_size, ref_genome){
 #' "muttype" showing the main indel type and "muttype_sub" which shows the subtype. 
 #' The subtype is the number of repeats or the microhomology length.
 #' 
-#' @examples 
 #' 
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -400,7 +396,6 @@ get_big_dels = function(gr, mut_size, ref_genome){
 #' 
 #' @return A DNAStringSet containing the flaning bases.
 #' 
-#' @examples 
 #' 
 #' @family Indels
 #'

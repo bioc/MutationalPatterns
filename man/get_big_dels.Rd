@@ -29,9 +29,6 @@ Determines the COSMIC context for deletions larger than 1bp in a GRanges object 
 This function is called by get_indel_context_gr.
 The function determines if there is microhomology for deletions that are not in repeat regions.
 }
-\examples{
-
-}
 \seealso{
 \code{\link{get_indel_context_gr}}
 

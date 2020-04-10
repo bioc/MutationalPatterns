@@ -28,9 +28,6 @@ Get contexts from bigger inserions
 Determines the COSMIC context for insertions larger than 1bp in a GRanges object containing Indel mutations.
 This function is called by get_indel_context_gr.
 }
-\examples{
-
-}
 \seealso{
 \code{\link{get_indel_context_gr}}
 
