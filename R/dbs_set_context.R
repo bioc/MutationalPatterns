@@ -10,6 +10,7 @@
 #' 
 #' @seealso
 #' \code{\link{set_context_dbs_gr}}, \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
+#' @family DBS
 #' 
 #' @examples
 #' ## Get GRangesList with DBS.
@@ -48,6 +49,7 @@ set_context_dbs = function(grl){
 #' 
 #' @seealso
 #' \code{\link{set_context_dbs}}
+#' @family DBS
 #' 
 #' @importFrom magrittr %>% 
 #' @export
