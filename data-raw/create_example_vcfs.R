@@ -3,6 +3,29 @@ library(VariantAnnotation)
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
+
+decrease_vcf_size = function(vcf_fname){
+    #Read vcf
+    vcf = readVcf(vcf_fname)
+    
+    #Remove unnecessary info
+    info(vcf) = info(vcf)[, 0, drop = F]
+    info(header(vcf)) = info(header(vcf))[0,, drop = F]
+    
+    #Remove unnecessary genotype data
+    gt_to_keep = c("GT", "AD", "DP", "GQ", "PL")
+    geno(vcf) = geno(vcf)[gt_to_keep]
+    geno(header(vcf)) = geno(header(vcf))[gt_to_keep,, drop = F]
+    
+    #Remove all but one sample
+    tmp_name = "tmp.vcf"
+    writeVcf(vcf, tmp_name)
+    system(str_c("cut -f1-10 ", tmp_name, " > ", vcf_fname))
+    file.remove(tmp_name)
+    invisible(0)
+}
+
+
 #Determine vcf and donor names
 snv_vcf_fnames = list.files("~/surfdrive/Shared/Boxtel_General/Data/Mutation_data/SNVs/hg19/Healthy_bone_marrow/", 
            pattern = "MQ60.vcf", 
@@ -35,6 +58,8 @@ vcf_l = vcf_l %>%
 out_vcf_fnames = str_c("inst/extdata/blood-", names(vcf_l), ".vcf")
 purrr::map2(vcf_l, out_vcf_fnames, writeVcf)
 
+#Decrease vcf size
+purrr::map(out_vcf_fnames, decrease_vcf_size)
 
 #Create granges object from the vcfs
 vcf_fnames = list.files("inst/extdata/", pattern = "blood.*.vcf", full.names = T)
