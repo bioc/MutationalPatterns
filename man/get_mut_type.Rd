@@ -7,9 +7,9 @@
 get_mut_type(grl, type = c("snv", "indel", "dbs", "mbs"))
 }
 \arguments{
-\item{type}{The type of variant that will be returned.}
+\item{grl}{GRanges/GRangesList}
 
-\item{gr}{GRanges/GRangesList}
+\item{type}{The type of variant that will be returned.}
 }
 \value{
 GRanges/GrangesList of the desired mutation type.

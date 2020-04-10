@@ -4,7 +4,7 @@
 #' It applies the get_indel_context_gr function to each gr in the input,
 #' which works by changing the REF and ALT columns of the GRanges into the COSMIC types.
 #'
-#' @param gr GRanges/GRangesList
+#' @param grl GRanges/GRangesList
 #'
 #' @return A version of the GRanges/GRangesList object, with modified REF and ALT columns. 
 #' 

@@ -7,7 +7,7 @@
 set_context_dbs(grl)
 }
 \arguments{
-\item{gr}{GRanges/GRangesList}
+\item{grl}{GRanges/GRangesList}
 }
 \value{
 A version of the GRanges/GRangesList object, with modified REF and ALT columns.

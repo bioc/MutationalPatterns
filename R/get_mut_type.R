@@ -6,7 +6,7 @@
 #' They are merged into single variants.
 #' The type of variant can be chosen with type.
 #'
-#' @param gr GRanges/GRangesList
+#' @param grl GRanges/GRangesList
 #' @param type The type of variant that will be returned.
 #'
 #' @return GRanges/GrangesList of the desired mutation type.
