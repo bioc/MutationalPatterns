@@ -9,8 +9,7 @@ read_vcfs_as_granges(
   sample_names,
   genome,
   group = "auto+sex",
-  check_alleles = TRUE,
-  n_cores = 1
+  type = c("snv", "indel", "dbs", "mbs", "all")
 )
 }
 \arguments{
@@ -31,15 +30,13 @@ of this group will be removed.  Possible values:
 * 'none' for no filtering, which results in keeping all
   seqlevels from the VCF file.}
 
-\item{check_alleles}{logical. If TRUE (default) positions with insertions,
-deletions and/or multiple alternative alleles are excluded
-from the vcf object, since these positions cannot be analysed
-with this package.  This setting can be set to FALSE to speed
-up processing time only if the input vcf does not contain any
-of such positions, as these will cause obscure errors.}
-
-\item{n_cores}{numeric. Number of cores used for parallel processing. If no
-value is given, then the number of available cores is autodetected.}
+\item{type}{The mutation type that will be loaded. All other variants will be filtered out.
+Possible values:
+* 'snv'
+* 'indel'
+* 'dbs'
+* 'mbs'
+* 'all'}
 }
 \value{
 A GRangesList containing the GRanges obtained from 'vcf_files'
@@ -69,7 +66,11 @@ ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library("BSgenome")
 library(ref_genome, character.only = TRUE)
 
-# This function loads the files as GRanges objects
+# This function loads the files as GRanges objects.
+# For backwards compatability reasons it only loads SNVs by default
 vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
+
+#To load all variant types use:
+vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome, type = "all")
 
 }
