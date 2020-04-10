@@ -129,7 +129,7 @@ check_no_indels_gr = function(gr){
     nr_indel = sum(!snv_f)
     snv_present = nr_indel >= 1
     if (snv_present){
-        stop(str_c("There seem to be ", nr_indel, " Indels present in your data. Make sure to remove all Indels with the `get_mut_type` function."), call. = F)
+        stop(stringr::str_c("There seem to be ", nr_indel, " Indels present in your data. Make sure to remove all Indels with the `get_mut_type` function."), call. = F)
     }
     invisible(gr)
 }
