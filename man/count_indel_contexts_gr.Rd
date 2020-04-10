@@ -2,7 +2,7 @@
 % Please edit documentation in R/indel_count_contexts.R
 \name{count_indel_contexts_gr}
 \alias{count_indel_contexts_gr}
-\title{Count indel contexts from a single gr.}
+\title{Count indel contexts from a single GRanges object.}
 \usage{
 count_indel_contexts_gr(gr, categories)
 }
@@ -15,11 +15,11 @@ count_indel_contexts_gr(gr, categories)
 A single column tibble containing the number of indels per COSMIC context.
 }
 \description{
-Count indel contexts from a single gr.
+Count indel contexts from a single GRanges object.
 }
 \details{
 Counts the number of indels per COSMIC context from a GRanges object containing Indel mutations.
-The function is called by count_indel_contexts_gr
+The function is called by count_indel_contexts
 }
 \seealso{
 \code{\link{count_indel_contexts}}, \code{\link{get_indel_context}}

@@ -24,8 +24,6 @@
 #' @seealso \code{\link{count_indel_contexts_gr}}, \code{\link{get_indel_context}}
 #' 
 #' @export
-
-
 count_indel_contexts = function(grl){
     categories = dplyr::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
                                       rep("T_insertion", 6), rep("2bp_deletion", 6), rep("3bp_deletion", 6), 
@@ -57,11 +55,11 @@ count_indel_contexts = function(grl){
     return(counts)
 }
 
-#' Count indel contexts from a single gr.
+#' Count indel contexts from a single GRanges object.
 #' 
 #' @details
 #' Counts the number of indels per COSMIC context from a GRanges object containing Indel mutations.
-#' The function is called by count_indel_contexts_gr
+#' The function is called by count_indel_contexts
 #' 
 #' @param gr GRanges object containing Indel mutations in which the context was added with get_indel_context.
 #' @param categories A tibble containing all possible indel context categories
