@@ -26,6 +26,8 @@ The function is called by count_dbs_contexts
 
 Other DBS: 
 \code{\link{count_dbs_contexts}()},
+\code{\link{plot_dbs_contexts}()},
+\code{\link{plot_main_dbs_contexts}()},
 \code{\link{set_context_dbs_gr}()},
 \code{\link{set_context_dbs}()}
 }

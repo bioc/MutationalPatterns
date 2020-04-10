@@ -30,8 +30,6 @@
 #' @seealso \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}
 #' 
 #' @export
-
-
 plot_indel_contexts = function(counts, same_y = F){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.

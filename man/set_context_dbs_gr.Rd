@@ -22,6 +22,8 @@ This is done by changing the REF and ALT columns of the GRanges into the COSMIC 
 Other DBS: 
 \code{\link{count_dbs_contexts_gr}()},
 \code{\link{count_dbs_contexts}()},
+\code{\link{plot_dbs_contexts}()},
+\code{\link{plot_main_dbs_contexts}()},
 \code{\link{set_context_dbs}()}
 }
 \concept{DBS}

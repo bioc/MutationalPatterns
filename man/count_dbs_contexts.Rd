@@ -35,6 +35,8 @@ count_dbs_contexts(grl_dbs_context)
 
 Other DBS: 
 \code{\link{count_dbs_contexts_gr}()},
+\code{\link{plot_dbs_contexts}()},
+\code{\link{plot_main_dbs_contexts}()},
 \code{\link{set_context_dbs_gr}()},
 \code{\link{set_context_dbs}()}
 }
