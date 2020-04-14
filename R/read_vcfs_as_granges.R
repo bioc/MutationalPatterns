@@ -1,112 +1,3 @@
-#' Filter a GRanges object based on seqlevels
-#'
-#' This function filters a GRanges object based on a group of seqnames.
-#'
-#' @param gr GRanges object 
-#' @param group Selector for a seqlevel group.  All seqlevels outside
-#'              of this group will be removed.  Possible values:
-#'              * 'all' for all chromosomes;
-#'              * 'auto' for autosomal chromosomes;
-#'              * 'sex' for sex chromosomes;
-#'              * 'auto+sex' for autosomal + sex chromosomes (default);
-#'              * 'circular' for circular chromosomes;
-#'              * 'none' for no filtering, which results in keeping all
-#'                seqlevels from the VCF file.
-#' @param genome BSgenome object
-#' @return A GRanges object
-#'
-filter_seqlevels = function(gr, group, genome){
-    
-    groups <- c()
-    if (group != "none"){
-        #These variables are needed to extract the possible seqlevels
-        ref_style <- GenomeInfoDb::seqlevelsStyle(genome)
-        ref_organism <- GenomeInfoDb::organism(genome)
-        
-        if (group == "auto+sex"){
-            groups <- c(GenomeInfoDb::extractSeqlevelsByGroup(species = ref_organism,
-                                                              style = ref_style,
-                                                              group = "auto"),
-                        GenomeInfoDb::extractSeqlevelsByGroup(species = ref_organism,
-                                                              style = ref_style,
-                                                              group = "sex"))
-            
-            # In some cases, the seqlevelsStyle returns multiple styles.
-            # In this case, we need to do a little more work to extract
-            # a vector of seqlevels from it.
-            groups_names <- names(groups)
-            if (! is.null(groups_names))
-            {
-                # The seqlevels in the groups are now duplicated.
-                # The following code deduplicates the list items, so that
-                # creating a data frame will work as expected.
-                unique_names <- unique(groups_names)
-                groups <- plyr::llply(unique_names, function(x) groups[groups_names == x])
-                groups <- plyr::llply(groups, unlist, recursive = FALSE)
-                
-                # In case there are multiple styles applied, we only use the first.
-                groups <- unique(as.vector(groups[[1]]))
-            }
-        }
-        else
-        {
-            groups <- GenomeInfoDb::extractSeqlevelsByGroup ( species = ref_organism,
-                                                              style = ref_style,
-                                                              group = group )
-            groups <- unique(as.vector(t(groups)))
-        }
-        
-        # The provided VCF files may not contain all chromosomes that are
-        # available in the reference genome.  Therefore, we only take the
-        # chromosomes that are actually available in the VCF file,
-        # belonging to the filter group.
-        groups <- BiocGenerics::intersect(groups, seqlevels(gr))
-        
-        # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
-        # on variants, yet, remove all variants that aren't in the filter
-        # group.  By default, keepSeqlevels would produce an error.
-        gr <- GenomeInfoDb::keepSeqlevels(gr, groups, pruning.mode = "tidy")
-    }
-    return(gr)
-}
-
-#' Read a single VCF file into a GRanges object
-#'
-#' This function reads a Variant Call Format (VCF) file into a GRanges object
-#' In addition to loading the files, this
-#' function applies the same seqlevel style to the GRanges objects as the
-#' reference genome passed in the 'genome' parameter.
-#'
-#' @param vcf_file A VCF file name
-#' @param genome BSgenome object
-#' @param group Selector for a seqlevel group.  All seqlevels outside
-#'              of this group will be removed.  Possible values:
-#'              * 'all' for all chromosomes;
-#'              * 'auto' for autosomal chromosomes;
-#'              * 'sex' for sex chromosomes;
-#'              * 'auto+sex' for autosomal + sex chromosomes (default);
-#'              * 'circular' for circular chromosomes;
-#'              * 'none' for no filtering, which results in keeping all
-#'                seqlevels from the VCF file.
-#' @return A GRanges object
-#'
-read_single_vcf_as_grange = function(vcf_file, genome, group){
-    
-    # Use VariantAnnotation's readVcf, but only store the
-    # GRanges information in memory.  This speeds up the
-    # loading significantly.
-    genome_name <- GenomeInfoDb::genome(genome)[[1]]
-    vcf <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
-    
-    # Convert to a single chromosome naming standard.
-    seqlevelsStyle(vcf) <- GenomeInfoDb::seqlevelsStyle(genome)[1]
-    
-    #Filter for variants with the correct seqlevels
-    vcf = filter_seqlevels(vcf, group, genome)
-    
-    return(vcf)
-}
-
 #' Read VCF files into a GRangesList
 #'
 #' This function reads Variant Call Format (VCF) files into a GRanges object
@@ -181,7 +72,7 @@ read_vcfs_as_granges <- function(vcf_files,
     
     # Check the class of the reference genome
     genome <- base::get(genome)
-    if (!inherits(ref_genome, "BSgenome")){
+    if (!inherits(genome, "BSgenome")){
         stop("Please provide the name of a BSgenome object.")
     }
     
@@ -198,4 +89,113 @@ read_vcfs_as_granges <- function(vcf_files,
     names(grl) <- sample_names
     
     return(grl)
+}
+
+#' Read a single VCF file into a GRanges object
+#'
+#' This function reads a Variant Call Format (VCF) file into a GRanges object
+#' In addition to loading the files, this
+#' function applies the same seqlevel style to the GRanges objects as the
+#' reference genome passed in the 'genome' parameter.
+#'
+#' @param vcf_file A VCF file name
+#' @param genome BSgenome object
+#' @param group Selector for a seqlevel group.  All seqlevels outside
+#'              of this group will be removed.  Possible values:
+#'              * 'all' for all chromosomes;
+#'              * 'auto' for autosomal chromosomes;
+#'              * 'sex' for sex chromosomes;
+#'              * 'auto+sex' for autosomal + sex chromosomes (default);
+#'              * 'circular' for circular chromosomes;
+#'              * 'none' for no filtering, which results in keeping all
+#'                seqlevels from the VCF file.
+#' @return A GRanges object
+#'
+read_single_vcf_as_grange = function(vcf_file, genome, group){
+    
+    # Use VariantAnnotation's readVcf, but only store the
+    # GRanges information in memory.  This speeds up the
+    # loading significantly.
+    genome_name <- GenomeInfoDb::genome(genome)[[1]]
+    vcf <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+    
+    # Convert to a single chromosome naming standard.
+    seqlevelsStyle(vcf) <- GenomeInfoDb::seqlevelsStyle(genome)[1]
+    
+    #Filter for variants with the correct seqlevels
+    vcf = filter_seqlevels(vcf, group, genome)
+    
+    return(vcf)
+}
+
+#' Filter a GRanges object based on seqlevels
+#'
+#' This function filters a GRanges object based on a group of seqnames.
+#'
+#' @param gr GRanges object 
+#' @param group Selector for a seqlevel group.  All seqlevels outside
+#'              of this group will be removed.  Possible values:
+#'              * 'all' for all chromosomes;
+#'              * 'auto' for autosomal chromosomes;
+#'              * 'sex' for sex chromosomes;
+#'              * 'auto+sex' for autosomal + sex chromosomes (default);
+#'              * 'circular' for circular chromosomes;
+#'              * 'none' for no filtering, which results in keeping all
+#'                seqlevels from the VCF file.
+#' @param genome BSgenome object
+#' @return A GRanges object
+#'
+filter_seqlevels = function(gr, group, genome){
+    
+    groups <- c()
+    if (group != "none"){
+        #These variables are needed to extract the possible seqlevels
+        ref_style <- GenomeInfoDb::seqlevelsStyle(genome)
+        ref_organism <- GenomeInfoDb::organism(genome)
+        
+        if (group == "auto+sex"){
+            groups <- c(GenomeInfoDb::extractSeqlevelsByGroup(species = ref_organism,
+                                                              style = ref_style,
+                                                              group = "auto"),
+                        GenomeInfoDb::extractSeqlevelsByGroup(species = ref_organism,
+                                                              style = ref_style,
+                                                              group = "sex"))
+            
+            # In some cases, the seqlevelsStyle returns multiple styles.
+            # In this case, we need to do a little more work to extract
+            # a vector of seqlevels from it.
+            groups_names <- names(groups)
+            if (! is.null(groups_names))
+            {
+                # The seqlevels in the groups are now duplicated.
+                # The following code deduplicates the list items, so that
+                # creating a data frame will work as expected.
+                unique_names <- unique(groups_names)
+                groups <- plyr::llply(unique_names, function(x) groups[groups_names == x])
+                groups <- plyr::llply(groups, unlist, recursive = FALSE)
+                
+                # In case there are multiple styles applied, we only use the first.
+                groups <- unique(as.vector(groups[[1]]))
+            }
+        }
+        else
+        {
+            groups <- GenomeInfoDb::extractSeqlevelsByGroup ( species = ref_organism,
+                                                              style = ref_style,
+                                                              group = group )
+            groups <- unique(as.vector(t(groups)))
+        }
+        
+        # The provided VCF files may not contain all chromosomes that are
+        # available in the reference genome.  Therefore, we only take the
+        # chromosomes that are actually available in the VCF file,
+        # belonging to the filter group.
+        groups <- BiocGenerics::intersect(groups, seqlevels(gr))
+        
+        # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
+        # on variants, yet, remove all variants that aren't in the filter
+        # group.  By default, keepSeqlevels would produce an error.
+        gr <- GenomeInfoDb::keepSeqlevels(gr, groups, pruning.mode = "tidy")
+    }
+    return(gr)
 }
