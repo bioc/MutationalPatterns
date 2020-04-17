@@ -4,12 +4,16 @@
 \alias{plot_indel_contexts}
 \title{Plot the indel contexts}
 \usage{
-plot_indel_contexts(counts, same_y = F)
+plot_indel_contexts(counts, same_y = F, extra_labels = F)
 }
 \arguments{
 \item{counts}{A tibble containing the number of indels per COSMIC context.}
 
 \item{same_y}{A boolean describing whether the same y axis should be used for all samples.}
+
+\item{extra_labels}{A boolean describing whether extra labels should be added. 
+These can clarify the plot, but will shift when different plot widths are used.
+We recommend saving a plot with a width of 12, when using this argument.}
 }
 \value{
 A ggplot figure.
@@ -34,6 +38,9 @@ plot_indel_contexts(indel_counts)
 
 ## Use the same y axis for all samples.
 plot_indel_contexts(indel_counts, same_y = TRUE)
+
+## Add extra labels to make plot clearer
+plot_indel_contexts(indel_counts, extra_labels = T)
 
 }
 \seealso{

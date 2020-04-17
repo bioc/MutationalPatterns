@@ -8,7 +8,9 @@
 #' 
 #' @param counts A tibble containing the number of indels per COSMIC context.
 #' @param same_y A boolean describing whether the same y axis should be used for all samples.
-#' 
+#' @param extra_labels A boolean describing whether extra labels should be added. 
+#'     These can clarify the plot, but will shift when different plot widths are used.
+#'     We recommend saving a plot with a width of 12, when using this argument.
 #' @return A ggplot figure.
 #' 
 #' @examples 
@@ -23,6 +25,9 @@
 #' ## Use the same y axis for all samples.
 #' plot_indel_contexts(indel_counts, same_y = TRUE)
 #' 
+#' ## Add extra labels to make plot clearer
+#' plot_indel_contexts(indel_counts, extra_labels = T)
+#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -30,7 +35,7 @@
 #' @seealso \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}
 #' 
 #' @export
-plot_indel_contexts = function(counts, same_y = F){
+plot_indel_contexts = function(counts, same_y = F, extra_labels = F){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     count = muttype = muttype_sub = NULL
@@ -53,6 +58,21 @@ plot_indel_contexts = function(counts, same_y = F){
     colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5","#FC8A6A", 
                "#F14432", "#BC141A", "#D0E1F2", "#94C4DF", "#4A98C9", "#1764AB", 
                "#E2E2EF", "#B6B6D8", "#8683BD", "#61409B")
+    
+
+    if (extra_labels){
+        title = stringr::str_c("Deletion           ",
+                               "Insertion          ",
+                               "Deletion                                   ",
+                               "Insertion                                  ",
+                               "Deletion (MH)")
+        x_lab = stringr::str_c("Homopolymer length                            ",
+        "Number of repeat units                                                                               ",
+        "Microhomology length")
+    } else{
+        title = x_lab = ""
+    }
+    
     fig = ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ muttype, 
@@ -61,8 +81,7 @@ plot_indel_contexts = function(counts, same_y = F){
         theme_minimal() +
         scale_fill_manual(values = colors) +
         theme(panel.grid.major.x = element_blank(), strip.background =element_rect(fill="cadetblue")) +
-        labs(fill = "Mutation type", title = "Deletion         Insertion        Deletion                              Insertion                              Deletion (MH)", y = "Nr of indels",
-             x = "Homopolymer length                         Number of repeat units                                                                Microhomology length")
+        labs(fill = "Mutation type", title = title, y = "Nr of indels", x = x_lab)
     
     return(fig)
 }
