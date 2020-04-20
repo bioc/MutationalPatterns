@@ -5,34 +5,13 @@
 ##SnpSiftVersion="SnpSift 4.1h (build 2015-08-03), by Pablo Cingolani"
 ##reference=file:///hpc/cog_bioinf/GENOMES/Homo_sapiens.GRCh37.GATK.illumina/Homo_sapiens.GRCh37.GATK.illumina.fasta
 ##source=SelectVariants
-##fileDate=20200410
-##ALT=<ID=NON_REF,Description="Represents any possible alternative allele at this location">
-##FILTER=<ID=INDEL_HardToValidate,Description="MQ0 >= 4 && ((MQ0 / (1.0 * DP)) > 0.1)">
-##FILTER=<ID=INDEL_LowCoverage,Description="DP < 5">
-##FILTER=<ID=INDEL_LowQual,Description="QUAL >= 30.0 && QUAL < 50.0">
-##FILTER=<ID=INDEL_LowQualityDepth,Description="QD < 2.0">
-##FILTER=<ID=INDEL_ReadPosRankSumLow,Description="ReadPosRankSum < -20.0">
-##FILTER=<ID=INDEL_SOR,Description="SOR > 10.0">
-##FILTER=<ID=INDEL_StrandBias,Description="FS > 200.0">
-##FILTER=<ID=INDEL_VeryLowQual,Description="QUAL < 30.0">
-##FILTER=<ID=LowQual,Description="Low quality">
-##FILTER=<ID=SNP_HaplotypeScoreHigh,Description="HaplotypeScore > 13.0">
-##FILTER=<ID=SNP_HardToValidate,Description="MQ0 >= 4 && ((MQ0 / (1.0 * DP)) > 0.1)">
-##FILTER=<ID=SNP_LowCoverage,Description="DP < 5">
-##FILTER=<ID=SNP_LowQual,Description="QUAL >= 30.0 && QUAL < 50.0">
-##FILTER=<ID=SNP_LowQualityDepth,Description="QD < 2.0">
-##FILTER=<ID=SNP_MQRankSumLow,Description="MQRankSum < -12.5">
-##FILTER=<ID=SNP_MappingQuality,Description="MQ < 40.0">
-##FILTER=<ID=SNP_ReadPosRankSumLow,Description="ReadPosRankSum < -8.0">
-##FILTER=<ID=SNP_SOR,Description="SOR > 4.0">
-##FILTER=<ID=SNP_StrandBias,Description="FS > 60.0">
-##FILTER=<ID=SNP_VeryLowQual,Description="QUAL < 30">
-##FILTER=<ID=SnpCluster,Description="SNPs found in clusters">
+##fileDate=20200420
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##FORMAT=<ID=AD,Number=.,Type=Integer,Description="Allelic depths for the ref and alt alleles in the order listed">
 ##FORMAT=<ID=DP,Number=1,Type=Integer,Description="Approximate read depth (reads with MQ=255 or with bad mates are filtered)">
 ##FORMAT=<ID=GQ,Number=1,Type=Integer,Description="Genotype Quality">
 ##FORMAT=<ID=PL,Number=G,Type=Integer,Description="Normalized, Phred-scaled likelihoods for genotypes as defined in the VCF specification">
+##ALT=<ID=NON_REF,Description="Represents any possible alternative allele at this location">
 ##contig=<ID=1,length=249250621,assembly=""hg19"">
 ##contig=<ID=2,length=243199373,assembly=""hg19"">
 ##contig=<ID=3,length=198022430,assembly=""hg19"">
@@ -2049,3 +2028,34 @@
 22	49875884	22:49875884_G/A	G	A	871.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,105,1575
 22	50511127	22:50511127_C/T	C	T	362.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
 22	50881734	22:50881734_G/A	G	A	574.13	PASS	.	GT:AD:DP:GQ:PL	0/0:35,0:35:99:0,99,1485
+1	7617544	1:7617544_A/T	A	T	549.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,105,1575
+1	7617545	1:7617545_G/T	G	T	549.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,105,1575
+1	7617546	1:7617546_G/T	G	T	549.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,105,1575
+3	171868468	3:171868468_A/C	A	C	987.13	PASS	.	GT:AD:DP:GQ:PL	0/1:14,29:43:99:1018,0,453
+3	171868469	3:171868469_A/C	A	C	987.13	PASS	.	GT:AD:DP:GQ:PL	0/1:14,29:43:99:1018,0,453
+3	171868470	3:171868470_A/C	A	C	987.13	PASS	.	GT:AD:DP:GQ:PL	0/1:14,29:43:99:1018,0,453
+5	97042179	5:97042179_A/T	A	T	637.13	PASS	.	GT:AD:DP:GQ:PL	0/0:36,0:36:99:0,99,1485
+5	97042180	5:97042180_A/G	A	G	637.13	PASS	.	GT:AD:DP:GQ:PL	0/0:36,0:36:99:0,99,1485
+5	97042181	5:97042181_A/T	A	T	637.13	PASS	.	GT:AD:DP:GQ:PL	0/0:36,0:36:99:0,99,1485
+5	156172136	5:156172136_T/G	T	G	630.13	PASS	.	GT:AD:DP:GQ:PL	0/0:34,0:34:99:0,99,1464
+5	156172137	5:156172137_C/G	C	G	630.13	PASS	.	GT:AD:DP:GQ:PL	0/0:34,0:34:99:0,99,1464
+5	156172138	5:156172138_T/G	T	G	630.13	PASS	.	GT:AD:DP:GQ:PL	0/0:34,0:34:99:0,99,1464
+5	156172139	5:156172139_T/G	T	G	630.13	PASS	.	GT:AD:DP:GQ:PL	0/0:34,0:34:99:0,99,1464
+5	156172140	5:156172140_A/T	A	T	630.13	PASS	.	GT:AD:DP:GQ:PL	0/0:34,0:34:99:0,99,1464
+6	124392666	6:124392666_C/T	C	T	648.13	PASS	.	GT:AD:DP:GQ:PL	0/1:21,18:39:99:679,0,786
+6	124392667	6:124392667_A/T	A	T	648.13	PASS	.	GT:AD:DP:GQ:PL	0/1:21,18:39:99:679,0,786
+6	124392668	6:124392668_A/C	A	C	648.13	PASS	.	GT:AD:DP:GQ:PL	0/1:21,18:39:99:679,0,786
+6	124392669	6:124392669_C/T	C	T	648.13	PASS	.	GT:AD:DP:GQ:PL	0/1:21,18:39:99:679,0,786
+7	152958108	7:152958108_A/C	A	C	739.13	PASS	.	GT:AD:DP:GQ:PL	0/0:37,0:37:99:0,99,1485
+7	152958109	7:152958109_G/C	G	C	739.13	PASS	.	GT:AD:DP:GQ:PL	0/0:37,0:37:99:0,99,1485
+7	152958110	7:152958110_C/A	C	A	739.13	PASS	.	GT:AD:DP:GQ:PL	0/0:37,0:37:99:0,99,1485
+10	15420383	10:15420383_A/T	A	T	507.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+10	15420384	10:15420384_G/A	G	A	507.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+10	15420385	10:15420385_T/A	T	A	507.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+11	39208084	11:39208084_C/A	C	A	639.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+11	39208085	11:39208085_C/A	C	A	639.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+11	39208086	11:39208086_A/G	A	G	639.13	PASS	.	GT:AD:DP:GQ:PL	0/0:38,0:38:99:0,99,1485
+18	58893047	18:58893047_C/G	C	G	552.13	PASS	.	GT:AD:DP:GQ:PL	0/0:39,0:39:99:0,105,1575
+18	58893048	18:58893048_A/C	A	C	552.13	PASS	.	GT:AD:DP:GQ:PL	0/0:39,0:39:99:0,105,1575
+18	58893049	18:58893049_T/C	T	C	552.13	PASS	.	GT:AD:DP:GQ:PL	0/0:39,0:39:99:0,105,1575
+18	58893050	18:58893050_A/G	A	G	552.13	PASS	.	GT:AD:DP:GQ:PL	0/0:39,0:39:99:0,105,1575
