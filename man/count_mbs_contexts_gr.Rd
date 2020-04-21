@@ -25,6 +25,7 @@ The function is called by count_mbs_contexts
 \code{\link{count_mbs_contexts}}
 
 Other MBS: 
-\code{\link{count_mbs_contexts}()}
+\code{\link{count_mbs_contexts}()},
+\code{\link{plot_mbs_contexts}()}
 }
 \concept{MBS}

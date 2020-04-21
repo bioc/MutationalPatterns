@@ -34,6 +34,7 @@ count_mbs_contexts(grl_mbs)
 \code{\link{count_mbs_contexts_gr}}
 
 Other MBS: 
-\code{\link{count_mbs_contexts_gr}()}
+\code{\link{count_mbs_contexts_gr}()},
+\code{\link{plot_mbs_contexts}()}
 }
 \concept{MBS}
