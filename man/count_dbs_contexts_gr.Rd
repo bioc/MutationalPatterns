@@ -7,9 +7,9 @@
 count_dbs_contexts_gr(gr, categories)
 }
 \arguments{
-\item{gr}{GRanges object containing Indel mutations in which the context was added with set_dbs_context.}
+\item{gr}{GRanges object containing DBS mutations in which the context was added with set_dbs_context.}
 
-\item{categories}{A tibble containing all possible indel context categories}
+\item{categories}{A tibble containing all possible dbs context categories}
 }
 \value{
 A single column tibble containing the number of dbs per COSMIC context.

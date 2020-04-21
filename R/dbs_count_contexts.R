@@ -7,11 +7,11 @@
 #' 
 #' @param grl GRanges or GRangesList object containing DBS mutations in which the context was added with set_dbs_context.
 #' 
-#' @return A tibble containing the number of indels per COSMIC context per gr.
+#' @return A tibble containing the number of DBS per COSMIC context per gr.
 #' 
 #' @examples 
-#' ## Get a GRangesList or GRanges object with indel contexts.
-#' ## See 'indel_get_context' for more info on how to do this.
+#' ## Get a GRangesList or GRanges object with dbs contexts.
+#' ## See 'dbs_get_context' for more info on how to do this.
 #' grl_dbs_context <- readRDS(system.file("states/blood_grl_dbs_context.rds",
 #'                 package="MutationalPatterns"))
 #' 
@@ -68,8 +68,8 @@ count_dbs_contexts = function(grl){
 #' Counts the number of DBS per COSMIC context from a GRanges object containing DBS mutations.
 #' The function is called by count_dbs_contexts
 #' 
-#' @param gr GRanges object containing Indel mutations in which the context was added with set_dbs_context.
-#' @param categories A tibble containing all possible indel context categories
+#' @param gr GRanges object containing DBS mutations in which the context was added with set_dbs_context.
+#' @param categories A tibble containing all possible dbs context categories
 #' 
 #' @return A single column tibble containing the number of dbs per COSMIC context.
 #' 
