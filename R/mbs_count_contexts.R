@@ -23,7 +23,7 @@
 #' 
 #' @export
 count_mbs_contexts = function(grl){
-    categories = tibble::tibble("size" = c(1:9, "10+"))
+    categories = tibble::tibble("size" = c(3:9, "10+"))
     
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
