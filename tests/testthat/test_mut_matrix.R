@@ -5,28 +5,21 @@ ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 # We re-use the data that is shipped with the package.
-sample_names <- c ( "colon1", "colon2", "colon3",
-                   "intestine1", "intestine2", "intestine3",
-                   "liver1", "liver2", "liver3" )
-
-vcfs <- list.files (system.file("extdata", package="MutationalPatterns"),
-                    pattern = "sample.vcf", full.names = TRUE)
-
-input <- read_vcfs_as_granges(vcfs, sample_names,
-                              "BSgenome.Hsapiens.UCSC.hg19")
+input <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+                                 package="MutationalPatterns"))
 
 expected <- readRDS(system.file("states/mut_mat_data.rds",
                                 package="MutationalPatterns"))
 
+output <- mut_matrix(input, ref_genome)
+
 test_that("transforms correctly", {
-    actual <- mut_matrix(input, ref_genome)
-    expect_that(actual, equals(expected))
+    expect_equal(output, expected)
 })
 
-test_that("a list and a GRangesList are acceptable", {
-    list_actual <- mut_matrix(as.list(input), ref_genome)
-    grangeslist_actual <- mut_matrix(input, ref_genome)
+test_that("a list is also acceptable input", {
+    output_list <- mut_matrix(as.list(input), ref_genome)
 
-    expect_that (list_actual, equals(grangeslist_actual))
-    expect_that (grangeslist_actual, equals(expected))
+    expect_equal(output_list, output)
+    expect_equal(output_list, expected)
 })

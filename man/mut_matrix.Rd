@@ -4,15 +4,14 @@
 \alias{mut_matrix}
 \title{Make mutation count matrix of 96 trinucleotides}
 \usage{
-mut_matrix(vcf_list, ref_genome, num_cores = 1)
+mut_matrix(grl, ref_genome, vcf_list = NA)
 }
 \arguments{
-\item{vcf_list}{List of collapsed vcf objects}
+\item{grl}{GRangesList or GRanges object.}
 
 \item{ref_genome}{BSGenome reference genome object}
 
-\item{num_cores}{Number of cores used for parallel processing. If no value
-is given, then the number of available cores is autodetected.}
+\item{vcf_list}{Deprecated argument. Replaced with grl}
 }
 \value{
 96 mutation count matrix
@@ -23,7 +22,7 @@ Make 96 trinucleotide mutation count matrix
 \examples{
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
-vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
 ## Load the corresponding reference genome.
@@ -32,7 +31,7 @@ library(ref_genome, character.only = TRUE)
 
 ## Construct a mutation matrix from the loaded VCFs in comparison to the
 ## ref_genome.
-mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome)
+mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
 
 }
 \seealso{

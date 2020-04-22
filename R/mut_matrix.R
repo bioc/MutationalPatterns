@@ -1,19 +1,15 @@
 #' Make mutation count matrix of 96 trinucleotides 
 #'  
 #' @description Make 96 trinucleotide mutation count matrix
-#' @param vcf_list List of collapsed vcf objects
-#' @param ref_genome BSGenome reference genome object 
-#' @param num_cores Number of cores used for parallel processing. If no value
-#'                  is given, then the number of available cores is autodetected.
+#' @param grl GRangesList or GRanges object.
+#' @param ref_genome BSGenome reference genome object
+#' @param vcf_list Deprecated argument. Replaced with grl
 #' @return 96 mutation count matrix
-#' @import GenomicRanges
-#' @importFrom parallel detectCores
-#' @importFrom parallel mclapply
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
-#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+#' grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #'
 #' ## Load the corresponding reference genome.
@@ -22,34 +18,35 @@
 #'
 #' ## Construct a mutation matrix from the loaded VCFs in comparison to the
 #' ## ref_genome.
-#' mut_mat <- mut_matrix(vcf_list = vcfs, ref_genome = ref_genome)
+#' mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
 #'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
 #' @export
-
-mut_matrix = function(vcf_list, ref_genome, num_cores = 1)
-{
-    df = data.frame()
-
-    rows <- mclapply (as.list(vcf_list), function (vcf)
-    {
-        type_context = type_context(vcf, ref_genome)
-        row = mut_96_occurrences(type_context)
-        return(row)
-    }, mc.cores = num_cores)
-
-    # Merge the rows into a dataframe.
-    for (row in rows)
-    {
-        if (class (row) == "try-error") stop (row)
-        df = rbind (df, row)
+mut_matrix = function (grl, ref_genome, vcf_list = NA) {
+    
+    if (!missing("vcf_list")){
+        warning("vcf_list is deprecated, use grl instead. 
+              The parameter grl is set equal to the parameter vcf_list.")
+        grl <- vcf_list
     }
-
-    names(df) = names(row)
-    row.names(df) = names(vcf_list)
-
-    # transpose
-    return(t(df))
+    
+    #Convert list to grl if necessary
+    if (inherits(grl, "list")){
+        grl = GenomicRanges::GRangesList(grl)
+    }
+    if (inherits(grl, "CompressedGRangesList")){
+        gr_sizes = S4Vectors::elementNROWS(grl)
+        gr = unlist(grl)
+    } else if (inherits(grl, "GRanges")){
+        gr = grl
+        gr_sizes = length(gr)
+        names(gr_sizes) = "My_sample"
+    } else{
+        not_gr_or_grl(grl)
+    }
+    type_context = type_context(gr, ref_genome)
+    mut_mat = mut_96_occurrences(type_context, gr_sizes)
+    return(mut_mat)
 }

@@ -1,34 +1,47 @@
 #' Count 96 trinucleotide mutation occurrences
 #'  
+#'  @details 
+#'  This function is called by mut_matrix. It calculates the 96 trinucleotide context for all variants
+#'  and then splits these per GRanges (samples). It then calculates how often each 96 trinucleotide context occures.
+#'  
+#'  
 #' @param type_context result from type_context function
-#' @importFrom S4Vectors isEmpty
-#' @noRd
-#' @return vector with 96 trinucleotide mutation occurrences
-
-mut_96_occurrences = function(type_context)
-{
-    vector = rep(0,96)
-    names(vector) = TRIPLETS_96
+#' @param gr_sizes A vector indicating the number of variants per GRanges
+#' @return Mutation matrix with 96 trinucleotide mutation occurrences
+#' 
+#' @importFrom magrittr %>% 
+mut_96_occurrences = function(type_context, gr_sizes){
     
-    # if type_context is empty, return vector with zeroes
-    if (isEmpty(type_context$types) || isEmpty(type_context$context))
-        return(vector)
+    #Create table with all possible contexts
+    cats = tibble::tibble("categories" = factor(TRIPLETS_96, levels = TRIPLETS_96))
     
-    # for all mutations in this sample
-    for (i in 1:length(type_context[[1]]))
-    {
-        # Find mutation type
-        type = which(SUBSTITUTIONS == type_context[[1]][i])
-
-        # Find triplet
-        if(type < 4)
-            context = which(C_TRIPLETS == type_context[[2]][i])
-        else
-            context = which(T_TRIPLETS == type_context[[2]][i])
-
-        pos = (type - 1)*16 + context
-        vector[pos] = vector[pos] + 1
+    #Determine 96 context for all variants
+    full_context = stringr::str_c(substr(type_context$context, 1, 1), 
+                                  "[", 
+                                  type_context$types, 
+                                  "]", 
+                                  substr(type_context$context, 3, 3)) %>% 
+        factor(levels = TRIPLETS_96)
+    
+    #Set names if they are not yet present
+    if (is.null(names(gr_sizes))){
+        names(gr_sizes) = seq_along(gr_sizes)
     }
+    
+    #Create vector describing the sample of each variant
+    sample_vector = rep(names(gr_sizes), gr_sizes) %>% 
+        factor(levels = names(gr_sizes))
+    
+    #Count the mutations per type and per sample
+    counts = tibble::tibble("categories" = full_context, "sample" = sample_vector) %>% 
+        dplyr::filter(!is.na(categories)) %>% 
+        dplyr::group_by(categories, sample, .drop = F) %>% 
+        dplyr::summarise(count = dplyr::n())
 
-    return(vector)
+    #Transform the data into a mutation matrix
+    counts = tidyr::spread(counts, key = sample, value = count, fill = 0)
+    unnecesary_cols = which(colnames(counts) == "<NA>")
+    mut_mat = as.matrix(counts[,-c(1, unnecesary_cols)])
+    rownames(mut_mat) = counts$categories
+    return(mut_mat)
 }
