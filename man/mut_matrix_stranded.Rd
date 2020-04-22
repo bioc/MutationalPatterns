@@ -6,15 +6,15 @@
 strand information}
 \usage{
 mut_matrix_stranded(
-  vcf_list,
+  grl,
   ref_genome,
   ranges,
   mode = "transcription",
-  num_cores = 1
+  vcf_list = NA
 )
 }
 \arguments{
-\item{vcf_list}{List of collapsed vcf objects}
+\item{grl}{GRangesList or GRanges object.}
 
 \item{ref_genome}{BSGenome reference genome object}
 
@@ -24,8 +24,7 @@ mut_matrix_stranded(
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
 
-\item{num_cores}{Number of cores used for parallel processing. If no value
-is given, then the number of available cores is autodetected.}
+\item{vcf_list}{Deprecated argument. Replaced with grl}
 }
 \value{
 192 mutation count matrix (96 X 2 strands)
@@ -37,7 +36,7 @@ these can be transcription or replication strand
 \examples{
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
-vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
 
 ## Load the corresponding reference genome.
@@ -55,7 +54,7 @@ library(ref_genome, character.only = TRUE)
 genes_hg19 <- readRDS(system.file("states/genes_hg19.rds",
                         package="MutationalPatterns"))
 
-mut_mat_s = mut_matrix_stranded(vcfs, ref_genome, genes_hg19, 
+mut_mat_s = mut_matrix_stranded(grl, ref_genome, genes_hg19, 
                                 mode = "transcription")
 
 ## Replication strand analysis:
@@ -77,7 +76,7 @@ repli_strand_granges$strand_info = factor(
   levels = c("left", "right")
   )
 
-mut_mat_s_rep = mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
+mut_mat_s_rep = mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
                                 mode = "replication")
 
 }

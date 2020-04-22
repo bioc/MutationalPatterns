@@ -1,33 +1,38 @@
 context("Function 'mut_matrix_stranded'")
 
-library("TxDb.Hsapiens.UCSC.hg19.knownGene")
-genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
-vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
-                        pattern = "sample.vcf", full.names = TRUE)
-
-sample_names <- c("colon1", "colon2", "colon3",
-                  "intestine1", "intestine2", "intestine3",
-                  "liver1", "liver2", "liver3")
-
-ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+# To test mut_matrix, we need to load the reference genome and the genes first.
+ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
-vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
+library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 
+#Test that the functio works with default arguments 
+genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
+input <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+                             package="MutationalPatterns"))
 expected <- readRDS(system.file("states/mut_mat_s_data.rds",
                                 package="MutationalPatterns"))
 
 test_that("transforms correctly", {
-    actual <- mut_matrix_stranded(vcfs, ref_genome, genes_hg19)
-    expect_that(actual, equals(expected))
+    output <- mut_matrix_stranded(input, ref_genome, ranges = genes_hg19)
+    expect_equal(output, expected)
 })
 
-
-test_that("a list and a GRangesList are acceptable", {
-    list_actual <- mut_matrix_stranded(as.list(vcfs), ref_genome, genes_hg19)
-    grangeslist_actual <- mut_matrix_stranded(vcfs, ref_genome, genes_hg19)
+#Test that a list is an acceptable input
+test_that("a list is also acceptable input", {
+    output_list <- mut_matrix_stranded(as.list(input), ref_genome, ranges = genes_hg19)
     
-    expect_that(list_actual, equals(grangeslist_actual))
-    expect_that(grangeslist_actual, equals(expected))
+    expect_equal(output_list, output)
+    expect_equal(output_list, expected)
 })
 
+#Test replication mode
+repli_strand_granges <- readRDS(system.file("states/repli_strand.rds",
+                                            package="MutationalPatterns"))
+expected_repli <- readRDS(system.file("states/mut_mat_repli.rds",
+                                      package="MutationalPatterns"))
+
+test_that("replication mode transforms correctly", {
+    mut_mat_repli = mut_matrix_stranded(grl, ref_genome, repli_strand_granges, mode = "replication")
+    expect_equal(mut_mat_repli, expected_repli)
+})

@@ -4,25 +4,20 @@
 #' Make a mutation count matrix with 192 features: 96 trinucleotides and 2 strands,
 #' these can be transcription or replication strand
 #'
-#' @param vcf_list List of collapsed vcf objects
+#' @param grl GRangesList or GRanges object.
 #' @param ref_genome BSGenome reference genome object 
 #' @param ranges GRanges object with the genomic ranges of:
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or 
 #' 2. (replication mode) the replication strand with 'strand_info' metadata 
 #' @param mode "transcription" or "replication", default = "transcription"
-#' @param num_cores Number of cores used for parallel processing. If no value
-#'                  is given, then the number of available cores is autodetected.
+#' @param vcf_list Deprecated argument. Replaced with grl
 #'
 #' @return 192 mutation count matrix (96 X 2 strands)
-#'
-#' @import GenomicRanges
-#' @importFrom parallel detectCores
-#' @importFrom parallel mclapply
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
-#' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+#' grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 #'                 package="MutationalPatterns"))
 #'
 #' ## Load the corresponding reference genome.
@@ -40,7 +35,7 @@
 #' genes_hg19 <- readRDS(system.file("states/genes_hg19.rds",
 #'                         package="MutationalPatterns"))
 #'
-#' mut_mat_s = mut_matrix_stranded(vcfs, ref_genome, genes_hg19, 
+#' mut_mat_s = mut_matrix_stranded(grl, ref_genome, genes_hg19, 
 #'                                 mode = "transcription")
 #' 
 #' ## Replication strand analysis:
@@ -62,7 +57,7 @@
 #'   levels = c("left", "right")
 #'   )
 #' 
-#' mut_mat_s_rep = mut_matrix_stranded(vcfs, ref_genome, repli_strand_granges,
+#' mut_mat_s_rep = mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
 #'                                 mode = "replication")
 #'
 #' @seealso
@@ -72,52 +67,29 @@
 #'
 #' @export
 
-mut_matrix_stranded = function(vcf_list, ref_genome, ranges, mode = "transcription", num_cores = 1)
-{
-  df = data.frame()
-  
-
-  # Transcription mode
-  if(mode == "transcription")
-    {
-      # For each vcf in vcf_list count the 192 features
-      rows <- mclapply (as.list(vcf_list), function (vcf)
-      {
-        type_context = type_context(vcf, ref_genome)
-        strand = mut_strand(vcf, ranges, mode = "transcription")
-        row = mut_192_occurrences(type_context, strand)
-        return(row)
-      }, mc.cores = num_cores)
-      
-      # Combine the rows in one dataframe
-      for (row in rows)
-        df = rbind (df, row)
-    }
-  
-  # Replication mode
-  if(mode == "replication")
-  {
-    # For each vcf in vcf_list count the 192 features
-    rows <- mclapply (as.list(vcf_list), function (vcf)
-    {
-      type_context = type_context(vcf, ref_genome)
-      strand = mut_strand(vcf, ranges, mode = "replication")
-      row = mut_192_occurrences(type_context, strand)
-      return(row)
-    }, mc.cores = num_cores, mc.silent = FALSE)
-    
-    # Combine the rows in one dataframe
-    for (row in rows)
-    {
-      if (class (row) == "try-error") stop (row)
-      df = rbind (df, row)
-    }
+mut_matrix_stranded = function(grl, ref_genome, ranges, mode = "transcription", vcf_list = NA){
+  if (!missing("vcf_list")){
+    warning("vcf_list is deprecated, use grl instead. 
+              The parameter grl is set equal to the parameter vcf_list.")
+    grl <- vcf_list
   }
   
-  # Add row names to data.frame
-  names(df) = names(row)
-  row.names(df) = names(vcf_list)
-  
-  # Transpose and return
-  return(t(df))
+  #Convert list to grl if necessary
+  if (inherits(grl, "list")){
+    grl = GenomicRanges::GRangesList(grl)
+  }
+  if (inherits(grl, "CompressedGRangesList")){
+    gr_sizes = S4Vectors::elementNROWS(grl)
+    gr = unlist(grl)
+  } else if (inherits(grl, "GRanges")){
+    gr = grl
+    gr_sizes = length(gr)
+    names(gr_sizes) = "My_sample"
+  } else{
+    not_gr_or_grl(grl)
+  }
+  strand = mut_strand(gr, ranges, mode = mode)
+  type_context = type_context(gr, ref_genome)
+  mut_mat = mut_192_occurrences(type_context, strand, gr_sizes)
+  return(mut_mat)
 }

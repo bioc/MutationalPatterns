@@ -1,17 +1,23 @@
-#' Compute 192 mutation count vector
-#' 
-#' Compute 192 mutation count vector, 96 trinucleotide changes X 2 strands
+#' Count 192 trinucleotide mutation occurrences
+#'  
+#'  @details 
+#'  This function is called by mut_matrix_stranded. 
+#'  The 192 trinucleotide context is the 96 trinucleotide context combined with the strands.
+#'  This function calculates the 192 trinucleotide context for all variants.
+#'  and then splits these per GRanges (samples). It then calculates how often each 192 trinucleotide context occurs.
 #'  
 #' @param type_context result from type_context function
 #' @param strand factor with strand information for each
 #' position, for example "U" for untranscribed, "T" for transcribed strand, 
 #' and "-" for unknown
+#' @param gr_sizes A vector indicating the number of variants per GRanges
 #' 
-#' @noRd
-#' @return A vector with 192 mutation occurrences and 96 trinucleotides
+#' @importFrom magrittr %>% 
+#' 
+#' @return Mutation matrix with 192 mutation occurrences and 96 trinucleotides
 #' for two strands
 
-mut_192_occurrences = function(type_context, strand)
+mut_192_occurrences = function(type_context, strand, gr_sizes)
 {
   # get possible strand values
   values = levels(strand)
@@ -20,21 +26,32 @@ mut_192_occurrences = function(type_context, strand)
   idx2 = which(strand == values[2])
   
   # get type context for both vcf subsets
-  type_context_1 = lapply(type_context, function(x) x[idx1])
-  type_context_2 = lapply(type_context, function(x) x[idx2])
+  type_context_1 = purrr::map(type_context, function(x) x[idx1])
+  type_context_2 = purrr::map(type_context, function(x) x[idx2])
+  
+  #Subset the gr_sizes.
+  sample_vector = rep(names(gr_sizes), gr_sizes) %>% 
+    factor(levels = names(gr_sizes))
+  table_vector_1 = sample_vector[idx1] %>% 
+    table()
+  gr_sizes_1 = as.vector(table_vector_1)
+  names(gr_sizes_1) = names(table_vector_1)
+  table_vector_2 = sample_vector[idx2] %>% 
+    table()
+  gr_sizes_2 = as.vector(table_vector_2)
+  names(gr_sizes_2) = names(table_vector_2)
   
   # make 96-trinucleotide count vector per set
-  vector1 = mut_96_occurrences(type_context_1)
-  vector2 = mut_96_occurrences(type_context_2)
+  mut_mat_1 = mut_96_occurrences(type_context_1, gr_sizes_1)
+  mut_mat_2 = mut_96_occurrences(type_context_2, gr_sizes_2)
   
   # add names
   names_1 = paste(TRIPLETS_96, values[1], sep = "-")
   names_2 = paste(TRIPLETS_96, values[2], sep = "-")
   
-  # combine vectors in alternating fashion
-  vector = c(rbind(vector1, vector2))
-  names = c(rbind(names_1, names_2))
-  names(vector) = names
+  # combine matrixes
+  mut_mat = rbind(mut_mat_1, mut_mat_2)
+  rownames(mut_mat) = c(names_1, names_2)
 
-  return(vector)
+  return(mut_mat)
 }
