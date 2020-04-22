@@ -39,3 +39,19 @@ saveRDS(repli_strand_granges, "inst/states/repli_strand.rds")
 #Create replication strand matrix
 mut_mat_repli = mut_matrix_stranded(grl, ref_genome, repli_strand_granges, mode = "replication")
 saveRDS(mut_mat_repli, "inst/states/mut_mat_repli.rds")
+
+
+
+#Refit to signatures
+filename <- system.file("extdata/snv_signatures_probabilities.txt",
+                        package="MutationalPatterns")
+signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures = as.matrix(signatures[,-c(1,2)])
+
+#Normal refit
+fit_res = fit_to_signatures(mut_mat, signatures)
+saveRDS(fit_res, "inst/states/snv_refit.rds")
+
+#Strict refit
+strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
+saveRDS(strict_refit$fit_res, "inst/states/strict_snv_refit.rds")

@@ -5,9 +5,9 @@
 #' reconstructs the mutation matrix by solving the nonnegative least-squares
 #' constraints problem.
 #' 
-#' @param mut_matrix 96 mutation count matrix (dimensions: 96 mutations
+#' @param mut_matrix mutation count matrix (dimensions: x mutation types
 #' X n samples)
-#' @param signatures Signature matrix (dimensions: 96 mutations
+#' @param signatures Signature matrix (dimensions: x mutation types
 #' X n signatures)
 #'
 #' @return Named list with signature contributions and reconstructed
@@ -22,30 +22,21 @@
 #'                     package="MutationalPatterns"))
 #'
 #' ## You can download the signatures from the COSMIC website:
-#' # http://cancer.sanger.ac.uk/cancergenome/assets/signatures_probabilities.txt
+#' # https://cancer.sanger.ac.uk/cosmic/signatures
 #' 
 #' ## We copied the file into our package for your convenience.
-#' filename <- system.file("extdata/signatures_probabilities.txt",
+#' filename <- system.file("extdata/snv_signatures_probabilities.txt",
 #'                         package="MutationalPatterns")
-#' cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
+#' signatures <- read.table(filename, sep = "\t", header = TRUE)
 #' 
-#' ## Match the order to MutationalPatterns standard of mutation matrix
-#' order = match(row.names(mut_mat), cancer_signatures$Somatic.Mutation.Type)
-#' ## Reorder cancer signatures dataframe
-#' cancer_signatures = cancer_signatures[order,]
-#' ## Use trinucletiode changes names as row.names
-#' ## row.names(cancer_signatures) = cancer_signatures$Somatic.Mutation.Type
-#' ## Keep only 96 contributions of the signatures in matrix
-#' cancer_signatures = as.matrix(cancer_signatures[,4:33])
-#' ## Rename signatures to number only
-#' colnames(cancer_signatures) = as.character(1:30)
+#' ## Remove unnecessary columns
+#' signatures = as.matrix(signatures[,-c(1,2)])
 #'
 #'
 #' ## Perform the fitting
-#' fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
+#' fit_res <- fit_to_signatures(mut_mat, signatures)
 #'
-#' @seealso
-#' \code{\link{mut_matrix}}
+#' @seealso \code{\link{mut_matrix}},\code{\link{fit_to_signatures_strict}}
 #'
 #' @export
 
