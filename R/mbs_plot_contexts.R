@@ -52,7 +52,7 @@ plot_mbs_contexts = function(counts, same_y = T){
     fig = ggplot(counts, aes(x = size, y = count, fill = size)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ ., 
-                   scale = facet_scale, space = "free_x",
+                   scales = facet_scale, space = "free_x",
                    labeller = labeller(sample = facet_labs_y)) +
         labs(x = "MNV size", y = "Nr. of MBSs") +
         guides(fill = F) +
