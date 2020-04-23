@@ -20,6 +20,7 @@ test_that("transforms correctly", {
 
 #Test that a list is an acceptable input
 test_that("a list is also acceptable input", {
+    output <- mut_matrix_stranded(input, ref_genome, ranges = genes_hg19)
     output_list <- mut_matrix_stranded(as.list(input), ref_genome, ranges = genes_hg19)
     
     expect_equal(output_list, output)
@@ -33,6 +34,6 @@ expected_repli <- readRDS(system.file("states/mut_mat_repli.rds",
                                       package="MutationalPatterns"))
 
 test_that("replication mode transforms correctly", {
-    mut_mat_repli = mut_matrix_stranded(grl, ref_genome, repli_strand_granges, mode = "replication")
+    mut_mat_repli = mut_matrix_stranded(input, ref_genome, repli_strand_granges, mode = "replication")
     expect_equal(mut_mat_repli, expected_repli)
 })
