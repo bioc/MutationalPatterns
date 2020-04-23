@@ -26,7 +26,7 @@
 #' plot_indel_contexts(indel_counts, same_y = TRUE)
 #' 
 #' ## Add extra labels to make plot clearer
-#' plot_indel_contexts(indel_counts, extra_labels = T)
+#' plot_indel_contexts(indel_counts, extra_labels = TRUE)
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
