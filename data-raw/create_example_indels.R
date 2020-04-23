@@ -19,3 +19,15 @@ indel_counts = count_indel_contexts(grl_indel_context)
 saveRDS(indel_counts, "inst/states/blood_indel_counts.rds")
 
 
+#Refit to signatures
+filename <- system.file("extdata/indel_signatures_probabilities.txt",
+                        package="MutationalPatterns")
+signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures = as.matrix(signatures[,-c(1)])
+
+indel_m = indel_counts %>% 
+    dplyr::select(-muttype, -muttype_sub) %>% 
+    as.matrix()
+fit_res = fit_to_signatures(indel_m, signatures)
+saveRDS(fit_res, "inst/states/indel_refit.rds")
+
