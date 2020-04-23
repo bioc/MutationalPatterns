@@ -448,25 +448,27 @@ plot_compare_profiles(mut_mat[,1],
 
 Download mutational signatures from the COSMIC website:
 
-<<read_cancer_signatures>>=
+<<read_signatures>>=
 # You can download the signatures from the COSMIC website:
 # https://cancer.sanger.ac.uk/cosmic/signatures
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
                         package="MutationalPatterns")
-cancer_signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures = as.matrix(signatures[,-c(1,2)])
+
 @
 
 Plot mutational profile of the first two COSMIC signatures:
 <<plot_96_profile_COSMIC_e, eval=FALSE>>=
-plot_96_profile(cancer_signatures[,1:2], condensed = TRUE, ymax = 0.3)
+plot_96_profile(signatures[,1:2], condensed = TRUE, ymax = 0.3)
 @
 
 \begin{figure}[H]
 \begin{center}
 <<plot_96_profile_COSMIC, fig=TRUE, width=7, height=3, echo=FALSE>>=
-plot_96_profile(cancer_signatures[,1:2], condensed = TRUE, ymax = 0.3)
+plot_96_profile(signatures[,1:2], condensed = TRUE, ymax = 0.3)
 @
 \end{center}
 \end{figure}
@@ -475,9 +477,9 @@ Hierarchically cluster the COSMIC signatures based on their similarity with
 average linkage:
 
 <<cluster_COSMIC, fig=TRUE, width=7, height=5>>=
-hclust_cosmic = cluster_signatures(cancer_signatures, method = "average")
+hclust_cosmic = cluster_signatures(signatures, method = "average")
 # store signatures in new order
-cosmic_order = colnames(cancer_signatures)[hclust_cosmic$order]
+cosmic_order = colnames(signatures)[hclust_cosmic$order]
 plot(hclust_cosmic)
 @
 
@@ -496,14 +498,14 @@ The cosine similarity between two mutational profiles/signatures can be
 calculated with \Rfunction{cos\_sim}:
 
 <<cos_sim>>=
-cos_sim(mut_mat[,1], cancer_signatures[,1])
+cos_sim(mut_mat[,1], signatures[,1])
 @
 
 Calculate pairwise cosine similarity between mutational profiles and COSMIC
 signatures:
 
 <<cos_sim_cosmic_samples, fig=TRUE, width=7, height=3.5>>=
-cos_sim_samples_signatures = cos_sim_matrix(mut_mat, cancer_signatures)
+cos_sim_samples_signatures = cos_sim_matrix(mut_mat, signatures)
 # Plot heatmap with specified signature order
 plot_cosine_heatmap(cos_sim_samples_signatures,
                     col_order = cosmic_order,
@@ -524,7 +526,7 @@ constraints problem.
 Fit mutation matrix to the COSMIC mutational signatures:
 
 <<fit_to_signatures>>=
-fit_res <- fit_to_signatures(mut_mat, cancer_signatures)
+fit_res <- fit_to_signatures(mut_mat, signatures)
 @
 
 Plot the optimal contribution of the COSMIC signatures in each sample as a
@@ -535,7 +537,7 @@ stacked barplot.
 select <- which(rowSums(fit_res$contribution) > 10)
 # Plot contribution barplot
 plot_contribution(fit_res$contribution[select,],
-                    cancer_signatures[,select],
+                    signatures[,select],
                     coord_flip = FALSE,
                     mode = "absolute")
 @
@@ -546,7 +548,7 @@ select <- which(rowSums(fit_res$contribution) > 0)
 # Plot contribution
 ggsave("plot_contribution_3.pdf",
        plot_contribution(fit_res$contribution[select,],
-                         cancer_signatures[,select],
+                         signatures[,select],
                          coord_flip = FALSE,
                          mode = "absolute"),
        width=9,
