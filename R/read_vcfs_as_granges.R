@@ -120,7 +120,7 @@ read_single_vcf_as_grange = function(vcf_file, genome, group){
     vcf <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
     
     # Convert to a single chromosome naming standard.
-    seqlevelsStyle(vcf) <- GenomeInfoDb::seqlevelsStyle(genome)[1]
+    GenomeInfoDb::seqlevelsStyle(vcf) <- GenomeInfoDb::seqlevelsStyle(genome)[1]
     
     #Filter for variants with the correct seqlevels
     vcf = filter_seqlevels(vcf, group, genome)
