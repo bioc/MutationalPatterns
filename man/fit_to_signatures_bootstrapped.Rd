@@ -67,10 +67,17 @@ signatures <- read.table(filename, sep = "\t", header = TRUE)
 signatures = as.matrix(signatures[,-c(1,2)])
 
 ## Fit to signatures with bootstrapping
-contri_boots = fit_to_signatures_bootstrapped(mut_mat, signatures, n_boots = 10, max_delta = 0.05)
+contri_boots = fit_to_signatures_bootstrapped(mut_mat, 
+signatures, 
+n_boots = 10, 
+max_delta = 0.05)
 
 ## Use the original refit method
-contri_boots = fit_to_signatures_bootstrapped(mut_mat, signatures, n_boots = 10, max_delta = 0.05, method = "original")
+contri_boots = fit_to_signatures_bootstrapped(mut_mat, 
+signatures, 
+n_boots = 10, 
+max_delta = 0.05, 
+method = "original")
 
 }
 \seealso{
