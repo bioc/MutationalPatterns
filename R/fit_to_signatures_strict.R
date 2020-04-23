@@ -1,4 +1,4 @@
-#' Fit mutational signatures to a mutation matrix
+#' Fit mutational signatures to a mutation matrix with less overfitting
 #' 
 #' Find a linear non-negative combination of mutation signatures that
 #' reconstructs the mutation matrix. First an optimal reconstruction is achieved via `fit_to_signatures`.
@@ -27,7 +27,7 @@
 #' @importFrom magrittr %>% 
 #'
 #' @examples
-#' #' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
+#' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 #'                     package="MutationalPatterns"))
 #'

@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_to_signatures_strict.R
 \name{fit_to_signatures_strict}
 \alias{fit_to_signatures_strict}
-\title{Fit mutational signatures to a mutation matrix}
+\title{Fit mutational signatures to a mutation matrix with less overfitting}
 \usage{
 fit_to_signatures_strict(mut_matrix, signatures, max_delta = 0.05)
 }
@@ -30,7 +30,7 @@ Iterations are stopped when the difference between two iterations becomes more t
 The second-last set of signatures is then used for a final refit.
 }
 \examples{
-#' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
+## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
                     package="MutationalPatterns"))
 
