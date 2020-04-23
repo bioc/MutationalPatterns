@@ -4,14 +4,14 @@
 \alias{get_cos_sim_ori_vs_rec}
 \title{Get the cosine similarity between a reconstructed mutation matrix and the original}
 \usage{
-get_cos_sim_ori_vs_rec(mut_mat, fit_res)
+get_cos_sim_ori_vs_rec(mut_matrix, fit_res)
 }
 \arguments{
-\item{fit_res}{Named list with signature contributions and reconstructed
-mutation matrix}
-
 \item{mut_matrix}{mutation count matrix (dimensions: x mutation types
 X n samples)}
+
+\item{fit_res}{Named list with signature contributions and reconstructed
+mutation matrix}
 }
 \value{
 Cosine similarity

@@ -5,7 +5,7 @@
 \title{Fit mutational signatures to a mutation matrix with bootstrapping}
 \usage{
 fit_to_signatures_bootstrapped(
-  mut_mat,
+  mut_matrix,
   signatures,
   n_boots = 1000,
   max_delta = 0.05,
@@ -14,6 +14,9 @@ fit_to_signatures_bootstrapped(
 )
 }
 \arguments{
+\item{mut_matrix}{mutation count matrix (dimensions: x mutation types
+X n samples)}
+
 \item{signatures}{Signature matrix (dimensions: x mutation types
 X n signatures)}
 
@@ -29,9 +32,6 @@ Only used with method strict.}
 * 'original_10+' Uses fit_to_signatures, but removes signatures with less than 10 variants.;}
 
 \item{verbose}{Boolean. If TRUE, the function will show how far along it is.}
-
-\item{mut_matrix}{mutation count matrix (dimensions: x mutation types
-X n samples)}
 }
 \value{
 A matrix showing the signature contributions across all the bootstrap iterations.

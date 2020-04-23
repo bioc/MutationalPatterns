@@ -67,7 +67,7 @@
 #' max_delta = 0.05, 
 #' method = "original")
 #' 
-fit_to_signatures_bootstrapped = function(mut_mat, 
+fit_to_signatures_bootstrapped = function(mut_matrix, 
                                           signatures, 
                                           n_boots = 1000, 
                                           max_delta = 0.05, 
@@ -81,7 +81,7 @@ fit_to_signatures_bootstrapped = function(mut_mat,
     method = match.arg(method)
     
     #Check enough mutations are present
-    min_nr_muts = colSums(mut_mat) %>% 
+    min_nr_muts = colSums(mut_matrix) %>% 
         min()
     if (min_nr_muts <= 10){
         warning("At least one of your samples has less than 10 mutations. 
@@ -94,7 +94,7 @@ fit_to_signatures_bootstrapped = function(mut_mat,
     for (i in seq_len(n_boots)){
         
         #Resample mut_mat
-        mut_mat_resampled = resample_mut_mat(mut_mat)
+        mut_mat_resampled = resample_mut_mat(mut_matrix)
         
         #Perform refit method
         if (method == "strict"){

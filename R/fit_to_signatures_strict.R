@@ -163,8 +163,8 @@ fit_to_signatures_strict = function(mut_matrix, signatures, max_delta = 0.05){
 #'
 #' @return Cosine similarity
 #'
-get_cos_sim_ori_vs_rec = function(mut_mat, fit_res){
-    cos_sim_all = cos_sim_matrix(mut_mat, fit_res$reconstructed)
+get_cos_sim_ori_vs_rec = function(mut_matrix, fit_res){
+    cos_sim_all = cos_sim_matrix(mut_matrix, fit_res$reconstructed)
     cos_sim = diag(cos_sim_all)
     mean_cos_sim = mean(cos_sim)
 }
