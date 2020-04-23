@@ -46,3 +46,23 @@ test_that("Refitting indels gives expected output.", {
     output = fit_to_signatures(indel_m, signatures)
     expect_equal(output, expected)
 })
+
+#Get dbs mut_mat
+dbs_counts = readRDS(system.file("states/blood_dbs_counts.rds", package = "MutationalPatterns"))
+dbs_m = dbs_counts %>% 
+    dplyr::select(-REF, -ALT) %>% 
+    as.matrix()
+
+#Get dbs signatures
+filename <- system.file("extdata/dbs_signatures_probabilities.txt",
+                        package="MutationalPatterns")
+signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures = as.matrix(signatures[,-c(1)])
+
+expected <- readRDS(system.file("states/dbs_refit.rds",
+                                package="MutationalPatterns"))
+
+test_that("Refitting dbss gives expected output.", {
+    output = fit_to_signatures(dbs_m, signatures)
+    expect_equal(output, expected)
+})
