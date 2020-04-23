@@ -73,6 +73,11 @@ fit_to_signatures_bootstrapped = function(mut_mat,
                                           max_delta = 0.05, 
                                           method = c("strict", "original", "original_10+"),
                                           verbose = TRUE){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    sigs = NULL
+    
     method = match.arg(method)
     
     #Check enough mutations are present

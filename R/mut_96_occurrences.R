@@ -12,6 +12,10 @@
 #' @importFrom magrittr %>% 
 mut_96_occurrences = function(type_context, gr_sizes){
     
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    categories = count = NULL
+    
     #Create table with all possible contexts
     cats = tibble::tibble("categories" = factor(TRIPLETS_96, levels = TRIPLETS_96))
     

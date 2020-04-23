@@ -23,6 +23,11 @@
 #' 
 #' @export
 count_mbs_contexts = function(grl){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    size = NULL
+    
     categories = tibble::tibble("size" = c(3:9, "10+"))
     
     if (inherits(grl, "CompressedGRangesList")){
@@ -59,6 +64,11 @@ count_mbs_contexts = function(grl){
 #' @seealso \code{\link{count_mbs_contexts}}
 #' @family MBS
 count_mbs_contexts_gr = function(gr, categories){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    count = size = NULL
+    
     counts_tb = gr$REF %>% 
         BiocGenerics::width() %>% 
         tibble::enframe(value = "size") %>% 

@@ -53,6 +53,10 @@
 #' fig_l = strict_refit$sim_decay_fig
 fit_to_signatures_strict = function(mut_matrix, signatures, max_delta = 0.05){
     
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    rowname = NULL
+    
     #Remove signatures with zero contribution across samples
     fit_res = fit_to_signatures(mut_matrix, signatures)
     sig_pres = rowSums(fit_res$contribution) != 0
@@ -181,7 +185,11 @@ get_cos_sim_ori_vs_rec = function(mut_mat, fit_res){
 #'
 plot_sim_decay = function(sims, removed_sigs, max_delta){
     
-    #
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    Removed_signatures = Cosine_similarity = NULL
+    
+    #Prepare data
     sims = sims[!S4Vectors::isEmpty(sims)] %>%
         unlist()
     removed_sigs = removed_sigs[!S4Vectors::isEmpty(removed_sigs)] %>% 
