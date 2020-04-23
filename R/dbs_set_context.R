@@ -9,7 +9,7 @@
 #' @return A version of the GRanges/GRangesList object, with modified REF and ALT columns. 
 #' 
 #' @seealso
-#' \code{\link{set_context_dbs_gr}}, \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
+#' \code{\link{set_dbs_context_gr}}, \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
 #' @family DBS
 #' 
 #' @examples
@@ -23,14 +23,14 @@
 #' 
 #' @importFrom magrittr %>% 
 #' @export
-set_context_dbs = function(grl){
+set_dbs_context = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
-        grl = purrr::map(gr_l, set_context_dbs_gr) %>% 
+        grl = purrr::map(gr_l, set_dbs_context_gr) %>% 
             GRangesList()
         return(grl)
     } else if (inherits(grl, "GRanges")){
-        gr = set_context_dbs_gr(grl)
+        gr = set_dbs_context_gr(grl)
         return(gr)
     } else{
         not_gr_or_grl(grl)
@@ -48,12 +48,12 @@ set_context_dbs = function(grl){
 #' @return A version of the GRanges object, with modified REF and ALT columns. 
 #' 
 #' @seealso
-#' \code{\link{set_context_dbs}}
+#' \code{\link{set_dbs_context}}
 #' @family DBS
 #' 
 #' @importFrom magrittr %>% 
 #' @export
-set_context_dbs_gr = function(gr){
+set_dbs_context_gr = function(gr){
     
     #Check that no indels are present.
     check_no_indels(gr)

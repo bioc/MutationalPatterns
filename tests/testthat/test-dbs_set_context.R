@@ -1,4 +1,4 @@
-context("test-set_context_dbs")
+context("test-set_dbs_context")
 
 
 ## Get GRangesList with DBS.
@@ -6,7 +6,7 @@ grl_dbs <- readRDS(system.file("states/blood_grl_dbs.rds",
                 package="MutationalPatterns"))
 
 ##Set context dbs
-output = set_context_dbs(grl_dbs)
+output = set_dbs_context(grl_dbs)
 
 expected <- readRDS(system.file("states/blood_grl_dbs_context.rds",
                                package="MutationalPatterns"))

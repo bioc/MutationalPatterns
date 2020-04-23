@@ -37,7 +37,7 @@ Other DBS:
 \code{\link{count_dbs_contexts_gr}()},
 \code{\link{plot_dbs_contexts}()},
 \code{\link{plot_main_dbs_contexts}()},
-\code{\link{set_context_dbs_gr}()},
-\code{\link{set_context_dbs}()}
+\code{\link{set_dbs_context_gr}()},
+\code{\link{set_dbs_context}()}
 }
 \concept{DBS}
