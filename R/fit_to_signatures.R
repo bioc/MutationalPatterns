@@ -36,7 +36,7 @@
 #' ## Perform the fitting
 #' fit_res <- fit_to_signatures(mut_mat, signatures)
 #'
-#' @seealso \code{\link{mut_matrix}},\code{\link{fit_to_signatures_strict}}
+#' @seealso \code{\link{mut_matrix}},\code{\link{fit_to_signatures_strict}},\code{\link{fit_to_signatures_bootstrapped}}
 #'
 #' @export
 

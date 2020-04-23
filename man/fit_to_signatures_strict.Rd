@@ -56,7 +56,8 @@ fig_l = strict_refit$sim_decay_fig
 }
 \seealso{
 \code{\link{mut_matrix}}, 
-\code{\link{fit_to_signatures}}, 
+\code{\link{fit_to_signatures}},
+\code{\link{fit_to_signatures_bootstrapped}},
 \code{\link{get_cos_sim_ori_vs_rec}}, 
 \code{\link{plot_sim_decay}}
 }

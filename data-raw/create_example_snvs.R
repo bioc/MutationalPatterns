@@ -55,3 +55,8 @@ saveRDS(fit_res, "inst/states/snv_refit.rds")
 #Strict refit
 strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
 saveRDS(strict_refit$fit_res, "inst/states/strict_snv_refit.rds")
+
+#bootstrapped refit
+set.seed(42)
+contri_boots = fit_to_signatures_bootstrapped(mut_mat, signatures, n_boots = 2, max_delta = 0.05)
+saveRDS(contri_boots, "inst/states/bootstrapped_snv_refit.rds")

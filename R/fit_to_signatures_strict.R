@@ -19,9 +19,10 @@
 #' that for each sample shows in what order the signatures were removed and how this affected the cosine similarity.
 #' 
 #' @seealso \code{\link{mut_matrix}}, 
-#' \code{\link{fit_to_signatures}}, 
+#' \code{\link{fit_to_signatures}},
+#' \code{\link{fit_to_signatures_bootstrapped}},
 #' \code{\link{get_cos_sim_ori_vs_rec}}, 
-#' \code{\link{plot_sim_decay}} 
+#' \code{\link{plot_sim_decay}}
 #' @export
 #' 
 #' @importFrom magrittr %>% 
