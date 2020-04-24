@@ -311,11 +311,11 @@ check_chroms = function(gr, ref_genome){
 }
 
 
-#' Check whether input is na.
+#' Check whether input is a scalar na.
 #'
-#' @param Vector
+#' @param Vector Input. Function checks if it is a scalar NA
 #'
 #' @return Boolean
 is_na = function(x) {
-    is_scalar_vector(x) && is.na(x)
+    purrr::is_scalar_vector(x) && is.na(x)
 }

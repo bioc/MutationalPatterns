@@ -2,16 +2,16 @@
 % Please edit documentation in R/check_remove_muttypes.R
 \name{is_na}
 \alias{is_na}
-\title{Check whether input is na.}
+\title{Check whether input is a scalar na.}
 \usage{
 is_na(x)
 }
 \arguments{
-\item{Vector}{}
+\item{Vector}{Input. Function checks if it is a scalar NA}
 }
 \value{
 Boolean
 }
 \description{
-Check whether input is na.
+Check whether input is a scalar na.
 }
