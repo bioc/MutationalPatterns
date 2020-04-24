@@ -15,6 +15,9 @@
 #'
 #' @return A tibble containing the amount of lesions segregation per sample
 #' @importFrom magrittr %>% 
+#' @seealso
+#' \code{\link{plot_lesion_segregation}}
+#' @family Lesion_segregation
 #'
 #'@examples
 #'
@@ -48,7 +51,7 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
     }
     
     if (split_by_type){
-        if (is.na(ref_genome)){
+        if (is_na(ref_genome)){
             stop("The ref_genome needs to be set when split_by_type = TRUE")
         }
         check_chroms(gr, ref_genome)
@@ -85,6 +88,7 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
 #'               Only needed when split_by_type is TRUE
 #' @return A tibble containing the amount of lesions segregation for a single sample
 #' @importFrom magrittr %>% 
+#' @family Lesion_segregation
 #'
 calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_type = FALSE, ref_genome = NA){
     
@@ -148,6 +152,7 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
 #' @param gr A GRanges object
 #'
 #' @return A GRanges object where the strands have been set.
+#' @family Lesion_segregation
 #' 
 get_strandedness_gr = function(gr){
     check_no_indels(gr)
@@ -166,6 +171,8 @@ get_strandedness_gr = function(gr){
 #'
 #' @return A tibble with strand information
 #' @importFrom magrittr %>% 
+#' @family Lesion_segregation
+#' 
 get_strandedness_tb = function(gr){
     tb = as.data.frame(gr) %>%
         tibble::as_tibble() %>% 
@@ -181,6 +188,8 @@ get_strandedness_tb = function(gr){
 #'
 #' @return A list containing the total number of variants and the number of strand switches
 #' @importFrom magrittr %>%  
+#' @family Lesion_segregation
+#' 
 calculate_strand_switches = function(tb){
     strands_l = split(tb$strand, tb$seqnames)
     switches = purrr::map(strands_l, calculate_strand_switch) %>% 
@@ -195,7 +204,9 @@ calculate_strand_switches = function(tb){
 #'
 #' @return A boolean vector describing for each variant 
 #' if it switched strands with the previous variant.
+#' @family Lesion_segregation
 #' @importFrom magrittr %>%  
+#' 
 calculate_strand_switch = function(strand){
     switches = strand != dplyr::lead(strand)
     switches = switches %>% 

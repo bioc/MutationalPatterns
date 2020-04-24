@@ -309,3 +309,13 @@ check_chroms = function(gr, ref_genome){
     }
     invisible(gr)
 }
+
+
+#' Check whether input is na.
+#'
+#' @param Vector
+#'
+#' @return Boolean
+is_na = function(x) {
+    is_scalar_vector(x) && is.na(x)
+}
