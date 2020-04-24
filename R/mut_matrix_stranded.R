@@ -29,11 +29,8 @@
 #' ## Bioconductor:
 #' # source("https://bioconductor.org/biocLite.R")
 #' # biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
-#' # library("TxDb.Hsapiens.UCSC.hg19.knownGene")
-#'
-#' ## For this example, we preloaded the data for you:
-#' genes_hg19 <- readRDS(system.file("states/genes_hg19.rds",
-#'                         package="MutationalPatterns"))
+#' library("TxDb.Hsapiens.UCSC.hg19.knownGene")
+#' genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #'
 #' mut_mat_s = mut_matrix_stranded(grl, ref_genome, genes_hg19, 
 #'                                 mode = "transcription")

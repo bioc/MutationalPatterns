@@ -64,18 +64,6 @@
 #' promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
 #'                         package="MutationalPatterns"))
 #'
-#' # open = getBM(attributes = c('chromosome_name', 'chromosome_start',
-#' #                             'chromosome_end', 'feature_type_name'),
-#' #               filters = "regulatory_feature_type_name",
-#' #               values = "Open chromatin",
-#' #               mart = regulatory)
-#' # open_g = reduce(GRanges(open$chromosome_name,
-#' #                 IRanges(open$chromosome_start,
-#' #                         open$chromosome_end)))
-#'
-#' open_g <- readRDS(system.file("states/open_g_data.rds",
-#'                     package="MutationalPatterns"))
-#'
 #' # flanking = getBM(attributes = c('chromosome_name',
 #' #                                 'chromosome_start',
 #' #                                 'chromosome_end',
@@ -91,22 +79,9 @@
 #' flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
 #'                                     package="MutationalPatterns"))
 #'
-#' # TF_binding = getBM(attributes = c('chromosome_name', 'chromosome_start',
-#' #                                   'chromosome_end', 'feature_type_name'),
-#' #                      filters = "regulatory_feature_type_name",
-#' #                      values = "TF binding site",
-#' #                      mart = regulatory)
-#' # TF_binding_g = reduce(GRanges(TF_binding$chromosome_name,
-#' #                               IRanges(TF_binding$chromosome_start,
-#' #                               TF_binding$chromosome_end)))
+#' regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
 #'
-#' TF_binding_g <- readRDS(system.file("states/TF_binding_g_data.rds",
-#'                                     package="MutationalPatterns"))
-#'
-#' regions <- GRangesList(promoter_g, flanking_g, CTCF_g, open_g, TF_binding_g)
-#'
-#' names(regions) <- c("Promoter", "Promoter flanking", "CTCF",
-#'                     "Open chromatin", "TF binding")
+#' names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
 #'
 #' # Use a naming standard consistently.
 #' seqlevelsStyle(regions) <- "UCSC"
