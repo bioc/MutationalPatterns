@@ -110,6 +110,7 @@ read_vcfs_as_granges <- function(vcf_files,
 #'              * 'none' for no filtering, which results in keeping all
 #'                seqlevels from the VCF file.
 #' @return A GRanges object
+#' @importFrom magrittr %>% 
 #'
 read_single_vcf_as_grange = function(vcf_file, genome, group){
     
@@ -124,6 +125,17 @@ read_single_vcf_as_grange = function(vcf_file, genome, group){
     
     #Filter for variants with the correct seqlevels
     vcf = filter_seqlevels(vcf, group, genome)
+    
+    #Check for duplicate variants
+    nr_duplicated = vcf %>% 
+        duplicated() %>% 
+        sum()
+    if (nr_duplicated){
+        warning(paste0("There were ", nr_duplicated, " duplicated variants in vcf file: ",
+                           vcf_file,
+                           " They have been filtered out."), call. = F)
+        vcf = BiocGenerics::unique(vcf)
+    }
     
     return(vcf)
 }
