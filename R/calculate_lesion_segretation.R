@@ -2,8 +2,10 @@
 #' 
 #' The amount of lesion segregation is calculated per GRanges object.
 #' The results are then combined in a table.
+#' It's possible to calculate the lesion segregation separately per 96 substitution context.
+#' The results are then automatically added back up together.
 #'
-#' @param gr GRanges object
+#' @param grl GRangesList or GRanges object
 #' @param sample_name The name of the sample
 #' @param split_by_type Boolean describing whether the lesion 
 #' segregation should be calculated for all SNVs together or per 96 substitution context
@@ -15,12 +17,44 @@
 #' @importFrom magrittr %>% 
 #'
 #'@examples
+#'
+#' ## See the 'read_vcfs_as_granges()' example for how we obtained the
+#' ## following data:
+#' grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+#'                 package="MutationalPatterns"))
+#' 
+#' ## Set the sample names
+#' sample_names <- c(
+#'    "colon1", "colon2", "colon3",
+#'    "intestine1", "intestine2", "intestine3",
+#'    "liver1", "liver2", "liver3")
+#'                                  
+#' ## Load the corresponding reference genome.
+#' ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+#' library(ref_genome, character.only = TRUE)
+#' 
+#' ## Calculate lesion segregation
+#' lesion_segretation = calculate_lesion_segregation(grl, sample_names)
+#' 
+#' ## Calculate lesion segregation per 96 base type
+#' lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names, 
+#' split_by_type = TRUE, ref_genome = ref_genome)
+#' 
 calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE , ref_genome = NA){
     
+    #Validate arguments
     if (length(grl) != length(sample_names)){
         stop("The grl and the sample_names should be equally long.", call. = F)
     }
     
+    if (split_by_type){
+        if (is.na(ref_genome)){
+            stop("The ref_genome needs to be set when split_by_type = TRUE")
+        }
+        check_chroms(gr, ref_genome)
+    }
+    
+    #Perform lesion segregation on each GR
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
         strand_tb = purrr::map2(gr_l, sample_names, function(gr, sample_name){
@@ -32,10 +66,11 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
     } else{
         not_gr_or_grl(grl)
     }
+    
+    #Add final columns to output
     strand_tb = strand_tb %>% 
         dplyr::mutate(sample_name = sample_names,
-                      p_adjusted = p.adjust(p.value, method = "fdr"),
-                      switching = estimate <= 0.4 & p_adjusted <= 0.05)
+                      p.adjusted = p.adjust(p.value, method = "fdr"))
     return(strand_tb)
 }
 
@@ -73,7 +108,7 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
                           "\n Returning NA"))
             return(NA)
         }
-        type_context = type_context(gr, get(ref_genome))
+        type_context = type_context(gr, ref_genome)
         full_context = stringr::str_c(substr(type_context$context, 1, 1), 
                              "[", type_context$types, "]", 
                              substr(type_context$context, 3, 3))
@@ -101,8 +136,10 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
     }
     
     #Calculate if the number of strand switches is significantly different from expected.
-    stat_tb = binom.test(x = res$x, n = res$n, p = 0.5) %>% 
-        broom::tidy()
+    res = binom.test(x = res$x, n = res$n, p = 0.5)
+    stat_tb = tibble::tibble(estimate = res$estimate, statistic = res$statistic, p.value = res$p.value, 
+                   parameter = res$parameter, conf.low = res$conf.int[[1]], conf.high = res$conf.int[[2]],
+                   method = "Exact binomial test", alternative = "two.sided")
     return(stat_tb)
 }
 

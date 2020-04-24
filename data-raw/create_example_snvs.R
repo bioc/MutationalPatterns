@@ -60,3 +60,7 @@ saveRDS(strict_refit$fit_res, "inst/states/strict_snv_refit.rds")
 set.seed(42)
 contri_boots = fit_to_signatures_bootstrapped(mut_mat, signatures, n_boots = 2, max_delta = 0.05)
 saveRDS(contri_boots, "inst/states/bootstrapped_snv_refit.rds")
+
+#Calculate lesion segregation
+lesion_segretation = calculate_lesion_segregation(grl, sample_names)
+saveRDS(lesion_segretation, "inst/states/lesion_segregation.rds")
