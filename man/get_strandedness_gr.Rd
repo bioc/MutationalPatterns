@@ -15,3 +15,15 @@ A GRanges object where the strands have been set.
 \description{
 Determine the strands of a GRanges object
 }
+\seealso{
+Other Lesion_segregation: 
+\code{\link{calculate_lesion_segregation_gr}()},
+\code{\link{calculate_lesion_segregation}()},
+\code{\link{calculate_strand_switches}()},
+\code{\link{calculate_strand_switch}()},
+\code{\link{get_strandedness_tb}()},
+\code{\link{lesion_get_x_axis_breaks}()},
+\code{\link{plot_lesion_segregation_gg}()},
+\code{\link{plot_lesion_segregation}()}
+}
+\concept{Lesion_segregation}

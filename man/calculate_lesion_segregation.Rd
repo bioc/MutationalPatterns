@@ -57,3 +57,17 @@ lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names,
 split_by_type = TRUE, ref_genome = ref_genome)
 
 }
+\seealso{
+\code{\link{plot_lesion_segregation}}
+
+Other Lesion_segregation: 
+\code{\link{calculate_lesion_segregation_gr}()},
+\code{\link{calculate_strand_switches}()},
+\code{\link{calculate_strand_switch}()},
+\code{\link{get_strandedness_gr}()},
+\code{\link{get_strandedness_tb}()},
+\code{\link{lesion_get_x_axis_breaks}()},
+\code{\link{plot_lesion_segregation_gg}()},
+\code{\link{plot_lesion_segregation}()}
+}
+\concept{Lesion_segregation}

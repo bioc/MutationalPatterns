@@ -29,3 +29,15 @@ A tibble containing the amount of lesions segregation for a single sample
 \description{
 Calculate the amount of lesion segregation for a singe GRanges object.
 }
+\seealso{
+Other Lesion_segregation: 
+\code{\link{calculate_lesion_segregation}()},
+\code{\link{calculate_strand_switches}()},
+\code{\link{calculate_strand_switch}()},
+\code{\link{get_strandedness_gr}()},
+\code{\link{get_strandedness_tb}()},
+\code{\link{lesion_get_x_axis_breaks}()},
+\code{\link{plot_lesion_segregation_gg}()},
+\code{\link{plot_lesion_segregation}()}
+}
+\concept{Lesion_segregation}
