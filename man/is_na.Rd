@@ -7,7 +7,7 @@
 is_na(x)
 }
 \arguments{
-\item{Vector}{Input. Function checks if it is a scalar NA}
+\item{x}{Input. Function checks if it is a scalar NA}
 }
 \value{
 Boolean
