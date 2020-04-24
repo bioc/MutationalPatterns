@@ -35,5 +35,5 @@ mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
 
 }
 \seealso{
-\code{\link{read_vcfs_as_granges}},
+\code{\link{read_vcfs_as_granges}}
 }
