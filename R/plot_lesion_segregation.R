@@ -25,9 +25,13 @@
 #' plot_lesion_segregation(gr, sample_name = "Colon1")
 #' 
 #' ## Plot lesion segregation per chromosome
-#' plot_lesion_segregation(gr, per_chrom = T, sample_name = "Colon1")
+#' plot_lesion_segregation(gr, per_chrom = TRUE, sample_name = "Colon1")
 #' 
-plot_lesion_segregation = function(gr, per_chrom = F, sample_name = NA){
+plot_lesion_segregation = function(gr, per_chrom = FALSE, sample_name = NA){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    max_pos = start_mb = notused = NULL
     
     #Get strandedness
     gr = get_strandedness_gr(gr)
@@ -72,7 +76,7 @@ plot_lesion_segregation = function(gr, per_chrom = F, sample_name = NA){
         fig_l = mapply(plot_lesion_segregation_gg, 
                        tb_l, tb_limits_l, 
                        MoreArgs = list("x_axis_breaks" = x_axis_breaks, "point_size" = point_size, "sample_name" = sample_name), 
-                       SIMPLIFY = F)
+                       SIMPLIFY = FALSE)
         return(fig_l)
     } 
 }
@@ -126,6 +130,10 @@ lesion_get_x_axis_breaks = function(max_coord, per_chrom){
 #' @family Lesion_segregation
 #' 
 plot_lesion_segregation_gg = function(tb, tb_limits, x_axis_breaks, point_size, sample_name){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    y = start_mb = NULL
     
     if (is_na(sample_name)){
         my_labs = labs(y = "Strand", x = "Coordinate (mb)")

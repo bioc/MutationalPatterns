@@ -6,7 +6,7 @@
 #' The results are then automatically added back up together.
 #'
 #' @param grl GRangesList or GRanges object
-#' @param sample_name The name of the sample
+#' @param sample_names The name of the sample
 #' @param split_by_type Boolean describing whether the lesion 
 #' segregation should be calculated for all SNVs together or per 96 substitution context
 #' @param ref_genome A string matching the name of a BSgenome library
@@ -18,7 +18,7 @@
 #' @seealso
 #' \code{\link{plot_lesion_segregation}}
 #' @family Lesion_segregation
-#'
+#' @export
 #'@examples
 #'
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -45,6 +45,10 @@
 #' 
 calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE , ref_genome = NA){
     
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    p.value = NULL
+    
     #Validate arguments
     if (length(grl) != length(sample_names)){
         stop("The grl and the sample_names should be equally long.", call. = F)
@@ -54,7 +58,6 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
         if (is_na(ref_genome)){
             stop("The ref_genome needs to be set when split_by_type = TRUE")
         }
-        check_chroms(gr, ref_genome)
     }
     
     #Perform lesion segregation on each GR
@@ -92,9 +95,8 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
 #'
 calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_type = FALSE, ref_genome = NA){
     
-    
     if (!length(gr)){
-        message(str_c("No mutations present in sample: ", sample_name,
+        message(paste0("No mutations present in sample: ", sample_name,
                       "\n Returning NA"))
         return(NA)
     }
@@ -104,16 +106,18 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
     
     if (split_by_type){
         
+        
         #Split gr according to the 96 substitution context.
-        cnd = tryCatch(suppressWarnings({seqlevelsStyle(gr) = "UCSC"}),
+        cnd = tryCatch(suppressWarnings({GenomeInfoDb::seqlevelsStyle(gr) = "UCSC"}),
                        error = function(cnd) cnd)
         if (inherits(cnd, "error")){
-            message(str_c("Could not change seqlevelstyle in sample: ", sample_name, ".",
+            message(paste0("Could not change seqlevelstyle in sample: ", sample_name, ".",
                           "\n Returning NA"))
             return(NA)
         }
+        check_chroms(gr, ref_genome)
         type_context = type_context(gr, ref_genome)
-        full_context = stringr::str_c(substr(type_context$context, 1, 1), 
+        full_context = paste0(substr(type_context$context, 1, 1), 
                              "[", type_context$types, "]", 
                              substr(type_context$context, 3, 3))
         tb_l = split(tb, full_context)
@@ -134,7 +138,7 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
     
     #Check if mutations are present
     if (res$n == 0){
-        message(str_c("No multiple mutations in one chromosome with context present in sample: ", sample_name,
+        message(paste0("No multiple mutations in one chromosome with context present in sample: ", sample_name,
                       "\n Returning NA"))
         return(NA)
     }

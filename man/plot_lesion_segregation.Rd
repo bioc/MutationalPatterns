@@ -4,7 +4,7 @@
 \alias{plot_lesion_segregation}
 \title{Plot the strands of variants to show lesion segregation}
 \usage{
-plot_lesion_segregation(gr, per_chrom = F, sample_name = NA)
+plot_lesion_segregation(gr, per_chrom = FALSE, sample_name = NA)
 }
 \arguments{
 \item{gr}{GRanges object}
@@ -33,7 +33,7 @@ gr = grl[[1]]
 plot_lesion_segregation(gr, sample_name = "Colon1")
 
 ## Plot lesion segregation per chromosome
-plot_lesion_segregation(gr, per_chrom = T, sample_name = "Colon1")
+plot_lesion_segregation(gr, per_chrom = TRUE, sample_name = "Colon1")
 
 }
 \seealso{

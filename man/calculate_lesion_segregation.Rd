@@ -14,14 +14,14 @@ calculate_lesion_segregation(
 \arguments{
 \item{grl}{GRangesList or GRanges object}
 
+\item{sample_names}{The name of the sample}
+
 \item{split_by_type}{Boolean describing whether the lesion 
 segregation should be calculated for all SNVs together or per 96 substitution context}
 
 \item{ref_genome}{A string matching the name of a BSgenome library
 corresponding to the reference genome.
 Only needed when split_by_type is TRUE}
-
-\item{sample_name}{The name of the sample}
 }
 \value{
 A tibble containing the amount of lesions segregation per sample

@@ -11,7 +11,7 @@ gr = grl[[1]]
 #Perform function
 output = plot_lesion_segregation(gr, sample_name = "Colon1")
 output_noname = plot_lesion_segregation(gr)
-output_l = plot_lesion_segregation(gr, per_chrom = T, sample_name = "Colon1")
+output_l = plot_lesion_segregation(gr, per_chrom = TRUE, sample_name = "Colon1")
 
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
