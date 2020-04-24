@@ -67,11 +67,8 @@ vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 ## Bioconductor:
 # source("https://bioconductor.org/biocLite.R")
 # biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
-# library("TxDb.Hsapiens.UCSC.hg19.knownGene")
-
-## For this example, we preloaded the data for you:
-genes_hg19 <- readRDS(system.file("states/genes_hg19.rds",
-                        package="MutationalPatterns"))
+library("TxDb.Hsapiens.UCSC.hg19.knownGene")
+genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 mut_strand(vcfs[[1]], genes_hg19, mode = "transcription")
 

@@ -64,3 +64,26 @@ saveRDS(contri_boots, "inst/states/bootstrapped_snv_refit.rds")
 #Calculate lesion segregation
 lesion_segretation = calculate_lesion_segregation(grl, sample_names)
 saveRDS(lesion_segretation, "inst/states/lesion_segregation.rds")
+
+
+#Split mutation types
+#Read in genomic regions
+CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
+                    package="MutationalPatterns"))
+promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
+                        package="MutationalPatterns"))
+flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
+                                    package="MutationalPatterns"))
+
+#Combine the regions into a single GRangesList
+regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
+names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
+
+seqlevelsStyle(regions) = "UCSC"
+
+#Read in some variants.
+grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
+                package="MutationalPatterns"))
+
+grl_split = split_muts_region(grl, regions)
+saveRDS(grl_split, "inst/states/grl_split_region.rds")
