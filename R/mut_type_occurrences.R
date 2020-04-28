@@ -1,7 +1,8 @@
 #' Count the occurrences of each base substitution type
 #' 
-#' @param vcf_list A GRangesList
-#' @param ref_genome Reference genome
+#' @param grl GRangesList or GRanges object.
+#' @param ref_genome BSGenome reference genome object
+#' @param vcf_list Deprecated argument. Replaced with grl
 #' @return data.frame with counts of each base substitution type for
 #' each sample in vcf_list
 #'
@@ -25,9 +26,28 @@
 #'
 #' @export
 
-mut_type_occurrences = function(vcf_list, ref_genome)
+mut_type_occurrences = function(grl, ref_genome, vcf_list = NA)
 {  
-    n_samples = length(vcf_list)
+    if (!is_na(vcf_list)){
+        warning("vcf_list is deprecated, use grl instead. 
+              The parameter grl is set equal to the parameter vcf_list.")
+        grl <- vcf_list
+    }
+    
+    #Convert to grl if necessary
+    if (inherits(grl, "list")){
+        grl = GenomicRanges::GRangesList(grl)
+    } else if (inherits(grl, "GRanges")){
+        grl = GRangesList(grl)
+        names(grl) = "my_sample"
+    } 
+    
+    #Check input
+    if (!inherits(grl, "CompressedGRangesList")){
+        not_gr_or_grl(grl)
+    }
+    
+    n_samples = length(grl)
     df = data.frame()
 
     CpG = c("ACG", "CCG", "TCG", "GCG")
@@ -37,7 +57,7 @@ mut_type_occurrences = function(vcf_list, ref_genome)
     full_table = NULL
     for(i in 1:n_samples)
     {
-        vcf = vcf_list[[i]]
+        vcf = grl[[i]]
         types = mut_type(vcf)
 
         CT_context = 0
@@ -58,7 +78,7 @@ mut_type_occurrences = function(vcf_list, ref_genome)
         df = BiocGenerics::rbind(df, full_table)
     }
 
-    row.names(df) = names(vcf_list)
+    row.names(df) = names(grl)
     colnames(df) = names(full_table)
     return(df)
 }
