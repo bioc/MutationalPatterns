@@ -55,6 +55,7 @@ lengthen_mut_matrix(indel_m_split)
 Other genomic_regions: 
 \code{\link{get_muts_region}()},
 \code{\link{lengthen_mut_matrix_single_sample}()},
+\code{\link{plot_long_profile}()},
 \code{\link{plot_spectrum_region}()},
 \code{\link{split_muts_region_gr}()},
 \code{\link{split_muts_region}()}
