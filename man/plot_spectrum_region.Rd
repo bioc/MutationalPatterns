@@ -75,5 +75,14 @@ plot_spectrum_region(type_occurrences, by = sample_names)
 \seealso{
 \code{\link{read_vcfs_as_granges}},
 \code{\link{mut_type_occurrences}},
-\code{\link{plot_spectrum}}
+\code{\link{plot_spectrum}},
+\code{\link{split_muts_region}}
+
+Other genomic_regions: 
+\code{\link{get_muts_region}()},
+\code{\link{lengthen_mut_matrix_single_sample}()},
+\code{\link{lengthen_mut_matrix}()},
+\code{\link{split_muts_region_gr}()},
+\code{\link{split_muts_region}()}
 }
+\concept{genomic_regions}

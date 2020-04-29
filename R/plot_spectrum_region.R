@@ -19,6 +19,7 @@
 #'
 #' @import ggplot2
 #' @importFrom magrittr %>% 
+#' @export
 #'
 #' @examples
 #' ## See the 'split_muts_region()' example for how we obtained the
@@ -57,9 +58,10 @@
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #' \code{\link{mut_type_occurrences}},
-#' \code{\link{plot_spectrum}}
-#'
-#' @export
+#' \code{\link{plot_spectrum}},
+#' \code{\link{split_muts_region}}
+#' @family genomic_regions
+#' 
 #' 
 plot_spectrum_region = function(type_occurrences, by = NA, mode = c("relative", "absolute"), colors = NULL, legend = TRUE){
     

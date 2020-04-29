@@ -50,6 +50,9 @@ split_muts_region(grl, regions)
 \seealso{
 Other genomic_regions: 
 \code{\link{get_muts_region}()},
+\code{\link{lengthen_mut_matrix_single_sample}()},
+\code{\link{lengthen_mut_matrix}()},
+\code{\link{plot_spectrum_region}()},
 \code{\link{split_muts_region_gr}()}
 }
 \concept{genomic_regions}
