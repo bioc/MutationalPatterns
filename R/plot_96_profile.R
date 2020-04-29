@@ -12,8 +12,8 @@
 #' @importFrom BiocGenerics cbind
 #'
 #' @examples
-#' ## See the 'mut_matrix_stranded()' example for how we obtained the
-#' ## mutation matrix with transcriptional strand information:
+#' ## See the 'mut_matrix()' example for how we obtained the
+#' ## mutation matrix information:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 #'                                 package="MutationalPatterns"))
 #'

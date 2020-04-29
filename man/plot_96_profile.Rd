@@ -22,8 +22,8 @@ plot_96_profile(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
 Plot relative contribution of 96 trinucleotides
 }
 \examples{
-## See the 'mut_matrix_stranded()' example for how we obtained the
-## mutation matrix with transcriptional strand information:
+## See the 'mut_matrix()' example for how we obtained the
+## mutation matrix information:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
                                 package="MutationalPatterns"))
 
