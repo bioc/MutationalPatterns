@@ -18,6 +18,7 @@
 #' @return Spectrum plot by genomic region
 #'
 #' @import ggplot2
+#' @importFrom magrittr %>% 
 #'
 #' @examples
 #' ## See the 'split_muts_region()' example for how we obtained the
