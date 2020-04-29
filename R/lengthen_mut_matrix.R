@@ -34,10 +34,9 @@
 #'                                 package="MutationalPatterns"))
 #' 
 #' ## Transform the indel counts into a matrix.
-#' indel_m_split = indel_counts_split %>% 
-#' dplyr::select(-muttype, -muttype_sub) %>% 
-#'     as.matrix()
-#' rownames(indel_m_split) = stringr::str_c(indel_counts_split$muttype, indel_counts_split$muttype_sub, sep = "_")
+#' indel_m_split = as.matrix(dplyr::select(indel_counts_split, -muttype, -muttype_sub))
+#' rownames(indel_m_split) = stringr::str_c(indel_counts_split$muttype, 
+#'                                         indel_counts_split$muttype_sub, sep = "_")
 #' 
 #' ## Lengthen the matrix
 #' lengthen_mut_matrix(indel_m_split)
