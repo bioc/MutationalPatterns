@@ -89,7 +89,7 @@ grl_split = split_muts_region(grl, regions)
 saveRDS(grl_split, "inst/states/grl_split_region.rds")
 
 mut_mat_split_region = mut_matrix(grl_split, ref_genome)
-saveRDS(mut_mat_split, "inst/states/mut_mat_splitregions.rds")
+saveRDS(mut_mat_split_region, "inst/states/mut_mat_splitregions.rds")
 
 mut_mat_longregion = lengthen_mut_matrix(mut_mat_split_region)
 saveRDS(mut_mat_longregion, "inst/states/mut_mat_longregions.rds")
