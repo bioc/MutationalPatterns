@@ -25,7 +25,7 @@
 #' 
 #' @export
 count_indel_contexts = function(grl){
-    categories = dplyr::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
+    categories = tibble::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
                                       rep("T_insertion", 6), rep("2bp_deletion", 6), rep("3bp_deletion", 6), 
                                       rep("4bp_deletion", 6), rep("5+bp_deletion", 6), rep("2bp_insertion", 6),
                                       rep("3bp_insertion", 6),rep("4bp_insertion", 6),rep("5+bp_insertion", 6), 
@@ -92,11 +92,15 @@ count_indel_contexts_gr = function(gr, categories){
              Did you forget to run `get_indel_context`?", call. = F)
     }
     
-    id_context = dplyr::tibble("muttype" = gr$muttype, "muttype_sub" = gr$muttype_sub)
     
-    #Classify the number of repeat units/ homopolymer length / microhomology length to either 5+ or 6+ depending on whether the indel is a ins or del.
-    id_context[id_context$muttype_sub >= 6, "muttype_sub"] = "6+"
-    id_context[grepl("insertion|microhomology", id_context$muttype) & id_context$muttype_sub >= 5, "muttype_sub"] = "5+"
+    #Classify the number of repeat units/ homopolymer length / microhomology length to either 5+ or 6+ 
+    #depending on whether the indel is a ins or del.
+    id_context = dplyr::tibble("muttype" = gr$muttype, "muttype_sub" = gr$muttype_sub) %>% 
+        dplyr::mutate(muttype_sub = ifelse(muttype_sub >= 6, "6+", muttype_sub),
+                      muttype_sub = ifelse(grepl("insertion|microhomology", muttype) & muttype_sub >= 5, 
+                                           "5+", muttype_sub),
+                      muttype_sub = as.character(muttype_sub))#Ensures column type for later joining
+    
     
     #Classify large indels as size 5+
     ref_sizes = gr$REF %>%
