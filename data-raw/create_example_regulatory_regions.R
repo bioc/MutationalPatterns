@@ -22,6 +22,7 @@ CTCF_g <- reduce(GRanges(CTCF$chromosome_name,
                 CTCF$chromosome_end)))
 seqlevels(CTCF_g) = c(1:22, "X", "Y")
 CTCF_g = sort(CTCF_g)
+CTCF_g = CTCF_g[sample.int(length(CTCF_g), 50000)]
 saveRDS(CTCF_g, "inst/states/CTCF_g_data.rds")
 
 # Download the promoter regions and conver them to a GRanges object.
@@ -50,4 +51,5 @@ flanking_g = reduce(GRanges(
                        flanking$chromosome_end)))
 seqlevels(flanking_g) = c(1:22, "X", "Y")
 flanking_g = sort(flanking_g)
+flanking_g = flanking_g[sample.int(length(flanking_g), 50000)]
 saveRDS(flanking_g, "inst/states/promoter_flanking_g_data.rds")
