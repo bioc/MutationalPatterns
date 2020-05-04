@@ -7,7 +7,7 @@
 plot_spectrum_region(
   type_occurrences,
   by = NA,
-  mode = c("relative", "absolute"),
+  mode = c("relative_sample_feature", "relative_sample", "absolute"),
   colors = NULL,
   legend = TRUE
 )
@@ -17,9 +17,11 @@ plot_spectrum_region(
 
 \item{by}{Optional grouping variable}
 
-\item{mode}{'absolute' or 'relative'.
-When relative, the number of variants will be shown
-divided by the total number of variants in that sample and genomic region.}
+\item{mode}{'relative_sample', 'relative_sample_feature' or 'absolute'
+When 'relative_sample', the number of variants will be shown
+divided by the total number of variants in that sample.
+When 'relative_sample_feature', the number of variants will be shown
+divided by the total number of variants in that sample. and genomic region.}
 
 \item{colors}{Optional color vector with 7 values}
 
@@ -56,8 +58,12 @@ library(ref_genome, character.only = TRUE)
 ## Get the type occurrences for all VCF objects.
 type_occurrences = mut_type_occurrences(grl, ref_genome)
 
-## Plot the point mutation spectrum per sample type and per genomic region
+## Plot the relative point mutation spectrum per sample type and per genomic region
 plot_spectrum_region(type_occurrences, by = tissue)
+
+## Plot the relative point mutation spectrum per sample type and per genomic region,
+## but normalize only for the samples
+plot_spectrum_region(type_occurrences, by = tissue, mode = "relative_sample")
 
 ## Plot the absolute point mutation spectrum per sample type and per genomic region
 plot_spectrum_region(type_occurrences, mode = "absolute")
