@@ -20,19 +20,26 @@
 
 mutations_from_vcf = function(vcf) 
 {
-    ref = as.character(vcf$REF)
-    alt = as.character(unlist(vcf$ALT))
-
+    
     # Allow both uppercase and lowercase column names.
-    if (length(ref) == 0)
+    vcf_cols = colnames(S4Vectors::mcols(vcf))
+    if ("REF" %in% vcf_cols){
+        ref = as.character(vcf$REF)
+    } else if ("ref" %in% vcf_cols){
         ref = as.character(vcf$ref)
-
-    if (length(alt) == 0)
-        alt = as.character(vcf$alt)
-
-    # If these columns are still missing, there's nothing we can do.
-    if (length(ref) == 0 || length(alt) == 0)
-        warning("Some of your data is missing an ALT and/or a REF column.")
+    } else{
+        warning("Some of your data is missing a REF column.")
+        ref = character()
+    }
+    
+    if ("ALT" %in% vcf_cols){
+        alt = as.character(unlist(vcf$ALT))
+    } else if ("alt" %in% vcf_cols){
+        alt = as.character(unlist(vcf$alt))
+    } else{
+        warning("Some of your data is missing an ALT column.")
+        alt = character()
+    }
 
     muts = paste(ref, alt, sep=">")
     return(muts)
