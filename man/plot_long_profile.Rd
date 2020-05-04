@@ -4,10 +4,22 @@
 \alias{plot_long_profile}
 \title{Plot 96 trinucleotide profile per subgroup}
 \usage{
-plot_long_profile(mut_matrix, colors = NULL, ymax = 0.2, condensed = FALSE)
+plot_long_profile(
+  mut_matrix,
+  mode = c("relative_sample", "relative_sample_feature", "absolute"),
+  colors = NULL,
+  ymax = 0.2,
+  condensed = FALSE
+)
 }
 \arguments{
 \item{mut_matrix}{Mutation matrix}
+
+\item{mode}{'relative_sample', 'relative_sample_feature' or 'absolute'
+When 'relative_sample', the number of variants will be shown
+divided by the total number of variants in that sample.
+When 'relative_sample_feature', the number of variants will be shown
+divided by the total number of variants in that sample. and genomic region.}
 
 \item{colors}{6 value color vector}
 

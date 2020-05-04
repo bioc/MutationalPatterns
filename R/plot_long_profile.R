@@ -6,6 +6,11 @@
 #' as its input.
 #' 
 #' @param mut_matrix Mutation matrix
+#' @param mode 'relative_sample', 'relative_sample_feature' or 'absolute'
+#' When 'relative_sample', the number of variants will be shown
+#' divided by the total number of variants in that sample.
+#' When 'relative_sample_feature', the number of variants will be shown
+#' divided by the total number of variants in that sample. and genomic region.
 #' @param colors 6 value color vector
 #' @param ymax Y axis maximum value, default = 0.2
 #' @param condensed More condensed plotting format. Default = FALSE.
@@ -29,11 +34,13 @@
 #'
 #' @export
 #' 
-plot_long_profile = function(mut_matrix, colors = NULL, ymax = 0.2, condensed = FALSE){
+plot_long_profile = function(mut_matrix, mode = c("relative_sample", "relative_sample_feature", "absolute"), colors = NULL, ymax = 0.2, condensed = FALSE){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     context = feature = substitution = freq = NULL
+    
+    mode = match.arg(mode)
     
     if (is.null(colors)) {
         colors = COLORS6
@@ -53,9 +60,6 @@ plot_long_profile = function(mut_matrix, colors = NULL, ymax = 0.2, condensed = 
     facet_labs_y = stringr::str_c(colnames(mut_matrix), " (n = ", nr_muts, ")")
     names(facet_labs_y) = colnames(mut_matrix)
     
-    #Frequency instead of raw counts
-    mut_matrix = prop.table(mut_matrix, 2)
-    
     #Split the rownames in context, substitution and features
     row_names = rownames(mut_matrix)
     full_context = stringr::str_remove(row_names, "_.*")
@@ -73,6 +77,23 @@ plot_long_profile = function(mut_matrix, colors = NULL, ymax = 0.2, condensed = 
         dplyr::mutate(context = context, feature = feature, substitution = substitution) %>% 
         tidyr::gather(value = "freq", key = "sample", -context, -feature, -substitution)
     
+    if (mode == "relative_sample"){
+        tb = tb %>% 
+            dplyr::group_by(sample) %>% 
+            dplyr::mutate(freq = freq/sum(freq)) %>% 
+            dplyr::ungroup()
+        y_axis_break_interval = 0.1
+    } else if (mode == "relative_sample_feature"){
+        tb = tb %>% 
+            dplyr::group_by(sample, feature) %>% 
+            dplyr::mutate(freq = freq/sum(freq)) %>% 
+            dplyr::ungroup()
+        y_axis_break_interval = 0.1
+    } else if (mode == "absolute"){
+        y_axis_break_interval = 10
+    }
+    tb = dplyr::mutate(tb, freq = ifelse(is.nan(freq), 0, freq))
+    
     #Create figure.
     #Suppresses alpha warning.
     withCallingHandlers({
@@ -83,7 +104,7 @@ plot_long_profile = function(mut_matrix, colors = NULL, ymax = 0.2, condensed = 
             ylab("Relative contribution") + 
             coord_cartesian(ylim = c(0, ymax)) + 
             scale_alpha_discrete(range = c(0.4, 1)) + 
-            scale_y_continuous(breaks = seq(0, ymax, 0.1)) + 
+            scale_y_continuous(breaks = seq(0, ymax, y_axis_break_interval)) + 
             guides(fill = FALSE) + 
             theme_bw() + 
             theme(axis.title.y = element_text(size = 12, vjust = 1), 
