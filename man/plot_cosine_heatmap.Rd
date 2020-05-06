@@ -6,8 +6,9 @@
 \usage{
 plot_cosine_heatmap(
   cos_sim_matrix,
-  col_order,
+  col_order = NA,
   cluster_rows = TRUE,
+  cluster_cols = FALSE,
   method = "complete",
   plot_values = FALSE
 )
@@ -19,6 +20,8 @@ Result from \code{\link{cos_sim_matrix}}}
 \item{col_order}{Character vector with the desired order of the columns names for plotting. Optional.}
 
 \item{cluster_rows}{Hierarchically cluster rows based on eucledian distance. Default = TRUE.}
+
+\item{cluster_cols}{Hierarchically cluster cols based on eucledian distance. Default = FALSE.}
 
 \item{method}{The agglomeration method to be used for hierarchical clustering. This should be one of 
 "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
@@ -49,14 +52,15 @@ signatures = as.matrix(signatures[,-c(1,2)])
 ## Calculate the cosine similarity between each signature and each 96 mutational profile
 cos_matrix = cos_sim_matrix(mut_mat, signatures)
 
-## Cluster signatures based on cosine similarity 
-sig_hclust = cluster_signatures(signatures)
-col_order = colnames(signatures)[sig_hclust$order]
 
 ## Plot the cosine similarity between each signature and each sample with hierarchical 
 ## sample clustering and signatures order based on similarity
 
-plot_cosine_heatmap(cos_matrix, col_order, cluster_rows = TRUE, method = "complete")
+plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+
+## You can also plot the similarity of samples with eachother
+cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
+plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
 
 }
 \seealso{
