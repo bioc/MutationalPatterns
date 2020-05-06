@@ -49,8 +49,7 @@
 #' 
 #' @seealso
 #' \code{\link{mut_matrix}},
-#' \code{\link{cos_sim_matrix}},
-#' \code{\link{cluster_signatures}} 
+#' \code{\link{cos_sim_matrix}}
 #' 
 #' @export
 

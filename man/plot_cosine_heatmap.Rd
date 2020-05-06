@@ -65,6 +65,5 @@ plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method
 }
 \seealso{
 \code{\link{mut_matrix}},
-\code{\link{cos_sim_matrix}},
-\code{\link{cluster_signatures}}
+\code{\link{cos_sim_matrix}}
 }
