@@ -4,7 +4,13 @@
 \alias{plot_spectrum}
 \title{Plot point mutation spectrum}
 \usage{
-plot_spectrum(type_occurrences, CT = FALSE, by, colors, legend = TRUE)
+plot_spectrum(
+  type_occurrences,
+  CT = FALSE,
+  by = NA,
+  colors = NA,
+  legend = TRUE
+)
 }
 \arguments{
 \item{type_occurrences}{Type occurrences matrix}
@@ -51,6 +57,7 @@ plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
             "liver", "liver", "liver")
+
 plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 
 ## You can also set custom colors.

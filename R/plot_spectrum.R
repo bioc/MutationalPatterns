@@ -9,11 +9,7 @@
 #' @return Spectrum plot
 #'
 #' @import ggplot2
-#' @importFrom reshape2 melt
-#' @importFrom BiocGenerics cbind
-#' @importFrom plyr ddply
-#' @importFrom plyr summarise
-#' @importFrom stats sd
+#' @importFrom magrittr %>% 
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -42,7 +38,7 @@
 #' tissue <- c("colon", "colon", "colon",
 #'             "intestine", "intestine", "intestine",
 #'             "liver", "liver", "liver")
-#;
+#'
 #' plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 #'
 #' ## You can also set custom colors.
@@ -61,19 +57,15 @@
 #'
 #' @export
 
-plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
+plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legend = TRUE)
 {
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
-    value = NULL
-    nmuts = NULL
-    sub_type = NULL
-    variable = NULL
-    error_pos = NULL
-    stdev = NULL
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+    value = nmuts = sub_type = variable = error_pos = stdev = NULL
+
 
     # If colors parameter not provided, set to default colors
-    if (missing(colors))
+    if (is_na(colors))
         colors = COLORS7
 
     # Check color vector length
@@ -86,68 +78,45 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by, colors, legend=TRUE)
     else
         type_occurrences = type_occurrences[,c(1:2,8,7,4:6)]
 
-    # Relative contribution per sample
-    df2 = type_occurrences / rowSums(type_occurrences)
-
     # If grouping variable not provided, set to "all"
-    if (missing(by))
+    if (is_na(by))
         by="all"
 
-    # Add by info to df
-    df2$by = by
-
-    # Reshape
-    df3 = melt(df2, id.vars = "by")
-
-    # Count number of mutations per mutation type
-    counts = melt(type_occurrences, measure.vars = colnames(type_occurrences))
-    df4 = cbind(df3, counts$value)
-    colnames(df4)[4] = "nmuts" 
-
-    # Calculate the mean and the stdev on the value for each group broken
-    # down by type + variable
-    x = ddply(df4, c("by", "variable"), summarise,
-                mean = mean(value), stdev = sd(value))
-
-    info_x = ddply(df4, c("by"), summarise, total_individuals = sum(value),
-                    total_mutations = sum(nmuts))
-
-    x = merge(x, info_x)
-    info_type = data.frame(sub_type = c("C>A", "C>G", "C>T", "C>T",
-                                        "C>T", "T>A", "T>C", "T>G"),
-                            variable = c("C>A", "C>G", "C>T", "C>T at CpG",
-                                        "C>T other", "T>A", "T>C", "T>G"))
-    x = merge(x,info_type)
-    x$total_mutations = prettyNum(x$total_mutations, big.mark = ",")
-    x$total_mutations = paste("No. mutations =",
-                                as.character(x$total_mutations))
-
-    # Define positioning of error bars
-    x$error_pos = x$mean
-
+    # Reshape the type_occurences for the plotting
+    tb = type_occurrences %>% 
+      tibble::rownames_to_column("sample") %>% 
+      dplyr::mutate(by = by) %>% #Add user defined grouping
+      tidyr::pivot_longer(c(-sample, -by), names_to = "variable", values_to = "nmuts") %>% #Make long format
+      dplyr::group_by(sample) %>% 
+      dplyr::mutate(value = nmuts / sum(nmuts)) %>% #Calculate relative values
+      dplyr::ungroup() %>% 
+      dplyr::group_by(by, variable) %>% #Summarise per group and mutation type
+      dplyr::summarise(mean = mean(value), stdev = stats::sd(value),
+                       total_individuals = sum(value), total_mutations = sum(nmuts)) %>% 
+      dplyr::mutate(total_individuals = sum(total_individuals), total_mutations = sum(total_mutations)) %>% 
+      dplyr::ungroup() %>% 
+      dplyr::mutate(total_mutations = prettyNum(total_mutations, big.mark = ","), #Make pretty and add subtypes
+                    total_mutations = paste("No. mutations = ", total_mutations),
+                    sub_type = stringr::str_remove(variable, " .*"),
+                    variable = factor(variable, levels = unique(variable)),
+                    error_pos = mean)
+    
     # Define colors for plotting
     if(CT == FALSE)
         colors = colors[c(1,2,3,5:7)]
 
-    # If C>T stacked bar (distinction between CpG sites and other)
+    # C>T stacked bar (distinction between CpG sites and other)
     else
     {
         # Adjust positioning of error bars for stacked bars
         # mean of C>T at CpG should be plus the mean of C>T at other
-        x = x[order(x$by),]
-        CpG = which(x$variable == "C>T at CpG")
-        other = which(x$variable == "C>T other")
-        x$error_pos[CpG] = x$error_pos[other] + x$error_pos[CpG]
-
-        # Define order of bars
-        order = order(factor(x$variable, levels = c("C>A", "C>G", "C>T other",
-                                                    "C>T at CpG","T>A", "T>C",
-                                                    "T>G")))
-        x = x[order,]
+        CpG = which(tb$variable == "C>T at CpG")
+        other = which(tb$variable == "C>T other")
+        tb$error_pos[CpG] = tb$error_pos[other] + tb$error_pos[CpG]
     }
 
     # Make barplot
-    plot = ggplot(data=x, aes(x=sub_type,
+    plot = ggplot(data=tb, aes(x=sub_type,
                                 y=mean,
                                 fill=variable,
                                 group=sub_type)) +
