@@ -38,7 +38,7 @@
 #' 
 #' ## Plot the cosine similarity between each signature and each sample with hierarchical 
 #' ## clustering of samples and signatures.
-#' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+#' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
 #' 
 #' ## In the above example, clustering is performed on the similarities of the samples with
 #' ## the signatures. It's also possible to cluster the signatures and samples on their (96) profile.
@@ -48,11 +48,15 @@
 #' sample_order = colnames(mut_mat)[hclust_samples$order]
 #' ## Plot the cosine heatmap using this given signature order.
 #' plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, row_order = sample_order,
-#'  col_order = cosmic_order, method = "complete")
+#'  col_order = cosmic_order)
 #' 
 #' ## You can also plot the similarity of samples with eachother
 #' cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
-#' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+#' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
+#' 
+#' 
+#' ## It's also possible to add the actual values in the heatmap.
+#' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, plot_values = TRUE)
 #' 
 #' @seealso
 #' \code{\link{mut_matrix}},
@@ -138,16 +142,13 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
   }
   
 
-  # melt
+  # Make matrix long and set factor levels, to get the correct order for plotting.
   cos_sim_matrix.m = cos_sim_matrix %>%
     as.data.frame() %>% 
     tibble::rownames_to_column("Sample") %>% 
-    tidyr::pivot_longer(-Sample, names_to = "Signature", values_to = "Cosine.sim")
- 
-  # change factor levels to the correct order for plotting
-  cos_sim_matrix.m = dplyr::mutate(cos_sim_matrix.m,
-                                   Signature = factor(Signature, levels = col_order),
-                                   Sample = factor(Sample, levels = row_order))
+    tidyr::pivot_longer(-Sample, names_to = "Signature", values_to = "Cosine.sim") %>% 
+    dplyr::mutate(Signature = factor(Signature, levels = col_order),
+                  Sample = factor(Sample, levels = row_order))
 
   # plot heatmap
   heatmap = ggplot(cos_sim_matrix.m, aes(x=Signature, y=Sample, fill=Cosine.sim, order=Sample)) + 
@@ -160,7 +161,7 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
   # if plot_values is TRUE, add values to heatmap
   if (plot_values == TRUE)
   {
-    heatmap = heatmap + geom_text(aes(label = round(Cosine.sim, 2)), size = 3)
+    heatmap = heatmap + geom_text(aes(label = round(Cosine.sim, 2)), size = 2)
   }
   
   # Add dendrogram depending on the clustering of the rows and the columns.

@@ -56,7 +56,7 @@ cos_matrix = cos_sim_matrix(mut_mat, signatures)
 
 ## Plot the cosine similarity between each signature and each sample with hierarchical 
 ## clustering of samples and signatures.
-plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
 
 ## In the above example, clustering is performed on the similarities of the samples with
 ## the signatures. It's also possible to cluster the signatures and samples on their (96) profile.
@@ -66,11 +66,15 @@ hclust_samples = cluster_signatures(mut_mat, method = "average")
 sample_order = colnames(mut_mat)[hclust_samples$order]
 ## Plot the cosine heatmap using this given signature order.
 plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, row_order = sample_order,
- col_order = cosmic_order, method = "complete")
+ col_order = cosmic_order)
 
 ## You can also plot the similarity of samples with eachother
 cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
-plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
+
+
+## It's also possible to add the actual values in the heatmap.
+plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, plot_values = TRUE)
 
 }
 \seealso{
