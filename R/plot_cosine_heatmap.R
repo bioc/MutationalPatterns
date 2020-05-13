@@ -16,7 +16,6 @@
 #' @return Heatmap with cosine similarities
 #'
 #' @import ggplot2
-#' @importFrom reshape2 melt
 #' @importFrom ggdendro dendro_data segment theme_dendro
 #' @importFrom magrittr %>% 
 #' @examples
@@ -140,14 +139,16 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
   
 
   # melt
-  cos_sim_matrix.m = melt(cos_sim_matrix)
-  # assign variable names
-  colnames(cos_sim_matrix.m) = c("Sample", "Signature", "Cosine.sim")
-  
+  cos_sim_matrix.m = cos_sim_matrix %>%
+    as.data.frame() %>% 
+    tibble::rownames_to_column("Sample") %>% 
+    tidyr::pivot_longer(-Sample, names_to = "Signature", values_to = "Cosine.sim")
+ 
   # change factor levels to the correct order for plotting
-  cos_sim_matrix.m$Signature = factor(cos_sim_matrix.m$Signature, levels = col_order)
-  cos_sim_matrix.m$Sample = factor(cos_sim_matrix.m$Sample, levels = row_order)
-  
+  cos_sim_matrix.m = dplyr::mutate(cos_sim_matrix.m,
+                                   Signature = factor(Signature, levels = col_order),
+                                   Sample = factor(Sample, levels = row_order))
+
   # plot heatmap
   heatmap = ggplot(cos_sim_matrix.m, aes(x=Signature, y=Sample, fill=Cosine.sim, order=Sample)) + 
     geom_tile(color = "white") +
