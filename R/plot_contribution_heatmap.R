@@ -13,9 +13,7 @@
 #' @return Heatmap with relative contribution of each signature for each sample
 #'
 #' @import ggplot2
-#' @importFrom reshape2 melt
 #' @importFrom ggdendro dendro_data segment theme_dendro
-#' @importFrom cowplot plot_grid
 #'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following
@@ -100,14 +98,14 @@ plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = 
   xend = NULL
   yend = NULL
 
-  # melt data frame
-  contribution_norm.m = melt(contribution_norm)
-  # assign variable names
-  colnames(contribution_norm.m) = c("Sample", "Signature", "Contribution")
-  # change factor levels to the order for plotting
-  contribution_norm.m$Sample = factor(contribution_norm.m$Sample, levels = sample_order)
-  contribution_norm.m$Signature = factor(contribution_norm.m$Signature, levels = sig_order)
-  
+  # Make matrix long and set factor levels, to get the correct order for plotting.
+  contribution_norm.m = contribution_norm %>%
+    as.data.frame() %>% 
+    tibble::rownames_to_column("Sample") %>% 
+    tidyr::pivot_longer(-Sample, names_to = "Signature", values_to = "Contribution") %>% 
+    dplyr::mutate(Signature = factor(Signature, levels = sig_order),
+                  Sample = factor(Sample, levels = sample_order))
+
   # plot heatmap
   heatmap = ggplot(contribution_norm.m, aes(x=Signature, y=Sample, fill=Contribution, order=Sample)) + 
     geom_tile(color = "white") +

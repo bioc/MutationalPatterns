@@ -7,12 +7,7 @@
 #' from strand_occurrences()
 #' @return Dataframe with poisson test P value for the ratio between the
 #' two strands per group per base substitution type.
-#' @importFrom reshape2 dcast
-#' @importFrom reshape2 melt
-#' @importFrom plyr .
-#' @importFrom plyr ddply
-#' @importFrom plyr summarise
-#' @importFrom stats "poisson.test"
+#' @importFrom magrittr  %>% 
 #'
 #' @examples
 #' ## See the 'mut_matrix_stranded()' example for how we obtained the
@@ -43,21 +38,19 @@ strand_bias_test = function(strand_occurrences)
 {
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
-    group = NULL
-    type = NULL
-    strand = NULL
-    variable = NULL
+    group = type = strand = variable = relative_contribution = no_mutations = NULL
 
     # statistical test for strand ratio
     # poisson test
-    df_strand = reshape2::dcast(melt(strand_occurrences),
-                                group + type ~ strand,
-                                sum,
-                                subset = plyr::.(variable == "no_mutations"))
+    df_strand = strand_occurrences %>% 
+        dplyr::select(-relative_contribution) %>% 
+        tidyr::pivot_wider(names_from = strand, values_from = no_mutations) %>% 
+        dplyr::mutate(total = 3 + 4,
+                      ratio = 3 / 4)
     
-    df_strand$total = df_strand[,3] + df_strand[,4]
-    df_strand$ratio = df_strand[,3] / df_strand[,4]
-    df_strand$p_poisson = apply(df_strand, 1, function(x) poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value)
+    df_strand$p_poisson = apply(df_strand, 1, function(x){
+        stats::poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value
+        })
     df_strand$significant[df_strand$p_poisson < 0.05] = "*"
     df_strand$significant[df_strand$p_poisson >= 0.05] = " "
 

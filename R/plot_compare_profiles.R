@@ -16,8 +16,6 @@
 #' @return 96 spectrum plot of profile 1, profile 2 and their difference
 #'
 #' @import ggplot2
-#' @importFrom reshape2 melt
-#' @importFrom BiocGenerics cbind
 #'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the following
@@ -67,7 +65,7 @@ plot_compare_profiles = function(profile1,
     # round
     cosine_sim = round(cosine_sim, 3)
     
-    x = cbind(s1_relative, s2_relative, diff)
+    x = BiocGenerics::cbind(s1_relative, s2_relative, diff)
     colnames(x) = c(profile_names, "Difference")
 
     substitutions = c('C>A', 'C>G', 'C>T', 'T>A', 'T>C', 'T>G')
@@ -84,7 +82,9 @@ plot_compare_profiles = function(profile1,
     df = data.frame(substitution = substitutions[index], context = context)
     rownames(x) = NULL
     df2 = cbind(df, as.data.frame(x))
-    df3 = melt(df2, id.vars = c("substitution", "context"))
+    df3 = df2 %>% 
+      tidyr::pivot_longer(c(-substitution, -context), names_to = "variable", values_to = "value") %>% 
+      dplyr::mutate(variable = factor(variable, levels = unique(variable)))
 
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
