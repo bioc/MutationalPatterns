@@ -18,7 +18,6 @@
 #' @import ggplot2
 #' @importFrom reshape2 melt
 #' @importFrom ggdendro dendro_data segment theme_dendro
-#' @importFrom cowplot plot_grid
 #' @importFrom magrittr %>% 
 #' @examples
 #' 
@@ -39,9 +38,18 @@
 #' 
 #' 
 #' ## Plot the cosine similarity between each signature and each sample with hierarchical 
-#' ## sample clustering and signatures order based on similarity
-#' 
+#' ## clustering of samples and signatures.
 #' plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, method = "complete")
+#' 
+#' ## In the above example, clustering is performed on the similarities of the samples with
+#' ## the signatures. It's also possible to cluster the signatures and samples on their (96) profile.
+#' hclust_cosmic = cluster_signatures(signatures, method = "average")
+#' cosmic_order = colnames(signatures)[hclust_cosmic$order]
+#' hclust_samples = cluster_signatures(mut_mat, method = "average")
+#' sample_order = colnames(mut_mat)[hclust_samples$order]
+#' ## Plot the cosine heatmap using this given signature order.
+#' plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, row_order = sample_order,
+#'  col_order = cosmic_order, method = "complete")
 #' 
 #' ## You can also plot the similarity of samples with eachother
 #' cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
@@ -53,7 +61,7 @@
 #' 
 #' @export
 
-plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TRUE, 
+plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, cluster_rows = TRUE, 
                                cluster_cols = FALSE, method = "complete", plot_values = FALSE)
 {
   # check explained argument
@@ -69,12 +77,21 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TR
   # To avoid R CMD check complaints we initialize them to NULL.
   Cosine.sim = Signature = Sample = x = y = xend = yend = NULL
 
-    # if cluster samples is TRUE, perform clustering
-  if(cluster_rows == TRUE){
+  #If cluster_rows is TRUE perform clustering. Else use supplied row_order or
+  #the current column order.
+  if (!is_na(row_order) & cluster_rows == TRUE){
+    stop("row_order can only be provided when cluster_rows is FALSE", call. = F)
+  } else if (!is_na(row_order)){
+    # check row_order argument
+    if(class(row_order) != "character")
+    {stop("row_order must be a character vector")}
+    if(length(row_order) != nrow(cos_sim_matrix))
+    {stop("row_order must have the same length as the number of signatures in the explained matrix")}
+  } else if(cluster_rows == TRUE){
     # cluster samples based on eucledian distance between relative contribution
     hc.sample = hclust(dist(cos_sim_matrix), method = method)
     # order samples according to clustering
-    sample_order = rownames(cos_sim_matrix)[hc.sample$order]
+    row_order = rownames(cos_sim_matrix)[hc.sample$order]
     
     dhc = as.dendrogram(hc.sample)
     # rectangular lines
@@ -87,7 +104,7 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TR
       theme_dendro()
   }
   else{
-    sample_order = rownames(cos_sim_matrix)
+    row_order = rownames(cos_sim_matrix)
   }
   
   
@@ -129,7 +146,8 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TR
   
   # change factor levels to the correct order for plotting
   cos_sim_matrix.m$Signature = factor(cos_sim_matrix.m$Signature, levels = col_order)
-  cos_sim_matrix.m$Sample = factor(cos_sim_matrix.m$Sample, levels = sample_order)
+  cos_sim_matrix.m$Sample = factor(cos_sim_matrix.m$Sample, levels = row_order)
+  
   # plot heatmap
   heatmap = ggplot(cos_sim_matrix.m, aes(x=Signature, y=Sample, fill=Cosine.sim, order=Sample)) + 
     geom_tile(color = "white") +
@@ -137,6 +155,7 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TR
     theme_bw() + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(x=NULL, y=NULL)
+  
   # if plot_values is TRUE, add values to heatmap
   if (plot_values == TRUE)
   {
@@ -147,14 +166,14 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, cluster_rows = TR
   if (cluster_rows == TRUE & cluster_cols == TRUE){
     empty_fig = ggplot() +
       theme_void()
-    plot_final = plot_grid(empty_fig, dendrogram_cols, dendrogram_rows, heatmap, 
+    plot_final = cowplot::plot_grid(empty_fig, dendrogram_cols, dendrogram_rows, heatmap, 
                            align = "hv", axis = "tblr", rel_widths = c(0.3, 1), rel_heights = c(0.3, 1))
   }
   else if(cluster_rows == TRUE & cluster_cols == FALSE){
     # combine plots
-    plot_final = plot_grid(dendrogram_rows, heatmap, align='h', rel_widths=c(0.3,1))
+    plot_final = cowplot::plot_grid(dendrogram_rows, heatmap, align='h', rel_widths=c(0.3,1))
   } else if (cluster_rows == FALSE & cluster_cols == TRUE){
-    plot_final = plot_grid(dendrogram_cols, heatmap, align='v', rel_heights =c(0.3,1)) +
+    plot_final = cowplot::plot_grid(dendrogram_cols, heatmap, align='v', rel_heights =c(0.3,1)) +
       # reverse order of the samples such that first is up
       ylim(rev(levels(factor(cos_sim_matrix.m$Sample))))
   } else{
