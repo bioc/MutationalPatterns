@@ -48,7 +48,7 @@ signatures = as.matrix(signatures[,-c(1,2)])
 ## Fit to signatures strict
 strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
 
-## fit_res similar to `fit_to_signatures`
+## fit_res similar to 'fit_to_signatures()'
 fit_res = strict_refit$fit_res
 
 ## list of ggplots that shows how the cosine similarity was reduced during the iterations
