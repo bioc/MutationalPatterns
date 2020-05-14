@@ -35,32 +35,34 @@
 #'
 #' @export
 
-plot_strand_bias = function(strand_bias, colors)
+plot_strand_bias = function(strand_bias, colors = NA)
 {
+  
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  type = significant = strand_1 = strand_2 = log2_ratio = log2_ratio_no1pseudo = NULL
+  
+  # if colors parameter not provided, set to default colors
+  if (is_na(colors))
+    colors=COLORS6
+  
   # get variable names
   var_names = colnames(strand_bias)[3:4]
-
-  # if colors parameter not provided, set to default colors
-  if (missing(colors))
-    colors=COLORS6
+  colnames(strand_bias)[3:4] = c("strand_1", "strand_2")
+  
 
   # determine max y value for plotting
   # = log2 ratio with pseudo counts of 0.1
-  log2_ratio = log2(  (strand_bias[,3]+0.1) /
-                        (strand_bias[,4]+0.1))
-
+  strand_bias = dplyr::mutate(strand_bias, log2_ratio = log2((strand_1+0.1) / (strand_2+0.1)),
+                              log2_ratio_no1pseudo = log2((strand_1) / (strand_2+0.1)))
+  
   # max yvalue for plotting plus
-  max = round(max(abs(log2_ratio)), digits = 1) + 0.1
-  pos_stars = abs(log2((strand_bias[, 3])/(strand_bias[, 4] + 0.1)))
+  max = round(max(abs(strand_bias$log2_ratio)), digits = 1) + 0.1
+  pos_stars = abs(strand_bias$log2_ratio_no1pseudo)
   max_pos_star = round(max(pos_stars[is.finite(pos_stars)]), digits = 1) + 0.1
   if(max < max_pos_star){
     max = max_pos_star
 }
-
-  # These variables will be available at run-time, but not at compile-time.
-  # To avoid compiling trouble, we initialize them to NULL
-  type = NULL
-  significant = NULL
 
   # add label for infinite values
   label2 = log2(strand_bias$ratio)
@@ -68,19 +70,15 @@ plot_strand_bias = function(strand_bias, colors)
   label2[select] = " "
 
   # plot strand bias with poisson test results
-  plot = ggplot(strand_bias, aes( x = type,
-                                  y = log2((strand_bias[,3]+0.1) /
-                                             (strand_bias[,4]+0.1)),
-                                  fill = type)) +
-    scale_fill_manual(values = COLORS6) +
+  plot = ggplot(strand_bias, aes( x = type, y = log2_ratio, fill = type)) +
     geom_bar(colour = "black", stat ="identity", position = "identity") +
+    scale_fill_manual(values = COLORS6) +
     scale_y_continuous(limits = c(-max, max)) +
     geom_text(
       aes(x = type,
-          y = log2((strand_bias[,3]) / (strand_bias[,4]+0.1)),
+          y = log2_ratio_no1pseudo,
           label = significant,
-          vjust = ifelse(sign(log2((strand_bias[,3]) /
-                                     (strand_bias[,4]+0.1))) > 0, 0.5, 1)),
+          vjust = ifelse(sign(log2_ratio_no1pseudo) > 0, 0.5, 1)),
       size = 8,
       position = ggplot2::position_dodge(width = 1)) +
     facet_grid(. ~ group) +

@@ -4,7 +4,7 @@
 \alias{plot_strand_bias}
 \title{Plot strand bias per base substitution type per group}
 \usage{
-plot_strand_bias(strand_bias, colors)
+plot_strand_bias(strand_bias, colors = NA)
 }
 \arguments{
 \item{strand_bias}{data.frame, result from strand_bias function}
