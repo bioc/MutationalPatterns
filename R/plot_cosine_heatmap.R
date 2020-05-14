@@ -87,10 +87,11 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
     stop("row_order can only be provided when cluster_rows is FALSE", call. = F)
   } else if (!is_na(row_order)){
     # check row_order argument
-    if(class(row_order) != "character")
-    {stop("row_order must be a character vector")}
-    if(length(row_order) != nrow(cos_sim_matrix))
-    {stop("row_order must have the same length as the number of signatures in the explained matrix")}
+    if(!inherits(row_order, "character")){
+      stop("row_order must be a character vector", call. = F)}
+    if(length(row_order) != nrow(cos_sim_matrix)){
+      stop("row_order must have the same length as the number of
+          samples in the explained matrix", call. = F)}
   } else if(cluster_rows == TRUE){
     # cluster samples based on eucledian distance between relative contribution
     hc.sample = hclust(dist(cos_sim_matrix), method = method)
@@ -118,10 +119,11 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
     stop("col_order can only be provided when cluster_cols is FALSE", call. = F)
   } else if (!is_na(col_order)){
     # check col_order argument
-    if(class(col_order) != "character")
-    {stop("col_order must be a character vector")}
-    if(length(col_order) != ncol(cos_sim_matrix))
-    {stop("col_order must have the same length as the number of signatures in the explained matrix")}
+    if(!inherits(col_order, "character")){
+      stop("col_order must be a character vector", call. = F)}
+    if(length(col_order) != ncol(cos_sim_matrix)){
+      stop("col_order must have the same length as the number of 
+          signatures in the explained matrix", call. = F)}
   } else if(cluster_cols == TRUE){
     #Cluster cols
     hc.sample2 = cos_sim_matrix %>% 
@@ -153,15 +155,14 @@ plot_cosine_heatmap = function(cos_sim_matrix, col_order = NA, row_order = NA, c
 
   # plot heatmap
   heatmap = ggplot(cos_sim_matrix.m, aes(x=Signature, y=Sample, fill=Cosine.sim, order=Sample)) + 
-    geom_tile(color = "white") +
+    geom_raster() +
     scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Cosine \nsimilarity", limits = c(0,1.000000001)) +
     theme_bw() + 
     theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
     labs(x=NULL, y=NULL)
   
   # if plot_values is TRUE, add values to heatmap
-  if (plot_values == TRUE)
-  {
+  if (plot_values == TRUE){
     heatmap = heatmap + geom_text(aes(label = round(Cosine.sim, 2)), size = 2)
   }
   
