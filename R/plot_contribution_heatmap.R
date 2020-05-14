@@ -38,7 +38,7 @@
 #' sample_order = c("colon1", "colon2", "colon3", "intestine1", "intestine2", 
 #'                  "intestine3", "liver3", "liver2", "liver1")
 #' plot_contribution_heatmap(nmf_res$contribution, cluster_samples = FALSE,
-#'                                                   sig_order = sig_order, sample_order = sample_order)
+#'                            sig_order = sig_order, sample_order = sample_order)
 #' 
 #' ## It's also possible to create a contribution heatmap with text values
 #' output_text = plot_contribution_heatmap(nmf_res$contribution, plot_values = TRUE)
