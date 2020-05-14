@@ -46,9 +46,6 @@ test_that("Refitting indels gives expected output.", {
 
 #Get dbs mut_mat
 dbs_counts = readRDS(system.file("states/blood_dbs_counts.rds", package = "MutationalPatterns"))
-dbs_m = dbs_counts %>% 
-    dplyr::select(-REF, -ALT) %>% 
-    as.matrix()
 
 #Get dbs signatures
 filename <- system.file("extdata/dbs_signatures_probabilities.txt",
@@ -60,6 +57,6 @@ expected <- readRDS(system.file("states/dbs_refit.rds",
                                 package="MutationalPatterns"))
 
 test_that("Refitting dbss gives expected output.", {
-    output = fit_to_signatures(dbs_m, signatures)
+    output = fit_to_signatures(dbs_counts, signatures)
     expect_equal(output, expected)
 })

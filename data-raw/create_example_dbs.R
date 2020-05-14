@@ -24,8 +24,6 @@ filename <- system.file("extdata/dbs_signatures_probabilities.txt",
 signatures <- read.table(filename, sep = "\t", header = TRUE)
 signatures = as.matrix(signatures[,-c(1)])
 
-dbs_m = dbs_counts %>% 
-    dplyr::select(-REF, -ALT) %>% 
-    as.matrix()
-fit_res = fit_to_signatures(dbs_m, signatures)
+
+fit_res = fit_to_signatures(dbs_counts, signatures)
 saveRDS(fit_res, "inst/states/dbs_refit.rds")

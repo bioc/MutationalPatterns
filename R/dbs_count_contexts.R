@@ -50,13 +50,18 @@ count_dbs_contexts = function(grl){
     }
     counts = cbind(categories, counts)
     counts[is.na(counts)] = 0
-    counts = tibble::as_tibble(counts)
-    counts$REF = factor(counts$REF, levels = BiocGenerics::unique(counts$REF))
+    counts = counts %>% 
+        tidyr::unite("muttype_total", REF, ALT) %>% 
+        tibble::column_to_rownames("muttype_total") %>% 
+        as.matrix()
     
-    bases = c("A", "C", "G", "T")
-    bases1 = bases
-    bases_combi = tidyr::crossing(bases, bases1)
-    counts$ALT = factor(counts$ALT, levels = stringr::str_c(bases_combi$bases, bases_combi$bases1))
+    #counts = tibble::as_tibble(counts)
+    #counts$REF = factor(counts$REF, levels = BiocGenerics::unique(counts$REF))
+    
+    #bases = c("A", "C", "G", "T")
+    #bases1 = bases
+    #bases_combi = tidyr::crossing(bases, bases1)
+    #counts$ALT = factor(counts$ALT, levels = stringr::str_c(bases_combi$bases, bases_combi$bases1))
     return(counts)
 }
 

@@ -36,6 +36,20 @@ plot_dbs_contexts = function(counts, same_y = F){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = REF = ALT = NULL
     
+    #Transform to data frame
+    counts = counts %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column("muttype_total") %>% 
+        tidyr::separate(muttype_total, c("REF", "ALT"), sep = "_") %>% 
+        dplyr::mutate(REF = factor(REF, levels = BiocGenerics::unique(REF)))
+
+    #Set levels of ALT
+    bases = c("A", "C", "G", "T")
+    bases1 = bases
+    bases_combi = tidyr::crossing(bases, bases1)
+    counts$ALT = factor(counts$ALT, levels = stringr::str_c(bases_combi$bases, bases_combi$bases1))
+
+    
     #Transform data to long format.
     counts = tidyr::gather(counts, key = "sample", value = "count", -REF, -ALT)
     nr_muts = counts %>% 

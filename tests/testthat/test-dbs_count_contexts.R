@@ -9,7 +9,7 @@ expected = readRDS(system.file("states/blood_dbs_counts.rds",
                                package="MutationalPatterns"))
 
 test_that("Output has correct class",{
-    expect_true(inherits(output, c("tbl_df")))
+    expect_true(inherits(output, c("matrix")))
 })
 
 test_that("Output is identical to expected", {
