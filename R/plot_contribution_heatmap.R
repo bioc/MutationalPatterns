@@ -55,6 +55,12 @@
 # plotting function for relative contribution of signatures in heatmap
 plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = TRUE, method = "complete", plot_values = FALSE)
 {
+  
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  Signature = Sample = Contribution = x = y = xend = yend = NULL
+  
+  
   # check contribution argument
   if(! inherits(contribution, "matrix"))
     {stop("contribution must be a matrix")}
@@ -90,13 +96,8 @@ plot_contribution_heatmap = function(contribution, sig_order, cluster_samples = 
     sample_order = rownames(contribution)
   }
 
-  Signature = NULL
-  Sample = NULL
-  Contribution = NULL
-  x = NULL
-  y = NULL
-  xend = NULL
-  yend = NULL
+
+ 
 
   # Make matrix long and set factor levels, to get the correct order for plotting.
   contribution_norm.m = contribution_norm %>%

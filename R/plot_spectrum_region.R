@@ -77,7 +77,7 @@ plot_spectrum_region = function(type_occurrences,
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    `C>T at CpG` = `C>T other` = type = amount = stdev = tot_muts = lower = upper = NULL
+    `C>T at CpG` = `C>T other` = type = amount = stdev = tot_muts = lower = upper = freq = NULL
     
     
     if (is.null(colors)) {

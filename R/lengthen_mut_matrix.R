@@ -42,6 +42,10 @@
 #' lengthen_mut_matrix(indel_m_split)
 #' 
 lengthen_mut_matrix = function(mut_matrix){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
+    
     col_names = colnames(mut_matrix)
     max_dots_in_name = col_names %>% 
         stringr::str_count("\\.") %>% 

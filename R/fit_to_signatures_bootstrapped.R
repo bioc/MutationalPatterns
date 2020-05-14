@@ -76,7 +76,7 @@ fit_to_signatures_bootstrapped = function(mut_matrix,
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    sigs = NULL
+    sigs = . = NULL
     
     method = match.arg(method)
     

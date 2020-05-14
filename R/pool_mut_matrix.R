@@ -20,6 +20,10 @@
 #' 
 #' 
 pool_mut_mat = function(mut_matrix, grouping){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
+    
     grouping = factor(grouping)
     mut_mat_group = mut_matrix %>% 
         t(.) %>% 

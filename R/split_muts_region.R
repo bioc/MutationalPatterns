@@ -39,6 +39,10 @@
 #'
 #' 
 split_muts_region = function(grl, ranges_grl){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
+    
     if (inherits(grl, "CompressedGRangesList")){
         
         if (is.null(names(grl))){

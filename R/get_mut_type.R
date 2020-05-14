@@ -122,9 +122,14 @@ get_mut_type_gr = function(gr, type = c("snv", "indel", "dbs", "mbs")){
 #' @return A list of granges
 #' @importFrom magrittr %>% 
 split_mbs_gr = function(gr, merge_muts = T){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
     
+    #Validate input
     check_no_indels(gr)
     
+    #Sort
     gr = BiocGenerics::sort(gr)
     
     #Identify location of each mut and its subsequent mut.

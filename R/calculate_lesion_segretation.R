@@ -47,7 +47,7 @@ calculate_lesion_segregation = function(grl, sample_names, split_by_type = FALSE
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    p.value = NULL
+    p.value = . = NULL
     
     #Validate arguments
     if (length(grl) != length(sample_names)){
@@ -195,6 +195,10 @@ get_strandedness_tb = function(gr){
 #' @family Lesion_segregation
 #' 
 calculate_strand_switches = function(tb){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
+    
     strands_l = split(tb$strand, tb$seqnames)
     switches = purrr::map(strands_l, calculate_strand_switch) %>% 
         do.call("c", .)

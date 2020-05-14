@@ -50,6 +50,10 @@ plot_compare_profiles = function(profile1,
                                     colors,
                                     condensed = FALSE)
 {
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    value = substitution = Sample = Contribution = Signature = variable = NULL
+    
     # if colors parameter not provided, set to default colors
     if(missing(colors)){colors = COLORS6}
     s1_relative = profile1 / sum(profile1)
@@ -85,15 +89,7 @@ plot_compare_profiles = function(profile1,
     df3 = df2 %>% 
       tidyr::pivot_longer(c(-substitution, -context), names_to = "variable", values_to = "value") %>% 
       dplyr::mutate(variable = factor(variable, levels = unique(variable)))
-
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
-    value = NULL
-    substitution = NULL
-    Sample = NULL
-    Contribution = NULL
-    Signature = NULL
-
+    
     # Add dummy non_visible data points to force y axis limits per facet
     df4 = data.frame(substitution = rep("C>A", 4),
                         context = rep("A.A",4),

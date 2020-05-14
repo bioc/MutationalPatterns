@@ -61,7 +61,8 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legen
 {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-    value = nmuts = sub_type = variable = error_pos = stdev = NULL
+    value = nmuts = sub_type = variable = error_pos = stdev = total_mutations = NULL
+    x = total_individuals = NULL
 
 
     # If colors parameter not provided, set to default colors
