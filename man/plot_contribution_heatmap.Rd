@@ -6,8 +6,10 @@
 \usage{
 plot_contribution_heatmap(
   contribution,
-  sig_order,
+  sig_order = NA,
+  sample_order = NA,
   cluster_samples = TRUE,
+  cluster_sigs = FALSE,
   method = "complete",
   plot_values = FALSE
 )
@@ -17,7 +19,11 @@ plot_contribution_heatmap(
 
 \item{sig_order}{Character vector with the desired order of the signature names for plotting. Optional.}
 
+\item{sample_order}{Character vector with the desired order of the sample names for plotting. Optional.}
+
 \item{cluster_samples}{Hierarchically cluster samples based on eucledian distance. Default = T.}
+
+\item{cluster_sigs}{Hierarchically cluster sigs based on eucledian distance. Default = T.}
 
 \item{method}{The agglomeration method to be used for hierarchical clustering. This should be one of 
 "ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
@@ -32,14 +38,8 @@ Heatmap with relative contribution of each signature for each sample
 Plot relative contribution of signatures in a heatmap
 }
 \examples{
-## See the 'mut_matrix()' example for how we obtained the following
-## mutation matrix.
-mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                                package="MutationalPatterns"))
-
 ## Extracting signatures can be computationally intensive, so
 ## we use pre-computed data generated with the following command:
-
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
 
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
@@ -48,22 +48,30 @@ nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
 ## Set signature names as row names in the contribution matrix
 rownames(nmf_res$contribution) = c("Signature A", "Signature B")
 
-## Define signature order for plotting
+## Plot with clustering.
+plot_contribution_heatmap(nmf_res$contribution, cluster_samples = TRUE, cluster_sigs = TRUE)
+
+## Define signature and sample order for plotting. If you have a mutation or signature
+## matrix, then this can be done like in the example of 'plot_cosine_heatmap()'
 sig_order = c("Signature B", "Signature A")
+sample_order = c("colon1", "colon2", "colon3", "intestine1", "intestine2", 
+                 "intestine3", "liver3", "liver2", "liver1")
+plot_contribution_heatmap(nmf_res$contribution, cluster_samples = FALSE,
+                                                  sig_order = sig_order, sample_order = sample_order)
 
+## It's also possible to create a contribution heatmap with text values
+output_text = plot_contribution_heatmap(nmf_res$contribution, plot_values = TRUE)
 
-## Contribution heatmap with signatures in defined order
-plot_contribution_heatmap(nmf_res$contribution, 
-                          sig_order = c("Signature B", "Signature A"))
-
-## Contribution heatmap without sample clustering
-plot_contribution_heatmap(nmf_res$contribution, 
-                          sig_order = c("Signature B", "Signature A"), 
-                          cluster_samples = FALSE, method = "complete")
+## IThis function can also be used on the result of a signature refitting analysis.
+## Here we load a existing result as an example.
+snv_refit <- readRDS(system.file("states/strict_snv_refit.rds",
+                                 package="MutationalPatterns"))
+plot_contribution_heatmap(snv_refit$contribution, cluster_samples = TRUE, cluster_sigs = TRUE)
 
 }
 \seealso{
 \code{\link{extract_signatures}},
 \code{\link{mut_matrix}},
-\code{\link{plot_contribution}}
+\code{\link{plot_contribution}},
+\code{\link{plot_cosine_heatmap}}
 }
