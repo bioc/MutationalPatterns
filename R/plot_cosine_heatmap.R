@@ -6,6 +6,7 @@
 #' @param cos_sim_matrix Matrix with pairwise cosine similarities.
 #'                       Result from \code{\link{cos_sim_matrix}}
 #' @param col_order Character vector with the desired order of the columns names for plotting. Optional.
+#' @param row_order Character vector with the desired order of the row names for plotting. Optional.
 #' @param cluster_rows Hierarchically cluster rows based on eucledian distance. Default = TRUE.
 #' @param cluster_cols Hierarchically cluster cols based on eucledian distance. Default = FALSE.
 #' @param method The agglomeration method to be used for hierarchical clustering. This should be one of 
@@ -47,8 +48,8 @@
 #' hclust_samples = cluster_signatures(mut_mat, method = "average")
 #' sample_order = colnames(mut_mat)[hclust_samples$order]
 #' ## Plot the cosine heatmap using this given signature order.
-#' plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, row_order = sample_order,
-#'  col_order = cosmic_order)
+#' plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, 
+#' row_order = sample_order, col_order = cosmic_order)
 #' 
 #' ## You can also plot the similarity of samples with eachother
 #' cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
