@@ -38,7 +38,7 @@ strand_bias_test = function(strand_occurrences)
 {
     # These variables will be available at run-time, but not at compile-time.
     # To avoid compiling trouble, we initialize them to NULL.
-    group = type = strand = variable = relative_contribution = no_mutations = NULL
+    group = type = strand = variable = relative_contribution = no_mutations = p_poisson = NULL
 
     # statistical test for strand ratio
     # poisson test
@@ -51,8 +51,8 @@ strand_bias_test = function(strand_occurrences)
     df_strand$p_poisson = apply(df_strand, 1, function(x){
         stats::poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value
         })
-    df_strand$significant[df_strand$p_poisson < 0.05] = "*"
-    df_strand$significant[df_strand$p_poisson >= 0.05] = " "
-
+    df_strand = df_strand %>% 
+        dplyr::mutate(significant = ifelse(p_poisson < 0.05, "*", " "))
+    
     return(df_strand)
 }
