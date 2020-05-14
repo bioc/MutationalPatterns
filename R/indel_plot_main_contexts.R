@@ -39,12 +39,17 @@ plot_main_indel_contexts = function(counts, same_y = F){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = muttype = muttype_sub = NULL
     
+    #Turn matrix into tibble
+    counts = counts %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column("muttype_total") %>% 
+        tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>% 
+        dplyr::mutate(muttype = factor(muttype, levels = unique(muttype)))
     
     counts_main = counts %>% 
         dplyr::select(-muttype_sub) %>% 
         dplyr::group_by(muttype) %>% 
-        dplyr::summarise_all(list( ~sum(.)))
-    counts_main = counts_main %>% 
+        dplyr::summarise_all(list( ~sum(.))) %>% 
         tidyr::gather(key = "sample", value = "count", -.data$muttype)
     nr_muts = counts_main %>% 
         dplyr::group_by(sample) %>% 

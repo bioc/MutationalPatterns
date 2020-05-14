@@ -25,10 +25,7 @@ filename <- system.file("extdata/indel_signatures_probabilities.txt",
 signatures <- read.table(filename, sep = "\t", header = TRUE)
 signatures = as.matrix(signatures[,-c(1)])
 
-indel_m = indel_counts %>% 
-    dplyr::select(-muttype, -muttype_sub) %>% 
-    as.matrix()
-fit_res = fit_to_signatures(indel_m, signatures)
+fit_res = fit_to_signatures(indel_counts, signatures)
 saveRDS(fit_res, "inst/states/indel_refit.rds")
 
 
@@ -50,9 +47,5 @@ seqlevelsStyle(regions) = "UCSC"
 grl_indel_split = split_muts_region(grl_indel_context, regions)
 indel_counts_split = count_indel_contexts(grl_indel_split)
 saveRDS(indel_counts_split, "inst/states/blood_indels_counts_split_region.rds")
-indel_m_split = indel_counts_split %>% 
-    dplyr::select(-muttype, -muttype_sub) %>% 
-    as.matrix()
-rownames(indel_m_split) = stringr::str_c(indel_counts_split$muttype, indel_counts_split$muttype_sub, sep = "_")
-indel_matrix_long = lengthen_mut_matrix(indel_m_split)
+indel_matrix_long = lengthen_mut_matrix(indel_counts_split)
 saveRDS(indel_matrix_long, "inst/states/blood_indels_longmatrix_split_region.rds")

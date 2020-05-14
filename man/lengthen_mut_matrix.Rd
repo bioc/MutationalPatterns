@@ -39,13 +39,9 @@ long_mut_mat = lengthen_mut_matrix(mut_mat_split_region)
 indel_counts_split <- readRDS(system.file("states/blood_indels_counts_split_region.rds",
                                 package="MutationalPatterns"))
 
-## Transform the indel counts into a matrix.
-indel_m_split = as.matrix(dplyr::select(indel_counts_split, -muttype, -muttype_sub))
-rownames(indel_m_split) = stringr::str_c(indel_counts_split$muttype, 
-                                        indel_counts_split$muttype_sub, sep = "_")
 
 ## Lengthen the matrix
-lengthen_mut_matrix(indel_m_split)
+lengthen_mut_matrix(indel_counts_split)
 
 }
 \seealso{

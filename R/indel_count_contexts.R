@@ -50,8 +50,13 @@ count_indel_contexts = function(grl){
     }
     counts = cbind(categories, counts)
     counts[is.na(counts)] = 0
-    counts = dplyr::as_tibble(counts)
-    counts$muttype = factor(counts$muttype, levels = unique(counts$muttype))
+    counts = counts %>% 
+        tidyr::unite("muttype_total", muttype, muttype_sub) %>% 
+        tibble::column_to_rownames("muttype_total") %>% 
+        as.matrix()
+    
+    #counts = dplyr::as_tibble(counts)
+    #counts$muttype = factor(counts$muttype, levels = unique(counts$muttype))
     return(counts)
 }
 

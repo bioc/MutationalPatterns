@@ -29,9 +29,6 @@ test_that("Output is equal to expected", {
 
 #Get indel mut_mat
 indel_counts = readRDS(system.file("states/blood_indel_counts.rds", package = "MutationalPatterns"))
-indel_m = indel_counts %>% 
-    dplyr::select(-muttype, -muttype_sub) %>% 
-    as.matrix()
 
 #Get indel signatures
 filename <- system.file("extdata/indel_signatures_probabilities.txt",
@@ -43,7 +40,7 @@ expected <- readRDS(system.file("states/indel_refit.rds",
                                 package="MutationalPatterns"))
 
 test_that("Refitting indels gives expected output.", {
-    output = fit_to_signatures(indel_m, signatures)
+    output = fit_to_signatures(indel_counts, signatures)
     expect_equal(output, expected)
 })
 

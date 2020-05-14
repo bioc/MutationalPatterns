@@ -7,16 +7,12 @@ input <- readRDS(system.file("states/mut_mat_splitregions.rds",
 #Read in indel
 input_indel <- readRDS(system.file("states/blood_indels_counts_split_region.rds",
                              package = "MutationalPatterns"))
-indel_m_split = input_indel %>%
-dplyr::select(-muttype, -muttype_sub) %>%
-    as.matrix()
-rownames(indel_m_split) = stringr::str_c(input_indel$muttype, input_indel$muttype_sub, sep = "_")
 
 ## Lengthen the matrix
 
 #Run function
 output = lengthen_mut_matrix(input)
-output_indel = lengthen_mut_matrix(indel_m_split)
+output_indel = lengthen_mut_matrix(input_indel)
 
 
 
@@ -31,7 +27,7 @@ nr_regions = input %>%
     unique() %>% 
     length()
 
-nr_regions_indel = indel_m_split %>% 
+nr_regions_indel = input_indel %>% 
     colnames() %>% 
     stringr::str_remove(".*\\.") %>% 
     unique() %>% 
@@ -39,7 +35,7 @@ nr_regions_indel = indel_m_split %>%
 
 test_that("Output has correct size", {
     expect_equal(dim(output), c(nrow(input) * nr_regions, ncol(input) / nr_regions))
-    expect_equal(dim(output_indel), c(nrow(indel_m_split) * nr_regions_indel, ncol(indel_m_split) / nr_regions_indel))
+    expect_equal(dim(output_indel), c(nrow(input_indel) * nr_regions_indel, ncol(input_indel) / nr_regions_indel))
 })
 
 expected = readRDS(system.file("states/mut_mat_longregions.rds",

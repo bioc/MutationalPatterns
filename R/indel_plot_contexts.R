@@ -40,7 +40,12 @@ plot_indel_contexts = function(counts, same_y = F, extra_labels = F){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = muttype = muttype_sub = NULL
     
-    counts = tidyr::gather(counts, key = "sample", value = "count", -muttype, -muttype_sub)
+    counts = counts %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column("muttype_total") %>% 
+        tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>% 
+        dplyr::mutate(muttype = factor(muttype, levels = unique(muttype))) %>% 
+        tidyr::gather(key = "sample", value = "count", -muttype, -muttype_sub)
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = round(sum(count)))
