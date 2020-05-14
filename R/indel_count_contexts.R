@@ -25,6 +25,11 @@
 #' 
 #' @export
 count_indel_contexts = function(grl){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    muttype = muttype_sub = NULL
+    
     categories = tibble::tibble("muttype" = c(rep("C_deletion", 6), rep("T_deletion", 6), rep("C_insertion", 6), 
                                       rep("T_insertion", 6), rep("2bp_deletion", 6), rep("3bp_deletion", 6), 
                                       rep("4bp_deletion", 6), rep("5+bp_deletion", 6), rep("2bp_insertion", 6),

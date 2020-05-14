@@ -34,7 +34,7 @@ plot_dbs_contexts = function(counts, same_y = F){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    count = REF = ALT = NULL
+    count = REF = ALT = muttype_total = NULL
     
     #Transform to data frame
     counts = counts %>% 

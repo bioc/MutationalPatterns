@@ -38,7 +38,7 @@
 plot_indel_contexts = function(counts, same_y = F, extra_labels = F){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    count = muttype = muttype_sub = NULL
+    count = muttype = muttype_sub = muttype_total = NULL
     
     counts = counts %>% 
         as.data.frame() %>% 

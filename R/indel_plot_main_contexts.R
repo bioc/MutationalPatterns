@@ -37,7 +37,7 @@ plot_main_indel_contexts = function(counts, same_y = F){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    count = muttype = muttype_sub = NULL
+    count = muttype = muttype_sub = muttype_total = NULL
     
     #Turn matrix into tibble
     counts = counts %>% 

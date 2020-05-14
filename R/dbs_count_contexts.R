@@ -23,6 +23,11 @@
 #' 
 #' @export
 count_dbs_contexts = function(grl){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    REF = ALT = NULL
+    
     categories = tibble::tibble("REF" = c(rep("AC", 9),rep("AT", 6), rep("CC", 9), rep("CG", 6), 
                                   rep("CT", 9), rep("GC", 6), rep("TA", 6), rep("TC", 9), 
                                   rep("TG", 9), rep("TT", 9)), 
@@ -55,13 +60,6 @@ count_dbs_contexts = function(grl){
         tibble::column_to_rownames("muttype_total") %>% 
         as.matrix()
     
-    #counts = tibble::as_tibble(counts)
-    #counts$REF = factor(counts$REF, levels = BiocGenerics::unique(counts$REF))
-    
-    #bases = c("A", "C", "G", "T")
-    #bases1 = bases
-    #bases_combi = tidyr::crossing(bases, bases1)
-    #counts$ALT = factor(counts$ALT, levels = stringr::str_c(bases_combi$bases, bases_combi$bases1))
     return(counts)
 }
 
