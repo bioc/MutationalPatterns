@@ -6,7 +6,6 @@
 #' @return data.frame with counts of each base substitution type for
 #' each sample in vcf_list
 #'
-#' @importFrom BiocGenerics rbind
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -38,7 +37,7 @@ mut_type_occurrences = function(grl, ref_genome, vcf_list = NA)
     if (inherits(grl, "list")){
         grl = GenomicRanges::GRangesList(grl)
     } else if (inherits(grl, "GRanges")){
-        grl = GRangesList(grl)
+        grl = GenomicRanges::GRangesList(grl)
         names(grl) = "my_sample"
     } 
     
