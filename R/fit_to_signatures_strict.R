@@ -141,6 +141,7 @@ fit_to_signatures_strict = function(mut_matrix, signatures, max_delta = 0.05){
     contribution = contribution %>% 
         dplyr::select(-rowname) %>% 
         as.matrix()
+    contribution[is.na(contribution)] = 0
     
     #Combine the reconstructed of all samples
     reconstructed = purrr::map(fit_res, "reconstructed") %>% 
