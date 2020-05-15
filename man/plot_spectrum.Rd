@@ -8,6 +8,7 @@ plot_spectrum(
   type_occurrences,
   CT = FALSE,
   by = NA,
+  indv_points = FALSE,
   colors = NA,
   legend = TRUE
 )
@@ -19,6 +20,9 @@ plot_spectrum(
 sites, default = FALSE}
 
 \item{by}{Optional grouping variable}
+
+\item{indv_points}{Whether to plot the individual samples 
+as points, default = FALSE}
 
 \item{colors}{Optional color vector with 7 values}
 
@@ -49,6 +53,9 @@ plot_spectrum(type_occurrences)
 
 ## Or with distinction of C>T at CpG sites
 plot_spectrum(type_occurrences, CT = TRUE)
+
+## You can also include individual sample points.
+plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE)
 
 ## Or without legend
 plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
