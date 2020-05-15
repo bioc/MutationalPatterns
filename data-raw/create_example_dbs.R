@@ -6,7 +6,7 @@ library(ref_genome, character.only = TRUE)
 #Get grl
 grl = readRDS("inst/states/blood_grl.rds")
 
-#Get dbss
+#Get dbs
 grl_dbs = get_mut_type(grl, "dbs")
 saveRDS(grl_dbs, "inst/states/blood_grl_dbs.rds")
 
