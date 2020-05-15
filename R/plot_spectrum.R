@@ -4,6 +4,8 @@
 #' @param CT Distinction between C>T at CpG and C>T at other
 #' sites, default = FALSE
 #' @param by Optional grouping variable
+#' @param indv_points Whether to plot the individual samples 
+#' as points, default = FALSE 
 #' @param colors Optional color vector with 7 values
 #' @param legend Plot legend, default = TRUE
 #' @return Spectrum plot
@@ -31,6 +33,9 @@
 #' ## Or with distinction of C>T at CpG sites
 #' plot_spectrum(type_occurrences, CT = TRUE)
 #'
+#' ## You can also include individual sample points.
+#' plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE)
+#'
 #' ## Or without legend
 #' plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
 #'
@@ -57,7 +62,7 @@
 #'
 #' @export
 
-plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legend = TRUE)
+plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALSE, colors = NA, legend = TRUE)
 {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -83,23 +88,25 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legen
     if (is_na(by))
         by="all"
 
-    # Reshape the type_occurences for the plotting
-    tb = type_occurrences %>% 
+    #Reshape the type_occurences for the plotting
+    tb_per_sample = type_occurrences %>% 
       tibble::rownames_to_column("sample") %>% 
       dplyr::mutate(by = by) %>% #Add user defined grouping
       tidyr::pivot_longer(c(-sample, -by), names_to = "variable", values_to = "nmuts") %>% #Make long format
       dplyr::group_by(sample) %>% 
       dplyr::mutate(value = nmuts / sum(nmuts)) %>% #Calculate relative values
       dplyr::ungroup() %>% 
-      dplyr::group_by(by, variable) %>% #Summarise per group and mutation type
-      dplyr::summarise(mean = mean(value), stdev = stats::sd(value),
+      dplyr::mutate(sub_type = stringr::str_remove(variable, " .*"),
+                    variable = factor(variable, levels = unique(variable)))
+    #Summarise per group and mutation type
+    tb = tb_per_sample %>% 
+      dplyr::group_by(by, variable) %>% 
+      dplyr::summarise(sub_type = sub_type[[1]], mean = mean(value), stdev = stats::sd(value),
                        total_individuals = sum(value), total_mutations = sum(nmuts)) %>% 
       dplyr::mutate(total_individuals = sum(total_individuals), total_mutations = sum(total_mutations)) %>% 
       dplyr::ungroup() %>% 
       dplyr::mutate(total_mutations = prettyNum(total_mutations, big.mark = ","), #Make pretty and add subtypes
                     total_mutations = paste("No. mutations = ", total_mutations),
-                    sub_type = stringr::str_remove(variable, " .*"),
-                    variable = factor(variable, levels = unique(variable)),
                     error_pos = mean)
     
     # Define colors for plotting
@@ -114,6 +121,11 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legen
         CpG = which(tb$variable == "C>T at CpG")
         other = which(tb$variable == "C>T other")
         tb$error_pos[CpG] = tb$error_pos[other] + tb$error_pos[CpG]
+        
+        #Value of the individual sample points also needs to be adjusted.
+        CpG = which(tb_per_sample$variable == "C>T at CpG")
+        other = which(tb_per_sample$variable == "C>T other")
+        tb_per_sample$value[CpG] = tb_per_sample$value[other] + tb_per_sample$value[CpG]
     }
 
     # Make barplot
@@ -130,8 +142,13 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, colors = NA, legen
                 axis.text.x = element_blank(),
                 panel.grid.major.x = element_blank())
     
+    if (indv_points == TRUE){
+      plot = plot +
+        geom_jitter(data = tb_per_sample, aes(y = value), height = 0, width = 0.3, colour = "grey23")
+    }
+    
     # check if standard deviation error bars can be plotted
-    if(sum(is.na(x$stdev)) > 0)
+    if(sum(is.na(tb$stdev)) > 0)
       warning("No standard deviation error bars can be plotted, because there is only one sample per mutation spectrum")
     else
       plot = plot + geom_errorbar(aes(ymin=error_pos-stdev, 
