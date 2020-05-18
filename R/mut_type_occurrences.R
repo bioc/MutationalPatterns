@@ -33,6 +33,7 @@ mut_type_occurrences = function(grl, ref_genome, vcf_list = NA)
         grl <- vcf_list
     }
     
+    
     #Convert to grl if necessary
     if (inherits(grl, "list")){
         grl = GenomicRanges::GRangesList(grl)
@@ -40,6 +41,9 @@ mut_type_occurrences = function(grl, ref_genome, vcf_list = NA)
         grl = GenomicRanges::GRangesList(grl)
         names(grl) = "my_sample"
     } 
+    
+    #Check that the seqnames of the gr and ref_genome match
+    check_chroms(grl, ref_genome)
     
     #Check input
     if (!inherits(grl, "CompressedGRangesList")){

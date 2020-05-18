@@ -34,6 +34,9 @@
 #' @export
 
 get_indel_context = function(grl, ref_genome){
+    #Check that the seqnames of the gr and ref_genome match
+    check_chroms(grl, ref_genome)
+    
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
         gr_list = purrr::map(gr_l, function(x) get_indel_context_gr(x, ref_genome))
@@ -72,9 +75,6 @@ get_indel_context_gr = function(gr, ref_genome){
     
     #Check that no snvs are present.    
     check_no_snvs(gr)
-    
-    #Check that the seqnames of the gr and ref_genome match
-    check_chroms(gr, ref_genome)
     
     #Calculate indel size to determine main category
     ref_sizes = gr$REF %>%

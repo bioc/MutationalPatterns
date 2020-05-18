@@ -2,19 +2,22 @@
 % Please edit documentation in R/check_remove_muttypes.R
 \name{check_chroms}
 \alias{check_chroms}
-\title{Check that the seqnames of a GRanges object are present in a ref_genome}
+\title{Check that the seqnames of a GRangesList or GRanges object are present in a ref_genome}
 \usage{
-check_chroms(gr, ref_genome)
+check_chroms(grl, ref_genome)
 }
 \arguments{
-\item{gr}{GRanges object}
+\item{grl}{GRangesList or GRanges object}
 
 \item{ref_genome}{BSGenome reference genome object}
 }
 \description{
-Check that the seqnames of a GRanges object are present in a ref_genome
+Check that the seqnames of a GRangesList or GRanges object are present in a ref_genome
 }
 \details{
-This function tests that the variants in a GRanges object have seqnames, that match the supplied ref_genome.
+This function tests that the variants in a GRangesList or GRanges object have seqnames, 
+that match the supplied ref_genome.
 If this is not the case an error is thrown, with suggestions how to fix this.
+This function also check whether variants in the input overlap with the reference genome.
+If this is not the case, then the wrong reference object might be used.
 }

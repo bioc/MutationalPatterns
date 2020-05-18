@@ -277,25 +277,41 @@ not_gr_or_grl = function(arg){
                Please provide an object of the correct class."))
 }
 
-#' Check that the seqnames of a GRanges object are present in a ref_genome
+#' Check that the seqnames of a GRangesList or GRanges object are present in a ref_genome
 #'
 #' @details 
-#' This function tests that the variants in a GRanges object have seqnames, that match the supplied ref_genome.
+#' This function tests that the variants in a GRangesList or GRanges object have seqnames, 
+#' that match the supplied ref_genome.
 #' If this is not the case an error is thrown, with suggestions how to fix this.
+#' This function also check whether variants in the input overlap with the reference genome.
+#' If this is not the case, then the wrong reference object might be used.
 #' 
-#' @param gr GRanges object
+#' @param grl GRangesList or GRanges object
 #' @param ref_genome BSGenome reference genome object
 #' 
 #' 
-check_chroms = function(gr, ref_genome){
+check_chroms = function(grl, ref_genome){
+    if (inherits(grl, "CompressedGRangesList")){
+        gr = BiocGenerics::unlist(grl)
+        return(grl)
+    } else if (!inherits(grl, "GRanges")){
+        not_gr_or_grl(grl)
+    }
+    
+    
     gr_seqnames = as.vector(seqnames(gr))
-    ref_seqnames = seqnames(get(ref_genome))
+    ref = get(ref_genome)
+    ref_seqnames = seqnames(ref)
+    
+    #Check if there is any overlap in chromosome names
     shared_chroms = intersect(gr_seqnames, ref_seqnames)
     if (!length(shared_chroms)){
         stop("The input GRanges and the ref_genome share no seqnames (chromosome names). 
              Do they use the same seqlevelsStyle? An example of how to fix this is show below.
              You can change the seqlevelStyle with: `seqlevelsStyle(grl) = 'UCSC'", call. = F)
     }
+    
+    #Check if there are variants in the input granges that are not in the reference.
     gr_seqlevels = levels(seqnames(gr))
     gr_seqlevels_notref = unique(gr_seqlevels[!gr_seqlevels %in% ref_seqnames])
     if(length(gr_seqlevels_notref)){
@@ -307,6 +323,22 @@ check_chroms = function(gr, ref_genome){
         You can then remove variants in other chromosomes with: 
         `seqlevels(grl, pruning.mode = 'tidy') = chromosomes`"), call. = F)
     }
+    
+    #Check if there are variants in the input granges that don't overlap with the reference
+    ref_gr = GenomicRanges::GRanges(as.vector(seqnames(ref)), IRanges::IRanges(start = 1, end = seqlengths(ref)))
+    hits = GenomicRanges::findOverlaps(gr, ref_gr)
+    if (length(hits)){
+        gr_nomatch = gr[-queryHits(hits)]
+    } else{
+        gr_nomatch = gr
+    }
+    nr_nomatch = length(gr_nomatch)
+    if (nr_nomatch){
+        stop(stringr::str_c("There are ", nr_nomatch, " variants that don't overlap with 
+                            the chromosome lengths of the chosen reference genome. 
+                            Did you select the correct reference genome?"), call. = F)
+    }
+    
     invisible(gr)
 }
 

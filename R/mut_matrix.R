@@ -36,6 +36,8 @@ mut_matrix = function (grl, ref_genome, vcf_list = NA) {
     if (inherits(grl, "list")){
         grl = GenomicRanges::GRangesList(grl)
     }
+    
+    #Determine nr mutations per sample
     if (inherits(grl, "CompressedGRangesList")){
         gr_sizes = S4Vectors::elementNROWS(grl)
         gr = unlist(grl)
