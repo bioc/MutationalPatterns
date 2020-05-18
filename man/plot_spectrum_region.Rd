@@ -8,6 +8,7 @@ plot_spectrum_region(
   type_occurrences,
   by = NA,
   mode = c("relative_sample_feature", "relative_sample", "absolute"),
+  error_bars = c("95\%_CI", "stdev", "SEM", "none"),
   colors = NULL,
   legend = TRUE
 )
@@ -22,6 +23,12 @@ When 'relative_sample', the number of variants will be shown
 divided by the total number of variants in that sample.
 When 'relative_sample_feature', the number of variants will be shown
 divided by the total number of variants in that sample. and genomic region.}
+
+\item{error_bars}{The type of error bars to plot.
+* '95%_CI' for 95% Confidence intervals (default);
+* 'stdev' for standard deviations;
+* 'SEM' for the standard error of the mean (NOT recommended);
+* 'none' Do not plot any error bars;}
 
 \item{colors}{Optional color vector with 7 values}
 
@@ -45,7 +52,7 @@ The by, colors and legend argument work the same as in'plot_spectrum()'.
 grl <- readRDS(system.file("states/grl_split_region.rds",
                 package="MutationalPatterns"))
 
-## Or plot spectrum per tissue
+## Determine tissue names
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
             "liver", "liver", "liver")
@@ -66,7 +73,10 @@ plot_spectrum_region(type_occurrences, by = tissue)
 plot_spectrum_region(type_occurrences, by = tissue, mode = "relative_sample")
 
 ## Plot the absolute point mutation spectrum per sample type and per genomic region
-plot_spectrum_region(type_occurrences, mode = "absolute")
+plot_spectrum_region(type_occurrences, by = tissue, mode = "absolute")
+
+## Plot the point mutations spectrum with different error bars
+plot_spectrum_region(type_occurrences, by = tissue, error_bars = "stdev")
 
 sample_names <- c(
 "colon1", "colon2", "colon3",
@@ -74,7 +84,7 @@ sample_names <- c(
 "liver1", "liver2", "liver3")
 
 ## Plot the point mutation spectrum per individual sample and per genomic region
-plot_spectrum_region(type_occurrences, by = sample_names)
+plot_spectrum_region(type_occurrences, by = sample_names, error_bars = "none")
 
 
 }

@@ -15,6 +15,11 @@
 #' divided by the total number of variants in that sample.
 #' When 'relative_sample_feature', the number of variants will be shown
 #' divided by the total number of variants in that sample. and genomic region.
+#' @param error_bars The type of error bars to plot.
+#'              * '95%_CI' for 95% Confidence intervals (default);
+#'              * 'stdev' for standard deviations;
+#'              * 'SEM' for the standard error of the mean (NOT recommended);
+#'              * 'none' Do not plot any error bars;
 #' @param colors Optional color vector with 7 values
 #' @param legend Plot legend, default = TRUE
 #' @return Spectrum plot by genomic region
@@ -29,7 +34,7 @@
 #' grl <- readRDS(system.file("states/grl_split_region.rds",
 #'                 package="MutationalPatterns"))
 #' 
-#'## Or plot spectrum per tissue
+#'## Determine tissue names
 #' tissue <- c("colon", "colon", "colon",
 #'             "intestine", "intestine", "intestine",
 #'             "liver", "liver", "liver")
@@ -50,7 +55,10 @@
 #' plot_spectrum_region(type_occurrences, by = tissue, mode = "relative_sample")
 #' 
 #' ## Plot the absolute point mutation spectrum per sample type and per genomic region
-#' plot_spectrum_region(type_occurrences, mode = "absolute")
+#' plot_spectrum_region(type_occurrences, by = tissue, mode = "absolute")
+#' 
+#' ## Plot the point mutations spectrum with different error bars
+#' plot_spectrum_region(type_occurrences, by = tissue, error_bars = "stdev")
 #' 
 #' sample_names <- c(
 #' "colon1", "colon2", "colon3",
@@ -58,7 +66,7 @@
 #' "liver1", "liver2", "liver3")
 #' 
 #' ## Plot the point mutation spectrum per individual sample and per genomic region
-#' plot_spectrum_region(type_occurrences, by = sample_names)
+#' plot_spectrum_region(type_occurrences, by = sample_names, error_bars = "none")
 #' 
 #' 
 #' @seealso
@@ -71,7 +79,8 @@
 #' 
 plot_spectrum_region = function(type_occurrences, 
                                 by = NA, 
-                                mode = c("relative_sample_feature", "relative_sample", "absolute"), 
+                                mode = c("relative_sample_feature", "relative_sample", "absolute"),
+                                error_bars = c("95%_CI", "stdev", "SEM", "none"),
                                 colors = NULL, 
                                 legend = TRUE){
     
@@ -84,6 +93,7 @@ plot_spectrum_region = function(type_occurrences,
         colors = COLORS6
     }
     mode = match.arg(mode)
+    error_bars = match.arg(error_bars)
     
     row_names = rownames(type_occurrences)
     max_dots_in_name = row_names %>% 
@@ -140,11 +150,12 @@ plot_spectrum_region = function(type_occurrences,
     tb = tb %>% 
         dplyr::left_join(tb_by, by = "sample") %>% 
         dplyr::group_by(by, feature, type) %>% 
-        dplyr::summarise(stdev = sd(freq), freq = mean(freq), amount = sum(amount)) %>% 
+        dplyr::summarise(stdev = sd(freq), freq = mean(freq), amount = sum(amount), total_indv = dplyr::n()) %>% 
         dplyr::ungroup() %>% 
         dplyr::rename(sample = by) %>% 
-        dplyr::mutate(lower = freq - stdev, upper = freq + stdev)
-    
+        dplyr::mutate(sem = stdev/sqrt(total_indv),
+                      error_95 = ifelse(total_indv > 1, qt(0.975, df = total_indv-1)*sem, NA))
+
     #Count nr muts per sample group
     tot_muts_tb = tb %>% 
         dplyr::group_by(sample) %>% 
@@ -171,9 +182,20 @@ plot_spectrum_region = function(type_occurrences,
     })
     
     #Add errorbars
-    if (sum(is.na(tb$stdev)) == 0){
-        fig = fig + 
-            geom_errorbar(aes(ymin = lower, ymax = upper), position = "dodge")
+    if(sum(is.na(tb$stdev)) != 0 & error_bars != "none"){
+        warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
+              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", call. = F)
+    } else{
+        if (error_bars == "stdev"){
+            fig = fig + geom_errorbar(aes(ymin=freq-stdev, 
+                                            ymax=freq+stdev), position = "dodge")
+        } else if (error_bars == "95%_CI"){
+            fig = fig + geom_errorbar(aes(ymin=freq-error_95, 
+                                            ymax=freq+error_95), position = "dodge")
+        } else if (error_bars == "SEM"){
+            fig = fig + geom_errorbar(aes(ymin=freq-sem, 
+                                            ymax=freq+sem), position = "dodge")
+        }
     }
     
     #Remove legend if required

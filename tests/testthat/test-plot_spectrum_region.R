@@ -22,7 +22,9 @@ output_relative_sample = plot_spectrum_region(type_occurrences, mode = "relative
 #Plot the absolute point mutation spectrum over all samples
 output_absolute = plot_spectrum_region(type_occurrences, mode = "absolute")
 
-
+#Plot using different types of error bars.
+output_stdev = plot_spectrum_region(type_occurrences, error_bars = "stdev")
+output_sem = plot_spectrum_region(type_occurrences, error_bars = "SEM")
 
 #Plot per tissue
 tissue <- c("colon", "colon", "colon",
@@ -35,13 +37,15 @@ sample_names <- c(
 "colon1", "colon2", "colon3",
 "intestine1", "intestine2", "intestine3",
 "liver1", "liver2", "liver3")
-output_sample = plot_spectrum_region(type_occurrences, by = sample_names)
+output_sample = plot_spectrum_region(type_occurrences, by = sample_names, error_bars = "none")
 
 #Test different outputs
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
     expect_true(inherits(output_relative_sample, c("gg")))
     expect_true(inherits(output_absolute, c("gg")))
+    expect_true(inherits(output_stdev, c("gg")))
+    expect_true(inherits(output_sem, c("gg")))
     expect_true(inherits(output_tissue, c("gg")))
     expect_true(inherits(output_sample, c("gg")))
 })
