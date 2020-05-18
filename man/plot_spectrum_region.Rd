@@ -8,6 +8,7 @@ plot_spectrum_region(
   type_occurrences,
   by = NA,
   mode = c("relative_sample_feature", "relative_sample", "absolute"),
+  indv_points = FALSE,
   error_bars = c("95\%_CI", "stdev", "SEM", "none"),
   colors = NULL,
   legend = TRUE
@@ -23,6 +24,9 @@ When 'relative_sample', the number of variants will be shown
 divided by the total number of variants in that sample.
 When 'relative_sample_feature', the number of variants will be shown
 divided by the total number of variants in that sample. and genomic region.}
+
+\item{indv_points}{Whether to plot the individual samples 
+as points, default = FALSE}
 
 \item{error_bars}{The type of error bars to plot.
 * '95%_CI' for 95% Confidence intervals (default);
@@ -52,10 +56,6 @@ The by, colors and legend argument work the same as in'plot_spectrum()'.
 grl <- readRDS(system.file("states/grl_split_region.rds",
                 package="MutationalPatterns"))
 
-## Determine tissue names
-tissue <- c("colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver")
 
  ## Load a reference genome.
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
@@ -65,25 +65,36 @@ library(ref_genome, character.only = TRUE)
 ## Get the type occurrences for all VCF objects.
 type_occurrences = mut_type_occurrences(grl, ref_genome)
 
-## Plot the relative point mutation spectrum per sample type and per genomic region
-plot_spectrum_region(type_occurrences, by = tissue)
+## Plot the relative point mutation spectrum per genomic region
+plot_spectrum_region(type_occurrences)
 
-## Plot the relative point mutation spectrum per sample type and per genomic region,
+## Include the individual sample points
+plot_spectrum_region(type_occurrences, indv_points = TRUE)
+
+## Plot the relative point mutation spectrum per genomic region,
 ## but normalize only for the samples
-plot_spectrum_region(type_occurrences, by = tissue, mode = "relative_sample")
+plot_spectrum_region(type_ocurrences, mode = "relative_sample")
 
-## Plot the absolute point mutation spectrum per sample type and per genomic region
-plot_spectrum_region(type_occurrences, by = tissue, mode = "absolute")
+## Plot the absolute point mutation spectrum per genomic region
+plot_spectrum_region(type_occurrences, mode = "absolute")
 
 ## Plot the point mutations spectrum with different error bars
 plot_spectrum_region(type_occurrences, by = tissue, error_bars = "stdev")
 
+## Plot the relative point mutation spectrum per sample type and per genomic region
+## Determine tissue names
+tissue <- c("colon", "colon", "colon",
+            "intestine", "intestine", "intestine",
+            "liver", "liver", "liver")
+plot_spectrum_region(type_occurrences, by = tissue)
+
+## Plot the relative point mutation spectrum per individual sample and per genomic region
+## Determine sample names
 sample_names <- c(
 "colon1", "colon2", "colon3",
 "intestine1", "intestine2", "intestine3",
 "liver1", "liver2", "liver3")
 
-## Plot the point mutation spectrum per individual sample and per genomic region
 plot_spectrum_region(type_occurrences, by = sample_names, error_bars = "none")
 
 

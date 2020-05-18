@@ -26,6 +26,9 @@ output_absolute = plot_spectrum_region(type_occurrences, mode = "absolute")
 output_stdev = plot_spectrum_region(type_occurrences, error_bars = "stdev")
 output_sem = plot_spectrum_region(type_occurrences, error_bars = "SEM")
 
+#Plot including the sample points themselves
+output_indv = plot_spectrum_region(type_occurrences, indv_points = TRUE)
+
 #Plot per tissue
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
@@ -46,6 +49,7 @@ test_that("Output has correct class",{
     expect_true(inherits(output_absolute, c("gg")))
     expect_true(inherits(output_stdev, c("gg")))
     expect_true(inherits(output_sem, c("gg")))
+    expect_true(inherits(output_indv, c("gg")))
     expect_true(inherits(output_tissue, c("gg")))
     expect_true(inherits(output_sample, c("gg")))
 })
