@@ -10,8 +10,7 @@
 #' @return A data.frame with the total number of mutations and relative
 #' contribution within group per base substitution type and strand 
 #'
-#' @importFrom stats aggregate
-#' @importFrom reshape2 melt
+#' @importFrom magrittr %>% 
 #'
 #' @examples
 #' ## See the 'mut_matrix_stranded()' example for how we obtained the
@@ -36,40 +35,32 @@
 #'
 #' @export
 
-strand_occurrences = function(mut_mat_s, by)
+strand_occurrences = function(mut_mat_s, by = NA)
 {
-    df = t(mut_mat_s)
-
-    # check if grouping parameter by was provided, if not group by all
-    if(missing(by)){by = rep("all", nrow(df))}
-
-    # sum by group
-    x = stats::aggregate(df, by=list(by), FUN=sum) 
-
-    # add group as rownames
-    rownames(x) = x[,1]
-    x = x[,-1]
-
-    # calculate relative contribution within group
-    x_r = x / rowSums(x)
-
-    # get strand from rownames
-    strand = unlist(lapply( strsplit(rownames(mut_mat_s), "-") , function(x) x[2]))
-    # get substitutions from rownames
-    substitutions = substring(rownames(mut_mat_s), 3, 5)
+    #Make data long
+    tb_per_sample = mut_mat_s %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column("type_strand") %>% 
+        tidyr::pivot_longer(-type_strand, values_to = "no_mutations", names_to = "sample") %>% 
+        tidyr::separate(type_strand, into = c("type", "strand"), sep = "-") %>% 
+        dplyr::mutate(type = str_replace(type, ".*\\[(.*)\\].*", "\\1"))
     
-    # sum per substition per strand
-    x2 = melt(aggregate(t(x), by = list(substitutions, strand), FUN=sum))
-    x2_r = melt(aggregate(t(x_r), by = list(substitutions, strand), FUN=sum))
-    colnames(x2) = c("type", "strand", "group", "no_mutations")
-    colnames(x2_r) = c("type", "strand", "group", "relative_contribution")
-
-    # combine relative and absolute
-    y = merge(x2, x2_r)
-
-    # reorder group, type, strand
-    y = y[,c(3,1,2,4,5)]
-    y = y[order(y$group, y$type),]
-
-    return(y)
+    #Add grouping info
+    tb_by = tibble::tibble("sample" = unique(tb_per_sample$sample),
+                           "by" = by)
+    tb_per_sample = tb_per_sample %>% 
+        dplyr::left_join(tb_by, by = "sample")
+    
+    #Summarise per group
+    tb = tb_per_sample %>% 
+        dplyr::group_by(by, type, strand) %>% #Summarise the number of mutations per group
+        dplyr::summarise(no_mutations = sum(no_mutations)) %>%
+        dplyr::ungroup() %>% 
+        dplyr::group_by(by) %>% #Calculate relative per group. NOT per sample.
+        dplyr::mutate(relative_contribution = no_mutations / sum(no_mutations)) %>% 
+        dplyr::ungroup() %>%
+        dplyr::rename(group = by) %>% 
+        dplyr::mutate(group = factor(group, levels = unique(group))) #Turn group into factor
+        
+    return(tb)
 }

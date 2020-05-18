@@ -4,7 +4,7 @@
 \alias{strand_occurrences}
 \title{Count occurrences per base substitution type and strand}
 \usage{
-strand_occurrences(mut_mat_s, by)
+strand_occurrences(mut_mat_s, by = NA)
 }
 \arguments{
 \item{mut_mat_s}{192 feature mutation count matrix, result from
