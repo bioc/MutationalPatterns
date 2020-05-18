@@ -58,21 +58,25 @@ plot_strand = function(strand_bias_df, mode = c("relative", "absolute"), colors 
         y_lab = "Total number of mutations"
     }
     
-    #Create plot
-    plot = ggplot(strand_bias_df, aes(x=type,
-                                        y=y_vals,
-                                        fill=type,
-                                        alpha=strand)) +
-        geom_bar(stat="identity",
-                    position = "dodge",
-                    colour="black",
-                    cex=0.5) + 
-        scale_fill_manual(values= colors) +
-        scale_alpha_discrete(range = c(1, 0.4)) +
-        labs(y = y_lab, x = "") +
-        facet_grid(. ~ group) +
-        theme_bw() +
-        scale_x_discrete(breaks=NULL)
-    
+    #Create plot. Warnings about using alpha as a discrete variable are muffled.
+    withCallingHandlers({
+        plot = ggplot(strand_bias_df, aes(x=type,
+                                            y=y_vals,
+                                            fill=type,
+                                            alpha=strand)) +
+            geom_bar(stat="identity",
+                        position = "dodge",
+                        colour="black",
+                        cex=0.5) + 
+            scale_fill_manual(values= colors) +
+            scale_alpha_discrete(range = c(1, 0.4)) +
+            labs(y = y_lab, x = "") +
+            facet_grid(. ~ group) +
+            theme_bw() +
+            scale_x_discrete(breaks=NULL)
+    }, warning = function(w) {
+        if (grepl("Using alpha for a discrete variable is not advised.", conditionMessage(w)))
+            invokeRestart("muffleWarning")
+    })
     return(plot)
 }
