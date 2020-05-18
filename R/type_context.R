@@ -38,8 +38,13 @@ type_context = function(vcf, ref_genome)
         return(res)
     }
 
+    #Get the mut context
     mut_context = mut_context(vcf, ref_genome)
+    
+    #Get the mutations
     muts = mutations_from_vcf(vcf)
+    
+    #Get the 6 base mutation types
     types = mut_type(vcf)
 
     # find the mutations for which the context needs to be adjusted
