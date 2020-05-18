@@ -9,6 +9,7 @@ plot_spectrum(
   CT = FALSE,
   by = NA,
   indv_points = FALSE,
+  error_bars = c("95\%_CI", "stdev", "SEM", "none"),
   colors = NA,
   legend = TRUE
 )
@@ -23,6 +24,12 @@ sites, default = FALSE}
 
 \item{indv_points}{Whether to plot the individual samples 
 as points, default = FALSE}
+
+\item{error_bars}{The type of error bars to plot.
+* '95%_CI' for 95% Confidence intervals (default);
+* 'stdev' for standard deviations;
+* 'SEM' for the standard error of the mean (NOT recommended);
+* 'none' Do not plot any error bars;}
 
 \item{colors}{Optional color vector with 7 values}
 
@@ -57,8 +64,8 @@ plot_spectrum(type_occurrences, CT = TRUE)
 ## You can also include individual sample points.
 plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE)
 
-## Or without legend
-plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
+## You can also change the type of error bars
+plot_spectrum(type_occurrences, error_bars = "stdev")
 
 ## Or plot spectrum per tissue
 tissue <- c("colon", "colon", "colon",
@@ -66,6 +73,9 @@ tissue <- c("colon", "colon", "colon",
             "liver", "liver", "liver")
 
 plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
+
+## Or plot the spectrum per sample. Error bars are set to 'none', because they can't be plotted.
+plot_spectrum(type_occurrences, by = names(vcfs), CT = TRUE, error_bars = "none")
 
 ## You can also set custom colors.
 my_colors = c("pink", "orange", "blue", "lightblue",

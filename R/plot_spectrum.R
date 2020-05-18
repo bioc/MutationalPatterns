@@ -6,6 +6,11 @@
 #' @param by Optional grouping variable
 #' @param indv_points Whether to plot the individual samples 
 #' as points, default = FALSE 
+#' @param error_bars The type of error bars to plot.
+#'              * '95%_CI' for 95% Confidence intervals (default);
+#'              * 'stdev' for standard deviations;
+#'              * 'SEM' for the standard error of the mean (NOT recommended);
+#'              * 'none' Do not plot any error bars;
 #' @param colors Optional color vector with 7 values
 #' @param legend Plot legend, default = TRUE
 #' @return Spectrum plot
@@ -36,8 +41,8 @@
 #' ## You can also include individual sample points.
 #' plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE)
 #'
-#' ## Or without legend
-#' plot_spectrum(type_occurrences, CT = TRUE, legend = FALSE)
+#' ## You can also change the type of error bars
+#' plot_spectrum(type_occurrences, error_bars = "stdev")
 #'
 #' ## Or plot spectrum per tissue
 #' tissue <- c("colon", "colon", "colon",
@@ -45,6 +50,9 @@
 #'             "liver", "liver", "liver")
 #'
 #' plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
+#'
+#' ## Or plot the spectrum per sample. Error bars are set to 'none', because they can't be plotted.
+#' plot_spectrum(type_occurrences, by = names(vcfs), CT = TRUE, error_bars = "none")
 #'
 #' ## You can also set custom colors.
 #' my_colors = c("pink", "orange", "blue", "lightblue",
@@ -62,13 +70,15 @@
 #'
 #' @export
 
-plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALSE, colors = NA, legend = TRUE)
+plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALSE, 
+                         error_bars = c("95%_CI", "stdev", "SEM", "none"), colors = NA, legend = TRUE)
 {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
     value = nmuts = sub_type = variable = error_pos = stdev = total_mutations = NULL
     x = total_individuals = NULL
 
+    error_bars = match.arg(error_bars)
 
     # If colors parameter not provided, set to default colors
     if (is_na(colors))
@@ -104,6 +114,8 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALS
       dplyr::summarise(sub_type = sub_type[[1]], mean = mean(value), stdev = stats::sd(value),
                        total_individuals = sum(value), total_mutations = sum(nmuts)) %>% 
       dplyr::mutate(total_individuals = sum(total_individuals), total_mutations = sum(total_mutations)) %>% 
+      dplyr::mutate(sem = stdev/sqrt(total_individuals),
+                    error_95 = ifelse(total_individuals > 1, qt(0.975, df = total_individuals-1)*sem, NA)) %>% #Calc 95% CI and sem
       dplyr::ungroup() %>% 
       dplyr::mutate(total_mutations = prettyNum(total_mutations, big.mark = ","), #Make pretty and add subtypes
                     total_mutations = paste("No. mutations = ", total_mutations),
@@ -143,16 +155,31 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALS
                 panel.grid.major.x = element_blank())
     
     if (indv_points == TRUE){
+      #Add total_mutations column, which is necessary for faceting later
+      tb_per_sample = dplyr::left_join(tb_per_sample, 
+                                       tb[,c("by", "variable", "total_mutations")], 
+                                       by = c("by", "variable"))
       plot = plot +
         geom_jitter(data = tb_per_sample, aes(y = value), height = 0, width = 0.3, colour = "grey23")
     }
     
     # check if standard deviation error bars can be plotted
-    if(sum(is.na(tb$stdev)) > 0)
-      warning("No standard deviation error bars can be plotted, because there is only one sample per mutation spectrum")
-    else
-      plot = plot + geom_errorbar(aes(ymin=error_pos-stdev, 
-                                      ymax=error_pos+stdev), width=0.2)
+    if(sum(is.na(tb$stdev)) > 0 & error_bars != "none"){
+      warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
+              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", call. = F)
+    }
+    else{
+      if (error_bars == "stdev"){
+        plot = plot + geom_errorbar(aes(ymin=error_pos-stdev, 
+                                        ymax=error_pos+stdev), width=0.2)
+      } else if (error_bars == "95%_CI"){
+        plot = plot + geom_errorbar(aes(ymin=error_pos-error_95, 
+                                        ymax=error_pos+error_95), width=0.2)
+      } else if (error_bars == "SEM"){
+        plot = plot + geom_errorbar(aes(ymin=error_pos-sem, 
+                                        ymax=error_pos+sem), width=0.2)
+      }
+    }
     
       
     # Facetting
