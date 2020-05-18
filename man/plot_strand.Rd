@@ -37,10 +37,10 @@ tissue <- c("colon", "colon", "colon",
 
 strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 
-#' ## Plot the strand in relative mode.
+## Plot the strand in relative mode.
 strand_plot = plot_strand(strand_counts)
 
-#' ## Or absolute mode.
+## Or absolute mode.
 strand_plot = plot_strand(strand_counts, mode = "absolute")
 
 }
