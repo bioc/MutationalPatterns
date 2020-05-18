@@ -39,57 +39,40 @@
 #'
 #' @export
 
-plot_strand = function(strand_bias_df, mode = "relative", colors)
+plot_strand = function(strand_bias_df, mode = c("relative", "absolute"), colors = NA)
 {
     # if colors parameter not provided, set to default colors
-    if (missing(colors))
+    if (is_na(colors))
         colors=COLORS6
+    mode = match.arg(mode)
 
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
-    type = NULL
-    relative_contribution = NULL
-    no_mutations = NULL
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    type = relative_contribution = no_mutations = NULL
 
-    # Plot relative contribution within each group
-    if(mode == "relative")
-    {
-        plot = ggplot(strand_bias_df, aes(x=type,
-                                            y=relative_contribution,
-                                            fill=type,
-                                            alpha=strand)) +
-            geom_bar(stat="identity",
-                        position = "dodge",
-                        colour="black",
-                        cex=0.5) + 
-            scale_fill_manual(values= colors) +
-            scale_alpha_discrete(range = c(1, 0.4)) +
-            ylab("Relative contribution") +
-            facet_grid(. ~ group) +
-            theme_bw() +
-            scale_x_discrete(breaks=NULL) +
-            xlab("")
+    if (mode == "relative"){
+        strand_bias_df$y_vals = strand_bias_df$relative_contribution
+        y_lab = "Relative contribution"
+    } else if (mode == "absolute"){
+        strand_bias_df$y_vals = strand_bias_df$no_mutations
+        y_lab = "Total number of mutations"
     }
-
-    # Plot absolute contribution within each group
-    else if (mode == "absolute")
-    {
-        plot = ggplot(strand_bias_df, aes(x=type,
-                                            y=no_mutations,
-                                            fill=type,
-                                            alpha=strand)) +
-            geom_bar(stat="identity",
-                        position = "dodge",
-                        colour="black",
-                        cex=0.5) +
-            scale_fill_manual(values= colors) +
-            scale_alpha_discrete(range = c(1, 0.4)) +
-            ylab("Total number of mutations") +
-            facet_grid(. ~ group) +
-            theme_bw() +
-            scale_x_discrete(breaks=NULL) +
-            xlab("")
-    }
-
+    
+    #Create plot
+    plot = ggplot(strand_bias_df, aes(x=type,
+                                        y=y_vals,
+                                        fill=type,
+                                        alpha=strand)) +
+        geom_bar(stat="identity",
+                    position = "dodge",
+                    colour="black",
+                    cex=0.5) + 
+        scale_fill_manual(values= colors) +
+        scale_alpha_discrete(range = c(1, 0.4)) +
+        labs(y = y_lab, x = "") +
+        facet_grid(. ~ group) +
+        theme_bw() +
+        scale_x_discrete(breaks=NULL)
+    
     return(plot)
 }
