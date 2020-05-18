@@ -4,7 +4,7 @@
 \alias{plot_strand}
 \title{Plot strand per base substitution type}
 \usage{
-plot_strand(strand_bias_df, mode = "relative", colors)
+plot_strand(strand_bias_df, mode = c("relative", "absolute"), colors = NA)
 }
 \arguments{
 \item{strand_bias_df}{data.frame, result from strand_bias function}
