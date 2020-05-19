@@ -8,14 +8,12 @@
 #' @param nrun Number of iterations, default = 200
 #' @return Named list of mutation matrix, signatures and signature contribution
 #'
-#' @import NMF
-#'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 #'                     package="MutationalPatterns"))
 #'
-#' ## This function is computational intensive.
+#' ## This function is computationally intensive.
 #' # nmf_res <- extract_signatures(mut_mat, rank = 2)
 #'
 #' @seealso
@@ -37,7 +35,7 @@ extract_signatures = function(mut_matrix, rank, nrun = 200)
                     "samples in the input matrix.") )
 
     # Calculate NMF
-    res = nmf(mut_matrix, rank=rank, method="brunet", nrun=nrun, seed=123456)
+    res = NMF::nmf(mut_matrix, rank=rank, method="brunet", nrun=nrun, seed=123456)
 
     # Find signatures and contribution of signatures
     signatures = NMF::basis(res)
