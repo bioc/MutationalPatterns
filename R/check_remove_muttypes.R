@@ -293,12 +293,13 @@ not_gr_or_grl = function(arg){
 check_chroms = function(grl, ref_genome){
     if (inherits(grl, "CompressedGRangesList")){
         gr = BiocGenerics::unlist(grl)
-        return(grl)
-    } else if (!inherits(grl, "GRanges")){
+    } else if (inherits(grl, "GRanges")){
+        gr = grl
+    } else{
         not_gr_or_grl(grl)
     }
     
-    
+    #Get seq names
     gr_seqnames = as.vector(seqnames(gr))
     ref = get(ref_genome)
     ref_seqnames = seqnames(ref)
