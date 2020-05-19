@@ -6,17 +6,18 @@
 \usage{
 plot_contribution(
   contribution,
-  signatures,
-  index = c(),
+  signatures = NA,
+  index = NA,
   coord_flip = FALSE,
-  mode = "relative",
-  palette = c()
+  mode = c("relative", "absolute"),
+  palette = NA
 )
 }
 \arguments{
 \item{contribution}{Signature contribution matrix}
 
-\item{signatures}{Signature matrix}
+\item{signatures}{Signature matrix. 
+Neccessary when plotting NMF results in "absolute" mode}
 
 \item{index}{optional sample subset parameter}
 
@@ -33,13 +34,10 @@ to generate a palette.}
 Stacked barplot with contribution of each signature for each sample
 }
 \description{
-Plot contribution of signatures
+Plot contribution of signatures. Can be used on both the results of a NMF
+and on the results of signature refitting.
 }
 \examples{
-## See the 'mut_matrix()' example for how we obtained the following
-## mutation matrix.
-mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                                package="MutationalPatterns"))
 
 ## Extracting signatures can be computationally intensive, so
 ## we use pre-computed data generated with the following command:
@@ -52,25 +50,36 @@ nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
 colnames(nmf_res$signatures) = c("Signature A", "Signature B")
 rownames(nmf_res$contribution) = c("Signature A", "Signature B")
 
-## The following are examples of contribution plots.
-plot_contribution(nmf_res$contribution,
-                    nmf_res$signature,
-                    mode = "relative")
+## Plot the relative contribution
+plot_contribution(nmf_res$contribution)
 
+## Plot the absolute contribution.
+## When plotting absolute NMF results, the signatures need to be included.
 plot_contribution(nmf_res$contribution,
                     nmf_res$signature,
                     mode = "absolute")
 
+
+## Only plot a subset of samples
 plot_contribution(nmf_res$contribution,
                     nmf_res$signature,
                     mode = "absolute",
                     index = c(1,2))
-
+## Flip the coordinates
 plot_contribution(nmf_res$contribution,
                     nmf_res$signature,
                     mode = "absolute",
                     coord_flip = TRUE)
 
+## You can also use the results of signature refitting.
+## Here we load some data as an example
+fit_res = readRDS(system.file("states/snv_refit.rds", 
+                    package="MutationalPatterns"))
+plot_contribution(fit_res$contribution)
+
+## Or again in absolute mode
+plot_contribution(fit_res$contribution, 
+                    mode = "absolute")
 }
 \seealso{
 \code{\link{extract_signatures}},
