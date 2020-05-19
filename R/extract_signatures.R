@@ -8,6 +8,8 @@
 #' @param nrun Number of iterations, default = 200
 #' @return Named list of mutation matrix, signatures and signature contribution
 #'
+#' @import NMF
+#'
 #' @examples
 #' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
