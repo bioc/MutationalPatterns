@@ -4,12 +4,12 @@
 \alias{plot_96_profile}
 \title{Plot 96 trinucleotide profile}
 \usage{
-plot_96_profile(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
+plot_96_profile(mut_matrix, colors = NA, ymax = 0.2, condensed = FALSE)
 }
 \arguments{
 \item{mut_matrix}{96 trinucleotide profile matrix}
 
-\item{colors}{6 value color vector}
+\item{colors}{Optional 6 value color vector.}
 
 \item{ymax}{Y axis maximum value, default = 0.2}
 
@@ -29,6 +29,9 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 
 ## Plot the 96-profile of three samples
 plot_96_profile(mut_mat[,c(1,4,7)])
+
+## Plot a condensed profile
+plot_96_profile(mut_mat[,c(1,4,7)], condensed = TRUE)
 
 }
 \seealso{
