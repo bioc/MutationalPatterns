@@ -4,7 +4,7 @@
 \alias{plot_192_profile}
 \title{Plot 192 trinucleotide profile}
 \usage{
-plot_192_profile(mut_matrix, colors, ymax = 0.2, condensed = FALSE)
+plot_192_profile(mut_matrix, colors = NA, ymax = 0.2, condensed = FALSE)
 }
 \arguments{
 \item{mut_matrix}{192 trinucleotide profile matrix}
@@ -27,10 +27,15 @@ Plot relative contribution of 192 trinucleotides
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
                                     package="MutationalPatterns"))
 
-## Extract the signatures.
-## This is a computationally intensive task, so we load a precomputed
-## version instead.
-# nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
+## Plot profile for some of the samples
+plot_192_profile(mut_mat_s[,c(1,4,7)])
+
+## You can create a more condensed version of the plot
+plot_192_profile(mut_mat_s[,c(1,4,7)], condensed = TRUE)
+
+## It's also possible to plot signatures, for example signatures
+generated with NMF
+## See 'extract_signatures()' on how we obtained these signatures.
 nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
                                     package="MutationalPatterns"))
 
@@ -43,5 +48,6 @@ plot_192_profile(nmf_res_strand$signatures)
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},
-\code{\link{extract_signatures}}
+\code{\link{extract_signatures}},
+\code{\link{plot_96_profile}}
 }
