@@ -73,13 +73,13 @@ plot_spectrum_region(type_occurrences, indv_points = TRUE)
 
 ## Plot the relative point mutation spectrum per genomic region,
 ## but normalize only for the samples
-plot_spectrum_region(type_ocurrences, mode = "relative_sample")
+plot_spectrum_region(type_occurrences, mode = "relative_sample")
 
 ## Plot the absolute point mutation spectrum per genomic region
 plot_spectrum_region(type_occurrences, mode = "absolute")
 
 ## Plot the point mutations spectrum with different error bars
-plot_spectrum_region(type_occurrences, by = tissue, error_bars = "stdev")
+plot_spectrum_region(type_occurrences, error_bars = "stdev")
 
 ## Plot the relative point mutation spectrum per sample type and per genomic region
 ## Determine tissue names
