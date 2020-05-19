@@ -35,7 +35,12 @@ plot_mbs_contexts = function(counts, same_y = T){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = size = NULL
     
-    counts = tidyr::gather(counts, key = "sample", value = "count", -size)
+    counts = counts %>% 
+        as.data.frame() %>% 
+        tibble::rownames_to_column("size") %>%
+        tidyr::pivot_longer(-size, names_to = "sample", values_to = "count") %>% 
+        dplyr::mutate(size = factor(size, levels = unique(size)),
+                      sample = factor(sample, levels = unique(sample)))
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = round(sum(count)))

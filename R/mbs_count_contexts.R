@@ -43,8 +43,11 @@ count_mbs_contexts = function(grl){
         not_gr_or_grl(grl)
     }
     counts = cbind(categories, counts)
-    counts = dplyr::mutate(counts, size = factor(size, levels = size)) %>% 
-        tibble::as_tibble()
+    
+    #Turn output into matrix
+    counts = counts %>% 
+        tibble::column_to_rownames("size") %>% 
+        as.matrix()
     return(counts)
 }
 
@@ -69,16 +72,18 @@ count_mbs_contexts_gr = function(gr, categories){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = size = NULL
     
-    counts_tb = gr$REF %>% 
+    #Create count table
+    counts_tb = gr$REF %>% #Determine different sizes
         BiocGenerics::width() %>% 
         tibble::enframe(value = "size") %>% 
         dplyr::select(-name) %>%
         dplyr::mutate(size = ifelse(size >= 10, "10+", size),
                       size = as.character(size)) %>% 
-        dplyr::group_by(size) %>% 
+        dplyr::group_by(size) %>% #Count number muts per size
         dplyr::summarise(count = dplyr::n()) %>% 
         dplyr::right_join(categories, by = "size") %>% 
         dplyr::mutate(count = ifelse(is.na(count), 0, count)) %>% 
         dplyr::select(-size)
+    
     return(counts_tb)
 }
