@@ -76,7 +76,7 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALS
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
     value = nmuts = sub_type = variable = error_pos = stdev = total_mutations = NULL
-    x = total_individuals = NULL
+    x = total_individuals = sem = error_95 = NULL
 
     error_bars = match.arg(error_bars)
 

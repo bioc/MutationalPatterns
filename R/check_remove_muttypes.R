@@ -328,7 +328,7 @@ check_chroms = function(grl, ref_genome){
     ref_gr = GenomicRanges::GRanges(as.vector(seqnames(ref)), IRanges::IRanges(start = 1, end = seqlengths(ref)))
     hits = GenomicRanges::findOverlaps(gr, ref_gr)
     if (length(hits)){
-        gr_nomatch = gr[-queryHits(hits)]
+        gr_nomatch = gr[-S4Vectors::queryHits(hits)]
     } else{
         gr_nomatch = gr
     }

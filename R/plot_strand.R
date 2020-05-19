@@ -48,7 +48,7 @@ plot_strand = function(strand_bias_df, mode = c("relative", "absolute"), colors 
 
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    type = relative_contribution = no_mutations = NULL
+    type = relative_contribution = no_mutations = y_vals = NULL
 
     if (mode == "relative"){
         strand_bias_df$y_vals = strand_bias_df$relative_contribution

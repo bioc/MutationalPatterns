@@ -96,7 +96,7 @@ plot_contribution = function(contribution,
     #Make data long. Also create factors for ordering.
     tb = contribution %>% 
         as.data.frame() %>% 
-        rownames_to_column("Signature") %>% 
+        tibble::rownames_to_column("Signature") %>% 
         tidyr::pivot_longer(-Signature, names_to = "Sample", values_to = "Contribution") %>% 
         dplyr::mutate(Sample = factor(Sample, levels = unique(Sample)),
                       Signature = factor(Signature, levels = unique(Signature)))

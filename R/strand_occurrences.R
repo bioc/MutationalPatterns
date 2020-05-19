@@ -37,13 +37,18 @@
 
 strand_occurrences = function(mut_mat_s, by = NA)
 {
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    type_strand = no_mutations = group = NULL
+    
     #Make data long
     tb_per_sample = mut_mat_s %>% 
         as.data.frame() %>% 
         tibble::rownames_to_column("type_strand") %>% 
         tidyr::pivot_longer(-type_strand, values_to = "no_mutations", names_to = "sample") %>% 
         tidyr::separate(type_strand, into = c("type", "strand"), sep = "-") %>% 
-        dplyr::mutate(type = str_replace(type, ".*\\[(.*)\\].*", "\\1"))
+        dplyr::mutate(type = stringr::str_replace(type, ".*\\[(.*)\\].*", "\\1"))
     
     #Add grouping info
     tb_by = tibble::tibble("sample" = unique(tb_per_sample$sample),
