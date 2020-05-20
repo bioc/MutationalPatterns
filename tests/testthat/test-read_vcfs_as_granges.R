@@ -45,7 +45,7 @@ test_that("unfiltered works", {
     library(ref_genome, character.only = TRUE)
 
     input <- read_vcfs_as_granges(vcfs, sample_names, ref_genome, "none")
-    expected <- seqlevels(get(ref_genome))
+    expected <- seqlevels(BSgenome::getBSgenome(ref_genome))
 
     proper_subset <- all(seqlevels(input) %in% expected)
     expect_equal(proper_subset, TRUE)

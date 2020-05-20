@@ -7,7 +7,6 @@
 #' @return Character vector with the context of the base substitutions
 #' @importFrom GenomeInfoDb seqlevels
 #' @importFrom GenomeInfoDb seqnames
-#' @importFrom Biostrings getSeq
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -33,7 +32,7 @@ mut_context = function(vcf, ref_genome)
 
     ranges = resize(vcf, 3, fix = "center")
 
-    vcf_context = as.character(getSeq(get(ref_genome),
+    vcf_context = as.character(Biostrings::getSeq(BSgenome::getBSgenome(ref_genome),
                                         seqnames(vcf),
                                         start(vcf) - 1,
                                         end(vcf) + 1))

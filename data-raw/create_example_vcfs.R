@@ -42,7 +42,7 @@ create_1_mnv = function(mnv_length, vcf){
     old_seqnames = as.vector(seqnames(gr))
     seqlevelsStyle(gr) = "UCSC"
     seqlevels(gr) = str_c("chr", c(1:22, "X", "Y"))
-    refs = getSeq(get(ref_genome), gr)
+    refs = Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), gr)
     ref(mnv_variant) = refs
     
     possible_alts = purrr::map(as.vector(refs), ~setdiff(c("A", "C", "T", "G"), .x))

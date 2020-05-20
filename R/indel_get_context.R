@@ -344,7 +344,7 @@ get_big_dels = function(gr, mut_size, ref_genome){
     l_flank = l_flank %>% 
         GenomicRanges::trim() %>% 
         GenomicRanges::shift(1) #Trim the ranges that are extended beyond the actual length of the chromosome. #Add 1 base, because the first base in the granges obj is not deleted and should be used in the flank.
-    rev_l_seq = BSgenome::getSeq(eval(as.symbol(ref_genome)), l_flank) %>% 
+    rev_l_seq = Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), l_flank) %>% 
         reverse()
     rev_l_seq_s = strsplit(as.character(rev_l_seq), "")
     
@@ -410,6 +410,6 @@ get_extended_sequence = function(gr, flank_dist, ref_genome){
             invokeRestart("muffleWarning")
     })
     gr_extended = GenomicRanges::trim(gr_extended) #Trim the ranges that are extended beyond the actual length of the chromosome.
-    seq = BSgenome::getSeq(eval(as.symbol(ref_genome)), gr_extended)
+    seq = Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), gr_extended)
     return(seq)
 }

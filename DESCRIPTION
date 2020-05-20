@@ -15,6 +15,7 @@ Imports:
     parallel,
     S4Vectors,
     BiocGenerics (>= 0.18.0),
+    BSgenome (>= 1.40.0),
     VariantAnnotation (>= 1.18.1),
     reshape2 (>= 1.4.1),
     plyr (>= 1.8.3),
@@ -37,7 +38,6 @@ Depends:
     GenomicRanges (>= 1.24.0),
     NMF (>= 0.20.6)
 Suggests:
-    BSgenome (>= 1.40.0),
     BSgenome.Hsapiens.1000genomes.hs37d5 (>= 0.99.1),
     BSgenome.Hsapiens.UCSC.hg19 (>= 1.4.0),
     BiocStyle (>= 2.0.3),

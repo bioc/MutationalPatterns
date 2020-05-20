@@ -301,7 +301,7 @@ check_chroms = function(grl, ref_genome){
     
     #Get seq names
     gr_seqnames = as.vector(seqnames(gr))
-    ref = get(ref_genome)
+    ref = BSgenome::getBSgenome(ref_genome)
     ref_seqnames = seqnames(ref)
     
     #Check if there is any overlap in chromosome names

@@ -75,7 +75,7 @@ read_vcfs_as_granges <- function(vcf_files,
         stop("Please provide the same number of sample names as VCF files", call. = F)
     
     # Check the class of the reference genome
-    genome <- base::get(genome)
+    genome <- BSgenome::getBSgenome(genome)
     if (!inherits(genome, "BSgenome")){
         stop("Please provide the name of a BSgenome object.", call. = F)
     }
