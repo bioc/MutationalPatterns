@@ -23,7 +23,7 @@
 #' plot_192_profile(mut_mat_s[,c(1,4,7)], condensed = TRUE)
 #' 
 #' ## It's also possible to plot signatures, for example signatures
-#' generated with NMF
+#' ## generated with NMF
 #' ## See 'extract_signatures()' on how we obtained these signatures.
 #' nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
 #'                                     package="MutationalPatterns"))
@@ -45,7 +45,7 @@ plot_192_profile = function(mut_matrix, colors = NA, ymax = 0.2, condensed = FAL
 {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  freq = full_context = substitution = context = strand = NULL
+  freq = full_context = substitution = context = strand = full_context_strand = NULL
 
   # Check color vector length
   # Colors for plotting

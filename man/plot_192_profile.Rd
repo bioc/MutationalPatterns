@@ -34,7 +34,7 @@ plot_192_profile(mut_mat_s[,c(1,4,7)])
 plot_192_profile(mut_mat_s[,c(1,4,7)], condensed = TRUE)
 
 ## It's also possible to plot signatures, for example signatures
-generated with NMF
+## generated with NMF
 ## See 'extract_signatures()' on how we obtained these signatures.
 nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
                                     package="MutationalPatterns"))
