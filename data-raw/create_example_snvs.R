@@ -40,7 +40,11 @@ saveRDS(repli_strand_granges, "inst/states/repli_strand.rds")
 mut_mat_repli = mut_matrix_stranded(grl, ref_genome, repli_strand_granges, mode = "replication")
 saveRDS(mut_mat_repli, "inst/states/mut_mat_repli.rds")
 
-
+#Extract signatures
+nmf_res = extract_signatures(mut_mat, rank = 2)
+saveRDS(nmf_res, "inst/states/nmf_res_data.rds")
+nmf_res_strand = extract_signatures(mut_mat_s, rank = 2)
+saveRDS(nmf_res_strand, "inst/states/nmf_res_strand_data.rds")
 
 #Refit to signatures
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
