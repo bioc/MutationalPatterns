@@ -40,7 +40,7 @@ plot_enrichment_depletion = function(df){
 
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    value = variable = observed = expected = significant = NULL
+    value = variable = observed = expected = significant = region = NULL
  
 
     # Part 1: No. mutations expected and observed per region

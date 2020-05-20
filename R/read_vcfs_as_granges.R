@@ -228,7 +228,7 @@ filter_seqlevels = function(gr, group, genome){
     # available in the reference genome.  Therefore, we only take the
     # chromosomes that are actually available in the VCF file,
     # belonging to the filter group.
-    groups <- BiocGenerics::intersect(groups, seqlevels(gr))
+    groups <- BiocGenerics::intersect(groups, GenomeInfoDb::seqlevels(gr))
     
     # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
     # on variants, yet, remove all variants that aren't in the filter
