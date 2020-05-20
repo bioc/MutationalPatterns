@@ -4,7 +4,7 @@
 \alias{read_single_vcf_as_grange}
 \title{Read a single VCF file into a GRanges object}
 \usage{
-read_single_vcf_as_grange(vcf_file, genome, group)
+read_single_vcf_as_grange(vcf_file, genome, group, change_seqnames)
 }
 \arguments{
 \item{vcf_file}{A VCF file name}
@@ -20,6 +20,9 @@ of this group will be removed.  Possible values:
 * 'circular' for circular chromosomes;
 * 'none' for no filtering, which results in keeping all
   seqlevels from the VCF file.}
+
+\item{change_seqnames}{Boolean. Whether to change the seqnamesStyle of the vcf
+to that of the BSgenome object.}
 }
 \value{
 A GRanges object

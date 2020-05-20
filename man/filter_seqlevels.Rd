@@ -11,7 +11,6 @@ filter_seqlevels(gr, group, genome)
 
 \item{group}{Selector for a seqlevel group.  All seqlevels outside
 of this group will be removed.  Possible values:
-* 'all' for all chromosomes;
 * 'auto' for autosomal chromosomes;
 * 'sex' for sex chromosomes;
 * 'auto+sex' for autosomal + sex chromosomes (default);

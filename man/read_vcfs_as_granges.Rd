@@ -8,8 +8,9 @@ read_vcfs_as_granges(
   vcf_files,
   sample_names,
   genome,
-  group = "auto+sex",
-  type = c("snv", "indel", "dbs", "mbs", "all")
+  group = c("auto+sex", "auto", "sex", "circular", "all", "none"),
+  type = c("snv", "indel", "dbs", "mbs", "all"),
+  change_seqnames = TRUE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ Possible values:
 * 'dbs'
 * 'mbs'
 * 'all'}
+
+\item{change_seqnames}{Boolean. Whether to change the seqnamesStyle of the vcf
+to that of the BSgenome object. (default = TRUE)}
 }
 \value{
 A GRangesList containing the GRanges obtained from 'vcf_files'
