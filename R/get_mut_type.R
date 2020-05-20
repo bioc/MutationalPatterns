@@ -77,21 +77,16 @@ get_mut_type_gr = function(gr, type = c("snv", "indel", "dbs", "mbs")){
     gr = remove_indels(gr)
     gr_l = split_mbs_gr(gr)
     
-    if (type == "snv"){
+    not_mbs_f = names(gr_l) %in% c(1,2) #Determine which elements of the list are MNVs
+    if (type == "snv" & "1" %in% names(gr_l)){
         gr = gr_l$`1`
-    } else if (type == "dbs"){
+    } else if (type == "dbs" & "2" %in% names(gr_l)){
         gr = gr_l$`2`
-    } else if (type == "mbs"){
-        not_mbs_f = names(gr_l) %in% c(1,2) #Determine which elements of the list are MNVs
-        if (sum(!not_mbs_f) == 0){
-            gr = GenomicRanges::GRanges()
-        } else{
-            gr_l = gr_l[!not_mbs_f]
-            gr = unlist(GenomicRanges::GRangesList(gr_l))
-        }
-        if (is.null(gr)){
-            gr = GenomicRanges::GRanges()
-        }
+    } else if (type == "mbs" & sum(!not_mbs_f) != 0){
+        gr_l = gr_l[!not_mbs_f]
+        gr = unlist(GenomicRanges::GRangesList(gr_l))
+    } else{#Return empty gr when no variants are present.
+        gr = gr[0]
     }
     return(gr)
 }
@@ -128,6 +123,11 @@ split_mbs_gr = function(gr, merge_muts = T){
     
     #Validate input
     check_no_indels(gr)
+    
+    #Return empty grl when initial input is empty
+    if(!length(gr)){
+        return(GRangesList(gr))
+    }
     
     #Sort
     gr = BiocGenerics::sort(gr)
