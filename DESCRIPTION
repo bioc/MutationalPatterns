@@ -12,12 +12,10 @@ License: MIT + file LICENSE
 URL: https://doi.org/10.1186/s13073-018-0539-0
 Imports:
     stats,
-    parallel,
     S4Vectors,
     BiocGenerics (>= 0.18.0),
     BSgenome (>= 1.40.0),
     VariantAnnotation (>= 1.18.1),
-    reshape2 (>= 1.4.1),
     plyr (>= 1.8.3),
     dplyr (>= 0.8.3),
     tibble(>= 2.1.3),

@@ -5,8 +5,6 @@
 #' @param vcf A Granges object
 #' @param ref_genome Reference genome
 #' @return Character vector with the context of the base substitutions
-#' @importFrom GenomeInfoDb seqlevels
-#' @importFrom GenomeInfoDb seqnames
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
