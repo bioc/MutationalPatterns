@@ -33,30 +33,42 @@
 #' @importFrom magrittr %>% 
 #'
 #' @examples
-#' # The example data set consists of three colon samples, three intestine
-#' # samples and three liver samples.  So, to map each file to its appropriate
-#' # sample name, we create a vector containing the sample names:
+#' ## The example data set consists of three colon samples, three intestine
+#' ## samples and three liver samples.  So, to map each file to its appropriate
+#' ## sample name, we create a vector containing the sample names:
 #' sample_names <- c ( "colon1", "colon2", "colon3",
 #'                     "intestine1", "intestine2", "intestine3",
 #'                     "liver1", "liver2", "liver3" )
 #'
-#' # We assemble a list of files we want to load.  These files match the
-#' # sample names defined above.
+#' ## We assemble a list of files we want to load.  These files match the
+#' ## sample names defined above.
 #' vcf_files <- list.files(system.file("extdata", 
 #'                                     package="MutationalPatterns"),
 #'                                     pattern = "sample.vcf", full.names = TRUE)
 #'
-#' # Get a reference genome BSgenome object.
+#' ## Get a reference genome BSgenome object.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library("BSgenome")
 #' library(ref_genome, character.only = TRUE)
 #'
-#' # This function loads the files as GRanges objects.
-#' # For backwards compatability reasons it only loads SNVs by default
+#' ## This function loads the files as GRanges objects.
+#' ## For backwards compatability reasons it only loads SNVs by default
 #' vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
 #' 
-#' #To load all variant types use:
+#' ## To load all variant types use:
 #' vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome, type = "all")
+#' 
+#' ## Loading only indels can be done like this.
+#' 
+#' ## Select data containing indels. 
+#' vcf_fnames = list.files(system.file("extdata", package="MutationalPatterns"),
+#' pattern = "blood.*vcf", full.names = TRUE)
+#' sample_names = c("AC", "ACC55", "BCH")
+#' 
+#' ## Read data and select only the indels. 
+#' ## Other mutation types can be read in the same way.
+#' read_vcfs_as_granges(vcf_fnames, sample_names, ref_genome, type = "indel")
+#' 
 #' 
 #' @export
 read_vcfs_as_granges <- function(vcf_files, 
@@ -71,9 +83,9 @@ read_vcfs_as_granges <- function(vcf_files,
     group = match.arg(group)
     
     # Check sample names
-    if (length(vcf_files) != length(sample_names))
+    if (length(vcf_files) != length(sample_names)){
         stop("Please provide the same number of sample names as VCF files", call. = F)
-    
+    }
     # Check the class of the reference genome
     genome <- BSgenome::getBSgenome(genome)
     if (!inherits(genome, "BSgenome")){
