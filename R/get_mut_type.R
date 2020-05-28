@@ -164,7 +164,7 @@ split_mbs_gr = function(gr, merge_muts = T){
     full_muts_i_l = purrr::map2(start_i_muts, end_i_muts, seq)
     full_muts_i = unlist(full_muts_i_l)
     
-    #Merge dbs and mbs if the used wants this.
+    #Merge dbs and mbs if the user wants this.
     if (mut_l != 1 & merge_muts == T){
         gr_sub = purrr::map(full_muts_i_l, function(i_v) merge_muts(gr[i_v])) %>% 
             do.call(base::c, .)
