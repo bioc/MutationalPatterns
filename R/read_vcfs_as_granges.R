@@ -123,14 +123,21 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
     # Use VariantAnnotation's readVcf, but only store the
     # GRanges information in memory.  This speeds up the
     # loading significantly.
+    # Muffle the warning about duplicate keys.
     genome_name <- GenomeInfoDb::genome(genome)[[1]]
-    gr <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+    withCallingHandlers({
+        gr <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+    }, warning = function(w) {
+        if (grepl("duplicate keys in header will be forced to unique rownames", conditionMessage(w)))
+            invokeRestart("muffleWarning")
+    })
+    
     
     #Throw a warning when a file is empty. 
     #Return a empty GR, to prevent errors with changing the seqlevels.
     if (!length(gr)){
         warning(paste0("There were 0 variants (before filtering) found in the vcf file: ", vcf_file, 
-                       "\nYou might want to remove this sample from your analysis."))
+                       "\nYou might want to remove this sample from your analysis."), call. = F)
         return(gr)
     }
     
