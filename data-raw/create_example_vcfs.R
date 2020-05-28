@@ -82,9 +82,12 @@ decrease_vcf_size = function(vcf_fname){
     
     #Remove all but one sample
     tmp_name = "tmp.vcf"
+    tmp_name2 = "tmp2.vcf"
     writeVcf(vcf, tmp_name)
-    system(str_c("cut -f1-10 ", tmp_name, " > ", vcf_fname))
+    system(str_c("grep -v '##ALT' ", tmp_name, " > ", tmp_name2))
+    system(str_c("cut -f1-10 ", tmp_name2, " > ", vcf_fname))
     file.remove(tmp_name)
+    file.remove(tmp_name2)
     invisible(0)
     
 }
@@ -141,3 +144,9 @@ grl = purrr::map(vcf_l, granges) %>%
 seqlevelsStyle(grl) = "UCSC"
 seqlevels(grl, pruning.mode = "fine") = str_c("chr", c(1:22, "X"))
 saveRDS(grl, "inst/states/blood_grl.rds")
+
+
+#Create empty vcf
+vcf = vcf_l[[1]]
+vcf = vcf[0]
+writeVcf(vcf, "inst/extdata/empty.vcf")
