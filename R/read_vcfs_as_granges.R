@@ -124,7 +124,15 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
     # GRanges information in memory.  This speeds up the
     # loading significantly.
     genome_name <- GenomeInfoDb::genome(genome)[[1]]
-    vcf <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+    gr <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+    
+    #Throw a warning when a file is empty. 
+    #Return a empty GR, to prevent errors with changing the seqlevels.
+    if (!length(gr)){
+        warning(paste0("There were 0 variants (before filtering) found in the vcf file: ", vcf_file, 
+                       "\nYou might want to remove this sample from your analysis."))
+        return(gr)
+    }
     
     # Convert to a single chromosome naming standard.
     if (change_seqnames == T){
@@ -136,8 +144,8 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
                      to prevent this error.
                      However, you then have to make sure that the seqnames (chromosome names) are
                      the same between your vcfs and the reference BSgenome object.
-                     (The message of the internal error causing this problem is shown above.", call. = F)},
-            {GenomeInfoDb::seqlevelsStyle(vcf) <- GenomeInfoDb::seqlevelsStyle(genome)[1]}
+                     (The message of the internal error causing this problem is shown above.)", call. = F)},
+            {GenomeInfoDb::seqlevelsStyle(gr) <- GenomeInfoDb::seqlevelsStyle(genome)[1]}
         )
     }
     
@@ -150,22 +158,22 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
                      You can run this function with `group = 'all'`, to prevent this error.
                      (The message of the internal error causing this problem is shown above.)", 
                      call. = F)},
-            {vcf = filter_seqlevels(vcf, group, genome)}
+            {gr = filter_seqlevels(gr, group, genome)}
         )
     }
     
     #Check for duplicate variants
-    nr_duplicated = vcf %>% 
+    nr_duplicated = gr %>% 
         duplicated() %>% 
         sum()
     if (nr_duplicated){
         warning(paste0("There were ", nr_duplicated, " duplicated variants in vcf file: ",
                            vcf_file,
                            " They have been filtered out."), call. = F)
-        vcf = BiocGenerics::unique(vcf)
+        gr = BiocGenerics::unique(gr)
     }
     
-    return(vcf)
+    return(gr)
 }
 
 #' Filter a GRanges object based on seqlevels
