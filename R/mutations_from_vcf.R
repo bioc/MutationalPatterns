@@ -18,8 +18,10 @@
 #'
 #' @export
 
-mutations_from_vcf = function(vcf) 
-{
+mutations_from_vcf = function(vcf) {
+    
+    #Check that no indels are present.
+    check_no_indels(vcf)
     
     # Allow both uppercase and lowercase column names.
     vcf_cols = colnames(S4Vectors::mcols(vcf))
