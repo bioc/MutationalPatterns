@@ -28,7 +28,7 @@ mut_context = function(vcf, ref_genome)
     #Check that the seqnames of the gr and ref_genome match
     check_chroms(vcf, ref_genome)
 
-    ranges = resize(vcf, 3, fix = "center")
+    ranges = GenomicRanges::resize(vcf, 3, fix = "center")
 
     vcf_context = as.character(Biostrings::getSeq(BSgenome::getBSgenome(ref_genome),
                                         seqnames(vcf),
