@@ -28,7 +28,7 @@ mut_matrix = function (grl, ref_genome, vcf_list = NA) {
     
     if (!is_na(vcf_list)){
         warning("vcf_list is deprecated, use grl instead. 
-              The parameter grl is set equal to the parameter vcf_list.")
+              The parameter grl is set equal to the parameter vcf_list.", call. = F)
         grl <- vcf_list
     }
     
@@ -40,7 +40,7 @@ mut_matrix = function (grl, ref_genome, vcf_list = NA) {
     #Determine nr mutations per sample
     if (inherits(grl, "CompressedGRangesList")){
         gr_sizes = S4Vectors::elementNROWS(grl)
-        gr = unlist(grl)
+        gr = BiocGenerics::unlist(grl)
     } else if (inherits(grl, "GRanges")){
         gr = grl
         gr_sizes = length(gr)
