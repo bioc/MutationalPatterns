@@ -176,7 +176,7 @@ split_mbs_gr = function(gr, merge_muts = T){
     gr_l = list(gr_sub)
     names(gr_l) = mut_l
     
-    #Recurse on the rest mutations if there are still smaller mutions left.
+    #Recurse on the rest of the mutations if there are still smaller mutations left.
     gr = gr[-full_muts_i]
     if(length(gr) == 0){
         return(gr_l)

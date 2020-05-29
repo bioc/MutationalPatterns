@@ -25,6 +25,9 @@
 #'              * 'dbs'
 #'              * 'mbs'
 #'              * 'all'
+#'  This function assumes that dbs and mbs variants are present in the vcf as SNVs,
+#'  which are positioned next to each other. If your dbs/mbs variants are called
+#'  separately you should use type = 'all' to prevent incorrect filtering.
 #' @param change_seqnames Boolean. Whether to change the seqnamesStyle of the vcf
 #' to that of the BSgenome object. (default = TRUE)
 #' 

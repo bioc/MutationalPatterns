@@ -32,12 +32,15 @@ of this group will be removed.  Possible values:
   seqlevels from the VCF file.}
 
 \item{type}{The mutation type that will be loaded. All other variants will be filtered out.
-Possible values:
-* 'snv'
-* 'indel'
-* 'dbs'
-* 'mbs'
-* 'all'}
+            Possible values:
+            * 'snv'
+            * 'indel'
+            * 'dbs'
+            * 'mbs'
+            * 'all'
+This function assumes that dbs and mbs variants are present in the vcf as SNVs,
+which are positioned next to each other. If your dbs/mbs variants are called
+separately you should use type = 'all' to prevent incorrect filtering.}
 
 \item{change_seqnames}{Boolean. Whether to change the seqnamesStyle of the vcf
 to that of the BSgenome object. (default = TRUE)}
