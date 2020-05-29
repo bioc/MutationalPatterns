@@ -32,7 +32,7 @@ type_context = function(vcf, ref_genome)
     # Deal with empty GRanges objects.
     if (length (vcf) == 0)
     {
-        warning("Detected empty GRanges object.")
+        warning("Detected empty GRanges object.", call. = F)
         res = list(c(), c())
         names(res) = c("types", "context")
         return(res)

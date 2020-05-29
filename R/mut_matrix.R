@@ -48,7 +48,10 @@ mut_matrix = function (grl, ref_genome, vcf_list = NA) {
     } else{
         not_gr_or_grl(grl)
     }
+    #Determine type and context of all mutations
     type_context = type_context(gr, ref_genome)
+    
+    #Count the type and context to create the mut_mat
     mut_mat = mut_96_occurrences(type_context, gr_sizes)
     return(mut_mat)
 }
