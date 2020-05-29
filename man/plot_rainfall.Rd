@@ -40,7 +40,7 @@ Rainfall plot visualizes the types of mutations and intermutation distance
 Rainfall plots can be used to visualize the distribution of mutations
 along the genome or a subset of chromosomes. The distance of a mutation
 with the mutation prior to it (the intermutation distance) is plotted on
-the y-axis on a log scale.
+the y-axis on a log scale. The input GRanges are sorted before plotting.
 
 The colour of the points indicates the base substitution type.
 Clusters of mutations with lower intermutation distance represent mutation

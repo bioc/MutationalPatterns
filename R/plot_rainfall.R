@@ -5,7 +5,7 @@
 #' Rainfall plots can be used to visualize the distribution of mutations
 #' along the genome or a subset of chromosomes. The distance of a mutation
 #' with the mutation prior to it (the intermutation distance) is plotted on
-#' the y-axis on a log scale.
+#' the y-axis on a log scale. The input GRanges are sorted before plotting.
 #'
 #' The colour of the points indicates the base substitution type.
 #' Clusters of mutations with lower intermutation distance represent mutation
@@ -72,6 +72,9 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
                     "Please evaluate: seqinfo(vcf)\n",
                     "To add seqlengths to your vcf GRanges object use: seqlengths(vcf) <-  "))
     }
+    
+    #Sort
+    vcf = BiocGenerics::sort(vcf)
     
     # subset
     chr_length = chr_length[names(chr_length) %in% chromosomes]
