@@ -34,10 +34,9 @@
 #'
 #' @export
 
-strand_bias_test = function(strand_occurrences)
-{
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
+strand_bias_test = function(strand_occurrences){
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
     group = type = strand = variable = relative_contribution = no_mutations = p_poisson = NULL
 
     # statistical test for strand ratio
