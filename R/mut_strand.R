@@ -42,8 +42,6 @@
 #' length of vcf: "-" for positions outside gene bodies, "U" for
 #' untranscribed/sense/coding strand, "T" for
 #' transcribed/anti-sense/non-coding strand.
-#' 
-#' @importFrom GenomicRanges reduce
 #'
 #' @examples
 #' ## For this example we need our variants from the VCF samples, and
@@ -91,10 +89,10 @@ mut_strand = function(vcf, ranges, mode = "transcription")
     genes = GenomicRanges::reduce(ranges)
     
     # Check consistency of chromosome names.
-    if (!(all(seqlevels(vcf) %in% seqlevels(genes))))
+    if (!(all(GenomeInfoDb::seqlevels(vcf) %in% GenomeInfoDb::seqlevels(genes))))
       stop(paste( "Chromosome names (seqlevels) of vcf and genes Granges",
                   "object do not match. Use the seqlevelsStyle() function",
-                  "to rename chromosome names.") )
+                  "to rename chromosome names.") , call. = F)
     
     # Determine overlap between vcf positions and genes
     overlap = findOverlaps(vcf, genes)
