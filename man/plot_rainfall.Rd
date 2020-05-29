@@ -8,14 +8,14 @@ plot_rainfall(
   vcf,
   chromosomes,
   title = "",
-  colors,
+  colors = NA,
   cex = 2.5,
   cex_text = 3,
   ylim = 1e+08
 )
 }
 \arguments{
-\item{vcf}{CollapsedVCF object}
+\item{vcf}{GRanges object}
 
 \item{chromosomes}{Vector of chromosome/contig names of the reference
 genome to be plotted}

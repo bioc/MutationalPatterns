@@ -11,7 +11,7 @@
 #' Clusters of mutations with lower intermutation distance represent mutation
 #' hotspots.
 #'
-#' @param vcf CollapsedVCF object
+#' @param vcf GRanges object
 #' @param chromosomes Vector of chromosome/contig names of the reference
 #' genome to be plotted
 #' @param title Optional plot title
@@ -22,8 +22,6 @@
 #' @return Rainfall plot
 #'
 #' @import ggplot2
-#' @importFrom GenomeInfoDb seqlengths
-#' @importFrom GenomeInfoDb seqnames
 #'
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -51,32 +49,36 @@
 #'
 #' @export
 
-plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
-                            cex_text = 3, ylim = 1e+08)
-{
+plot_rainfall <- function(vcf, chromosomes, title = "", colors = NA, cex = 2.5,
+                            cex_text = 3, ylim = 1e+08){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    location = NULL
+    
     # If colors parameter not provided, set to default colors
-    if (missing(colors))
+    if (is_na(colors)){
         colors = COLORS6
+    }
 
     # Check color vector length
-    if (length(colors) != 6)
+    if (length(colors) != 6){
         stop("colors vector length not 6")
-
+    }
     # get chromosome lengths of reference genome
-    chr_length = seqlengths(vcf)
+    chr_length = GenomeInfoDb::seqlengths(vcf)
     # Check for missing seqlengths
-    if(sum(is.na(seqlengths(vcf))) > 1)
-    {
-    stop(paste("Chromosome lengths missing from vcf object.\n", 
+    if(sum(is.na(GenomeInfoDb::seqlengths(vcf))) > 1){
+        stop(paste("Chromosome lengths missing from vcf object.\n", 
                    "Likely cause: contig lengths missing from the header of your vcf file(s).\n", 
                     "Please evaluate: seqinfo(vcf)\n",
-                    "To add seqlengths to your vcf GRanges object use: seqlengths(vcf) <-  "))
+                    "To add seqlengths to your vcf GRanges object use: seqlengths(vcf) <-  "), call. = F)
     }
     
-    #Sort
+    #Sort the input
     vcf = BiocGenerics::sort(vcf)
     
-    # subset
+    # subset on the chromosomes selected by the user.
     chr_length = chr_length[names(chr_length) %in% chromosomes]
 
     # cumulative sum of chromosome lengths
@@ -84,54 +86,52 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors, cex = 2.5,
 
     # Plot chromosome labels without "chr"
     names(chr_cum) = names(chr_length)
-    labels = gsub("chr", "", names(chr_length))
+    labels = gsub("chr", "", names(chr_length), ignore.case = T)
 
-    # position of chromosome labels
-    m=c()
-    for(i in 2:length(chr_cum))
-        m = c(m,(chr_cum[i-1] + chr_cum[i]) / 2)
+    # position of chromosome labels. 
+    # Calculated by taking the average between two adjacent chr_cums.
+    m = (chr_cum[-1] + chr_cum[-length(chr_cum)])/2
 
-
-    # mutation characteristics
-    type = loc = dist = chrom = c()
-
-    # for each chromosome
-    for(i in 1:length(chromosomes))
-    {
-        chr_subset = vcf[seqnames(vcf) == chromosomes[i]]
+    #Determine mutation characteristics per chromosome.
+    tb_l = purrr::map(chromosomes, function(chr){
+        
+        #Subset variants to chromosome
+        chr_subset = vcf[GenomeInfoDb::seqnames(vcf) == chr]
         n = length(chr_subset)
-        if(n<=1){next}
-        type = c(type, mut_type(chr_subset)[-1])
-        loc = c(loc, (start(chr_subset) + chr_cum[i])[-1])
-        dist = c(dist, diff(start(chr_subset)))
-        chrom = c(chrom, rep(chromosomes[i],n-1))
-    }
-
-    data = data.frame(type = type,
-                        location = loc,
-                        distance = dist,
-                        chromosome = chrom)
+        if(n<=1){
+            return(NULL)
+        }
+        
+        #Determine type, location and distance to previous mut.
+        type = mut_type(chr_subset)[-1]
+        loc = (start(chr_subset) + chr_cum[chr])[-1]
+        dist = diff(start(chr_subset))
+        
+        #Combine all into a tibble.
+        tb = tibble::tibble("type" = type,
+               "location" = loc,
+               "distance" = dist,
+               "chromosome" = chr)
+        return(tb)
+    })
+    
+    #Combine the different chromosomes.
+    data = do.call(rbind, tb_l)
 
     # Removes colors based on missing mutation types.  This prevents colors from
     # shifting when comparing samples with low mutation counts.
     typesin = SUBSTITUTIONS %in% unique(data$type)
     colors = colors[typesin]
 
-    # These variables will be available at run-time, but not at compile-time.
-    # To avoid compiling trouble, we initialize them to NULL.
-    location = NULL
-
     # make rainfall plot
     plot = ggplot(data, aes(x=location, y=distance)) +
         geom_point(aes(colour=factor(type)), cex=cex) + 
         geom_vline(xintercept = as.vector(chr_cum), linetype="dotted") +
         annotate("text", x = m, y = ylim, label = labels, cex=cex_text) +
-        xlab("Genomic Location") +
-        ylab("Genomic Distance") +
         scale_y_log10() +
         scale_colour_manual(values=colors) +
         scale_x_continuous(expand = c(0,0), limits=c(0, max(chr_cum))) +
-        ggtitle(title) +
+        labs(x = "Genomic Location", y = "Genomic Distance", title = title) +
         theme_bw() +
         theme(
             legend.position = "bottom",
