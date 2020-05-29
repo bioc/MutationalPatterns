@@ -25,11 +25,6 @@ test_that("Output size is correct",{
     expect_equal(length(output$context), length(input))
 })
 
-test_that("The 6 base mutation types are returned",{
-    base_types = sort(unique(output$types))
-    expect_equal(base_types, c("C>A", "C>G", "C>T", "T>A", "T>C", "T>G"))
-})
-
 test_that("GRanges with 0 muts as input gives list with two empty vectors",{
     expect_warning({output_empty <- type_context(input[0], ref_genome)})
     expect_true(inherits(output_empty, "list"))
