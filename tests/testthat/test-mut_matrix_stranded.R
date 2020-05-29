@@ -1,4 +1,4 @@
-context("Function 'mut_matrix_stranded'")
+context("test-mut_matrix_stranded")
 
 
 # To test mut_matrix, we need to load the reference genome and the genes first.

@@ -1,4 +1,4 @@
-context("Function 'mut_matrix'")
+context("test-mut_matrix")
 
 # To test mut_matrix, we need to load the reference genome first.
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"

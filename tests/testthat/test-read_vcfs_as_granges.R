@@ -1,4 +1,4 @@
-context("Function 'read_vcfs_as_granges'")
+context("test-read_vcfs_as_granges")
 
 ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(BSgenome)
