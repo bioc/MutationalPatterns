@@ -8,6 +8,15 @@ grl = readRDS("inst/states/blood_grl.rds")
 
 #Get indels
 grl_indel = get_mut_type(grl, "indel")
+
+#Remove names from gr, because they are often very long.
+remove_names_gr = function(gr){
+    names(gr) = seq_along(gr)
+    return(gr)
+}
+grl_indel = purrr::map(as.list(grl_indel), remove_names_gr) %>% 
+    GRangesList()
+
 saveRDS(grl_indel, "inst/states/blood_grl_indel.rds")
 
 #Get context

@@ -13,6 +13,14 @@ gr_singlesample = get_mut_type(grl[[1]], type = "dbs")
 empty_gr = get_mut_type(grl[[1]][0], type = "dbs")
 gr_nodbs = get_mut_type(grl[[1]][1:20], type = "dbs")
 
+#Change names of grl_indel, to make them prettier.
+remove_names_gr = function(gr){
+    names(gr) = seq_along(gr)
+    return(gr)
+}
+grl_indel = purrr::map(as.list(grl_indel), remove_names_gr) %>% 
+    GRangesList()
+
 expected_grl_indel <- readRDS(system.file("states/blood_grl_indel.rds",
                            package="MutationalPatterns"))
 
