@@ -8,9 +8,6 @@
 #' @return data.frame with the observed and expected number of mutations per
 #' genomic region per group (by) or sample
 #'
-#' @importFrom BiocGenerics cbind
-#' @importFrom BiocGenerics rbind
-#' @importFrom stats aggregate
 #'
 #' @examples
 #' ## See the 'genomic_distribution()' example for how we obtained the
@@ -35,8 +32,7 @@
 enrichment_depletion_test = function(x, by = c())
 {
     # Handle the 'by' parameter when necessary by aggregating x
-    if (length(by) > 0)
-    {
+    if (length(by) > 0){
         x$by = by
         # Sum the columns while aggregating rows based on unique values
         # in 'by' and 'region'.
@@ -45,9 +41,7 @@ enrichment_depletion_test = function(x, by = c())
                                         surveyed_region_length,
                                         observed) ~ by + region,
                                 data = x, sum)
-    }
-    else
-    {
+    } else{
         res2 = x
         # In this case, the 'by' variable is 'sample' variable.
         res2$by = res2$sample
@@ -61,13 +55,15 @@ enrichment_depletion_test = function(x, by = c())
 
     # Perform enrichment/depletion test for each row
     res3 = data.frame()
-    for(i in 1:nrow(res2))
-    {
+    nr_muts = nrow(res2)
+    res3 = vector("list", nr_muts)
+    for(i in seq_len(nr_muts)){
         x = res2[i,]
-        res3 = rbind(res3, binomial_test(x$prob,
-                                            x$surveyed_region_length,
-                                            x$observed))
+        res3[[i]] = binomial_test(x$prob,
+                                  x$surveyed_region_length,
+                                  x$observed)
     }
+    res3 = do.call(rbind, res3)
 
     # Combine results into one data frame
     df = cbind(res2, res3)
