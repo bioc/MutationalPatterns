@@ -106,30 +106,23 @@
 #'
 #' @export
 
-genomic_distribution = function(vcf_list, surveyed_list, region_list)
-{
-    if (length(vcf_list) != length(surveyed_list))
-        stop("vcf_list and surveyed_list must have the same length")
+genomic_distribution = function(vcf_list, surveyed_list, region_list){
+    if (length(vcf_list) != length(surveyed_list)){
+        stop("vcf_list and surveyed_list must have the same length", call. = F)
+    }
 
-    if (is.null(names(region_list)))
+    if (is.null(names(region_list))){
         stop(paste( "Please set the names of region_list using:",
                     "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
-                    sep="\n"))
-
-    df = data.frame()
-    for(j in 1:length(region_list) )
-    {
-        for(i in 1:length(vcf_list) )
-        {
-            res = intersect_with_region(vcf_list[[i]],
-                                        surveyed_list[[i]],
-                                        region_list[[j]])
-            res$region = names(region_list)[j]
-            res$sample = names(vcf_list)[i]
-            res = res[,c(7,8,1:6)]
-            df = rbind(df, res)
-        }
+                    sep="\n"), call. = F)
     }
+
+    #Perform intersect with region over each combi of vcf and region.
+    #Map over the region list. Within this loop map over the vcfs.
+    df = purrr::map(as.list(region_list), function(region) {
+        purrr::map2(as.list(vcf_list), as.list(surveyed_list), intersect_with_region, region) %>% 
+        dplyr::bind_rows(.id = "sample")
+    }) %>% dplyr::bind_rows(.id = "region")
 
     # Region as factor
     # make sure level order is the same as in region_list input (important
