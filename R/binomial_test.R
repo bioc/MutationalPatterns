@@ -9,8 +9,6 @@
 #' @return A data.frame with direction of effect (enrichment/depletion),
 #' P-value and significance asterisks
 #'
-#' @importFrom stats pbinom
-#'
 #' @examples
 #' binomial_test (0.5, 1200, 543)
 #' binomial_test (0.2, 800, 150)
@@ -23,18 +21,16 @@ binomial_test = function(p, n, x)
     expected = p * n
 
     # Handle depletion
-    if (x < expected)
-    {
+    if (x < expected){
         # do lower tail test
-        pval = pbinom(x, n, p, lower.tail=TRUE)
+        pval = stats::pbinom(x, n, p, lower.tail=TRUE)
         effect = "depletion"
     }
 
     # Handle enrichment
-    else
-    {
+    else{
         # do upper tail test
-        pval = pbinom(x-1, n, p, lower.tail=FALSE)
+        pval = stats::pbinom(x-1, n, p, lower.tail=FALSE)
         effect = "enrichment"
     }
 
