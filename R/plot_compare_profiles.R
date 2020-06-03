@@ -53,6 +53,7 @@ plot_compare_profiles = function(profile1,
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     value = substitution = Sample = Contribution = Signature = variable = NULL
+    full_context = context = NULL
     
     # if colors parameter not provided, set to default colors
     if(is_na(colors)){
