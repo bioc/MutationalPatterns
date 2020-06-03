@@ -160,7 +160,8 @@ plot_spectrum = function(type_occurrences, CT=FALSE, by = NA, indv_points = FALS
                                        tb[,c("by", "variable", "total_mutations")], 
                                        by = c("by", "variable"))
       plot = plot +
-        geom_jitter(data = tb_per_sample, aes(y = value), height = 0, width = 0.3, colour = "grey23")
+        geom_jitter(data = tb_per_sample, aes(y = value), 
+                    height = 0, width = 0.3, shape = 21, colour = "grey23")
     }
     
     # check if standard deviation error bars can be plotted

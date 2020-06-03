@@ -196,7 +196,7 @@ plot_spectrum_region = function(type_occurrences,
     if (indv_points == TRUE){
         #Add total_mutations column, which is necessary for faceting later
         fig = fig +
-            geom_point(data = tb_per_sample, aes(y = freq), colour = "grey23", 
+            geom_point(data = tb_per_sample, aes(y = freq), colour = "grey23", shape = 21,
                        position = position_jitterdodge(dodge.width = 1, jitter.width = 0.3))
     }
     
