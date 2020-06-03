@@ -23,3 +23,9 @@ test_that("a list is also acceptable input", {
     expect_equal(output_list, output)
     expect_equal(output_list, expected)
 })
+
+test_that("A single GR can also be used as input", {
+    output_singlesample = mut_matrix(input[[1]], ref_genome)
+    expect_true(inherits(output_singlesample, "matrix"))
+    expect_equal(dim(output_singlesample), c(96, 1))
+})

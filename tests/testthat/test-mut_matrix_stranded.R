@@ -27,6 +27,14 @@ test_that("a list is also acceptable input", {
     expect_equal(output_list, expected)
 })
 
+#A single sample can be used as input.
+test_that("A single GR can also be used as input", {
+    output_singlesample = mut_matrix(input[[1]], ref_genome)
+    expect_true(inherits(output_singlesample, "matrix"))
+    expect_equal(dim(output_singlesample), c(96, 1))
+})
+
+
 #Test replication mode
 repli_strand_granges <- readRDS(system.file("states/repli_strand.rds",
                                             package="MutationalPatterns"))
@@ -37,3 +45,4 @@ test_that("replication mode transforms correctly", {
     mut_mat_repli = mut_matrix_stranded(input, ref_genome, repli_strand_granges, mode = "replication")
     expect_equal(mut_mat_repli, expected_repli)
 })
+
