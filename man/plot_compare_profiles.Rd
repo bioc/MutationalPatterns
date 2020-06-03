@@ -10,7 +10,7 @@ plot_compare_profiles(
   profile_names = c("profile 1", "profile 2"),
   profile_ymax = 0.2,
   diff_ylim = c(-0.02, 0.02),
-  colors,
+  colors = NA,
   condensed = FALSE
 )
 }
