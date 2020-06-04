@@ -306,6 +306,18 @@ check_chroms = function(grl, ref_genome){
     ref = BSgenome::getBSgenome(ref_genome)
     ref_seqnames = seqnames(ref)
     
+    #Check if the gr and reference have the same genome name.
+    genome_name_gr = unique(GenomeInfoDb::genome(gr))
+    genome_name_ref = unique(GenomeInfoDb::genome(ref))
+    if (genome_name_gr != genome_name_ref){
+        stop(paste0("The input GRanges (your vcf data) and the ref_genome do not have the same genome name.\n", 
+             "This problem is known to occur when you use an outside function to read in vcfs.\n",
+             "The input GRanges has the genome name: '", genome_name_gr, "'\n",
+            "The ref_genome has the genome name: '", genome_name_ref, "'\n",
+             "With `GenomeInfoDb::genome(your input GRanges) = '", genome_name_ref, "'`\n",
+            "you can view and change the genome name of your data to that of the ref_genome."), call. = F)
+    }
+    
     #Check if there is any overlap in chromosome names
     shared_chroms = intersect(gr_seqnames, ref_seqnames)
     if (!length(shared_chroms)){
