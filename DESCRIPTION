@@ -43,6 +43,7 @@ Suggests:
     biomaRt (>= 2.28.0),
     gridExtra (>= 2.2.1),
     rtracklayer (>= 1.32.2),
+    ccfindR (>= 1.6.0),
     testthat
 biocViews: Genetics, SomaticMutation
 ZipData: NA

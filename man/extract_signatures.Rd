@@ -4,14 +4,29 @@
 \alias{extract_signatures}
 \title{Extract mutational signatures from 96 mutation matrix using NMF}
 \usage{
-extract_signatures(mut_matrix, rank, nrun = 200)
+extract_signatures(
+  mut_matrix,
+  rank,
+  nrun = 200,
+  nmf_type = c("regular", "variational_bayes")
+)
 }
 \arguments{
 \item{mut_matrix}{96 mutation count matrix}
 
 \item{rank}{Number of signatures to extract}
 
-\item{nrun}{Number of iterations, default = 200}
+\item{nrun}{Number of iterations, default = 200.
+A lower number will be faster, but result in less accurate results.}
+
+\item{nmf_type}{Type of NMF to be used.
+             Possible values:
+             * 'regular'
+             * 'variational_bayes'
+The 'regular' method comes from the NMF package. 
+The 'variational_bayes' method comes from the ccfindR package.
+This method uses bayesian inference, which makes it easier to determine the
+mathmatically optimal number of signatures.}
 }
 \value{
 Named list of mutation matrix, signatures and signature contribution
@@ -27,6 +42,9 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 
 ## This function is computationally intensive.
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
+
+## It's also possible to use a variational Bayes method.
+# nmf_res <- extract_signatures(mut_mat, rank = 2, nmf_type = "variational_bayes")
 
 }
 \seealso{
