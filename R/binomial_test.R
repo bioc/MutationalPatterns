@@ -33,7 +33,10 @@ binomial_test = function(p, n, x)
         pval = stats::pbinom(x-1, n, p, lower.tail=FALSE)
         effect = "enrichment"
     }
-
+    
+    #make test two sided.
+    pval = pval * 2 
+    
     # Add significance asteriks
     if (pval < 0.05)
         significant = "*"

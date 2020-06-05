@@ -14,8 +14,8 @@ test_that("Output has correct size",{
 })
 
 test_that("Output has correct significance level",{
-    expect_equal(round(output_signi$pval, 5), 0.00055)
-    expect_equal(round(output_notsigni$pval, 5), 0.1998)
+    expect_equal(round(output_signi$pval, 5), 0.0011)
+    expect_equal(round(output_notsigni$pval, 5), 0.39961)
 })
 
 test_that("enrichment/depletion correctly determined", {
