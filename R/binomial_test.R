@@ -6,6 +6,7 @@
 #' @param p Probability of success
 #' @param n Number of trials
 #' @param x Observed number of successes
+#' @param cutoff Significance cutoff for the p value. Default: 0.05
 #' @return A data.frame with direction of effect (enrichment/depletion),
 #' P-value and significance asterisks
 #'
@@ -15,7 +16,7 @@
 #'
 #' @export
 
-binomial_test = function(p, n, x)
+binomial_test = function(p, n, x, cutoff = 0.05)
 {
     # Calculate expected number of successes
     expected = p * n
@@ -38,7 +39,7 @@ binomial_test = function(p, n, x)
     pval = pval * 2 
     
     # Add significance asteriks
-    if (pval < 0.05)
+    if (pval < cutoff)
         significant = "*"
     else
         significant = ""

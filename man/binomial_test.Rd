@@ -4,7 +4,7 @@
 \alias{binomial_test}
 \title{Binomial test for enrichment or depletion testing}
 \usage{
-binomial_test(p, n, x)
+binomial_test(p, n, x, cutoff = 0.05)
 }
 \arguments{
 \item{p}{Probability of success}
@@ -12,6 +12,8 @@ binomial_test(p, n, x)
 \item{n}{Number of trials}
 
 \item{x}{Observed number of successes}
+
+\item{cutoff}{Significance cutoff for the p value. Default: 0.05}
 }
 \value{
 A data.frame with direction of effect (enrichment/depletion),

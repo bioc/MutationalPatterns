@@ -4,12 +4,16 @@
 \alias{enrichment_depletion_test}
 \title{Test for enrichment or depletion of mutations in genomic regions}
 \usage{
-enrichment_depletion_test(x, by = c())
+enrichment_depletion_test(x, by = c(), p_cutoff = 0.05, fdr_cutoff = 0.1)
 }
 \arguments{
 \item{x}{data.frame result from genomic_distribution()}
 
 \item{by}{Optional grouping variable, e.g. tissue type}
+
+\item{p_cutoff}{Significance cutoff for the p value. Default: 0.05}
+
+\item{fdr_cutoff}{Significance cutoff for the fdr. Default: 0.1}
 }
 \value{
 data.frame with the observed and expected number of mutations per
@@ -31,7 +35,11 @@ tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 distr_test <- enrichment_depletion_test(distr, by = tissue)
 
 ## Or without specifying the 'by' parameter.
-distr_test2 <- enrichment_depletion_test(distr)
+distr_single_sample <- enrichment_depletion_test(distr)
+
+## Use different significance cutoffs for the pvalue and fdr
+distr_strict <- enrichment_depletion_test(distr, by = tissue, 
+                                         p_cutoff = 0.01, fdr_cutoff = 0.05)
 
 }
 \seealso{

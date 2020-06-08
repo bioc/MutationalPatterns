@@ -5,6 +5,8 @@
 #'
 #' @param x data.frame result from genomic_distribution() 
 #' @param by Optional grouping variable, e.g. tissue type
+#' @param p_cutoff Significance cutoff for the p value. Default: 0.05
+#' @param fdr_cutoff Significance cutoff for the fdr. Default: 0.1
 #' @return data.frame with the observed and expected number of mutations per
 #' genomic region per group (by) or sample
 #'
@@ -21,7 +23,11 @@
 #' distr_test <- enrichment_depletion_test(distr, by = tissue)
 #'
 #' ## Or without specifying the 'by' parameter.
-#' distr_test2 <- enrichment_depletion_test(distr)
+#' distr_single_sample <- enrichment_depletion_test(distr)
+#' 
+#' ## Use different significance cutoffs for the pvalue and fdr
+#' distr_strict <- enrichment_depletion_test(distr, by = tissue, 
+#'                                          p_cutoff = 0.01, fdr_cutoff = 0.05)
 #'
 #' @seealso
 #' \code{\link{genomic_distribution}},
@@ -29,7 +35,7 @@
 #'
 #' @export
 
-enrichment_depletion_test = function(x, by = c())
+enrichment_depletion_test = function(x, by = c(), p_cutoff = 0.05, fdr_cutoff = 0.1)
 {
     # Handle the 'by' parameter when necessary by aggregating x
     if (length(by) > 0){
@@ -60,7 +66,8 @@ enrichment_depletion_test = function(x, by = c())
         x = res2[i,]
         res3[[i]] = binomial_test(x$prob,
                                   x$surveyed_region_length,
-                                  x$observed)
+                                  x$observed,
+                                  p_cutoff)
     }
     res3 = do.call(rbind, res3)
 
@@ -69,7 +76,7 @@ enrichment_depletion_test = function(x, by = c())
     
     #Calculate fdr
     df = dplyr::mutate(df, fdr = stats::p.adjust(pval),
-                  significant_fdr = ifelse(pval <= 0.1, "*", ""))
+                  significant_fdr = ifelse(pval < fdr_cutoff, "*", ""))
     
     return(df)
 }
