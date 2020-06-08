@@ -4,10 +4,15 @@
 \alias{plot_enrichment_depletion}
 \title{Plot enrichment/depletion of mutations in genomic regions}
 \usage{
-plot_enrichment_depletion(df)
+plot_enrichment_depletion(df, sig_type = c("fdr", "p"))
 }
 \arguments{
 \item{df}{Dataframe result from enrichment_depletion_test()}
+
+\item{sig_type}{The type of significance to be used. Possible values:
+* 'fdr' False discovery rate. 
+A type of multiple testing correction.;
+* 'p' for regular p values.}
 }
 \value{
 Plot with two parts. 1: Barplot with no. mutations expected and
@@ -34,6 +39,9 @@ distr_test2 = enrichment_depletion_test(distr)
 ## Plot the enrichment/depletion
 plot_enrichment_depletion(distr_test)
 plot_enrichment_depletion(distr_test2)
+
+## Plot with p values instead of fdr
+plot_enrichment_depletion(distr_test, sig_type = "p")
 
 }
 \seealso{

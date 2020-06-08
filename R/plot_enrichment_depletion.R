@@ -1,6 +1,10 @@
 #' Plot enrichment/depletion of mutations in genomic regions
 #' 
 #' @param df Dataframe result from enrichment_depletion_test()
+#' @param sig_type The type of significance to be used. Possible values:
+#'              * 'fdr' False discovery rate. 
+#'              A type of multiple testing correction.;
+#'              * 'p' for regular p values.
 #' @return Plot with two parts. 1: Barplot with no. mutations expected and
 #' observed per region. 2: Effect size of enrichment/depletion
 #' (log2ratio) with results significance test.
@@ -24,6 +28,9 @@
 #' ## Plot the enrichment/depletion
 #' plot_enrichment_depletion(distr_test)
 #' plot_enrichment_depletion(distr_test2)
+#' 
+#' ## Plot with p values instead of fdr
+#' plot_enrichment_depletion(distr_test, sig_type = "p")
 #'
 #' @seealso
 #' \code{\link{enrichment_depletion_test}},
@@ -31,12 +38,26 @@
 #'
 #' @export
 
-plot_enrichment_depletion = function(df){
+plot_enrichment_depletion = function(df, sig_type = c("fdr", "p")){
     
-    df2 = df %>% 
+    sig_type = match.arg(sig_type)
+    
+    #Create dataframe for absolute part of plot
+    df_abs = df %>% 
         dplyr::select(by, region, observed, expected) %>% 
         tidyr::pivot_longer(c(-by, -region), names_to = "variable", values_to = "value") %>% 
         dplyr::mutate(variable = factor(variable, levels = unique(variable)))
+    
+    #Create dataframe for ratio part of plot
+    df_ratio = df %>% 
+        dplyr::mutate(ratio = (observed + 0.1) / (expected + 0.1),
+                      log2_ratio = log2(ratio))
+    
+    if (sig_type == "p"){
+        df_ratio$sig_plot = df_ratio$significant
+    } else{
+        df_ratio$sig_plot = df_ratio$significant_fdr
+    }
 
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
@@ -45,7 +66,7 @@ plot_enrichment_depletion = function(df){
 
     # Part 1: No. mutations expected and observed per region
     withCallingHandlers({
-        plot1 =  ggplot(df2, aes(x=by,
+        plot1 =  ggplot(df_abs, aes(x=by,
                                     y=value,
                                     fill=by,
                                     group=variable,
@@ -68,24 +89,22 @@ plot_enrichment_depletion = function(df){
 
     # determine max y value for plotting
     # = log2 ratio with pseudo counts
-    max = round(max(abs(log2((df$observed+0.1) / (df$expected+0.1)))),
-                digits = 1) + 0.1
+    y_max = round(max(abs(df_ratio$log2_ratio)),digits = 1) + 0.1
 
     # Part 2: effect size of enrichment/depletion with significance test
-    plot2 = ggplot(data=df, aes(x=by,
-                                y=log2((observed+0.1)/(expected+0.1)),
-                                fill=by)) +
+    plot2 = ggplot(data=df_ratio, aes(x = by,
+                                y = log2_ratio,
+                                fill = by)) +
         geom_bar(colour="black",
                     stat="identity",
                     position=position_dodge()) +
-        scale_y_continuous(limits=c(-max, max)) +
+        scale_y_continuous(limits=c(-y_max, y_max)) +
         geom_text(
             aes(x = by,
-                y = log2((observed+0.1) / (expected+0.1)),
-                label = significant,
-                vjust = ifelse(sign(log2((observed+0.1) /
-                                            (expected+0.1))) > 0, 0.5, 1)),
-                size = 8, position = position_dodge(width = 1)) +
+                y = log2_ratio,
+                label = sig_plot,
+                vjust = ifelse(sign(log2_ratio) > 0, 0.5, 1)),
+            size = 8, position = position_dodge(width = 1)) +
         facet_grid(~ region) +
         labs(x = "", y = "log2(observed/expected)") +
         scale_x_discrete(breaks = NULL) +

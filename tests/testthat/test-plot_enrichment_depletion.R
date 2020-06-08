@@ -16,8 +16,13 @@ distr_test2 = enrichment_depletion_test(distr)
 output = plot_enrichment_depletion(distr_test)
 output_persample = plot_enrichment_depletion(distr_test2)
 
+## Test with p instead of fdr
+output_pval = plot_enrichment_depletion(distr_test, sig_type = "p")
+
+
 #Perform tests
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
     expect_true(inherits(output_persample, c("gg")))
+    expect_true(inherits(output_pval, c("gg")))
 })

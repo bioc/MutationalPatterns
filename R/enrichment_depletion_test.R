@@ -54,7 +54,6 @@ enrichment_depletion_test = function(x, by = c())
     res2$expected = res2$prob * res2$surveyed_region_length
 
     # Perform enrichment/depletion test for each row
-    res3 = data.frame()
     nr_muts = nrow(res2)
     res3 = vector("list", nr_muts)
     for(i in seq_len(nr_muts)){
@@ -67,5 +66,10 @@ enrichment_depletion_test = function(x, by = c())
 
     # Combine results into one data frame
     df = cbind(res2, res3)
+    
+    #Calculate fdr
+    df = dplyr::mutate(df, fdr = stats::p.adjust(pval),
+                  significant_fdr = ifelse(pval <= 0.1, "*", ""))
+    
     return(df)
 }
