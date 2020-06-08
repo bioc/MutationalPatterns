@@ -16,10 +16,15 @@ output_singlechrom = plot_rainfall(vcfs[[1]], title = names(vcfs[1]), chromosome
 #Plot a subset of the variants
 output_subset = plot_rainfall(vcfs[[1]][1:10], title = names(vcfs[1]), chromosomes = chromosomes)
 
+#Plot an empty gr
+output_empty = plot_rainfall(vcfs[[1]][0], title = names(vcfs[1]), chromosomes = chromosomes)
+
+
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
     expect_true(inherits(output_singlechrom, c("gg")))
     expect_true(inherits(output_subset, c("gg")))
+    expect_true(inherits(output_empty, c("gg")))
 })
 
 test_that("Subsetted output contains the correct subset of colours",{

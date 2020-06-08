@@ -97,9 +97,15 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors = NA, cex = 2.5,
         
         #Subset variants to chromosome
         chr_subset = vcf[GenomeInfoDb::seqnames(vcf) == chr]
+        
+        #If there are not enough variants, then an empty tibble is returned.
         n = length(chr_subset)
         if(n<=1){
-            return(NULL)
+            tb = tibble::tibble("type" = character(0),
+                           "location" = double(0),
+                           "distance" = integer(0),
+                           "chromosome" = character(0))
+            return(tb)
         }
         
         #Determine type, location and distance to previous mut.
@@ -117,7 +123,7 @@ plot_rainfall <- function(vcf, chromosomes, title = "", colors = NA, cex = 2.5,
     
     #Combine the different chromosomes.
     data = do.call(rbind, tb_l)
-
+    
     # Removes colors based on missing mutation types.  This prevents colors from
     # shifting when comparing samples with low mutation counts.
     typesin = SUBSTITUTIONS %in% unique(data$type)
