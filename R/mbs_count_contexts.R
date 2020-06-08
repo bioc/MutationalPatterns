@@ -80,8 +80,8 @@ count_mbs_contexts_gr = function(gr, categories){
         dplyr::mutate(size = ifelse(size >= 10, "10+", size),
                       size = as.character(size)) %>% 
         dplyr::group_by(size) %>% #Count number muts per size
-        dplyr::summarise(count = dplyr::n()) %>% 
-        dplyr::right_join(categories, by = "size") %>% 
+        dplyr::summarise(count = dplyr::n(), .groups = "drop_last") %>% 
+        dplyr::left_join(categories, ., by = "size") %>% #Add to possible categories
         dplyr::mutate(count = ifelse(is.na(count), 0, count)) %>% 
         dplyr::select(-size)
     
