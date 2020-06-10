@@ -1,7 +1,7 @@
 #' Significance test for strand asymmetry
 #'
-#' This function performs a Poisson test for the ratio between mutations on 
-#' each strand
+#' This function performs a two sided Poisson test for the ratio between mutations on 
+#' each strand. Multiple testing correction is also performed.
 #' 
 #' @param strand_occurrences Dataframe with mutation count per strand, result
 #' from strand_occurrences()
@@ -14,10 +14,6 @@
 #' ## following mutation matrix.
 #' mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
 #'                                     package="MutationalPatterns"))
-#'
-#' ## Load a reference genome.
-#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-#' library(ref_genome, character.only = TRUE)
 #'
 #' tissue <- c("colon", "colon", "colon",
 #'             "intestine", "intestine", "intestine",
@@ -39,19 +35,28 @@ strand_bias_test = function(strand_occurrences){
     # To avoid R CMD check complaints we initialize them to NULL.
     group = type = strand = variable = relative_contribution = no_mutations = p_poisson = NULL
 
-    # statistical test for strand ratio
-    # poisson test
+    #Make data long
     df_strand = strand_occurrences %>% 
         dplyr::select(-relative_contribution) %>% 
-        tidyr::pivot_wider(names_from = strand, values_from = no_mutations) %>% 
-        dplyr::mutate(total = 3 + 4,
-                      ratio = 3 / 4)
+        tidyr::pivot_wider(names_from = strand, values_from = no_mutations)
+        
+    #Calculate total and ratio
+    df_strand[,"total"] = df_strand[,3] + df_strand[,4]
+    df_strand[,"ratio"] = df_strand[,3] / df_strand[,4]
     
+    #poisson test for strand ratio
+    #Is the same as binom in this scenario. 
+    #Since the output uses poisson in the name, we will keep using this.
     df_strand$p_poisson = apply(df_strand, 1, function(x){
-        stats::poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), r=1)$p.value
+        stats::poisson.test(c(as.numeric(x[3]), as.numeric(x[4])), 
+                            r=1, alternative = "two.sided")$p.value
         })
+    
+    #Add significance stars and do multiple testing correction.
     df_strand = df_strand %>% 
-        dplyr::mutate(significant = ifelse(p_poisson < 0.05, "*", " "))
+        dplyr::mutate(significant = ifelse(p_poisson < 0.05, "*", " "),
+                      fdr = stats::p.adjust(p_poisson, method = "fdr"),
+                      significant_fdr = ifelse(fdr < 0.1, "*", " "))
     
     return(df_strand)
 }

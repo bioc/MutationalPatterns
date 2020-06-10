@@ -15,18 +15,14 @@ Dataframe with poisson test P value for the ratio between the
 two strands per group per base substitution type.
 }
 \description{
-This function performs a Poisson test for the ratio between mutations on 
-each strand
+This function performs a two sided Poisson test for the ratio between mutations on 
+each strand. Multiple testing correction is also performed.
 }
 \examples{
 ## See the 'mut_matrix_stranded()' example for how we obtained the
 ## following mutation matrix.
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
                                     package="MutationalPatterns"))
-
-## Load a reference genome.
-ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-library(ref_genome, character.only = TRUE)
 
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",

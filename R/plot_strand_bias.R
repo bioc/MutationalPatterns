@@ -2,6 +2,10 @@
 #'
 #' @param strand_bias data.frame, result from strand_bias function
 #' @param colors Optional color vector with 6 values for plotting
+#' @param sig_type The type of significance to be used. Possible values:
+#'              * 'fdr' False discovery rate. 
+#'              A type of multiple testing correction.;
+#'              * 'p' for regular p values.
 #' @return Barplot
 #'
 #' @import ggplot2
@@ -12,9 +16,6 @@
 #' mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
 #'                                     package="MutationalPatterns"))
 #'
-#' ## Load a reference genome.
-#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-#' library(ref_genome, character.only = TRUE)
 #'
 #' tissue <- c("colon", "colon", "colon",
 #'             "intestine", "intestine", "intestine",
@@ -35,8 +36,9 @@
 #'
 #' @export
 
-plot_strand_bias = function(strand_bias, colors = NA)
-{
+plot_strand_bias = function(strand_bias, colors = NA, sig_type = c("fdr", "p")){
+  
+  sig_type = match.arg(sig_type)
   
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -55,6 +57,12 @@ plot_strand_bias = function(strand_bias, colors = NA)
   # = log2 ratio with pseudo counts of 0.1
   strand_bias = dplyr::mutate(strand_bias, log2_ratio = log2((strand_1+0.1) / (strand_2+0.1)),
                               log2_ratio_no1pseudo = log2((strand_1) / (strand_2+0.1)))
+  
+  if (sig_type == "p"){
+    strand_bias$sig_plot = strand_bias$significant
+  } else{
+    strand_bias$sig_plot = strand_bias$significant_fdr
+  }
   
   # max yvalue for plotting plus
   max = round(max(abs(strand_bias$log2_ratio)), digits = 1) + 0.1
@@ -77,7 +85,7 @@ plot_strand_bias = function(strand_bias, colors = NA)
     geom_text(
       aes(x = type,
           y = log2_ratio_no1pseudo,
-          label = significant,
+          label = sig_plot,
           vjust = ifelse(sign(log2_ratio_no1pseudo) > 0, 0.5, 1)),
       size = 8,
       position = ggplot2::position_dodge(width = 1)) +

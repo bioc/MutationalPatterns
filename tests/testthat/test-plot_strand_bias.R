@@ -26,8 +26,11 @@ strand_counts = strand_occurrences(mut_mat_repli, by=tissue)
 strand_bias = strand_bias_test(strand_counts)
 output_repli = plot_strand_bias(strand_bias)
 
+## Test with p instead of fdr
+output_pval = plot_enrichment_depletion(distr_test, sig_type = "p")
 
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
     expect_true(inherits(output_repli, c("gg")))
+    expect_true(inherits(output_pval, c("gg")))
 })

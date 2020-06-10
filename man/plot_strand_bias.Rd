@@ -4,12 +4,17 @@
 \alias{plot_strand_bias}
 \title{Plot strand bias per base substitution type per group}
 \usage{
-plot_strand_bias(strand_bias, colors = NA)
+plot_strand_bias(strand_bias, colors = NA, sig_type = c("fdr", "p"))
 }
 \arguments{
 \item{strand_bias}{data.frame, result from strand_bias function}
 
 \item{colors}{Optional color vector with 6 values for plotting}
+
+\item{sig_type}{The type of significance to be used. Possible values:
+* 'fdr' False discovery rate. 
+A type of multiple testing correction.;
+* 'p' for regular p values.}
 }
 \value{
 Barplot
@@ -23,9 +28,6 @@ Plot strand bias per base substitution type per group
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
                                     package="MutationalPatterns"))
 
-## Load a reference genome.
-ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-library(ref_genome, character.only = TRUE)
 
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
