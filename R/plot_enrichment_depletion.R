@@ -40,6 +40,11 @@
 
 plot_enrichment_depletion = function(df, sig_type = c("fdr", "p")){
     
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    value = variable = observed = expected = significant = NULL
+    region = ratio = log2_ratio = sig_plot = NULL
+
     sig_type = match.arg(sig_type)
     
     #Create dataframe for absolute part of plot
@@ -59,9 +64,6 @@ plot_enrichment_depletion = function(df, sig_type = c("fdr", "p")){
         df_ratio$sig_plot = df_ratio$significant_fdr
     }
 
-    # These variables use non standard evaluation.
-    # To avoid R CMD check complaints we initialize them to NULL.
-    value = variable = observed = expected = significant = region = NULL
  
 
     # Part 1: No. mutations expected and observed per region

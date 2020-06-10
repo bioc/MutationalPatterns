@@ -38,7 +38,8 @@
 strand_bias_test = function(strand_occurrences,  p_cutoff = 0.05, fdr_cutoff = 0.1){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    group = type = strand = variable = relative_contribution = no_mutations = p_poisson = NULL
+    group = type = strand = variable = relative_contribution = NULL
+    fdr = no_mutations = p_poisson = NULL
 
     #Make data long
     df_strand = strand_occurrences %>% 

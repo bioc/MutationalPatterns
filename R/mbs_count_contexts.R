@@ -70,7 +70,7 @@ count_mbs_contexts_gr = function(gr, categories){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    count = size = NULL
+    count = size = . = NULL
     
     #Create count table
     counts_tb = gr$REF %>% #Determine different sizes

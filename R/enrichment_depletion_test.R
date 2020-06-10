@@ -35,8 +35,12 @@
 #'
 #' @export
 
-enrichment_depletion_test = function(x, by = c(), p_cutoff = 0.05, fdr_cutoff = 0.1)
-{
+enrichment_depletion_test = function(x, by = c(), p_cutoff = 0.05, fdr_cutoff = 0.1){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    pval = fdr = NULL
+    
     # Handle the 'by' parameter when necessary by aggregating x
     if (length(by) > 0){
         x$by = by
