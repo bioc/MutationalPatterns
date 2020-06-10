@@ -31,7 +31,14 @@
 #' 
 #' ## Plot with p values instead of fdr
 #' plot_enrichment_depletion(distr_test, sig_type = "p")
-#'
+#' 
+#' ## Use multiple (max 3) significance cutoffs.
+#' ## This will vary the number of significance stars.
+#' distr_multistars <- enrichment_depletion_test(distr, by = tissue, 
+#'                                          p_cutoffs = c(0.05, 0.01, 0.005), 
+#'                                          fdr_cutoffs = c(0.1, 0.05, 0.01))
+#' plot_enrichment_depletion(distr_multistars)
+#' 
 #' @seealso
 #' \code{\link{enrichment_depletion_test}},
 #' \code{\link{genomic_distribution}}

@@ -5,8 +5,8 @@
 #' 
 #' @param strand_occurrences Dataframe with mutation count per strand, result
 #' from 'strand_occurrences()'
-#' @param p_cutoff Significance cutoff for the p value. Default: 0.05
-#' @param fdr_cutoff Significance cutoff for the fdr. Default: 0.1
+#' @param p_cutoffs Significance cutoff for the p value. Default: 0.05
+#' @param fdr_cutoffs Significance cutoff for the fdr. Default: 0.1
 #' @return Dataframe with poisson test P value for the ratio between the
 #' two strands per group per base substitution type.
 #' @importFrom magrittr  %>% 
@@ -27,7 +27,13 @@
 #'
 #' ## Use different significance cutoffs for the pvalue and fdr
 #' strand_bias_strict = strand_bias_test(strand_counts,  
-#'                                       p_cutoff = 0.01, fdr_cutoff = 0.05)
+#'                                       p_cutoffs = 0.01, fdr_cutoffs = 0.05)
+#'                                       
+#' ## Use multiple (max 3) significance cutoffs.
+#' ## This will vary the number of significance stars.
+#' strand_bias_multistars = strand_bias_test(strand_counts,
+#'                                          p_cutoffs = c(0.05, 0.01, 0.005), 
+#'                                          fdr_cutoffs = c(0.1, 0.05, 0.01))
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
 #' \code{\link{strand_occurrences}},
@@ -35,7 +41,7 @@
 #'
 #' @export
 
-strand_bias_test = function(strand_occurrences,  p_cutoff = 0.05, fdr_cutoff = 0.1){
+strand_bias_test = function(strand_occurrences,  p_cutoffs = 0.05, fdr_cutoffs = 0.1){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     group = type = strand = variable = relative_contribution = NULL
@@ -60,9 +66,9 @@ strand_bias_test = function(strand_occurrences,  p_cutoff = 0.05, fdr_cutoff = 0
     
     #Add significance stars and do multiple testing correction.
     df_strand = df_strand %>% 
-        dplyr::mutate(significant = ifelse(p_poisson < p_cutoff, "*", " "),
+        dplyr::mutate(significant = get_sig_star(p_poisson, p_cutoffs),
                       fdr = stats::p.adjust(p_poisson, method = "fdr"),
-                      significant_fdr = ifelse(fdr < fdr_cutoff, "*", " "))
+                      significant_fdr = get_sig_star(fdr, fdr_cutoffs))
     
     return(df_strand)
 }

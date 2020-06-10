@@ -4,15 +4,15 @@
 \alias{strand_bias_test}
 \title{Significance test for strand asymmetry}
 \usage{
-strand_bias_test(strand_occurrences, p_cutoff = 0.05, fdr_cutoff = 0.1)
+strand_bias_test(strand_occurrences, p_cutoffs = 0.05, fdr_cutoffs = 0.1)
 }
 \arguments{
 \item{strand_occurrences}{Dataframe with mutation count per strand, result
 from 'strand_occurrences()'}
 
-\item{p_cutoff}{Significance cutoff for the p value. Default: 0.05}
+\item{p_cutoffs}{Significance cutoff for the p value. Default: 0.05}
 
-\item{fdr_cutoff}{Significance cutoff for the fdr. Default: 0.1}
+\item{fdr_cutoffs}{Significance cutoff for the fdr. Default: 0.1}
 }
 \value{
 Dataframe with poisson test P value for the ratio between the
@@ -38,7 +38,13 @@ strand_bias = strand_bias_test(strand_counts)
 
 ## Use different significance cutoffs for the pvalue and fdr
 strand_bias_strict = strand_bias_test(strand_counts,  
-                                      p_cutoff = 0.01, fdr_cutoff = 0.05)
+                                      p_cutoffs = 0.01, fdr_cutoffs = 0.05)
+                                      
+## Use multiple (max 3) significance cutoffs.
+## This will vary the number of significance stars.                                                                     
+strand_bias_multistars = strand_bias_test(strand_counts,
+                                         p_cutoffs = c(0.05, 0.01, 0.005), 
+                                         fdr_cutoffs = c(0.1, 0.05, 0.01))
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},

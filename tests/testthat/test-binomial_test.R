@@ -2,7 +2,7 @@ context("test-binomial_test")
 
 output_signi = binomial_test (0.5, 1200, 543)
 output_notsigni = binomial_test (0.2, 800, 170)
-output_strictcutoff = binomial_test (0.5, 1200, 543, cutoff = 0.00001)
+output_strictcutoff = binomial_test (0.5, 1200, 543, p_cutoffs = 0.00001)
 
 
 test_that("Output has correct class",{

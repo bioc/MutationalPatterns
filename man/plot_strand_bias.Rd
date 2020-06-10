@@ -40,6 +40,11 @@ strand_bias = strand_bias_test(strand_counts)
 ## Plot the strand bias.
 plot_strand_bias(strand_bias)
 
+## Use multiple (max 3) significance cutoffs.
+strand_bias_multistars = strand_bias_test(strand_counts,
+                                         p_cutoffs = c(0.05, 0.01, 0.005), 
+                                         fdr_cutoffs = c(0.1, 0.05, 0.01))
+plot_strand_bias(strand_bias_multistars)
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},
