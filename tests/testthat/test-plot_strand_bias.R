@@ -4,10 +4,6 @@ context("test-plot_strand_bias")
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
                                     package="MutationalPatterns"))
 
-## Load a reference genome.
-ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
-library(ref_genome, character.only = TRUE)
-
 tissue <- c("colon", "colon", "colon",
             "intestine", "intestine", "intestine",
             "liver", "liver", "liver")
@@ -27,7 +23,7 @@ strand_bias = strand_bias_test(strand_counts)
 output_repli = plot_strand_bias(strand_bias)
 
 ## Test with p instead of fdr
-output_pval = plot_enrichment_depletion(distr_test, sig_type = "p")
+output_pval = plot_strand_bias(strand_bias, sig_type = "p")
 
 test_that("Output has correct class",{
     expect_true(inherits(output, c("gg")))
