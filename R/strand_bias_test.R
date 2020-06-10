@@ -4,7 +4,9 @@
 #' each strand. Multiple testing correction is also performed.
 #' 
 #' @param strand_occurrences Dataframe with mutation count per strand, result
-#' from strand_occurrences()
+#' from 'strand_occurrences()'
+#' @param p_cutoff Significance cutoff for the p value. Default: 0.05
+#' @param fdr_cutoff Significance cutoff for the fdr. Default: 0.1
 #' @return Dataframe with poisson test P value for the ratio between the
 #' two strands per group per base substitution type.
 #' @importFrom magrittr  %>% 
@@ -23,6 +25,9 @@
 #' strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 #' strand_bias = strand_bias_test(strand_counts)
 #'
+#' ## Use different significance cutoffs for the pvalue and fdr
+#' strand_bias_strict = strand_bias_test(strand_counts,  
+#'                                       p_cutoff = 0.01, fdr_cutoff = 0.05)
 #' @seealso
 #' \code{\link{mut_matrix_stranded}},
 #' \code{\link{strand_occurrences}},
@@ -30,7 +35,7 @@
 #'
 #' @export
 
-strand_bias_test = function(strand_occurrences){
+strand_bias_test = function(strand_occurrences,  p_cutoff = 0.05, fdr_cutoff = 0.1){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     group = type = strand = variable = relative_contribution = no_mutations = p_poisson = NULL
@@ -54,9 +59,9 @@ strand_bias_test = function(strand_occurrences){
     
     #Add significance stars and do multiple testing correction.
     df_strand = df_strand %>% 
-        dplyr::mutate(significant = ifelse(p_poisson < 0.05, "*", " "),
+        dplyr::mutate(significant = ifelse(p_poisson < p_cutoff, "*", " "),
                       fdr = stats::p.adjust(p_poisson, method = "fdr"),
-                      significant_fdr = ifelse(fdr < 0.1, "*", " "))
+                      significant_fdr = ifelse(fdr < fdr_cutoff, "*", " "))
     
     return(df_strand)
 }

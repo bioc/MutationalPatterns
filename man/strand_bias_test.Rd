@@ -4,11 +4,15 @@
 \alias{strand_bias_test}
 \title{Significance test for strand asymmetry}
 \usage{
-strand_bias_test(strand_occurrences)
+strand_bias_test(strand_occurrences, p_cutoff = 0.05, fdr_cutoff = 0.1)
 }
 \arguments{
 \item{strand_occurrences}{Dataframe with mutation count per strand, result
-from strand_occurrences()}
+from 'strand_occurrences()'}
+
+\item{p_cutoff}{Significance cutoff for the p value. Default: 0.05}
+
+\item{fdr_cutoff}{Significance cutoff for the fdr. Default: 0.1}
 }
 \value{
 Dataframe with poisson test P value for the ratio between the
@@ -32,6 +36,9 @@ tissue <- c("colon", "colon", "colon",
 strand_counts = strand_occurrences(mut_mat_s, by=tissue)
 strand_bias = strand_bias_test(strand_counts)
 
+## Use different significance cutoffs for the pvalue and fdr
+strand_bias_strict = strand_bias_test(strand_counts,  
+                                      p_cutoff = 0.01, fdr_cutoff = 0.05)
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},
