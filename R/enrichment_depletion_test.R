@@ -75,8 +75,8 @@ enrichment_depletion_test = function(x, by = c(), p_cutoff = 0.05, fdr_cutoff = 
     df = cbind(res2, res3)
     
     #Calculate fdr
-    df = dplyr::mutate(df, fdr = stats::p.adjust(pval),
-                  significant_fdr = ifelse(pval < fdr_cutoff, "*", ""))
+    df = dplyr::mutate(df, fdr = stats::p.adjust(pval, method = "fdr"),
+                  significant_fdr = ifelse(fdr < fdr_cutoff, "*", ""))
     
     return(df)
 }
