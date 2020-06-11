@@ -243,8 +243,8 @@ filter_seqlevels = function(gr, group, genome){
             # The following code deduplicates the list items, so that
             # creating a data frame will work as expected.
             unique_names <- unique(groups_names)
-            groups <- plyr::llply(unique_names, function(x) groups[groups_names == x])
-            groups <- plyr::llply(groups, unlist, recursive = FALSE)
+            groups <- lapply(unique_names, function(x) groups[groups_names == x])
+            groups <- lapply(groups, unlist, recursive = FALSE)
             
             # In case there are multiple styles applied, we only use the first.
             groups <- unique(as.vector(groups[[1]]))
