@@ -371,5 +371,5 @@ check_chroms = function(grl, ref_genome){
 #' @noRd
 #' 
 is_na = function(x) {
-    purrr::is_scalar_vector(x) && is.na(x)
+    length(x) == 1 && is.na(x)
 }
