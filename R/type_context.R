@@ -7,7 +7,6 @@
 #' @param ref_genome Reference genome
 #' @return Mutation types and context character vectors in a named list
 #'
-#' @importFrom IRanges reverse
 #' 
 #' @examples
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -55,7 +54,7 @@ type_context = function(vcf, ref_genome)
 
     # Change the context of these mutations to reverse complement
     # of the context
-    y = reverse(chartr('ATGC', 'TACG', y))
+    y = IRanges::reverse(chartr('ATGC', 'TACG', y))
 
     # replace subset with reverse complement
     mut_context[x] = y

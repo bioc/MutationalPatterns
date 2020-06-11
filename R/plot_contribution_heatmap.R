@@ -15,7 +15,6 @@
 #' @return Heatmap with relative contribution of each signature for each sample
 #'
 #' @import ggplot2
-#' @importFrom ggdendro dendro_data segment theme_dendro
 #' @importFrom magrittr %>% 
 #'
 #' @examples
@@ -97,13 +96,13 @@ plot_contribution_heatmap = function(contribution, sig_order = NA, sample_order 
     
     dhc = as.dendrogram(hc.sample)
     # rectangular lines
-    ddata = dendro_data(dhc, type = "rectangle")
+    ddata = ggdendro::dendro_data(dhc, type = "rectangle")
     # plot dendrogram of hierachical clustering
-    dendrogram_rows = ggplot(segment(ddata)) + 
+    dendrogram_rows = ggplot(ggdendro::segment(ddata)) + 
       geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
       coord_flip() + 
       scale_y_reverse(expand = c(0.2, 0)) + 
-      theme_dendro()
+      ggdendro::theme_dendro()
   }
   else{
     sample_order = rownames(contribution_norm)
@@ -131,11 +130,11 @@ plot_contribution_heatmap = function(contribution, sig_order = NA, sample_order 
     
     dhc = as.dendrogram(hc.sample2)
     # rectangular lines
-    ddata = dendro_data(dhc, type = "rectangle")
+    ddata = ggdendro::dendro_data(dhc, type = "rectangle")
     # plot dendrogram of hierachical clustering
-    dendrogram_cols = ggplot(segment(ddata)) + 
+    dendrogram_cols = ggplot(ggdendro::segment(ddata)) + 
       geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
-      theme_dendro() +
+      ggdendro::theme_dendro() +
       scale_y_continuous(expand = c(0.2, 0))
   } else{
     sig_order = colnames(contribution_norm)
