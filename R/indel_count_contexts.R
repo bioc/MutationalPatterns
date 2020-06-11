@@ -21,7 +21,7 @@
 #' 
 #' @family Indels
 #' 
-#' @seealso \code{\link{count_indel_contexts_gr}}, \code{\link{get_indel_context}}
+#' @seealso \code{\link{get_indel_context}}
 #' 
 #' @export
 count_indel_contexts = function(grl){
@@ -77,11 +77,8 @@ count_indel_contexts = function(grl){
 #' @return A single column tibble containing the number of indels per COSMIC context.
 #' 
 #' @importFrom magrittr %>%
-#' @family Indels
+#' @noRd
 #' 
-#' @seealso \code{\link{count_indel_contexts}}, \code{\link{get_indel_context}}
-
-
 count_indel_contexts_gr = function(gr, categories){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.

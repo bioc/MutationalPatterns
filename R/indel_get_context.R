@@ -29,10 +29,10 @@
 #' @family Indels
 #' 
 #' @seealso
-#' \code{\link{get_indel_context_gr}}, \code{\link{read_vcfs_as_granges}}, \code{\link{get_mut_type}}
+#' \code{\link{read_vcfs_as_granges}}, \code{\link{get_mut_type}}
 #' 
 #' @export
-
+#' 
 get_indel_context = function(grl, ref_genome){
     #Check that the seqnames of the gr and ref_genome match
     check_chroms(grl, ref_genome)
@@ -65,12 +65,10 @@ get_indel_context = function(grl, ref_genome){
 #' The subtype is either the number of repeats or the microhomology length. 
 #' 
 #' 
-#' @importFrom magrittr %>%
-#' @family Indels
+#' @noRd
 #' 
-#' @seealso \code{\link{get_indel_context}},
-
-
+#' @importFrom magrittr %>%
+#' 
 get_indel_context_gr = function(gr, ref_genome){
     
     #Check that no snvs are present.    
@@ -115,11 +113,9 @@ get_indel_context_gr = function(gr, ref_genome){
 #' 
 #' 
 #' @importFrom magrittr %>%
-#' @family Indels
-#' @seealso \code{\link{get_indel_context_gr}}
+#' @noRd
 #' 
 #'
-
 get_1bp_dels = function(gr, mut_size, ref_genome){
     
     #Select mutations
@@ -168,11 +164,8 @@ get_1bp_dels = function(gr, mut_size, ref_genome){
 #' 
 #' 
 #' @importFrom magrittr %>%
-#' @family Indels
-#' @seealso \code{\link{get_indel_context_gr}}
-#' 
+#' @noRd
 #'
-
 get_1bp_ins = function(gr, mut_size, ref_genome){
     
     #Select mutations
@@ -222,11 +215,8 @@ get_1bp_ins = function(gr, mut_size, ref_genome){
 #' 
 #' 
 #' @importFrom magrittr %>%
-#' @family Indels
-#' @seealso \code{\link{get_indel_context_gr}}
-#' 
+#' @noRd
 #'
-
 get_big_ins = function(gr, mut_size, ref_genome){
     
     #Select mutations
@@ -280,11 +270,8 @@ get_big_ins = function(gr, mut_size, ref_genome){
 #' 
 #' 
 #' @importFrom magrittr %>%
-#' @family Indels
-#' @seealso \code{\link{get_indel_context_gr}}
-#' 
+#' @noRd
 #'
-
 get_big_dels = function(gr, mut_size, ref_genome){
     
     #Select mutations
@@ -332,7 +319,7 @@ get_big_dels = function(gr, mut_size, ref_genome){
     
     
     #Also check for microhomology to the left of the deletion. For this take the reverse sequence to the left of the deletion and the reverse deleted bases.
-    rev_del_bases = reverse(del_bases_mh)
+    rev_del_bases = IRanges::reverse(del_bases_mh)
     rev_l_del_bases_s = strsplit(rev_del_bases, "")
     
     withCallingHandlers({#Flank the granges object, to get a sequence, that can be searched for repeats. This can result in a warning message, when the flanked range extends beyond the chrom lenght. This message is suppressed.
@@ -397,11 +384,9 @@ get_big_dels = function(gr, mut_size, ref_genome){
 #' @return A DNAStringSet containing the flaning bases.
 #' 
 #' 
-#' @family Indels
-#'
+#' @noRd
 #' 
 #'
-
 get_extended_sequence = function(gr, flank_dist, ref_genome){
     withCallingHandlers({#Flank the granges object, to get a sequence, that can be searched for repeats. This can result in a warning message, when the flanked range extends beyond the chrom lenght. This message is suppressed.
         gr_extended = GenomicRanges::flank(gr, flank_dist, start = F)

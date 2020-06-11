@@ -8,7 +8,7 @@
 #' @param grl GRanges/GRangesList object
 #' 
 #' @return Invisibly returns its input when it succeeds.
-#' 
+#' @noRd
 #' @importFrom magrittr %>%
 
 check_no_multi_alts = function(grl){
@@ -33,7 +33,7 @@ check_no_multi_alts = function(grl){
 #' @param gr GRanges object
 #' 
 #' @return Invisibly returns its input when it succeeds.
-#' 
+#' @noRd
 #' @importFrom magrittr %>%
 
 check_no_multi_alts_gr = function(gr){
@@ -54,7 +54,7 @@ check_no_multi_alts_gr = function(gr){
 #' It trows an error when this is not the case.
 #' 
 #' @param grl GRanges/GrangesList object
-#' 
+#' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #' 
 
@@ -77,7 +77,7 @@ check_no_snvs = function(grl){
 #' It trows an error when this is not the case.
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #' 
 
@@ -99,7 +99,7 @@ check_no_snvs_gr = function(gr){
 #' It trows an error when this is not the case.
 #' 
 #' @param grl GRanges/GrangesList object
-#' 
+#' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #' 
 check_no_indels = function(grl){
@@ -121,7 +121,7 @@ check_no_indels = function(grl){
 #' It trows an error when this is not the case.
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #' 
 check_no_indels_gr = function(gr){
@@ -143,7 +143,7 @@ check_no_indels_gr = function(gr){
 #' This function removes variants with multiple alternative alleles for a GRanges/GRangesList object.
 #' 
 #' @param grl GRanges/GRangesList object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges/GRangesList object.
 remove_multi_alts_variants = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
@@ -165,7 +165,7 @@ remove_multi_alts_variants = function(grl){
 #' This function removes variants with multiple alternative alleles for a single GRanges object.
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges object.
 #' 
 remove_multi_alts_variants_gr = function(gr){
@@ -180,7 +180,7 @@ remove_multi_alts_variants_gr = function(gr){
 #' This function removes SNV/MNV variants for a GRanges/GrangesList object.
 #' 
 #' @param grl GRanges/GRangesList object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges/GrangesList object.
 remove_snvs = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
@@ -202,7 +202,7 @@ remove_snvs = function(grl){
 #' This function removes SNV/MNV variants for a single GRanges object.
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges object.
 #' 
 remove_snvs_gr = function(gr){
@@ -217,7 +217,7 @@ remove_snvs_gr = function(gr){
 #' This function removes Indel variants for a GRanges/GrangesList object.
 #' 
 #' @param grl GRanges/GRangesList object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges/GrangesList object.
 remove_indels = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
@@ -239,7 +239,7 @@ remove_indels = function(grl){
 #' This function removes Indel variants for a single GRanges object.
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return A filtered version of the input GRanges object.
 #' 
 remove_indels_gr = function(gr){
@@ -255,7 +255,7 @@ remove_indels_gr = function(gr){
 #' 
 #' 
 #' @param gr GRanges object
-#' 
+#' @noRd
 #' @return A boolean vector. It's TRUE for SNVs/MNVs and FALSE for Indels
 #' 
 find_snv = function(gr){
@@ -271,6 +271,8 @@ find_snv = function(gr){
 #' It throws an error showing the actual class of the argument.
 #' 
 #' @param arg Argument. Any object that should have been a GRanges/GrangesList, but isn't.
+#' @noRd
+#' @return An error
 #' 
 not_gr_or_grl = function(arg){
     arg_name = deparse(substitute(arg))
@@ -291,6 +293,9 @@ not_gr_or_grl = function(arg){
 #' @param grl GRangesList or GRanges object
 #' @param ref_genome BSGenome reference genome object
 #' 
+#' @noRd
+#' 
+#' @return Invisibly returns the input grl
 #' 
 check_chroms = function(grl, ref_genome){
     if (inherits(grl, "CompressedGRangesList")){
@@ -354,7 +359,7 @@ check_chroms = function(grl, ref_genome){
                             Did you select the correct reference genome?"), call. = F)
     }
     
-    invisible(gr)
+    invisible(grl)
 }
 
 
@@ -363,6 +368,8 @@ check_chroms = function(grl, ref_genome){
 #' @param x Input. Function checks if it is a scalar NA
 #'
 #' @return Boolean
+#' @noRd
+#' 
 is_na = function(x) {
     purrr::is_scalar_vector(x) && is.na(x)
 }

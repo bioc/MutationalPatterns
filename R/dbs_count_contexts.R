@@ -19,7 +19,7 @@
 #' count_dbs_contexts(grl_dbs_context)
 #' 
 #' @family DBS
-#' @seealso \code{\link{count_dbs_contexts_gr}}, \code{\link{set_dbs_context}}
+#' @seealso \code{\link{set_dbs_context}}
 #' 
 #' @export
 count_dbs_contexts = function(grl){
@@ -78,8 +78,8 @@ count_dbs_contexts = function(grl){
 #' 
 #' @importFrom magrittr %>%
 #' 
-#' @seealso \code{\link{count_dbs_contexts}}, \code{\link{set_dbs_context}}
-#' @family DBS
+#' @noRd
+#' 
 count_dbs_contexts_gr = function(gr, categories){
     
     # These variables use non standard evaluation.

@@ -40,10 +40,8 @@ plot_dbs_contexts(dbs_counts, same_y = TRUE)
 \code{\link{count_dbs_contexts}}, \code{\link{plot_main_dbs_contexts}}
 
 Other DBS: 
-\code{\link{count_dbs_contexts_gr}()},
 \code{\link{count_dbs_contexts}()},
 \code{\link{plot_main_dbs_contexts}()},
-\code{\link{set_dbs_context_gr}()},
 \code{\link{set_dbs_context}()}
 }
 \concept{DBS}

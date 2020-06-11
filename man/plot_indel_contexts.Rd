@@ -47,14 +47,7 @@ plot_indel_contexts(indel_counts, extra_labels = TRUE)
 \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}
 
 Other Indels: 
-\code{\link{count_indel_contexts_gr}()},
 \code{\link{count_indel_contexts}()},
-\code{\link{get_1bp_dels}()},
-\code{\link{get_1bp_ins}()},
-\code{\link{get_big_dels}()},
-\code{\link{get_big_ins}()},
-\code{\link{get_extended_sequence}()},
-\code{\link{get_indel_context_gr}()},
 \code{\link{get_indel_context}()},
 \code{\link{plot_main_indel_contexts}()}
 }

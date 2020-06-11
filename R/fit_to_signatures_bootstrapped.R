@@ -34,8 +34,7 @@
 #'
 #' @seealso \code{\link{mut_matrix}},
 #' \code{\link{fit_to_signatures_strict}},
-#' \code{\link{fit_to_signatures_bootstrapped}},
-#' \code{\link{resample_mut_mat}}
+#' \code{\link{fit_to_signatures_bootstrapped}}
 #'
 #' @importFrom magrittr %>% 
 #' @examples
@@ -149,7 +148,8 @@ fit_to_signatures_bootstrapped = function(mut_matrix,
 #'
 #' @return A resamples mutation matrix
 #'
-#' @seealso \code{\link{fit_to_signatures_bootstrapped}}
+#' @noRd
+#' 
 resample_mut_mat = function(mut_matrix){
     mut_mat_resampled = apply(mut_matrix, 2, function(x){
         total_muts = sum(x)

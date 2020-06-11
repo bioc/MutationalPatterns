@@ -15,7 +15,6 @@
 #' @export
 #' @importFrom magrittr %>% 
 #'
-#' @seealso \code{\link{lengthen_mut_matrix_single_sample}}
 #' @family genomic_regions
 #' @examples
 #' 
@@ -64,9 +63,9 @@ lengthen_mut_matrix = function(mut_matrix){
 #' @param mut_matrix Mutation matrix
 #' 
 #' @importFrom magrittr %>% 
-#' @seealso \code{\link{lengthen_mut_matrix}}
-#' @family genomic_regions
+#' @noRd
 #' @return mut_matrix single sample
+#' 
 lengthen_mut_matrix_single_sample = function(mut_matrix){
     col_names = colnames(mut_matrix)
     sample = col_names %>%

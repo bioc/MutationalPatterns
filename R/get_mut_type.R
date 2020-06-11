@@ -24,7 +24,7 @@
 #' grl_mbs = get_mut_type(grl, "mbs")
 #' 
 #' @seealso
-#' \code{\link{get_mut_type_gr}}, \code{\link{read_vcfs_as_granges}}
+#' \code{\link{read_vcfs_as_granges}}
 #' 
 #' @importFrom magrittr %>%
 #' @export
@@ -56,8 +56,7 @@ get_mut_type = function(grl, type = c("snv", "indel", "dbs", "mbs")){
 #' @param gr GRanges
 #' @param type The type of variant that will be returned.
 #'
-#' @seealso
-#' \code{\link{get_mut_type}}, \code{\link{split_mbs_gr}}, \code{\link{read_vcfs_as_granges}}
+#' @noRd
 #' 
 #' @return GRanges of the desired mutation type.
 
@@ -111,11 +110,11 @@ get_mut_type_gr = function(gr, type = c("snv", "indel", "dbs", "mbs")){
 #' @param gr A GRanges object
 #' @param merge_muts Boolean value. If TRUE, the mutations are merged.
 #' 
-#' @seealso
-#' \code{\link{merge_muts}}, \code{\link{get_mut_type_gr}}
-#'
+#' @noRd
+#' 
 #' @return A list of granges
 #' @importFrom magrittr %>% 
+#' 
 split_mbs_gr = function(gr, merge_muts = T){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
@@ -196,8 +195,7 @@ split_mbs_gr = function(gr, merge_muts = T){
 #'
 #' @param gr GRanges object
 #' 
-#' @seealso
-#' \code{\link{split_mbs_gr}}
+#' @noRd
 #'
 #' @return GRanges object with a single variant.
 merge_muts = function(gr){

@@ -50,11 +50,8 @@ plot_long_profile(mut_mat_long[,c(1,4,7)])
 \code{\link{mut_matrix}}
 
 Other genomic_regions: 
-\code{\link{get_muts_region}()},
-\code{\link{lengthen_mut_matrix_single_sample}()},
 \code{\link{lengthen_mut_matrix}()},
 \code{\link{plot_spectrum_region}()},
-\code{\link{split_muts_region_gr}()},
 \code{\link{split_muts_region}()}
 }
 \concept{genomic_regions}

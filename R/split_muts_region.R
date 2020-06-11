@@ -77,7 +77,7 @@ split_muts_region = function(grl, ranges_grl){
 #'
 #' @param gr GRanges object containing variants
 #' @param ranges_grl GRangesList or GRanges object containing regions of interest
-#' @family genomic_regions
+#' @noRd
 #' @return GRangesList
 #' 
 split_muts_region_gr = function(gr, ranges_grl){
@@ -112,7 +112,7 @@ split_muts_region_gr = function(gr, ranges_grl){
 #'
 #' @param gr GRanges object containing variants
 #' @param ranges GRanges object containing regions of interest
-#' @family genomic_regions
+#' @noRd
 #' @return GRanges object
 #' 
 get_muts_region = function(gr, ranges){

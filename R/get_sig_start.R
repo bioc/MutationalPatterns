@@ -7,7 +7,8 @@
 #' @param cutoffs Significance cutoffs for the statistical value.
 #'
 #' @return A vector of significance stars and empty strings (not significant).
-#'
+#' @noRd
+#' 
 get_sig_star = function(val, cutoffs){
     
     #Get name of cutoffs argument

@@ -134,6 +134,7 @@ read_vcfs_as_granges <- function(vcf_files,
 #' to that of the BSgenome object.
 #' @return A GRanges object
 #' @importFrom magrittr %>% 
+#' @noRd
 #'
 read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
     
@@ -215,6 +216,7 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
 #'                seqlevels from the VCF file.
 #' @param genome BSgenome object
 #' @return A GRanges object
+#' @noRd
 #'
 filter_seqlevels = function(gr, group, genome){
     

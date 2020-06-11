@@ -35,5 +35,5 @@ grl_mbs = get_mut_type(grl, "mbs")
 
 }
 \seealso{
-\code{\link{get_mut_type_gr}}, \code{\link{read_vcfs_as_granges}}
+\code{\link{read_vcfs_as_granges}}
 }

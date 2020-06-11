@@ -9,7 +9,7 @@
 #' @return A version of the GRanges/GRangesList object, with modified REF and ALT columns. 
 #' 
 #' @seealso
-#' \code{\link{set_dbs_context_gr}}, \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
+#' \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
 #' @family DBS
 #' 
 #' @examples
@@ -23,6 +23,7 @@
 #' 
 #' @importFrom magrittr %>% 
 #' @export
+#' 
 set_dbs_context = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
@@ -47,12 +48,10 @@ set_dbs_context = function(grl){
 #'
 #' @return A version of the GRanges object, with modified REF and ALT columns. 
 #' 
-#' @seealso
-#' \code{\link{set_dbs_context}}
-#' @family DBS
+#' @noRd
 #' 
 #' @importFrom magrittr %>% 
-#' @export
+#' 
 set_dbs_context_gr = function(gr){
     
     #Check that no indels are present.

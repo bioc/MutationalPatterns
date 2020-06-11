@@ -31,13 +31,11 @@ count_dbs_contexts(grl_dbs_context)
 
 }
 \seealso{
-\code{\link{count_dbs_contexts_gr}}, \code{\link{set_dbs_context}}
+\code{\link{set_dbs_context}}
 
 Other DBS: 
-\code{\link{count_dbs_contexts_gr}()},
 \code{\link{plot_dbs_contexts}()},
 \code{\link{plot_main_dbs_contexts}()},
-\code{\link{set_dbs_context_gr}()},
 \code{\link{set_dbs_context}()}
 }
 \concept{DBS}

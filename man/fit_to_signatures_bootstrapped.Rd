@@ -83,6 +83,5 @@ method = "original")
 \seealso{
 \code{\link{mut_matrix}},
 \code{\link{fit_to_signatures_strict}},
-\code{\link{fit_to_signatures_bootstrapped}},
-\code{\link{resample_mut_mat}}
+\code{\link{fit_to_signatures_bootstrapped}}
 }

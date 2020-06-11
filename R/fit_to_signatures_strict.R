@@ -20,9 +20,7 @@
 #' 
 #' @seealso \code{\link{mut_matrix}}, 
 #' \code{\link{fit_to_signatures}},
-#' \code{\link{fit_to_signatures_bootstrapped}},
-#' \code{\link{get_cos_sim_ori_vs_rec}}, 
-#' \code{\link{plot_sim_decay}}
+#' \code{\link{fit_to_signatures_bootstrapped}}
 #' @export
 #' 
 #' @importFrom magrittr %>% 
@@ -51,6 +49,7 @@
 #' 
 #' ## list of ggplots that shows how the cosine similarity was reduced during the iterations
 #' fig_l = strict_refit$sim_decay_fig
+#' 
 fit_to_signatures_strict = function(mut_matrix, signatures, max_delta = 0.05){
     
     # These variables use non standard evaluation.
@@ -163,7 +162,8 @@ fit_to_signatures_strict = function(mut_matrix, signatures, max_delta = 0.05){
 #' mutation matrix
 #'
 #' @return Cosine similarity
-#'
+#' @noRd
+#' 
 get_cos_sim_ori_vs_rec = function(mut_matrix, fit_res){
     cos_sim_all = cos_sim_matrix(mut_matrix, fit_res$reconstructed)
     cos_sim = diag(cos_sim_all)
@@ -181,7 +181,7 @@ get_cos_sim_ori_vs_rec = function(mut_matrix, fit_res){
 #'
 #' @import ggplot2
 #' @importFrom magrittr %>% 
-#'
+#' @noRd
 #' @return ggplot object
 #'
 plot_sim_decay = function(sims, removed_sigs, max_delta){

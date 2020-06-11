@@ -28,13 +28,11 @@ set_dbs_context(grl_dbs)
 
 }
 \seealso{
-\code{\link{set_dbs_context_gr}}, \code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
+\code{\link{get_mut_type}}, \code{\link{read_vcfs_as_granges}}
 
 Other DBS: 
-\code{\link{count_dbs_contexts_gr}()},
 \code{\link{count_dbs_contexts}()},
 \code{\link{plot_dbs_contexts}()},
-\code{\link{plot_main_dbs_contexts}()},
-\code{\link{set_dbs_context_gr}()}
+\code{\link{plot_main_dbs_contexts}()}
 }
 \concept{DBS}
