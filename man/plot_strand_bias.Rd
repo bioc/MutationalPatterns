@@ -41,6 +41,7 @@ strand_bias = strand_bias_test(strand_counts)
 plot_strand_bias(strand_bias)
 
 ## Use multiple (max 3) significance cutoffs.
+## This will vary the number of significance stars.
 strand_bias_multistars = strand_bias_test(strand_counts,
                                          p_cutoffs = c(0.05, 0.01, 0.005), 
                                          fdr_cutoffs = c(0.1, 0.05, 0.01))
