@@ -29,3 +29,9 @@ test_that("A single GR can also be used as input", {
     expect_true(inherits(output_singlesample, "matrix"))
     expect_equal(dim(output_singlesample), c(96, 1))
 })
+
+#Test that a warning is given when using vcf_list
+test_that("A warning is given when using vcf_list",{
+    expect_warning({mut_matrix(vcf_list = input, ref_genome = ref_genome)}, 
+                   "vcf_list is deprecated")
+})

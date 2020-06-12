@@ -6,7 +6,7 @@ ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 
-#Test that the functio works with default arguments 
+#Test that the function works with default arguments 
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 input <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                              package="MutationalPatterns"))
@@ -29,9 +29,17 @@ test_that("a list is also acceptable input", {
 
 #A single sample can be used as input.
 test_that("A single GR can also be used as input", {
-    output_singlesample = mut_matrix(input[[1]], ref_genome)
+    output_singlesample = mut_matrix_stranded(input[[1]], ref_genome, ranges = genes_hg19)
     expect_true(inherits(output_singlesample, "matrix"))
-    expect_equal(dim(output_singlesample), c(96, 1))
+    expect_equal(dim(output_singlesample), c(192, 1))
+})
+
+#seqlevels genes need to match the input
+genes_badseqlevel = genes_hg19
+seqlevels(genes_badseqlevel)[1] = "chrtest"
+test_that("A single GR can also be used as input", {
+    expect_error({mut_matrix_stranded(input[[1]], ref_genome, ranges = genes_badseqlevel)},
+                 "Chromosome names \\(seqlevels\\) of vcf and genes Granges object do not match")
 })
 
 
@@ -44,5 +52,11 @@ expected_repli <- readRDS(system.file("states/mut_mat_repli.rds",
 test_that("replication mode transforms correctly", {
     mut_mat_repli = mut_matrix_stranded(input, ref_genome, repli_strand_granges, mode = "replication")
     expect_equal(mut_mat_repli, expected_repli)
+})
+
+#Test that a warning is given when using vcf_list
+test_that("A warning is given when using vcf_list",{
+    expect_warning({mut_matrix_stranded(vcf_list = input, ref_genome = ref_genome, ranges = genes_hg19)}, 
+                   "vcf_list is deprecated")
 })
 

@@ -54,6 +54,19 @@ test_that("unfiltered works", {
     expect_equal(proper_subset, TRUE)
 })
 
+
+#Test that a warning is given when vcf and names lengths don't match
+test_that("An error is given when vcf and names lengths don't match",{
+    expect_error({read_vcfs_as_granges(vcfs, sample_names[1:8], ref_genome)},
+                 "Please provide the same number of sample names as VCF files")
+})
+
+#Test that a warning is given when the supplied reference is not a BSgenome object
+test_that("An error is given when the supplied ref is not a BSgenome object",
+          {expect_error({read_vcfs_as_granges(vcfs, sample_names, "a")},
+                        "Please provide the name of a BSgenome object.")
+})
+
 #Test that you can read in specific mutation types
 vcf_fnames = list.files(system.file("extdata", package="MutationalPatterns"),
                         pattern = "blood.*vcf", full.names = TRUE)
@@ -92,4 +105,8 @@ test_that("Empty vcf works", {
     expect_true(inherits(output, "CompressedGRangesList"))
     expect_equal(length(output[[1]]), 0)
 })
+
+
+
+
 

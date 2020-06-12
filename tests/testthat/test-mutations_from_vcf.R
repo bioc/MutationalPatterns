@@ -17,8 +17,10 @@ colnames(mcols(vcf_lowercase)) = c("paramRangeID", "ref", "alt", "QUAL", "FILTER
 output_lowercase = mutations_from_vcf(vcf_lowercase)
 
 #Check it gives a warning on data with no ref or alt
-vcf_noreforalt = vcf
-colnames(mcols(vcf_noreforalt)) = c("paramRangeID", "a", "b", "QUAL", "FILTER")
+vcf_noref = vcf
+colnames(mcols(vcf_noref)) = c("paramRangeID", "a", "ALT", "QUAL", "FILTER")
+vcf_noalt = vcf
+colnames(mcols(vcf_noalt)) = c("paramRangeID", "REF", "a", "QUAL", "FILTER")
 
 #Unit tests
 test_that("Output has correct class",{
@@ -41,5 +43,6 @@ test_that("Input with lowercase doesn't change result",{
 })
 
 test_that("GR with no REF or ALT gives an error.", {
-    expect_error({output_noreforalt = mutations_from_vcf(vcf_noreforalt)}, "missing a ALT column")
+    expect_error({output_noref = mutations_from_vcf(vcf_noref)}, "missing a REF column")
+    expect_error({output_noalt = mutations_from_vcf(vcf_noalt)}, "missing a ALT column")
 })

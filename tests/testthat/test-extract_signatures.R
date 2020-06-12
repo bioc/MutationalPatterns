@@ -52,3 +52,16 @@ test_that("Output elements have correct size", {
     expect_equal(dim(output_bayes$contribution), c(2, 9))
     expect_equal(dim(output_bayes$reconstructed), c(96, 9))
 })
+
+#Test that an error is given when using a incorrect rank
+test_that("An error is given when used with incorrect rank",{
+    expect_error({extract_signatures(mut_mat, rank = 2.5, nrun = 1)},
+                 "Rank should be a positive integer")
+})
+
+#Test that an error is given when using a rank higher than the number of columns in the mut_mat
+test_that("An error is given when rank is higher than the number of mut_mat columns",{
+    expect_error({extract_signatures(mut_mat, rank = 30, nrun = 1)},
+                 paste0("The rank should be smaller than the number of ",
+                        "samples in the input matrix."))
+})

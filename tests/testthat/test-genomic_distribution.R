@@ -42,3 +42,25 @@ test_that("Output has correct class",{
 test_that("Output has correct size",{
     expect_equal(dim(output), c(27, 8))
 })
+
+#Test that an error is given when the grl and surveyed list are not the same size
+test_that("An error is given when input sizes don't match",{
+    expect_error({genomic_distribution(vcfs, surveyed_list[1:8], regions)},
+                 "grl and surveyed_list must have the same length")
+})
+
+#Test that an error is given when regions_list names are not set.
+regions_noname = regions
+names(regions_noname) = NULL
+test_that("An error is given when regions_list names are not set",{
+    expect_error({genomic_distribution(vcfs, surveyed_list, regions_noname)},
+                 "Please set the names of region_list using")
+})
+
+#Test that a warning is given when using vcf_list
+test_that("A warning is given when using vcf_list",{
+    expect_warning({genomic_distribution(vcf_list = vcfs[1], 
+                                         surveyed_list = surveyed_list[1], 
+                                         region_list = regions)}, 
+                   "vcf_list is deprecated")
+})
