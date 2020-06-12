@@ -46,11 +46,11 @@ extract_signatures = function(mut_matrix, rank, nrun = 200, nmf_type = c("regula
 
     # Make sure the rank_range is valid.
     if (!(rank > 0 & rank == round(rank)))
-        stop("Rank should be a positive integer")
+        stop("Rank should be a positive integer", call. = F)
 
     if (ncol(mut_matrix) < max(rank))
-        stop(paste( "The rank should be smaller than the number of",
-                    "samples in the input matrix.") )
+        stop(paste0("The rank should be smaller than the number of ",
+                    "samples in the input matrix."), call. = F)
 
     if (nmf_type == "regular"){
         # Calculate NMF
