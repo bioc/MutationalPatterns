@@ -91,11 +91,14 @@ read_vcfs_as_granges <- function(vcf_files,
     if (length(vcf_files) != length(sample_names)){
         stop("Please provide the same number of sample names as VCF files", call. = F)
     }
-    # Check the class of the reference genome
-    genome <- BSgenome::getBSgenome(genome)
-    if (!inherits(genome, "BSgenome")){
-        stop("Please provide the name of a BSgenome object.", call. = F)
-    }
+    
+    # Get the reference genome
+    tryCatch(
+        error = function(cnd){
+            stop("Please provide the name of a BSgenome object.", call. = F)
+        },
+        {genome <- BSgenome::getBSgenome(genome)}
+    )
     
     #Read vcfs
     grl <- purrr::map(vcf_files, read_single_vcf_as_grange, genome, group, change_seqnames) %>% 
