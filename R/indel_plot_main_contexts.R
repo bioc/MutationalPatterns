@@ -46,16 +46,23 @@ plot_main_indel_contexts = function(counts, same_y = F){
         tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>% 
         dplyr::mutate(muttype = factor(muttype, levels = unique(muttype)))
     
+    #Summarise per muttype and make data long
     counts_main = counts %>% 
         dplyr::select(-muttype_sub) %>% 
         dplyr::group_by(muttype) %>% 
         dplyr::summarise_all(list( ~sum(.))) %>% 
         tidyr::gather(key = "sample", value = "count", -.data$muttype)
+    
+    #Count nr mutations. (This is used for the facets)
     nr_muts = counts_main %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = sum(count))
+    
+    #Create facet text
     facet_labs_y = stringr::str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
     names(facet_labs_y) = nr_muts$sample
+    
+    #Set plotting parameters
     colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5","#FC8A6A",
                "#F14432", "#BC141A", "#D0E1F2", "#94C4DF","#4A98C9", "#1764AB", 
                "#E2E2EF", "#B6B6D8", "#8683BD", "#61409B")
@@ -64,6 +71,8 @@ plot_main_indel_contexts = function(counts, same_y = F){
     } else{
         facet_scale = "free"
     }
+    
+    #Create figure
     fig = ggplot(counts_main, aes(x = muttype, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ ., labeller = labeller(sample = facet_labs_y), scales = facet_scale) +

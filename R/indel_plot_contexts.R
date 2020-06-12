@@ -40,31 +40,37 @@ plot_indel_contexts = function(counts, same_y = F, extra_labels = F){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = muttype = muttype_sub = muttype_total = NULL
     
+    #Separate muttype and muttype_sub. Then make data long
     counts = counts %>% 
         as.data.frame() %>% 
         tibble::rownames_to_column("muttype_total") %>% 
         tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>% 
         dplyr::mutate(muttype = factor(muttype, levels = unique(muttype))) %>% 
         tidyr::gather(key = "sample", value = "count", -muttype, -muttype_sub)
+    
+    #Count nr mutations. (This is used for the facets)
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = round(sum(count)))
     
+    #Create facet texts
+    facet_labs_y = stringr::str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
+    names(facet_labs_y) = nr_muts$sample
+    facet_labs_x = c("1: C", "1: T", "1: C", "1: T", 2 ,3, 4, "5+", 2, 3, 4, "5+", 2, 3, 4, "5+")
+    names(facet_labs_x) = levels(counts$muttype)
+    
+    #Set plotting parameters
     if (same_y){
         facet_scale = "free_x"
     } else{
         facet_scale = "free"
     }
     
-    facet_labs_y = stringr::str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
-    names(facet_labs_y) = nr_muts$sample
-    facet_labs_x = c("1: C", "1: T", "1: C", "1: T", 2 ,3, 4, "5+", 2, 3, 4, "5+", 2, 3, 4, "5+")
-    names(facet_labs_x) = levels(counts$muttype)
     colors = c("#FDBE6F", "#FF8001", "#B0DD8B", "#36A12E", "#FDCAB5","#FC8A6A", 
                "#F14432", "#BC141A", "#D0E1F2", "#94C4DF", "#4A98C9", "#1764AB", 
                "#E2E2EF", "#B6B6D8", "#8683BD", "#61409B")
     
-
+    #Add optional extra labels
     if (extra_labels){
         title = stringr::str_c("Deletion           ",
                                "Insertion          ",
@@ -78,6 +84,7 @@ plot_indel_contexts = function(counts, same_y = F, extra_labels = F){
         title = x_lab = ""
     }
     
+    #Create figure
     fig = ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ muttype, 
