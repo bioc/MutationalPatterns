@@ -331,13 +331,13 @@ check_chroms = function(grl, ref_genome){
              You can change the seqlevelStyle with: `seqlevelsStyle(grl) = 'UCSC'", call. = F)
     }
     
-    #Check if there are variants in the input granges that are not in the reference.
+    #Check if there seqlevels in the input granges that are not in the reference.
     gr_seqlevels = levels(seqnames(gr))
     gr_seqlevels_notref = unique(gr_seqlevels[!gr_seqlevels %in% ref_seqnames])
     if(length(gr_seqlevels_notref)){
         gr_seqlevels_notref = stringr::str_c(gr_seqlevels_notref, collapse = ", ")
-        stop(stringr::str_c("The following seqlevels (chromosome names) occur in the input GRanges,
-        but are not present in the ref_genome: ", gr_seqlevels_notref, ". An example of how to fix this is show below.
+        stop(stringr::str_c("The following seqlevels (chromosome names) occur in the input GRanges,",
+        "but are not present in the ref_genome: ", gr_seqlevels_notref, ". An example of how to fix this is show below.
         First select the chromosomes you want to keep with: 
         `chromosomes = paste0('chr', c(1:22,'X'))`
         You can then remove variants in other chromosomes with: 
@@ -354,9 +354,9 @@ check_chroms = function(grl, ref_genome){
     }
     nr_nomatch = length(gr_nomatch)
     if (nr_nomatch){
-        stop(stringr::str_c("There are ", nr_nomatch, " variants that don't overlap with 
-                            the chromosome lengths of the chosen reference genome. 
-                            Did you select the correct reference genome?"), call. = F)
+        stop(stringr::str_c("There are ", nr_nomatch, " variants that don't overlap with ",
+                            "the chromosome lengths of the chosen reference genome.\n", 
+                            "Did you select the correct reference genome?"), call. = F)
     }
     
     invisible(grl)
@@ -371,5 +371,5 @@ check_chroms = function(grl, ref_genome){
 #' @noRd
 #' 
 is_na = function(x) {
-    length(x) == 1 && is.na(x)
+    purrr::is_scalar_vector(x) && is.na(x)
 }
