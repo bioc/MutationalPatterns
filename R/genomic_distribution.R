@@ -3,11 +3,12 @@
 #' Function finds the number of mutations that reside in genomic region and
 #' takes surveyed area of genome into account.
 #' 
-#' @param vcf_list A GRangesList or a list with VCF GRanges objects.
+#' @param grl GRangesList or GRanges object.
 #' @param surveyed_list A GRangesList or a list with GRanges of regions of
 #' the genome that have been surveyed (e.g. determined using GATK CallableLoci).
 #' @param region_list A GRangesList or a list with GRanges objects containing
 #' locations of genomic regions.
+#' @param vcf_list Deprecated. Use grl
 #'
 #' @return A data.frame containing the number observed and number of expected
 #' mutations in each genomic region.
@@ -106,9 +107,17 @@
 #'
 #' @export
 
-genomic_distribution = function(vcf_list, surveyed_list, region_list){
-    if (length(vcf_list) != length(surveyed_list)){
-        stop("vcf_list and surveyed_list must have the same length", call. = F)
+genomic_distribution = function(grl, surveyed_list, region_list, vcf_list = NA){
+    
+    #Check arguments
+    if (!is_na(vcf_list)){
+        warning("vcf_list is deprecated, use grl instead. 
+              The parameter grl is set equal to the parameter vcf_list.", call. = F)
+        grl <- vcf_list
+    }
+    
+    if (length(grl) != length(surveyed_list)){
+        stop("grl and surveyed_list must have the same length", call. = F)
     }
 
     if (is.null(names(region_list))){
@@ -120,7 +129,7 @@ genomic_distribution = function(vcf_list, surveyed_list, region_list){
     #Perform intersect with region over each combi of vcf and region.
     #Map over the region list. Within this loop map over the vcfs.
     df = purrr::map(as.list(region_list), function(region) {
-        purrr::map2(as.list(vcf_list), as.list(surveyed_list), intersect_with_region, region) %>% 
+        purrr::map2(as.list(grl), as.list(surveyed_list), intersect_with_region, region) %>% 
         dplyr::bind_rows(.id = "sample")
     }) %>% dplyr::bind_rows(.id = "region")
 
