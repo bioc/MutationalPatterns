@@ -144,7 +144,7 @@ read_single_vcf_as_grange = function(vcf_file, genome, group, change_seqnames){
     # Muffle the warning about duplicate keys.
     genome_name <- GenomeInfoDb::genome(genome)[[1]]
     withCallingHandlers({
-        gr <- SummarizedExperiment::rowRanges(VariantAnnotation::readVcf(vcf_file, genome_name))
+        gr <- GenomicRanges::granges(VariantAnnotation::readVcf(vcf_file, genome_name))
     }, warning = function(w) {
         if (grepl("duplicate keys in header will be forced to unique rownames", conditionMessage(w)))
             invokeRestart("muffleWarning")
