@@ -159,7 +159,7 @@ calculate_lesion_segregation_gr = function(gr, sample_name = "sample", split_by_
 #' 
 get_strandedness_gr = function(gr){
     check_no_indels(gr)
-    strand(gr) = ifelse(as.vector(gr$REF) %in% c("C", "T"), "+", "-")
+    strand(gr) = ifelse(as.vector(get_ref(gr)) %in% c("C", "T"), "+", "-")
     GenomeInfoDb::seqlevelsStyle(gr) = "NCBI" #This takes less space when plotting
     
     if (length(gr)){

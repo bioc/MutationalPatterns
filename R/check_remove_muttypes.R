@@ -37,7 +37,7 @@ check_no_multi_alts = function(grl){
 #' @importFrom magrittr %>%
 
 check_no_multi_alts_gr = function(gr){
-    alt = gr$ALT
+    alt = get_alt(gr)
     nr_alts = alt %>% 
         unlist() %>% 
         length()
@@ -169,7 +169,7 @@ remove_multi_alts_variants = function(grl){
 #' @return A filtered version of the input GRanges object.
 #' 
 remove_multi_alts_variants_gr = function(gr){
-    alt = gr$ALT
+    alt = get_alt(gr)
     gr = gr[IRanges::elementNROWS(alt) == 1]
     return(gr)
 }
@@ -260,7 +260,7 @@ remove_indels_gr = function(gr){
 #' 
 find_snv = function(gr){
     check_no_multi_alts(gr)
-    snv_f = width(gr$REF) == width(unlist(gr$ALT))
+    snv_f = width(get_ref(gr)) == width(unlist(get_alt(gr)))
     return(snv_f)
 }
 

@@ -75,9 +75,11 @@ get_indel_context_gr = function(gr, ref_genome){
     check_no_snvs(gr)
     
     #Calculate indel size to determine main category
-    ref_sizes = gr$REF %>%
+    ref_sizes = gr %>%
+        get_ref() %>% 
         width()
-    alt_sizes = gr$ALT %>%
+    alt_sizes = gr %>%
+        get_alt() %>% 
         unlist() %>%
         width()
     mut_size = alt_sizes - ref_sizes
@@ -125,7 +127,8 @@ get_1bp_dels = function(gr, mut_size, ref_genome){
     }
     
     #Get the deleted bases
-    del_bases = gr$REF %>%
+    del_bases = gr %>%
+        get_ref() %>% 
         as.character() %>%
         substring(2)
     
@@ -175,7 +178,8 @@ get_1bp_ins = function(gr, mut_size, ref_genome){
     }
     
     #Get inserted bases.
-    ins_bases = gr$ALT %>% 
+    ins_bases = gr %>% 
+        get_alt() %>% 
         unlist() %>% 
         as.character() %>% 
         substring(2)
@@ -227,7 +231,8 @@ get_big_ins = function(gr, mut_size, ref_genome){
     mut_size = mut_size[mut_size > 1]
     
     #Get inserted bases
-    ins_bases = gr$ALT %>% 
+    ins_bases = gr %>% 
+        get_alt() %>% 
         unlist() %>% 
         as.character() %>% 
         substring(2)
@@ -282,7 +287,8 @@ get_big_dels = function(gr, mut_size, ref_genome){
     mut_size = mut_size[mut_size < -1]
     
     #Get deleted bases
-    del_bases = gr$REF %>% 
+    del_bases = gr %>% 
+        get_ref() %>% 
         as.character() %>% 
         substring(2)
     biggest_dels = del_bases %>%

@@ -73,7 +73,8 @@ count_mbs_contexts_gr = function(gr, categories){
     count = size = . = NULL
     
     #Create count table
-    counts_tb = gr$REF %>% #Determine different sizes
+    counts_tb = gr %>% #Determine different sizes
+        get_ref() %>% 
         BiocGenerics::width() %>% 
         tibble::enframe(value = "size") %>% 
         dplyr::select(-name) %>%

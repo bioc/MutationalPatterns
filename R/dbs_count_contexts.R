@@ -86,7 +86,7 @@ count_dbs_contexts_gr = function(gr, categories){
     # To avoid R CMD check complaints we initialize them to NULL.
     REF = ALT = NULL
     
-    context = cbind("REF" = as.vector(gr$REF), "ALT" = as.vector(unlist(gr$ALT)))
+    context = cbind("REF" = as.vector(get_ref(gr)), "ALT" = as.vector(unlist(get_alt(gr))))
     counts = context %>% 
         tibble::as_tibble() %>% 
         dplyr::group_by(REF, ALT) %>% 

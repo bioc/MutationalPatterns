@@ -207,11 +207,13 @@ merge_muts = function(gr){
     gr_new = gr[1]
     
     #Combine refs, alts and quals
-    gr_new$REF = gr$REF %>% 
+    gr_new$REF = gr %>%
+        get_ref() %>% 
         as.vector() %>% 
         stringr::str_c(collapse = "") %>%
         Biostrings::DNAStringSet()
-    gr_new$ALT = gr$ALT %>%
+    gr_new$ALT = gr %>%
+        get_alt() %>% 
         unlist() %>% 
         as.vector() %>% 
         stringr::str_c(collapse = "") %>%

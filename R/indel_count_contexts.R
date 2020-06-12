@@ -110,9 +110,11 @@ count_indel_contexts_gr = function(gr, categories){
     
     
     #Classify large indels as size 5+
-    ref_sizes = gr$REF %>%
+    ref_sizes = gr %>%
+        get_ref() %>% 
         width()
-    alt_sizes = gr$ALT %>% 
+    alt_sizes = gr %>% 
+        get_alt() %>% 
         unlist() %>% 
         width()
     mut_size = abs(alt_sizes - ref_sizes)

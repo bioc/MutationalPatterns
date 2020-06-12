@@ -3,10 +3,22 @@ context("test-mutations_from_vcf")
 #Read vcfs
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
                 package="MutationalPatterns"))
+vcf = vcfs[[1]]
 
-output = mutations_from_vcf(vcfs[[1]])
-output_empty = mutations_from_vcf(vcfs[[1]][0])
+#Run function
+output = mutations_from_vcf(vcf)
 
+#Check it works on empty input
+output_empty = mutations_from_vcf(vcf[0])
+
+#Check it works on lowercase input
+vcf_lowercase = vcf
+colnames(mcols(vcf_lowercase)) = c("paramRangeID", "ref", "alt", "QUAL", "FILTER")
+output_lowercase = mutations_from_vcf(vcf_lowercase)
+
+#Check it gives a warning on data with no ref or alt
+vcf_noreforalt = vcf
+colnames(mcols(vcf_noreforalt)) = c("paramRangeID", "a", "b", "QUAL", "FILTER")
 
 #Unit tests
 test_that("Output has correct class",{
@@ -22,4 +34,12 @@ test_that("The 12 substitution types are returned",{
 
 test_that("GRanges with 0 muts as input gives empty output",{
     expect_equal(length(output_empty), 0)
+})
+
+test_that("Input with lowercase doesn't change result",{
+    expect_equal(output, output_lowercase)
+})
+
+test_that("GR with no REF or ALT gives an error.", {
+    expect_error({output_noreforalt = mutations_from_vcf(vcf_noreforalt)}, "missing a ALT column")
 })
