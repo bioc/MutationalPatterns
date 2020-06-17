@@ -16,7 +16,7 @@
 #' 
 #' ## Get a GRangesList or GRanges object with only indels.
 #' ## See 'read_vcfs_as_granges' or 'get_mut_type' for more info on how to do this.
-#' grl_indel <- readRDS(system.file("states/blood_grl_indel.rds",
+#' indel_grl <- readRDS(system.file("states/blood_grl_indel.rds",
 #'                 package="MutationalPatterns"))
 #' 
 #' ## Load the corresponding reference genome.
@@ -24,7 +24,7 @@
 #' library(ref_genome, character.only = TRUE)
 #' 
 #' ## Get the indel contexts
-#' get_indel_context(grl_indel, ref_genome)
+#' get_indel_context(indel_grl, ref_genome)
 #' 
 #' @family Indels
 #' 

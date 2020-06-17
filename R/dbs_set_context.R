@@ -15,11 +15,11 @@
 #' @examples
 #' ## Get GRangesList with DBS.
 #' ## See 'get_mut_type' or 'read_vcfs_as_granges' for more info on how to do this.
-#' grl_dbs <- readRDS(system.file("states/blood_grl_dbs.rds",
+#' dbs_grl <- readRDS(system.file("states/blood_grl_dbs.rds",
 #'                 package="MutationalPatterns"))
 #'                 
 #' ##Set context dbs
-#' set_dbs_context(grl_dbs)
+#' set_dbs_context(dbs_grl)
 #' 
 #' @importFrom magrittr %>% 
 #' @export

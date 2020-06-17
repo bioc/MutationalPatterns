@@ -4,16 +4,18 @@
 \alias{genomic_distribution}
 \title{Find overlaps between mutations and a genomic region.}
 \usage{
-genomic_distribution(vcf_list, surveyed_list, region_list)
+genomic_distribution(grl, surveyed_list, region_list, vcf_list = NA)
 }
 \arguments{
-\item{vcf_list}{A GRangesList or a list with VCF GRanges objects.}
+\item{grl}{GRangesList or GRanges object.}
 
 \item{surveyed_list}{A GRangesList or a list with GRanges of regions of
 the genome that have been surveyed (e.g. determined using GATK CallableLoci).}
 
 \item{region_list}{A GRangesList or a list with GRanges objects containing
 locations of genomic regions.}
+
+\item{vcf_list}{Deprecated. Use grl}
 }
 \value{
 A data.frame containing the number observed and number of expected

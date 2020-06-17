@@ -12,14 +12,13 @@
 #' 
 #' @examples 
 #' ## Get a GRangesList or GRanges object with mbs variants.
-#' grl_mbs <- readRDS(system.file("states/blood_grl_mbs.rds",
+#' mbs_grl <- readRDS(system.file("states/blood_grl_mbs.rds",
 #'                 package="MutationalPatterns"))
 #' 
 #' #Count the MBSs
-#' count_mbs_contexts(grl_mbs)
+#' count_mbs_contexts(mbs_grl)
 #' 
 #' @family MBS
-#' @seealso \code{\link{count_mbs_contexts_gr}}
 #' 
 #' @export
 count_mbs_contexts = function(grl){
@@ -63,9 +62,7 @@ count_mbs_contexts = function(grl){
 #' @return A single column tibble containing the number of MBS per MBS length
 #' 
 #' @importFrom magrittr %>%
-#' 
-#' @seealso \code{\link{count_mbs_contexts}}
-#' @family MBS
+#' @noRd
 count_mbs_contexts_gr = function(gr, categories){
     
     # These variables use non standard evaluation.

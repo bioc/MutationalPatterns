@@ -23,18 +23,15 @@ It then combines the results in a single tibble and returns this.
 }
 \examples{
 ## Get a GRangesList or GRanges object with mbs variants.
-grl_mbs <- readRDS(system.file("states/blood_grl_mbs.rds",
+mbs_grl <- readRDS(system.file("states/blood_grl_mbs.rds",
                 package="MutationalPatterns"))
 
 #Count the MBSs
-count_mbs_contexts(grl_mbs)
+count_mbs_contexts(mbs_grl)
 
 }
 \seealso{
-\code{\link{count_mbs_contexts_gr}}
-
 Other MBS: 
-\code{\link{count_mbs_contexts_gr}()},
 \code{\link{plot_mbs_contexts}()}
 }
 \concept{MBS}
