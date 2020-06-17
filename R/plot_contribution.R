@@ -5,7 +5,8 @@
 #' 
 #' @param contribution Signature contribution matrix
 #' @param signatures Signature matrix. 
-#' Neccessary when plotting NMF results in "absolute" mode
+#' Neccessary when plotting NMF results in "absolute" mode.
+#' It's not necessary in relative mode or when visualizing signature refitting results
 #' @param index optional sample subset parameter
 #' @param coord_flip Flip X and Y coordinates, default = FALSE
 #' @param mode "relative" or "absolute"; to plot the relative contribution or

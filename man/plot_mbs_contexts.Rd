@@ -39,7 +39,6 @@ plot_mbs_contexts(mbs_counts, same_y = TRUE)
 \code{\link{count_mbs_contexts}}
 
 Other MBS: 
-\code{\link{count_mbs_contexts_gr}()},
 \code{\link{count_mbs_contexts}()}
 }
 \concept{MBS}
