@@ -74,7 +74,7 @@ plot_main_dbs_contexts = function(counts, same_y = F){
         labs(x = "", y = "Nr of DBSs") +
         scale_fill_manual(guide=FALSE, values = colors) +
         theme_minimal() +
-        theme(anel.grid.major.x = element_blank(),
+        theme(panel.grid.major.x = element_blank(),
               axis.text.x = element_text(angle = 90))
     return(fig)
 }
