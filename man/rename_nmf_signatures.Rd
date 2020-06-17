@@ -48,9 +48,12 @@ signatures <- read.table(filename, sep = "\t", header = TRUE)
 ## Remove unnecessary columns
 signatures = as.matrix(signatures[,-c(1,2)])                
 
-nmf_res = rename_nmf_signatures(nmf_res, signatures)
+rename_nmf_signatures(nmf_res, signatures)
 
 ## You can change how similar the signatures have to be, before they are considered similar.
-nmf_res = rename_nmf_signatures(nmf_res, signatures, cutoff = 0.95)
+rename_nmf_signatures(nmf_res, signatures, cutoff = 0.95)
+
+## You can also change the base_name of the signatures that end up with a letter name.
+rename_nmf_signatures(nmf_res, signatures, cutoff = 0.95, base_name = "Signature_")
 
 }
