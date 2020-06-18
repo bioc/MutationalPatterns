@@ -211,6 +211,6 @@ plot_sim_decay = function(sims, removed_sigs, max_delta){
         geom_bar(stat = "identity") +
         scale_fill_manual(limits = c("low_delta", "high_delta"), values = c("grey", "red"), guide = F) +
         labs(x = "Removed signatures", y = paste0("Cosine similarity (max delta: ", max_delta, ")")) +
-        theme(axis.text.x = element_text(angle = 90, size = 12), text = element_text(size=20))
+        theme(axis.text.x = element_text(angle = 90, size = 12), text = element_text(size=12))
     return(fig)
 }
