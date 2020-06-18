@@ -42,6 +42,7 @@ plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
 
 Other DBS: 
 \code{\link{count_dbs_contexts}()},
+\code{\link{plot_compare_dbs}()},
 \code{\link{plot_dbs_contexts}()},
 \code{\link{set_dbs_context}()}
 }

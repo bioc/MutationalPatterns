@@ -44,6 +44,7 @@ get_indel_context(indel_grl, ref_genome)
 
 Other Indels: 
 \code{\link{count_indel_contexts}()},
+\code{\link{plot_compare_indels}()},
 \code{\link{plot_indel_contexts}()},
 \code{\link{plot_main_indel_contexts}()}
 }

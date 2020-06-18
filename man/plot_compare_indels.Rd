@@ -68,3 +68,15 @@ plot_compare_indels(indel_counts[,1],
                         diff_ylim = c(-0.03, 0.03))
 
 }
+\seealso{
+\code{\link{plot_compare_profiles}}, 
+\code{\link{plot_compare_dbs}},
+\code{\link{plot_compare_mbs}}
+
+Other Indels: 
+\code{\link{count_indel_contexts}()},
+\code{\link{get_indel_context}()},
+\code{\link{plot_indel_contexts}()},
+\code{\link{plot_main_indel_contexts}()}
+}
+\concept{Indels}

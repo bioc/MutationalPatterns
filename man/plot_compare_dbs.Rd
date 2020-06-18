@@ -68,3 +68,15 @@ plot_compare_dbs(dbs_counts[,1],
                  diff_ylim = c(-0.03, 0.03))
 
 }
+\seealso{
+\code{\link{plot_compare_profiles}}, 
+\code{\link{plot_compare_indels}},
+\code{\link{plot_compare_mbs}}
+
+Other DBS: 
+\code{\link{count_dbs_contexts}()},
+\code{\link{plot_dbs_contexts}()},
+\code{\link{plot_main_dbs_contexts}()},
+\code{\link{set_dbs_context}()}
+}
+\concept{DBS}

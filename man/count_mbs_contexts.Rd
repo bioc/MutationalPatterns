@@ -32,6 +32,7 @@ count_mbs_contexts(mbs_grl)
 }
 \seealso{
 Other MBS: 
+\code{\link{plot_compare_mbs}()},
 \code{\link{plot_mbs_contexts}()}
 }
 \concept{MBS}

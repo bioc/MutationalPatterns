@@ -64,3 +64,13 @@ plot_compare_mbs(mbs_counts[,1],
 ## Existing signatures have also not yet been defined.
 
 }
+\seealso{
+\code{\link{plot_compare_profiles}}, 
+\code{\link{plot_compare_dbs}},
+\code{\link{plot_compare_indels}}
+
+Other MBS: 
+\code{\link{count_mbs_contexts}()},
+\code{\link{plot_mbs_contexts}()}
+}
+\concept{MBS}

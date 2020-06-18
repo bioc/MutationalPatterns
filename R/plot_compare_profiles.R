@@ -52,7 +52,10 @@
 #'
 #' @seealso
 #' \code{\link{mut_matrix}},
-#' \code{\link{extract_signatures}}
+#' \code{\link{extract_signatures}},
+#' \code{\link{plot_compare_indels}}, 
+#' \code{\link{plot_compare_dbs}},
+#' \code{\link{plot_compare_mbs}}
 #'
 #' @export
 #' 

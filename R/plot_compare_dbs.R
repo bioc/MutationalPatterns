@@ -16,7 +16,11 @@
 #'
 #' @return A ggplot2 object
 #' @export
-#'
+#' @family DBS
+#' @seealso \code{\link{plot_compare_profiles}}, 
+#' \code{\link{plot_compare_indels}},
+#' \code{\link{plot_compare_mbs}}
+#' 
 #' @examples
 #' 
 #' ## Get the dbs counts

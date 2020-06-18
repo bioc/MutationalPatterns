@@ -32,6 +32,7 @@ set_dbs_context(dbs_grl)
 
 Other DBS: 
 \code{\link{count_dbs_contexts}()},
+\code{\link{plot_compare_dbs}()},
 \code{\link{plot_dbs_contexts}()},
 \code{\link{plot_main_dbs_contexts}()}
 }

@@ -54,6 +54,7 @@ plot_indel_contexts(indel_counts, extra_labels = TRUE)
 Other Indels: 
 \code{\link{count_indel_contexts}()},
 \code{\link{get_indel_context}()},
+\code{\link{plot_compare_indels}()},
 \code{\link{plot_main_indel_contexts}()}
 }
 \concept{Indels}
