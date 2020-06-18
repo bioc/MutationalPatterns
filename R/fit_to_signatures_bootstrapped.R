@@ -25,8 +25,8 @@
 #' @param method The refitting method to be used.
 #'               Possible values:
 #'              * 'strict' Uses fit_to_signatures_strict;
-#'              * 'original' Uses fit_to_signatures;
-#'              * 'original_10+' Uses fit_to_signatures, but removes signatures with less than 10 variants.;
+#'              * 'regular' Uses fit_to_signatures;
+#'              * 'regular_10+' Uses fit_to_signatures, but removes signatures with less than 10 variants.;
 #' @param verbose Boolean. If TRUE, the function will show how far along it is.
 #'
 #' @return A matrix showing the signature contributions across all the bootstrap iterations.
@@ -59,18 +59,18 @@
 #' n_boots = 10, 
 #' max_delta = 0.05)
 #' 
-#' ## Use the original refit method
+#' ## Use the regular refit method
 #' contri_boots = fit_to_signatures_bootstrapped(mut_mat, 
 #' signatures, 
 #' n_boots = 10, 
 #' max_delta = 0.05, 
-#' method = "original")
+#' method = "regular")
 #' 
 fit_to_signatures_bootstrapped = function(mut_matrix, 
                                           signatures, 
                                           n_boots = 1000, 
                                           max_delta = 0.05, 
-                                          method = c("strict", "original", "original_10+"),
+                                          method = c("strict", "regular", "regular_10+"),
                                           verbose = TRUE){
     
     # These variables use non standard evaluation.
@@ -100,11 +100,11 @@ fit_to_signatures_bootstrapped = function(mut_matrix,
             refit_out = fit_to_signatures_strict(mut_mat_resampled, signatures, max_delta = max_delta)
             contri = refit_out$fit_res$contribution
         }
-        else if (method == "original"){
+        else if (method == "regular"){
             fit_res = fit_to_signatures(mut_mat_resampled, signatures)
             contri = fit_res$contribution
         }
-        else if (method == "original_10+"){
+        else if (method == "regular_10+"){
             fit_res = fit_to_signatures(mut_mat_resampled, signatures)
             index = rowSums(fit_res$contribution >= 10) != 0 #Check whether a signature has at least 10 mutations in a single sample
             contri = fit_res$contribution[index,]

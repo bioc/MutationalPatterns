@@ -9,7 +9,7 @@ fit_to_signatures_bootstrapped(
   signatures,
   n_boots = 1000,
   max_delta = 0.05,
-  method = c("strict", "original", "original_10+"),
+  method = c("strict", "regular", "regular_10+"),
   verbose = TRUE
 )
 }
@@ -28,8 +28,8 @@ Only used with method strict.}
 \item{method}{The refitting method to be used.
  Possible values:
 * 'strict' Uses fit_to_signatures_strict;
-* 'original' Uses fit_to_signatures;
-* 'original_10+' Uses fit_to_signatures, but removes signatures with less than 10 variants.;}
+* 'regular' Uses fit_to_signatures;
+* 'regular_10+' Uses fit_to_signatures, but removes signatures with less than 10 variants.;}
 
 \item{verbose}{Boolean. If TRUE, the function will show how far along it is.}
 }
@@ -72,12 +72,12 @@ signatures,
 n_boots = 10, 
 max_delta = 0.05)
 
-## Use the original refit method
+## Use the regular refit method
 contri_boots = fit_to_signatures_bootstrapped(mut_mat, 
 signatures, 
 n_boots = 10, 
 max_delta = 0.05, 
-method = "original")
+method = "regular")
 
 }
 \seealso{
