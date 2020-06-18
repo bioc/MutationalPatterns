@@ -52,6 +52,8 @@ plot_dbs_contexts = function(counts, same_y = F){
     
     #Transform data to long format.
     counts = tidyr::gather(counts, key = "sample", value = "count", -REF, -ALT)
+    
+    #Count nr of mutations
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = round(sum(count)))
