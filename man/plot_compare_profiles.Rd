@@ -23,7 +23,9 @@ plot_compare_profiles(
 used for plotting, default = c("profile 1", "profile 2")}
 
 \item{profile_ymax}{Maximum value of y-axis (relative contribution) for
-profile plotting, default = 0.2}
+profile plotting. This can only be used to increase the y axis.
+If bars fall outside this limit, the maximum value is
+automatically increased. default = 0.2.}
 
 \item{diff_ylim}{Y-axis limits for profile difference plot,
 default = c(-0.02, 0.02)}
@@ -52,10 +54,23 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
                     package="MutationalPatterns"))
 
-## Compare the reconstructed 96-profile of sample 1 with orignal profile
+## Compare the reconstructed 96-profile of sample 1 with the original profile
+## The same thing could be done with a reconstructed profile from signature refitting.
 plot_compare_profiles(mut_mat[,1],
                         nmf_res$reconstructed[,1],
                         profile_names = c("Original", "Reconstructed"))
+                        
+## You could also compare regular mutation profiles with eachother.
+plot_compare_profiles(mut_mat[,1],
+                      mut_mat[,2])
+
+
+## You can also change the y limits.
+## This can be done separately for the profiles and the different facets.
+plot_compare_profiles(mut_mat[,1],
+                        mut_mat[,2],
+                        profile_ymax = 0.3,
+                        diff_ylim = c(-0.03, 0.03))
 
 }
 \seealso{
