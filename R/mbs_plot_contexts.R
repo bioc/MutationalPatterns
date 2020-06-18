@@ -19,8 +19,8 @@
 #' ## Plot contexts
 #' plot_mbs_contexts(mbs_counts)
 #' 
-#' ## Use the same y axis for all samples.
-#' plot_mbs_contexts(mbs_counts, same_y = TRUE)
+#' ## Use a different y axis for all samples.
+#' plot_mbs_contexts(mbs_counts, same_y = FALSE)
 #' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
@@ -35,31 +35,36 @@ plot_mbs_contexts = function(counts, same_y = T){
     # To avoid R CMD check complaints we initialize them to NULL.
     count = size = NULL
     
+    #Make data long
     counts = counts %>% 
         as.data.frame() %>% 
         tibble::rownames_to_column("size") %>%
         tidyr::pivot_longer(-size, names_to = "sample", values_to = "count") %>% 
         dplyr::mutate(size = factor(size, levels = unique(size)),
                       sample = factor(sample, levels = unique(sample)))
+    
+    #Count nr. muts
     nr_muts = counts %>% 
         dplyr::group_by(sample) %>% 
         dplyr::summarise(nr_muts = round(sum(count)))
     
+    #Create facets
     if (same_y){
-        facet_scale = "free_x"
+        facet_scale = "fixed"
     } else{
-        facet_scale = "free"
+        facet_scale = "free_y"
     }
     
     facet_labs_y = stringr::str_c(nr_muts$sample, " (n = ", nr_muts$nr_muts, ")")
     names(facet_labs_y) = nr_muts$sample
     
+    #Create plot
     fig = ggplot(counts, aes(x = size, y = count, fill = size)) +
         geom_bar(stat = "identity") +
         facet_grid(sample ~ ., 
-                   scales = facet_scale, space = "free_x",
+                   scales = facet_scale,
                    labeller = labeller(sample = facet_labs_y)) +
-        labs(x = "MNV size", y = "Nr. of MBSs") +
+        labs(x = "MBS size", y = "Nr. of MBSs") +
         guides(fill = F) +
         theme_classic() +
         theme(legend.background = element_rect(fill="transparent", colour=NA),

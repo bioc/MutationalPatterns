@@ -31,8 +31,8 @@ mbs_counts <- readRDS(system.file("states/blood_mbs_counts.rds",
 ## Plot contexts
 plot_mbs_contexts(mbs_counts)
 
-## Use the same y axis for all samples.
-plot_mbs_contexts(mbs_counts, same_y = TRUE)
+## Use a different y axis for all samples.
+plot_mbs_contexts(mbs_counts, same_y = FALSE)
 
 }
 \seealso{
