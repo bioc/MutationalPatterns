@@ -7,7 +7,7 @@
 #' @param profile2 Second mutation profile
 #' @param profile_names Character vector with names of the mutations profiles
 #' used for plotting, default = c("profile 1", "profile 2")
-#' @param Maximum value of y-axis (relative contribution) for
+#' @param profile_ymax Maximum value of y-axis (relative contribution) for
 #' profile plotting. This can only be used to increase the y axis.
 #' If bars fall outside this limit, the maximum value is
 #' automatically increased. default = 0.2.
@@ -55,7 +55,7 @@ plot_compare_dbs = function(profile1, profile2,
                                diff_ylim = c(-0.1, 0.1)){
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    count = muttype = muttype_sub = muttype_total = NULL
+    count = REF = ALT = value = muttype_total = NULL
     
     
     #Create a comparison of the profiles.

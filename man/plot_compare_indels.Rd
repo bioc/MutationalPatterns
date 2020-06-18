@@ -20,13 +20,13 @@ plot_compare_indels(
 \item{profile_names}{Character vector with names of the mutations profiles
 used for plotting, default = c("profile 1", "profile 2")}
 
-\item{diff_ylim}{Y-axis limits for profile difference plot,
-default = c(-0.1, 0.1)}
-
-\item{Maximum}{value of y-axis (relative contribution) for
+\item{profile_ymax}{Maximum value of y-axis (relative contribution) for
 profile plotting. This can only be used to increase the y axis.
 If bars fall outside this limit, the maximum value is
 automatically increased. default = 0.2.}
+
+\item{diff_ylim}{Y-axis limits for profile difference plot,
+default = c(-0.1, 0.1)}
 }
 \value{
 A ggplot2 object
