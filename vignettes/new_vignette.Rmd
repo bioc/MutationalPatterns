@@ -1,0 +1,637 @@
+---
+title: "Introduction to MutationalPatterns"
+author:
+- name: Freek Manders
+  affiliation:
+    - Princess Maxima Center, Utrecht, The Netherlands
+  email: F.M.Manders@prinsesmaximacentrum.nl
+- name: Francis Blokzijl
+  affiliation:
+    - University Medical Center Utrecht, Utrecht, The Netherlands
+- name: Roel Janssen
+  affiliation:
+    - University Medical Center Utrecht, Utrecht, The Netherlands
+- name: Rurika Oka
+  affiliation:
+    - Princess Maxima Center, Utrecht, The Netherlands
+  email: R.Oka@prinsesmaximacentrum.nl
+- name: Ruben van Boxtel
+  affiliation:
+    - Princess Maxima Center, Utrecht, The Netherlands
+- name: Edwin Cuppen
+  affiliation:
+    - University Medical Center Utrecht, Utrecht, The Netherlands
+package: "MutationalPatterns"
+output: 
+    BiocStyle::html_document
+bibliography: references.bib
+vignette: >
+    %\VignetteIndexEntry{Introduction to MutationalPatterns}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}  
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r, echo=FALSE}
+options(width=96)
+library(ggplot2)
+```
+
+# Introduction
+
+Mutational processes leave characteristic footprints in genomic DNA. This
+package provides a comprehensive set of flexible functions that allows
+researchers to easily evaluate and visualize a multitude of mutational patterns
+in base substitution catalogues of e.g. healthy samples, tumour samples, or DNA-repair deficient
+cells. This is the second major version of the package. Many new functions have been added and 
+functions from the previous version have been enhanced.
+The package covers a wide range of patterns including: mutational
+signatures, transcriptional and replicative strand bias, genomic distribution
+and association with genomic features, which are collectively meaningful for
+studying the activity of mutational processes. The package works with single nucleotide variants (SNVs),
+insertions and deletions (Indels), double base substitutions (DBSs) and multi base substitutions (MBSs). 
+The package provides functionalities for both extracting mutational signatures *de novo* and
+determining the contribution of previously identified mutational signatures on
+a single sample level. MutationalPatterns integrates with common R genomic
+analysis workflows and allows easy association with (publicly available)
+annotation data.
+
+Background on the biological relevance of the different mutational patterns, a
+practical illustration of the package functionalities, comparison with similar
+tools and software packages and an elaborate discussion, are described in the
+MutationalPatterns [article](https://doi.org/10.1186/s13073-018-0539-0). NEW ARTICLE.
+
+This vignette shows some common ways in which the functions in this package can be used. 
+It is however not exhaustive and won't show every argument of every function.
+You can view the documentation of a function by adding a `?` in front of it. Like: `?plot_spectrum`.
+This documentation describes all the arguments of a function. It also contains more examples of how the function can be used.
+
+# Data
+
+To perform the mutational pattern analyses, you need to load one or multiple
+VCF files with variant calls and the corresponding reference
+genome.
+
+## List reference genome
+
+List available genomes using `r Biocpkg("BSgenome")`:
+
+```{r, message=FALSE}
+library(BSgenome)
+head(available.genomes())
+```
+
+Download and load your reference genome of interest:
+
+```{r}
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
+library(ref_genome, character.only = TRUE)
+```
+
+## Load example data SNVs
+
+We provided two example data sets with this package. The first consists of a subset of
+somatic SNV catalogues of 9 normal human adult stem cells from 3 different
+tissues [@Blokzijl2016]. Additionally, we added 3 somatic mutation catalogues of healthy human hematopoietic stem cells [@Osorio2018]. These were added to demonstrate the new functions for dealing with indels, DBSs and MBSs. (The MBS were added in silico for demonstration purposes.)
+
+```{r Load package, message=FALSE}
+#library(MutationalPatterns)
+library(devtools)
+load_all("~/surfdrive/Shared/Boxtel_General/Scripts/Git_submission/Freek_MutationalPatterns/MutationalPatterns/")
+```
+
+Locate the VCF files of the example data from the first set. These will be used for the SNV examples:
+
+```{r locate_vcfs}
+vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
+                        pattern = "sample.vcf", full.names = TRUE)
+```
+
+Define corresponding sample names for the VCF files:
+```{r set_sample_names}
+sample_names <- c(
+    "colon1", "colon2", "colon3",
+    "intestine1", "intestine2", "intestine3",
+    "liver1", "liver2", "liver3")
+```
+
+Load the VCF files into a `GRangesList`.:
+```{r read_vcfs_as_granges, message=FALSE}
+grl <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome)
+```
+
+Define relevant metadata on the samples, such as tissue type:
+
+```{r store tissue variable}
+tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
+```
+
+
+## Load example data Indels, DBSs and MBSs
+
+We will now locate the VCF files of the example data from the second set. These will be used for the Indels, DBS and MBS examples.
+```{r locate blood data}
+blood_vcf_fnames = list.files(system.file("extdata", package="MutationalPatterns"), pattern = "blood.*vcf", full.names = TRUE)
+```
+
+Set their sample names.
+```{r set blood data sample names}
+blood_sample_names = c("AC", "ACC55", "BCH")
+```
+
+Read in the data, without filtering for any mutation type. (By default only SNVs are loaded for backwards compatibility.)
+```{r read blood data}
+blood_grl = read_vcfs_as_granges(blood_vcf_fnames, blood_sample_names, ref_genome, type = "all")
+```
+
+We can now retrieve different types of mutations from the `GrangesList`.
+```{r get mut types}
+snv_grl = get_mut_type(blood_grl, type = "snv")
+indel_grl = get_mut_type(blood_grl, type = "indel")
+dbs_grl = get_mut_type(blood_grl, type = "dbs")
+mbs_grl = get_mut_type(blood_grl, type = "mbs")
+```
+
+It's also possible to directly select for a specific mutation type when reading in the data.
+This can be a convenient shortcut, when you are only interested in a single type of mutation.
+```{r read indels, eval=FALSE}
+indel_grl = read_vcfs_as_granges(blood_vcf_fnames, blood_sample_names, ref_genome, type = "indel")
+```
+
+
+# Mutation characteristics
+
+## SNVs
+
+### Base substitution types
+
+We can retrieve base substitutions from the VCF GRanges object as "REF>ALT"
+using `mutations_from_vcf`:
+
+```{r mutations_from_vcf}
+muts = mutations_from_vcf(grl[[1]])
+head(muts, 12)
+```
+
+We can retrieve the base substitutions from the VCF GRanges object and convert
+them to the 6 types of base substitution types that are distinguished by
+convention: C>A, C>G, C>T, T>A, T>C, T>G. For example, when the reference
+allele is G and the alternative allele is T (G>T), `mut_type`
+returns the G:C>T:A mutation as a C>A mutation:
+
+```{r mut_type}
+types = mut_type(grl[[1]])
+head(types, 12)
+```
+
+To retrieve the sequence context (one base upstream and one base downstream) of
+the base substitutions in the VCF object from the reference genome, you can use
+the `mut_context` function:
+
+```{r mut_context}
+context = mut_context(grl[[1]], ref_genome)
+head(context, 12)
+```
+
+With`type_context`, you can retrieve the types and contexts
+for all positions in the VCF GRanges object. For the base substitutions that are
+converted to the conventional base substitution types, the reverse complement of
+the sequence context is returned.
+
+```{r type_context}
+type_context = type_context(grl[[1]], ref_genome)
+lapply(type_context, head, 12)
+```
+
+With `mut_type_occurrences`, you can count mutation type
+occurrences for all VCF objects in the `GRangesList`. For
+C>T mutations, a distinction is made between C>T at CpG sites and other
+sites, as deamination of methylated cytosine at CpG sites is a common mutational
+process. For this reason, the reference genome is needed for this functionality.
+
+```{r mut_type_occurrences}
+type_occurrences <- mut_type_occurrences(grl, ref_genome)
+type_occurrences
+```
+
+### Mutation spectrum
+
+A mutation spectrum shows the relative contribution of each mutation type in
+the base substitution catalogs. The `plot_spectrum` function plots
+the mean relative contribution of each of the 6 base substitution types over
+all samples. Error bars indicate the 95% confidence interval over all samples. The total
+number of mutations is indicated.
+
+```{r plot_spectrum}
+p1 <- plot_spectrum(type_occurrences)
+```
+
+Plot the mutation spectrum with distinction
+between C>T at CpG sites and other sites:
+
+```{r plot_spectrum_2}
+p2 <- plot_spectrum(type_occurrences, CT = TRUE)
+```
+
+Plot spectrum with the individual samples as points. Also remove legend to save space:
+```{r plot_spectrum_3}
+p3 <- plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE, legend = FALSE)
+```
+
+The gridExtra package will be used throughout this vignette to combine multiple
+plots:
+```{r combine_plot_spectrum, eval=TRUE, fig.wide = TRUE, message=FALSE}
+library("gridExtra")
+grid.arrange(p1, p2, p3, ncol=3, widths=c(3,3,1.75))
+```
+
+
+You can facet the per sample group, e.g. plot the spectrum for each tissue
+separately:
+```{r plot_spectrum_4}
+p4 <- plot_spectrum(type_occurrences, by = tissue, CT = TRUE, legend = TRUE)
+```
+
+You can use the standard deviation instead of 95%CI:
+```{r plot_spectrum_5}
+p5 <- plot_spectrum(type_occurrences, CT=TRUE, legend=TRUE, error_bars = "stdev")
+```
+
+
+```{r combine_plot_spectrum_2, fig.wide=TRUE, message=FALSE}
+grid.arrange(p4, p5, ncol=2, widths=c(4,2.3))
+```
+
+### 96 mutational profile
+
+Make a 96 trinucleodide mutation count matrix:
+```{r mut_matrix}
+mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
+head(mut_mat)
+```
+
+Plot the 96 profile of two samples:
+```{r plot_96_profile, fig.wide=TRUE}
+plot_96_profile(mut_mat[,c(1,7)])
+```
+
+
+## Indels
+
+First get the COSMIC indel contexts. This is done with `get_indel_context`, which adds the columns `muttype` and `muttype_sub` to the  `GRangesList`.
+The `muttype` column contains the main type of indel. The `muttype_sub` column shows the number of repeat units. 
+For microhomology (mh) deletions the mh length is shown.
+```{r get_indel_context}
+indel_grl = get_indel_context(indel_grl, ref_genome)
+head(indel_grl[[1]])
+```
+
+Next count the number of Indels per type. This results in a matrix that is similar to the `mut_mat` matrix.
+```{r count_indel_contexts}
+indel_counts = count_indel_contexts(indel_grl)
+head(indel_counts)
+```
+
+Now we can plot the Indel spectra. The facets at the top show the indel types. First the C and T deletions
+Then the C and T insertions. Next are the multi base deletions and insertions. Finally the deletions with microhomology are shown.
+The x-axis at the bottom shows the number of repeat units. For mh deletions the microhomoly length is shown.
+```{r, fig.wide=TRUE}
+plot_indel_contexts(indel_counts)
+```
+
+We can also choose to only plot the main contexts, without taking the number of repeat units or microhomology length into account.
+```{r, fig.wide=TRUE}
+plot_main_indel_contexts(indel_counts)
+```
+
+## DBSs
+
+First set the COSMIC DBS contexts. This is done by changing the `REF` and `ALT` columns of the `GRangesList`.
+```{r set_DBS_contexts}
+head(dbs_grl[[1]])
+dbs_grl = set_dbs_context(dbs_grl)
+head(dbs_grl[[1]])
+```
+
+Next count the number of DBSs per type. This again results in a matrix that is similar to the `mut_mat` matrix.
+```{r count_DBS_contexts}
+dbs_counts = count_dbs_contexts(dbs_grl)
+```
+
+Finally we can plot the DBS contexts. The facets at the top show the reference bases. The x-axis shows the alternative variants.
+```{r plot_DBS_contexts, fig.wide=TRUE}
+plot_dbs_contexts(dbs_counts, same_y = TRUE)
+```
+
+We can also choose to plot based on only the reference bases. Now the x-axis contains the reference bases.
+```{r plot_main_DBS_contexts, fig.wide=TRUE}
+plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
+```
+
+## MBSs
+
+No COSMIC MBS contexts existed when this vignette was written. Therefore the length of the MBSs is used as its context.
+First we can count the MBSs. This again results in a matrix that is similar to the `mut_mat` matrix.
+```{r count_MBS_contexts}
+mbs_counts = count_mbs_contexts(mbs_grl)
+```
+
+Next we can plot the contexts
+```{r plot_MBS_contexts}
+plot_mbs_contexts(mbs_counts, same_y = TRUE)
+```
+
+## Pooling samples
+
+Sometimes you have very few mutations per sample. In these cases it might be usefull to combine multiple samples.
+This can be done with `pool_mut_mat`. This works on the matrixes of SNVS, Indels, DBSs and MBSs.
+```{r}
+pooled_mut_mat = pool_mut_mat(mut_mat, grouping = tissue)
+head(pooled_mut_mat)
+```
+
+# Mutational signatures
+
+Mutational signatures are thought to represent mutational processes, and are
+characterized by a specific contribution of mutation types with a
+certain sequence context. Mutational signatures can be extracted *de novo* from your
+mutation count matrix, with non-negative matrix factorization (NMF). It's also possible to identify the exposure of your mutation count matrix to previously defined mutational signatures. This is often reffered to as signature refitting. NMF is most usefull for large amounts of samples, while signature refitting can also be used on single samples. We will first discuss NMF and then signature refitting. Finally we will discuss analyzing the similarity between a mutational profile and signatures directly.
+
+## *De novo* mutational signature extraction using NMF
+
+### NMF
+
+A critical parameter in NMF is the factorization rank, which is the number of mutational
+signatures you extract. You can determine the optimal factorization rank using the `r CRANpkg("NMF")`
+package \citep{Gaujoux2010}. As described in their paper:
+
+``...a common
+way of deciding on the rank is to try different values, compute some quality
+measure of the results, and choose the best value according to this quality
+criteria. The most common approach is to choose the smallest rank for which
+cophenetic correlation coefficient starts decreasing. Another approach is to
+choose the rank for which the plot of the residual sum of squares (RSS) between
+the input matrix and its estimate shows an inflection point.''
+
+Here we will show NMF for SNVs. Performing NMF on other mutation types works the same way.
+
+First add a small psuedocount to your mutation count matrix:
+```{r psuedo_count}
+mut_mat <- mut_mat + 0.0001
+```
+
+Use the NMF package to generate an estimate rank plot. This can take a long time:
+```{r use_nmf}
+library("NMF")
+estimate <- nmf(mut_mat, rank=2:5, method="brunet", nrun=10, seed=123456)
+```
+
+And plot it:
+```{r estimate_rank, fig.wide=TRUE}
+plot(estimate)
+```
+
+Extract mutational signatures from the mutation count matrix with
+`extract_signatures`. In this example 2 signatures are extracted, because a rank of 2 is used. (For larger datasets it is wise to perform more
+iterations by changing the nrun parameter to achieve stability and avoid bad local
+minima):
+
+```{r extract_signatures}
+nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10)
+```
+
+### Bayesian NMF
+
+It's also possible to use variational bayes NMF. This could make it easier to determine,
+the correct rank. To do this you need to install the `r Biocpkg("ccfindR")` package.
+You can then determine the optimal number of signatures. This can again take a long time.
+(Warnings will occur when you use ranks that are too high, therefore this example will only use ranks 1 and 2.
+More samples allow you to try higher ranks.)
+The highest value in the plot is the mathematically optimal number of signatures.
+(A note of warning: The mathematically optimal number doesn't necessarily make biological sense.)
+```{r use_bayesnmf, message=FALSE}
+library("ccfindR")
+sc <- scNMFSet(count = mut_mat)
+estimate_bayes = vb_factorize(sc, ranks = 1:2, nrun = 10, progress.bar = FALSE, verbose = 0)
+plot(estimate_bayes)
+```
+
+Extracting the signatures is then done by:
+```{r extract_signatures_bayes}
+nmf_res_bayes <- extract_signatures(mut_mat, rank = 2, nrun = 10, nmf_type = "variational_bayes")
+```
+
+### Changing the names of the extracted signatures
+
+You can provide the signatures with custom names:
+```{r add_column_names}
+colnames(nmf_res$signatures) <- c("Signature A", "Signature B")
+rownames(nmf_res$contribution) <- c("Signature A", "Signature B")
+```
+
+It's possible that some of the signatures extracted by NMF are very similar to signatures that are already known.
+Therefore, it might be usefull to change the names of the NMF signatures to these already known signatures. This often makes it easier to interpet your results.
+
+To do this you first need to read in some already existing signatures. Mutational signatures can be downloaded from multiple sources. One of them is the COSMIC [website](https://cancer.sanger.ac.uk/cosmic/signatures).
+(After downloading you have to make sure that the order of the mutation types is the same as the MutationalPatterns standard. You can use the `match` function for this.) For convenience we have included the SNV, Indel and DBS COSMIC signatures in this package.
+You can load them like this:
+```{r read_signatures}
+filename <- system.file("extdata/snv_signatures_probabilities.txt",
+                        package="MutationalPatterns")
+signatures <- read.table(filename, sep = "\t", header = TRUE)
+signatures = as.matrix(signatures[,-c(1,2)])
+```
+
+You can now change the names of the signatures extracted by NMF. In this example the name of a signature is changed if it has a cosine similarity of more than 0.85 with an existing COSMIC signature.
+```{r change_names_NMF_sigs}
+nmf_res = rename_nmf_signatures(nmf_res, signatures, cutoff = 0.85)
+colnames(nmf_res$signatures)
+```
+
+We now see that the signatures we extracted are very similar to COSMIC signatures SBS1 and SBS5. This helps with the interpretation because the aetiology of SBS1 is already known. This also tells us we didn't identify any completely novel processes.
+
+### Visualizing NMF results
+
+You can plot the 96-profile of the signatures (When looking at SNVs):
+```{r plot_96_profile_signatures, fig.wide=TRUE}
+plot_96_profile(nmf_res$signatures, condensed = TRUE)
+```
+
+You can visualize the contribution of the signatures in a barplot:
+```{r plot_contribution}
+plot_contribution(nmf_res$contribution, nmf_res$signature,
+                         mode = "relative")
+```
+
+
+The relative contribution of each signature for each sample can also be plotted
+as a heatmap with `plot_contribution_heatmap`, which might be easier
+to interpret and compare than stacked barplots. The signatures and samples can be
+hierarchically clustered based on their euclidean distance. Clustering here is based
+on the similarity between the contributions. 
+(Signatures with a similar contribution will thus be clustered together.)
+
+Plot signature contribution as a heatmap with sample and signature clustering dendrograms:
+```{r plot_contribution_heatmap_clust, fig.wide=TRUE}
+plot_contribution_heatmap(nmf_res$contribution, cluster_samples = TRUE, cluster_sigs = TRUE)
+```
+
+It's also possible to provide your own signature and sample order. This can be a manual
+ordering, but in this example we use clustering.
+We can cluster the signatures based on their cosine similarity and then retreive the order:
+```{r cluster signatures}
+hclust_signatures = cluster_signatures(nmf_res$signatures, method = "average")
+signatures_order = colnames(nmf_res$signatures)[hclust_signatures$order]
+signatures_order
+```
+
+We can do the same thing for the samples:
+```{r cluster samples}
+hclust_samples = cluster_signatures(mut_mat, method = "average")
+samples_order = colnames(mut_mat)[hclust_samples$order]
+samples_order
+```
+
+Now we can use the signature and sample order in the contribution heatmap:
+```{r plot_contribution_heatmap_order, fig.wide=TRUE}
+plot_contribution_heatmap(nmf_res$contribution, sig_order = signatures_order, sample_order = samples_order,
+                          cluster_sigs = FALSE, cluster_samples = FALSE)
+```
+
+A reconstructed mutational profile has been made for each sample by the NMF,
+based on the signatures and their contribution. The better the NMF worked the more
+similar the reconstructed profile will be to the original profile.
+
+We can compare the reconstructed mutational profile with the original mutational
+profile for a single sample like this:
+```{r plot_compare_profiles}
+plot_compare_profiles(mut_mat[,1],
+                        nmf_res$reconstructed[,1],
+                        profile_names = c("Original", "Reconstructed"),
+                        condensed = TRUE)
+```
+This is the function for SNVs. For indels you would use `plot_compare_indels`, for DBSs, `plot_compare_dbs` and for MBSs `plot_compare_mbs`.
+
+We can also plot the cosine similarity between the original and reconstructed matrix for all the samples. When a reconstructed profile has a cosine similarity of more than 0.95 with the original, the reconstructed profile is considered very good.
+```{r plot_ori_vs_rec}
+plot_original_vs_reconstructed(mut_mat, nmf_res$reconstructed, y_intercept = 0.95)
+```
+
+
+## Signature refitting
+
+### Find mathematically optimal contribution of COSMIC signatures
+
+Signature refitting quantifies the contribution of any set of signatures to the mutational profile of a sample.
+This is specifically useful for mutational signature analyses of
+small cohorts or individual samples, but also to relate own findings to known
+signatures and published findings. The  `fit_to_signatures` function
+finds the optimal linear combination of mutational signatures that most closely
+reconstructs the mutation matrix by solving a non-negative least-squares
+constraints problem.
+
+Fit mutation matrix to the COSMIC mutational signatures:
+```{r fit_to_signatures}
+fit_res <- fit_to_signatures(mut_mat, signatures)
+```
+
+
+The `fit_res` object can be visualized similarly to the `nmf_res` object. The functions `plot_contribution`, `plot_contribution_heatmap`, `plot_compare_profiles` and `plot_original_vs_reconstructed` will all work. As an example we show the contribution of signatures as a barplot.
+```{r plot_contribution_refit}
+plot_contribution(fit_res$contribution,
+                    coord_flip = FALSE,
+                    mode = "absolute")
+```
+
+We also show the cosine similarity with the reconstructed profiles, as this gives a good idea of how well the signatures could explain the mutational profiles.
+```{r plot_ori_vs_rec_fit}
+plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed, y_intercept = 0.95)
+```
+
+### Stricter refitting
+
+In the previous plots, many signatures were used to explain the mutational profiles of the samples. It seems however unlikely that this many mutational processes were really active in these samples. This problem, known as [overfitting](https://en.wikipedia.org/wiki/Overfitting), occurs because `fit_to_signatures` finds the optimal combination of signatures to reconstruct a profile. It will use a signature, even if it improves the fit very little.
+
+One simple way of dealing with this problem is to only use signatures with more than x attributed mutations. In this example we only use signatures with more than 10 mutations.
+```{r remove_sigs_low_contri}
+select <- which(rowSums(fit_res$contribution) > 10)
+plot_contribution(fit_res$contribution[select,],
+                    coord_flip = FALSE,
+                    mode = "absolute")
+```
+
+However, this only decreases the issue slightly. Another way to deal with overfitting is by selecting a limited number of signatures that will be used for the refitting. When you are analyzing a liver sample you could for example only use signatures that are known to occur in liver. Using prior knowledge like this will reduce overfitting, but can also lead to bias. You won't be able to identify signatures, if you removed them beforehand.
+
+A third way of dealing with overfitting is by starting with a standard refit and then removing signatures that have little effect on how well a mutational profile can be reconstructed. This works in an iterative fashion. In each iteration the signature with the lowest contribution is removed and refitting is repeated. Each time the cosine similarity between the original and reconstructed profile is calculated. You stop removing signatures when the difference between two iterations becomes bigger than a certain cutoff. This way only the signatures that are really necessary to explain a mutational profile will be used. This method is similar to a method used by @Alexandrov2020. In MutationalPatterns it can be used with `fit_to_signatures_strict`.
+
+
+A downside of this method is that the cutoff you should use is somewhat subjective. Here we use a cutoff of 0.02. Decreasing this number will make the refitting less strict, while increasing it will make the refitting more strict.
+```{r fit_to_signatures_strict}
+strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.02)
+```
+
+This function returns a list containing a `fit_res` object and a list of figures, showing in what order signatures were removed during the refitting.
+
+Here we show the figure for one sample. The x-axis shows the signature that was removed during that iteration. The red bar indicates that the difference in cosine similarity has become too large. The removal of signatures is stopped and SBS1 is kept for the final refit.
+```{r strict_refit_decay, fig.wide=TRUE}
+fig_list = strict_refit$sim_decay_fig
+fig_list[[1]]
+```
+
+The fit_res can be visualized in the same way as other `fit_res` objects.
+
+```{r plot_contribution_refit}
+fit_res_strict = strict_refit$fit_res
+plot_contribution(fit_res_strict$contribution,
+                    coord_flip = FALSE,
+                    mode = "absolute")
+```
+
+
+### Bootstrapped refitting.
+
+The stability of signature refitting can be suboptimal. Mutations can be attributed to different signatures in samples with a similar mutational profile. This can give the impression that samples are very different, when they actually aren't. This is often the result of "flat" signatures. Signatures that are similar to each other can also cause this issue.
+
+Bootstrapping can be used to verify how stable the refitting is [@Huang2018]. It works by making small changes to the mutational profile of a sample. These changes are made by resampling mutations with replacement using the samples own mutational profile as weights. The number of sampled mutations is the same as the number of mutations that was originally in the profile. This process is by default repeated 1000 times. A signature refit is performed for each iteration, resulting in an estimate of the refitting stability. In MutationalPatterns bootstrapping can be done with `fit_to_signatures_bootstrapped`.
+
+This function can be used with the different refitting methods described previously. Here we will use the "regular_10+" method on two samples, as its much faster than strict refitting. This will perform regular refitting, but remove all signatures with less than 10 attributed mutations. 
+```{r fit_to_signatures_bootstrapped, message=FALSE}
+contri_boots = fit_to_signatures_bootstrapped(mut_mat[,c(3,7)], 
+                                              signatures, 
+                                              n_boots = 100,
+                                              method = "regular_10+")
+```
+
+We can visualize the bootstrapped refitting like this. Each dot is one bootstrap iteration.
+```{r plot_bootstrapped_refit}
+plot_bootstrapped_contribution(contri_boots)
+```
+
+You can also visualize this using a relative y-axis and a boxplot:
+```{r plot_bootstrapped_refit_rel_boxtplot}
+plot_bootstrapped_contribution(contri_boots, mode = "relative", plot_type = "boxplot")
+```
+
+We can see that SBS1 is quite stable in the first sample. However, SBS5 is very unstable in the second sample. This instability is likely the result of SBS5 being very flat.
+
+We can also plot the correlation between signatures. A positive correlation between two signatures means that their contributions were high/low in the same bootstrap iterations. We will visualize this correlation for one sample.
+```{r plot_correlation_signatures}
+fig_list = plot_correlation_bootstrap(contri_boots)
+fig_list[[2]]
+```
+
+Here we can see that SBS5 and SBS40 have a negative correlation. This makes sense because they are similar to each other. They are also both flat signatures.
+
+# Session Information
+```{r sessioninfo}
+sessionInfo()
+```
+
+# References
+
