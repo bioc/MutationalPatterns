@@ -168,6 +168,7 @@ get_cos_sim_ori_vs_rec = function(mut_matrix, fit_res){
     cos_sim_all = cos_sim_matrix(mut_matrix, fit_res$reconstructed)
     cos_sim = diag(cos_sim_all)
     mean_cos_sim = mean(cos_sim)
+    return(mean_cos_sim)
 }
 
 
