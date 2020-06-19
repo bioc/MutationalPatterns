@@ -9,7 +9,7 @@ plot_correlation_bootstrap(contri_boots, per_sample = TRUE)
 \arguments{
 \item{contri_boots}{A dataframe with bootstrapped signature contributions.}
 
-\item{per_sample.}{Whether or not a plot should be made per sample. Default: TRUE.}
+\item{per_sample}{Whether or not a plot should be made per sample. Default: TRUE.}
 }
 \value{
 A list of ggplot2 objects if run per sample.

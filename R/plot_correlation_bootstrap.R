@@ -5,11 +5,12 @@
 #' It returns a list of the created figures.
 #'
 #' @param contri_boots A dataframe with bootstrapped signature contributions.
-#' @param per_sample. Whether or not a plot should be made per sample. Default: TRUE.
+#' @param per_sample Whether or not a plot should be made per sample. Default: TRUE.
 #'
 #' @return A list of ggplot2 objects if run per sample.
 #' Else it returns a single ggplot2 object.
 #' @export
+#' @importFrom magrittr %>% 
 #'
 #' @examples
 #' 
@@ -28,6 +29,10 @@
 #' plot_correlation_bootstrap(contri_boots, per_sample = FALSE)
 #' 
 plot_correlation_bootstrap = function(contri_boots, per_sample = TRUE){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
     
     if (per_sample){
         #Determine samples
@@ -64,10 +69,15 @@ plot_correlation_bootstrap = function(contri_boots, per_sample = TRUE){
 #' @param sample The name of the sample
 #'
 #' @return A ggplot2 object
-#'
+#' 
+#' @importFrom magrittr %>% 
 #' @noRd
 #' 
 plot_correlation_bootstrap_sample = function(contri_boots, sample){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    sig_row = sig_col = NULL
     
     #Get correlations
     withCallingHandlers({
