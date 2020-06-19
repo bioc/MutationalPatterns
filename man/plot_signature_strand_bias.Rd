@@ -31,7 +31,11 @@ nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
 ## Provide column names for the plot.
 colnames(nmf_res_strand$signatures) = c("Signature A", "Signature B")
 
+## Creat figure
 plot_signature_strand_bias(nmf_res_strand$signatures) 
+
+## You can also plot the bias of samples
+plot_signature_strand_bias(mut_mat_s[,c(1,2)])
 
 }
 \seealso{

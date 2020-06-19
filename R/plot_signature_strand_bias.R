@@ -24,7 +24,11 @@
 #' ## Provide column names for the plot.
 #' colnames(nmf_res_strand$signatures) = c("Signature A", "Signature B")
 #'
+#' ## Creat figure
 #' plot_signature_strand_bias(nmf_res_strand$signatures) 
+#'
+#' ## You can also plot the bias of samples
+#' plot_signature_strand_bias(mut_mat_s[,c(1,2)])
 #'
 #' @seealso
 #' \code{link{extract_signatures}},
@@ -57,7 +61,9 @@ plot_signature_strand_bias = function(signatures_strand_bias)
         tidyr::pivot_wider(names_from = strand) %>% #Split transcribed/untranscribed column for binom test.
         dplyr::mutate(observed = as.integer(transcribed),
                       size = as.integer(transcribed + untranscribed),
-                      ratio = transcribed / untranscribed)
+                      ratio = (transcribed / untranscribed),
+                      ratio = ifelse(is.nan(ratio), 1, ratio),
+                      log2_ratio = log2(ratio))
     
     # Perform binomial test
     stats_per_type$pval = purrr::map_dbl(seq_len(nrow(stats_per_type)), function(i){
@@ -68,11 +74,14 @@ plot_signature_strand_bias = function(signatures_strand_bias)
     stats_per_type = dplyr::mutate(stats_per_type, significant = ifelse(pval < 0.05, "*", " "))
    
     # Find maximum y value for plotting
-    max = round(max(abs(log2(stats_per_type$ratio))))
+    ratios = stats_per_type %>% 
+        dplyr::filter(is.finite(log2_ratio)) %>% 
+        dplyr::pull(log2_ratio)
+    max = round(max(abs(ratios)))
 
     # Plot
     plot = ggplot(stats_per_type,
-                    aes(x=type, y=log2(ratio), fill=type)) +
+                    aes(x=type, y=log2_ratio, fill=type)) +
         geom_bar(stat="identity", position="dodge", color="black") +
         scale_y_continuous(limits=c(-max,max)) +
         scale_fill_manual(values=COLORS6) +
@@ -85,7 +94,7 @@ plot_signature_strand_bias = function(signatures_strand_bias)
             aes(x = type,
                 y = log2(ratio),
                 label = significant,
-                vjust = ifelse(sign(log2(ratio)) > 0, 0.5, 1)), 
+                vjust = ifelse(sign(log2_ratio) > 0, 0.5, 1)), 
             size = 8, position = ggplot2::position_dodge(width=1))
 
     return(plot)
