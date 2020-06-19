@@ -558,7 +558,9 @@ plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed, y_intercept = 0.9
 
 In the previous plots, many signatures were used to explain the mutational profiles of the samples. It seems however unlikely that this many mutational processes were really active in these samples. This problem, known as [overfitting](https://en.wikipedia.org/wiki/Overfitting), occurs because `fit_to_signatures` finds the optimal combination of signatures to reconstruct a profile. It will use a signature, even if it improves the fit very little.
 
-One simple way of dealing with this problem is to only use signatures with more than x attributed mutations. In this example we only use signatures with more than 10 mutations.
+Another issue with signature refitting is signature missatribution. Mutations will sometimes be attributed to different signatures in samples with a similar mutational profile. This can give the impression that samples are very different, when they actually aren't. This is often the result of "flat" signatures, which are harder to fit. Signatures that are similar to each other can also cause this misattribution issue.
+
+One simple way of dealing with overfitting is to only use signatures with more than x attributed mutations. In this example we only use signatures with more than 10 mutations.
 ```{r remove_sigs_low_contri}
 select <- which(rowSums(fit_res$contribution) > 10)
 plot_contribution(fit_res$contribution[select,],
@@ -566,9 +568,16 @@ plot_contribution(fit_res$contribution[select,],
                     mode = "absolute")
 ```
 
-However, this only decreases the issue slightly. Another way to deal with overfitting is by selecting a limited number of signatures that will be used for the refitting. When you are analyzing a liver sample you could for example only use signatures that are known to occur in liver. Using prior knowledge like this will reduce overfitting, but can also lead to bias. You won't be able to identify signatures, if you removed them beforehand.
+However, this only decreases the issue slightly. Another way to deal with overfitting and the misattribution of signatures is by selecting a limited number of signatures that will be used for the refitting. When you are analyzing a liver sample you could for example only use signatures that are known to occur in liver. Using prior knowledge like this will reduce overfitting, but can also introduce bias. You won't be able to identify signatures, if you removed them beforehand. Another downside of this method is that you need prior knowledge of which signatures could be present.
 
-A third way of dealing with overfitting is by starting with a standard refit and then removing signatures that have little effect on how well a mutational profile can be reconstructed. This works in an iterative fashion. In each iteration the signature with the lowest contribution is removed and refitting is repeated. Each time the cosine similarity between the original and reconstructed profile is calculated. You stop removing signatures when the difference between two iterations becomes bigger than a certain cutoff. This way only the signatures that are really necessary to explain a mutational profile will be used. This method is similar to a method used by @Alexandrov2020. In MutationalPatterns it can be used with `fit_to_signatures_strict`.
+Merging similar signatures is another method that can reduce overfitting and the misattribution of signatures. This works by merging signatures whose cosine similarity is higher than a certain cutoff value. These merged signatures can then be used for refitting. The benefit of this method is that you don't need prior knowledge. However, interpreting the results might be more difficult. We can merge signatures like this:
+
+```{r Merge_signatures}
+merged_signatures = merge_signatures(signatures, cos_sim_cutoff = 0.8)
+```
+
+
+A fourth way of dealing with overfitting is by starting with a standard refit and then removing signatures that have little effect on how well a mutational profile can be reconstructed. This works in an iterative fashion. In each iteration the signature with the lowest contribution is removed and refitting is repeated. Each time the cosine similarity between the original and reconstructed profile is calculated. You stop removing signatures when the difference between two iterations becomes bigger than a certain cutoff. This way only the signatures that are really necessary to explain a mutational profile will be used. This method is similar to a method used by @Alexandrov2020. In MutationalPatterns it can be used with `fit_to_signatures_strict`.
 
 
 A downside of this method is that the cutoff you should use is somewhat subjective. Here we use a cutoff of 0.02. Decreasing this number will make the refitting less strict, while increasing it will make the refitting more strict.
@@ -586,19 +595,19 @@ fig_list[[1]]
 
 The fit_res can be visualized in the same way as other `fit_res` objects.
 
-```{r plot_contribution_refit}
+```{r plot_contribution_refit_strict}
 fit_res_strict = strict_refit$fit_res
 plot_contribution(fit_res_strict$contribution,
                     coord_flip = FALSE,
                     mode = "absolute")
 ```
 
+The best refitting method will depend on your data and research question. A single method can be used, but it's also possible to combine several methods.
+
 
 ### Bootstrapped refitting.
 
-The stability of signature refitting can be suboptimal. Mutations can be attributed to different signatures in samples with a similar mutational profile. This can give the impression that samples are very different, when they actually aren't. This is often the result of "flat" signatures. Signatures that are similar to each other can also cause this issue.
-
-Bootstrapping can be used to verify how stable the refitting is [@Huang2018]. It works by making small changes to the mutational profile of a sample. These changes are made by resampling mutations with replacement using the samples own mutational profile as weights. The number of sampled mutations is the same as the number of mutations that was originally in the profile. This process is by default repeated 1000 times. A signature refit is performed for each iteration, resulting in an estimate of the refitting stability. In MutationalPatterns bootstrapping can be done with `fit_to_signatures_bootstrapped`.
+The stability of signature refitting can be suboptimal, because of the previously mentioned signature misattribution. Bootstrapping can be used to verify how stable the refitting is [@Huang2018]. A more stable refit provides more confidence in the results. It works by making small changes to the mutational profile of a sample. These changes are made by resampling mutations with replacement using the samples own mutational profile as weights. The number of sampled mutations is the same as the number of mutations that was originally in the profile. This process is by default repeated 1000 times. A signature refit is performed for each iteration, resulting in an estimate of the refitting stability. In MutationalPatterns bootstrapping can be done with `fit_to_signatures_bootstrapped`.
 
 This function can be used with the different refitting methods described previously. Here we will use the "regular_10+" method on two samples, as its much faster than strict refitting. This will perform regular refitting, but remove all signatures with less than 10 attributed mutations. 
 ```{r fit_to_signatures_bootstrapped, message=FALSE}
@@ -620,13 +629,242 @@ plot_bootstrapped_contribution(contri_boots, mode = "relative", plot_type = "box
 
 We can see that SBS1 is quite stable in the first sample. However, SBS5 is very unstable in the second sample. This instability is likely the result of SBS5 being very flat.
 
-We can also plot the correlation between signatures. A positive correlation between two signatures means that their contributions were high/low in the same bootstrap iterations. We will visualize this correlation for one sample.
+We can also plot the correlation between signatures. A negative correlation between two signatures means that their contributions were high in different bootstrap iterations. We will visualize this correlation for one sample.
 ```{r plot_correlation_signatures}
 fig_list = plot_correlation_bootstrap(contri_boots)
 fig_list[[2]]
 ```
 
-Here we can see that SBS5 and SBS40 have a negative correlation. This makes sense because they are similar to each other. They are also both flat signatures.
+Here we can see that SBS5 and SBS40 have a negative correlation. This makes sense because they are both flat signatures that are very similar to each other. As a result the refitting process has difficulty distinguishing them.
+
+## Similarity between mutational profiles and signatures
+
+Instead of performing NMF or fitting signatures to a profile, you can also look at their similarity. This circuments the issues that exist with NMF and signature refitting. However, looking at similarities doesn't allow us to separate the different signatures that have contributed to a mutational profile. When multiple signatures have contributed to a profile, the similarities between this profile and the individual signatures can also become diluted.
+
+We can calculate the similarity between two mutational profiles / signatures like this:
+```{r Calculate_cossim_single}
+cos_sim(mut_mat[,1], signatures[,1])
+```
+
+We can also calculate the similarity between multiple mutational profiles / signatures:
+```{r Calculate_cossim}
+cos_sim_samples_signatures = cos_sim_matrix(mut_mat, signatures)
+cos_sim_samples_signatures[1:3, 1:3]
+```
+
+We can also visualize this with a heatmap using `plot_cosine_heatmap`. This function has the same clustering options as `plot_contribution_heatmap`, which we discussed earlier.
+```{r Plot_cosine_heatmap}
+plot_cosine_heatmap(cos_sim_samples_signatures, cluster_rows = TRUE, cluster_cols = TRUE)
+```
+
+It's also possible to look at the cosine similarities between samples.
+```{r plot_cosine_heatmap_samples}
+cos_sim_samples = cos_sim_matrix(mut_mat, mut_mat)
+plot_cosine_heatmap(cos_sim_samples, cluster_rows = TRUE, cluster_cols = TRUE)
+```
+
+
+# Strand bias analyses
+
+## Transcriptional strand bias analysis
+
+For the mutations within genes it can be determined whether the mutation is
+on the transcribed or non-transcribed strand, which can be used to evaluate
+the involvement of transcription-coupled repair. To this end, it is determined
+whether the "C" or "T" base (since by convention we regard base substitutions
+as C>X or T>X) are on the same strand as the gene definition. Base substitions
+on the same strand as the gene definitions are considered "untranscribed", and
+on the opposite strand of gene bodies as "transcribed", since the gene
+definitions report the coding or sense strand, which is untranscribed. No
+strand information is reported for base substitution that overlap with more
+than one gene body on different strands.
+
+Get gene definitions for your reference genome:
+
+```{r get_genes}
+# For example get known genes table from UCSC for hg19 using
+# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+library("TxDb.Hsapiens.UCSC.hg19.knownGene")
+genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
+genes_hg19
+```
+
+Get transcriptional strand information for all positions in the first VCF
+object with `mut_strand`. This function returns "-" for
+positions outside gene bodies, and positions that overlap with more than one
+gene on different strands.
+
+```{r mut_strand}
+strand = mut_strand(grl[[1]], genes_hg19)
+head(strand, 10)
+```
+
+Make mutation count matrix with transcriptional strand information (96
+trinucleotides * 2 strands = 192 features). NB: only those mutations that are
+located within gene bodies are counted.
+
+```{r mut_matrix_stranded}
+mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19)
+mut_mat_s[1:5,1:5]
+```
+
+We can visualize two samples from this matrix like this:
+```{r plot_192_spectrum}
+plot_192_profile(mut_mat_s[,1:2])
+```
+
+We can also count the number of mutations on each strand, per tissue, per mutation type:
+```{r strand_occurrences}
+strand_counts <- strand_occurrences(mut_mat_s, by=tissue)
+head(strand_counts)
+```
+
+Next we can use these counts to perform a Poisson test for strand asymmetry. Multiple testing correction is also performed.
+```{r strand_bias_test}
+strand_bias <- strand_bias_test(strand_counts)
+strand_bias
+```
+
+Plot the mutation spectrum with strand distinction:
+```{r plot_strand}
+ps1 <- plot_strand(strand_counts, mode = "relative")
+```
+
+Plot the effect size (log2(untranscribed/transcribed) of the strand bias.
+Asteriks indicate significant strand bias. Here we use p-values to plot asterisks. By default fdr is used.
+```{r plot_strand_bias}
+ps2 <- plot_strand_bias(strand_bias, sig_type = "p")
+```
+
+Combine the plots into one figure:
+```{r plot_strand_bias_combi}
+grid.arrange(ps1, ps2)
+```
+
+You can change the significance cutoffs for the fdr and p-values. You can use up to three cutoff levels for each, which changes the number of asteriks in the `significant` and `significant_fdr` columns. These asteriks will be used in the plot.
+```{r strand_bias_test_notstrict}
+strand_bias_notstrict <- strand_bias_test(strand_counts, 
+                                p_cutoffs = c(0.5, 0.1, 0.05), 
+                                fdr_cutoffs = 0.5)
+plot_strand_bias(strand_bias_notstrict, sig_type = "p")
+```
+
+## Replicative strand bias analysis
+
+The involvement of replication-associated mechanisms can be evaluated by
+testing for a mutational bias between the leading and lagging strand. The
+replication strand is dependent on the locations of replication origins from
+which DNA replication is fired. However, replication timing is dynamic and
+cell-type specific, which makes replication strand determination less
+straightforward than transcriptional strand bias analysis. Replication timing
+profiles can be generated with Repli-Seq experiments. Once the replication
+direction is defined, a strand asymmetry analysis can be performed similarly as
+the transcription strand bias analysis. The only difference is that you need to use the `replication` mode for the `mut_strand` and `mut_strand_matrix` functions.
+
+Here we read in an example bed file provided with the package containing replication direction
+annotation:
+```{r repli_file}
+repli_file = system.file("extdata/ReplicationDirectionRegions.bed",
+                           package = "MutationalPatterns")
+repli_strand = read.table(repli_file, header = TRUE)
+# Store in GRanges object
+repli_strand_granges = GRanges(seqnames = repli_strand$Chr,
+  ranges = IRanges(start = repli_strand$Start + 1,
+                   end = repli_strand$Stop),
+  strand_info = repli_strand$Class)
+# UCSC seqlevelsstyle
+seqlevelsStyle(repli_strand_granges) = "UCSC"
+repli_strand_granges
+```
+
+This `GRanges` object should have a `strand_info` metadata column, which
+contains only two different annotations, e.g. "left" and "right", or
+"leading" and "lagging". The genomic ranges cannot overlap, to allow only
+one annotation per location. 
+
+The levels of the `strand_info` metadata in the GRanges object determines the
+order in which the strands are reported in the mutation matrix that is returned
+by `mut_matrix_stranded`, so if you want to count right before left,
+you can specify this, before you run `mut_matrix_stranded`:
+
+```{r specify_levels}
+repli_strand_granges$strand_info <- factor(repli_strand_granges$strand_info,
+                                           levels = c("right", "left"))
+```
+
+
+Now that we defined the replication direction, the rest of the analysis is similar the the transcription bias analysis:
+
+We can calculate the strand matrix, counts and bias:
+```{r mut_matrix_stranded_rep}
+mut_mat_s_rep <- mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
+                                     mode = "replication")
+strand_counts_rep <- strand_occurrences(mut_mat_s_rep, by=tissue)
+strand_bias_rep <- strand_bias_test(strand_counts_rep)
+
+```
+
+And then visualize them:
+```{r plot_strand_rep}
+ps1 <- plot_strand(strand_counts_rep, mode = "relative")
+ps2 <- plot_strand_bias(strand_bias_rep)
+grid.arrange(ps1, ps2)
+```
+
+
+## Signatures with strand bias
+
+Strand bias can be included in signature analyses.
+We can for example perform NMF on a mutation count matrix with strand features:
+```{r extract_signatures_bias}
+nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
+colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
+```
+
+
+# Genomic distribution
+
+## Rainfall plot
+
+A rainfall plot visualizes mutation types and intermutation distance. Rainfall
+plots can be used to visualize the distribution of mutations along the genome
+or a subset of chromosomes. The y-axis corresponds to the distance of a
+mutation with the previous mutation and is log10 transformed. Drop-downs from
+the plots indicate clusters or ``hotspots'' of mutations.
+
+In this example we make a rainfall plot over the autosomal chromosomes for 1 sample:
+```{r plot_rainfall}
+# Define autosomal chromosomes
+chromosomes <- seqnames(get(ref_genome))[1:22]
+
+# Make a rainfall plot
+plot_rainfall(grl[[1]], title = names(grl[1]),
+                chromosomes = chromosomes, cex = 1.5, ylim = 1e+09)
+```
+
+
+
+# A note on the graphics
+
+The plots made with this package are all made using `r CRANpkg("ggplot2")` [@Wickham2016]. This means that all the plots (except for the plots with dendograms) are highly customizable. We can for example change the size and text orientation of the y-axis.
+
+```{r plot_spectrum_xaxis}
+p <- plot_spectrum(type_occurrences)
+p_axis = p +
+  theme(axis.text.y = element_text(size = 14, angle = 90))
+```
+
+We can also change the entire theme of the plot.
+```{r plot_spectrum_theme}
+p_theme <- p +
+  theme_classic()
+```
+
+```{r combine_plot_spectrum2, eval=TRUE, fig.wide = TRUE, message=FALSE}
+grid.arrange(p, p_axis, p_theme, ncol=3, widths=c(3,3,3))
+```
+
+More information on `r CRANpkg("ggplot2")` is available [here](https://ggplot2.tidyverse.org/). A list of themes is available [here](https://ggplot2.tidyverse.org/reference/ggtheme.html).
 
 # Session Information
 ```{r sessioninfo}
