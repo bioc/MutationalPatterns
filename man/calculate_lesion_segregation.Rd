@@ -7,6 +7,7 @@
 calculate_lesion_segregation(
   grl,
   sample_names,
+  test = c("binomial", "walf-wolfowitz"),
   split_by_type = FALSE,
   ref_genome = NA
 )
@@ -16,8 +17,12 @@ calculate_lesion_segregation(
 
 \item{sample_names}{The name of the sample}
 
+\item{test}{The statistical test that should be used. Possible values:
+* 'binomial' Binomial test based on the number of strand switches. (Default);
+* 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;}
+
 \item{split_by_type}{Boolean describing whether the lesion 
-segregation should be calculated for all SNVs together or per 96 substitution context}
+segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)}
 
 \item{ref_genome}{A string matching the name of a BSgenome library
 corresponding to the reference genome.
@@ -29,8 +34,8 @@ A tibble containing the amount of lesions segregation per sample
 \description{
 The amount of lesion segregation is calculated per GRanges object.
 The results are then combined in a table.
-It's possible to calculate the lesion segregation separately per 96 substitution context.
-The results are then automatically added back up together.
+It's possible to calculate the lesion segregation separately per 96 substitution context,
+when using the binomial test. The results are then automatically added back up together.
 }
 \examples{
 
@@ -55,6 +60,11 @@ lesion_segretation = calculate_lesion_segregation(grl, sample_names)
 ## Calculate lesion segregation per 96 base type
 lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names, 
 split_by_type = TRUE, ref_genome = ref_genome)
+
+## Calculate lesion segregation using the walf-wolfowitz test.
+lesion_segregation_walf = calculate_lesion_segregation(grl, 
+                                                       sample_names, 
+                                                       test = "walf-wolfowitz")
 
 }
 \seealso{

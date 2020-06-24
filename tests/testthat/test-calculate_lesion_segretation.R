@@ -17,15 +17,21 @@ sample_names <- c(
 output = calculate_lesion_segregation(grl, sample_names)
 output_per_type = calculate_lesion_segregation(grl, sample_names, 
                                                split_by_type = TRUE, ref_genome = ref_genome)
+output_walf = calculate_lesion_segregation(grl,
+                                           sample_names,
+                                           test = "walf-wolfowitz")
 
 test_that("Output has correct class",{
     expect_true(inherits(output, c("tbl_df")))
     expect_true(inherits(output_per_type, c("tbl_df")))
+    expect_true(inherits(output_walf, c("tbl_df")))
+    
 })
 
 test_that("Output has correct dimensions",{
-    expect_equal(dim(output), c(9, 10))
-    expect_equal(dim(output_per_type), c(9,10))
+    expect_equal(dim(output), c(9, 8))
+    expect_equal(dim(output_per_type), c(9,8))
+    expect_equal(dim(output_walf), c(9,5))
 })
 
 expected <- readRDS(system.file("states/lesion_segregation.rds",
