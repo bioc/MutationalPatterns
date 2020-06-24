@@ -77,7 +77,7 @@ plot_correlation_bootstrap_sample = function(contri_boots, sample){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
-    sig_row = sig_col = NULL
+    sig_row = sig_column = NULL
     
     #Get correlations
     withCallingHandlers({

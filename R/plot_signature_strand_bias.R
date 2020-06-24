@@ -41,7 +41,7 @@ plot_signature_strand_bias = function(signatures_strand_bias)
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
     Signature = type = ratio = transcribed = untranscribed = NULL
-    `Group.1` = `Group.2` = significant = pval = NULL
+    `Group.1` = `Group.2` = significant = pval = log2_ratio = NULL
 
     # check if there are 192 features in the signatures
     if (dim(signatures_strand_bias)[1] != 192)

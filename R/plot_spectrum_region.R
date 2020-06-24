@@ -10,15 +10,16 @@
 #'    
 #' @param type_occurrences Type occurrences matrix
 #' @param by Optional grouping variable
-#' @param mode 'relative_sample', 'relative_sample_feature' or 'absolute'
-#' When 'relative_sample', the number of variants will be shown
-#' divided by the total number of variants in that sample.
-#' When 'relative_sample_feature', the number of variants will be shown
-#' divided by the total number of variants in that sample. and genomic region.
+#' @param mode  The y-axis plotting mode.
+#'              * 'relative_sample', the number of variants will be shown
+#'              divided by the total number of variants in that sample;
+#'              * 'relative_sample_feature', the number of variants will be shown
+#'              divided by the total number of variants in that sample and genomic region (Default);
+#'              * 'absolut' The absolute number of mutations is shown;
 #' @param indv_points Whether to plot the individual samples 
 #' as points, default = FALSE
 #' @param error_bars The type of error bars to plot.
-#'              * '95%_CI' for 95% Confidence intervals (default);
+#'              * '95%_CI' for 95% Confidence intervals (Default);
 #'              * 'stdev' for standard deviations;
 #'              * 'SEM' for the standard error of the mean (NOT recommended);
 #'              * 'none' Do not plot any error bars;
