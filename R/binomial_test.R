@@ -36,7 +36,7 @@ binomial_test = function(p, n, x, p_cutoffs = 0.05)
     }
     
     #make test two sided.
-    pval = pval * 2 
+    pval = 2*min(pval, 1-pval) 
     
     # Add significance asteriks
     significant = get_sig_star(pval, p_cutoffs)
