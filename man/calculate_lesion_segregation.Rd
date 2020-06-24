@@ -7,9 +7,10 @@
 calculate_lesion_segregation(
   grl,
   sample_names,
-  test = c("binomial", "walf-wolfowitz"),
+  test = c("binomial", "walf-wolfowitz", "rl20"),
   split_by_type = FALSE,
-  ref_genome = NA
+  ref_genome = NA,
+  chromosomes = NA
 )
 }
 \arguments{
@@ -19,14 +20,18 @@ calculate_lesion_segregation(
 
 \item{test}{The statistical test that should be used. Possible values:
 * 'binomial' Binomial test based on the number of strand switches. (Default);
-* 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;}
+* 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;
+* 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;}
 
 \item{split_by_type}{Boolean describing whether the lesion 
 segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)}
 
 \item{ref_genome}{A string matching the name of a BSgenome library
 corresponding to the reference genome.
-Only needed when split_by_type is TRUE}
+Only needed when split_by_type is TRUE with the binomial test 
+or when using the rl20 test.}
+
+\item{chromosomes}{The chromosomes that are used. Only needed when using the rl20 test.}
 }
 \value{
 A tibble containing the amount of lesions segregation per sample
@@ -34,8 +39,16 @@ A tibble containing the amount of lesions segregation per sample
 \description{
 The amount of lesion segregation is calculated per GRanges object.
 The results are then combined in a table.
+}
+\details{
 It's possible to calculate the lesion segregation separately per 96 substitution context,
 when using the binomial test. The results are then automatically added back up together.
+
+When using the rl20 test, this function first calculates the strand runs per chromosome
+and combines them. It then calculates the smallest set of runs, which together encompass 
+at least 20% of the mutations. (This set thus contains the largest runs). 
+The size of the smallest run in this set is the rl20. The genomic span of
+the runs in this set is also calculated.
 }
 \examples{
 
@@ -65,7 +78,15 @@ split_by_type = TRUE, ref_genome = ref_genome)
 lesion_segregation_walf = calculate_lesion_segregation(grl, 
                                                        sample_names, 
                                                        test = "walf-wolfowitz")
-
+                                                       
+## Calculate lesion segregation using the rl20.
+chromosomes = paste0("chr", c(1:22, "X"))
+lesion_segregation_rl20 = calculate_lesion_segregation(grl, 
+                                                       sample_names, 
+                                                       test = "rl20",
+                                                       ref_genome = ref_genome,
+                                                       chromosomes = chromosomes)
+                                                       
 }
 \seealso{
 \code{\link{plot_lesion_segregation}}

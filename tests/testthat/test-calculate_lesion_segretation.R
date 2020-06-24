@@ -21,17 +21,27 @@ output_walf = calculate_lesion_segregation(grl,
                                            sample_names,
                                            test = "walf-wolfowitz")
 
+## Calculate lesion segregation using the rl20.
+chromosomes = paste0("chr", c(1:22, "X"))
+output_rl20 = calculate_lesion_segregation(grl,
+                                           sample_names,
+                                           test = "rl20",
+                                           ref_genome = ref_genome,
+                                           chromosomes = chromosomes)
+
+#Run tests
 test_that("Output has correct class",{
     expect_true(inherits(output, c("tbl_df")))
     expect_true(inherits(output_per_type, c("tbl_df")))
     expect_true(inherits(output_walf, c("tbl_df")))
-    
+    expect_true(inherits(output_rl20, c("tbl_df")))
 })
 
 test_that("Output has correct dimensions",{
     expect_equal(dim(output), c(9, 8))
     expect_equal(dim(output_per_type), c(9,8))
     expect_equal(dim(output_walf), c(9,5))
+    expect_equal(dim(output_rl20), c(9,5))
 })
 
 expected <- readRDS(system.file("states/lesion_segregation.rds",
@@ -39,3 +49,18 @@ expected <- readRDS(system.file("states/lesion_segregation.rds",
 test_that("transforms correctly", {
     expect_equal(output, expected)
 })
+
+#Test that An error is thrown when the arguments are incorrectly combined.
+test_that("An error is thrown when the arguments are incorrectly combined",{
+    expect_error({calculate_lesion_segregation(grl, sample_names[1])},
+                 "The grl and the sample_names should be equally long.")
+    expect_error({calculate_lesion_segregation(grl, sample_names, test = "walf-wolfowitz", split_by_type = T)},
+                 "The 'split_by_type' argument can only be used with the binomial test")
+    expect_error({calculate_lesion_segregation(grl, sample_names, split_by_type = TRUE)},
+                 "The ref_genome needs to be set when")
+    expect_error({calculate_lesion_segregation(grl, sample_names, test = "rl20", chromosomes = "chr1")},
+                 "The ref_genome needs to be set when")
+    expect_error({calculate_lesion_segregation(grl, sample_names, test = "rl20", ref_genome = ref_genome)},
+                 "The chromosomes need to be set when")
+})
+

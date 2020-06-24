@@ -2,19 +2,29 @@
 #' 
 #' The amount of lesion segregation is calculated per GRanges object.
 #' The results are then combined in a table.
+#' 
 #' It's possible to calculate the lesion segregation separately per 96 substitution context,
 #' when using the binomial test. The results are then automatically added back up together.
+#' 
+#' When using the rl20 test, this function first calculates the strand runs per chromosome
+#' and combines them. It then calculates the smallest set of runs, which together encompass 
+#' at least 20% of the mutations. (This set thus contains the largest runs). 
+#' The size of the smallest run in this set is the rl20. The genomic span of
+#' the runs in this set is also calculated.
 #'
 #' @param grl GRangesList or GRanges object
 #' @param sample_names The name of the sample
 #' @param test The statistical test that should be used. Possible values:
 #'              * 'binomial' Binomial test based on the number of strand switches. (Default);
 #'              * 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;
+#'              * 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;
 #' @param split_by_type Boolean describing whether the lesion 
 #' segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)
 #' @param ref_genome A string matching the name of a BSgenome library
 #'               corresponding to the reference genome.
-#'               Only needed when split_by_type is TRUE
+#'               Only needed when split_by_type is TRUE with the binomial test 
+#'               or when using the rl20 test.
+#' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
 #'
 #' @return A tibble containing the amount of lesions segregation per sample
 #' @importFrom magrittr %>% 
@@ -50,12 +60,21 @@
 #' lesion_segregation_walf = calculate_lesion_segregation(grl, 
 #'                                                        sample_names, 
 #'                                                        test = "walf-wolfowitz")
-#' 
+#'                                                        
+#' ## Calculate lesion segregation using the rl20.
+#' chromosomes = paste0("chr", c(1:22, "X"))
+#' lesion_segregation_rl20 = calculate_lesion_segregation(grl, 
+#'                                                        sample_names, 
+#'                                                        test = "rl20",
+#'                                                        ref_genome = ref_genome,
+#'                                                        chromosomes = chromosomes)
+#'                                                        
 calculate_lesion_segregation = function(grl, 
                                         sample_names, 
-                                        test = c("binomial", "walf-wolfowitz"),
+                                        test = c("binomial", "walf-wolfowitz", "rl20"),
                                         split_by_type = FALSE, 
-                                        ref_genome = NA){
+                                        ref_genome = NA,
+                                        chromosomes = NA){
     
     # These variables use non standard evaluation.
     # To avoid R CMD check complaints we initialize them to NULL.
@@ -63,7 +82,7 @@ calculate_lesion_segregation = function(grl,
     
     #Validate arguments
     test = match.arg(test)
-    if (test == "walf-wolfowitz" & split_by_type){
+    if (test != "binomial" & split_by_type){
         stop("The 'split_by_type' argument can only be used with the binomial test",
              call. = F)
     }
@@ -71,29 +90,45 @@ calculate_lesion_segregation = function(grl,
         stop("The grl and the sample_names should be equally long.", call. = F)
     }
     
-    if (split_by_type){
-        if (is_na(ref_genome)){
-            stop("The ref_genome needs to be set when split_by_type = TRUE")
+    if (is_na(ref_genome)){
+        if (split_by_type){
+            stop("The ref_genome needs to be set when split_by_type = TRUE", call. = F)
         }
+        if (test == "rl20"){
+            stop("The ref_genome needs to be set when test == rl20", call. = F)
+        }
+    }
+    
+    if (is_na(chromosomes) & test == "rl20"){
+        stop("The chromosomes need to be set when using test == rl20", call. = F)
     }
     
     #Perform lesion segregation on each GR
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
         strand_tb = purrr::map2(gr_l, sample_names, function(gr, sample_name){
-            calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome)
+            calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
             }) %>% 
             do.call(rbind, .)
     } else if (inherits(grl, "GRanges")){
-        strand_tb = calculate_lesion_segregation_gr(grl, sample_names, test, split_by_type, ref_genome)
+        strand_tb = calculate_lesion_segregation_gr(grl, 
+                                                    sample_names, 
+                                                    test, 
+                                                    split_by_type, 
+                                                    ref_genome, 
+                                                    chromosomes)
     } else{
         not_gr_or_grl(grl)
     }
     
+    #Multiple testing correction
+    if (test != "rl20"){
+        strand_tb = dplyr::mutate(strand_tb, fdr = p.adjust(p.value, method = "fdr"))
+    }
+    
     #Add final columns to output
     strand_tb = strand_tb %>% 
-        dplyr::mutate(sample_name = sample_names,
-                      fdr = p.adjust(p.value, method = "fdr")) %>% 
+        dplyr::mutate(sample_name = sample_names) %>% 
         dplyr::select(sample_name, dplyr::everything())
     return(strand_tb)
 }
@@ -109,16 +144,24 @@ calculate_lesion_segregation = function(grl,
 #' segregation should be calculated for all SNVs together or per 96 substitution context.
 #' @param ref_genome A string matching the name of a BSgenome library
 #'               corresponding to the reference genome.
-#'               Only needed when split_by_type is TRUE
+#'               Only needed when split_by_type is TRUE with the binomial test 
+#'               or when using the rl20 test.
+#' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
+#' 
 #' @return A tibble containing the amount of lesions segregation for a single sample
 #' @noRd
 #'
 calculate_lesion_segregation_gr = function(gr, 
                                            sample_name = "sample", 
-                                           test = c("binomial", "walf-wolfowitz"),
+                                           test = c("binomial", "walf-wolfowitz", "rl20"),
                                            split_by_type = FALSE, 
-                                           ref_genome = NA){
+                                           ref_genome = NA,
+                                           chromosomes = NA){
     
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    genome_span = genome_size = NULL
     
     #Check if mutations are present.
     if (!length(gr)){
@@ -177,17 +220,27 @@ calculate_lesion_segregation_gr = function(gr,
         
         #Add all results together in a tibble
         stat_tb = tibble::tibble(p.value = res$p.value, 
-                                 percent_strand_switches = res$estimate,
+                                 fraction_strand_switches = res$estimate,
                                  conf_low = res$conf.int[[1]], 
                                  conf_high = res$conf.int[[2]], 
                                  nr_strand_switches = res$statistic, 
                                  max_possible_switches = res$parameter)
-    } else{
+    } else if (test == "walf-wolfowitz"){
         #calculate if there is a significant deviation using the walf_wolfowitz_test
         wolfowitz = walf_wolfowitz_test(tb$strand)
         stat_tb = tibble::tibble(p.value = wolfowitz$p,
                                  sd = wolfowitz$sd,
                                  nr_total_runs = wolfowitz$runs_total)
+    } else if (test == "rl20"){
+        
+        #Calculate rl20 and genomic span
+        res = rl20_gspan(tb)
+        
+        #Add total size of genome to calculate fraction.
+        ref_genome = BSgenome::getBSgenome(ref_genome)
+        stat_tb = res %>% 
+            dplyr::mutate(genome_size = sum(GenomeInfoDb::seqlengths(ref_genome)[chromosomes]),
+                          fraction_span = genome_span/genome_size)
     }
     
     return(stat_tb)
@@ -309,4 +362,78 @@ walf_wolfowitz_test = function(strands){
     p <- 2*min(p,1-p)
     
     return(list("p" = p, "sd" = sd, "runs_total" = runs_total))
+}
+
+#' Calculate rl20 and genomic span
+#' 
+#' This function calculates the strand runs per chromosome
+#' and combines them. It then calculates the rl20. This is done by
+#' calculating the smallest set of runs, which together encompass 
+#' at least 20% of the mutations. (This set thus contains the largest runs). 
+#' The size of the smallest run in this set is the rl20. The genomic span of
+#' the runs in this set is also calculated.
+#'
+#' @param tb A tibble with strand information
+#'
+#' @return A list containing the rl20 and the genomic span
+#' @noRd
+#'
+rl20_gspan = function(tb){
+    
+    # These variables use non standard evaluation.
+    # To avoid R CMD check complaints we initialize them to NULL.
+    . = NULL
+    
+    #Number of variants
+    n = nrow(tb)
+    
+    #Remove factor
+    tb = dplyr::mutate(tb, strand = as.character(strand))
+    
+    #Determine runs per chromosome
+    tb_l = split(tb, tb$seqnames)
+    runs_l = purrr::map(tb_l, ~rle(.x$strand))
+    
+    #Combine run lengths
+    run_lengths = purrr::map(runs_l, "lengths") %>% 
+        do.call(c, .) %>% 
+        magrittr::set_names(NULL)
+    
+
+    #Sort runs on size
+    order_i = order(run_lengths, decreasing = TRUE)
+    sort_lengths = run_lengths[order_i]
+    
+    #Determine set of runs that together encompass 20% of mutations.
+    not_big_enough_set_size = sum(cumsum(sort_lengths) < 0.2*n) #Just less than 20%
+    set_size = not_big_enough_set_size + 1 #+1 to get over 20%
+    set = sort_lengths[seq_len(set_size)]
+    
+    #Get shortest run from 20% set
+    rl20 = set[set_size]
+    
+    #The next section will determine the genomic span. 
+    #To do this we need to get the position
+    #of variants back from the runs.
+    
+    #Determine original index of the runs in set.
+    order_i_set = order_i[seq_len(set_size)]
+    
+    #Get the mutation indices from the runs
+    cumsum_runs = cumsum(run_lengths)
+    
+    #Determine index of the first mutation of the runs in set.
+    #The index of the last mutation in the previous run is used for this.
+    start_i = cumsum_runs[order_i_set-1] + 1
+    
+    #Determine index of the last mutation of the runs in set.
+    end_i = cumsum_runs[order_i_set]
+    
+    #Use the indices to get the genomic positions and calculate
+    #the genomic span.
+    genomic_spans = tb$end[end_i] - tb$start[start_i]
+    genomic_span = sum(genomic_spans)
+    
+    res = tibble::tibble("rl20" = rl20, "genome_span" = genomic_span)
+    return(res)
 }
