@@ -39,7 +39,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, echo=FALSE}
-options(width=96)
+options(width = 96)
 library(ggplot2)
 ```
 
@@ -106,23 +106,25 @@ tissues [@Blokzijl2016]. Additionally, we added 3 somatic mutation catalogues of
 
 Before loading any data, you should first load the package.
 ```{r Load package, message=FALSE}
-#library(MutationalPatterns)
+# library(MutationalPatterns)
 library(devtools)
 load_all("~/surfdrive/Shared/Boxtel_General/Scripts/Git_submission/Freek_MutationalPatterns/MutationalPatterns/")
 ```
 
 Next, you can locate the VCF files of the example data from the first set. These will be used for the SNV examples:
 ```{r locate_vcfs}
-vcf_files <- list.files(system.file("extdata", package="MutationalPatterns"),
-                        pattern = "sample.vcf", full.names = TRUE)
+vcf_files <- list.files(system.file("extdata", package = "MutationalPatterns"),
+  pattern = "sample.vcf", full.names = TRUE
+)
 ```
 
 You also need to define corresponding sample names for the VCF files:
 ```{r set_sample_names}
 sample_names <- c(
-    "colon1", "colon2", "colon3",
-    "intestine1", "intestine2", "intestine3",
-    "liver1", "liver2", "liver3")
+  "colon1", "colon2", "colon3",
+  "intestine1", "intestine2", "intestine3",
+  "liver1", "liver2", "liver3"
+)
 ```
 
 Now you can load the VCF files into a `GRangesList`:
@@ -140,7 +142,7 @@ tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 
 We will now locate the VCF files of the example data from the second set. These will be used for the Indels, DBS and MBS examples.
 ```{r locate blood data}
-blood_vcf_fnames <- list.files(system.file("extdata", package="MutationalPatterns"), pattern = "blood.*vcf", full.names = TRUE)
+blood_vcf_fnames <- list.files(system.file("extdata", package = "MutationalPatterns"), pattern = "blood.*vcf", full.names = TRUE)
 ```
 
 Set their sample names.
@@ -252,7 +254,7 @@ Here we use the `r CRANpkg("gridExtra")` package to combine the created plots, s
 next to each other.
 ```{r combine_plot_spectrum, eval=TRUE, fig.wide = TRUE, message=FALSE}
 library("gridExtra")
-grid.arrange(p1, p2, p3, ncol=3, widths=c(3,3,1.75))
+grid.arrange(p1, p2, p3, ncol = 3, widths = c(3, 3, 1.75))
 ```
 
 
@@ -264,12 +266,12 @@ p4 <- plot_spectrum(type_occurrences, by = tissue, CT = TRUE, legend = TRUE)
 
 Or you could use the standard deviation instead of a 95% confidence interval (95%CI):
 ```{r plot_spectrum_5}
-p5 <- plot_spectrum(type_occurrences, CT=TRUE, legend=TRUE, error_bars = "stdev")
+p5 <- plot_spectrum(type_occurrences, CT = TRUE, legend = TRUE, error_bars = "stdev")
 ```
 
 
 ```{r combine_plot_spectrum_2, fig.wide=TRUE, message=FALSE}
-grid.arrange(p4, p5, ncol=2, widths=c(4,2.3))
+grid.arrange(p4, p5, ncol = 2, widths = c(4, 2.3))
 ```
 
 ### 96 mutational profile
@@ -283,7 +285,7 @@ head(mut_mat)
 
 Next, you can use this matrix to plot the 96 profile of samples. In this example we do this for 2 samples:
 ```{r plot_96_profile, fig.wide=TRUE}
-plot_96_profile(mut_mat[,c(1,7)])
+plot_96_profile(mut_mat[, c(1, 7)])
 ```
 
 ## Indels
@@ -292,13 +294,13 @@ First you should get the COSMIC indel contexts. This is done with `get_indel_con
 The `muttype` column contains the main type of indel. The `muttype_sub` column shows the number of repeat units. 
 For microhomology (mh) deletions the mh length is shown.
 ```{r get_indel_context}
-indel_grl = get_indel_context(indel_grl, ref_genome)
+indel_grl <- get_indel_context(indel_grl, ref_genome)
 head(indel_grl[[1]], n = 3)
 ```
 
 Next count the number of Indels per type. This results in a matrix that is similar to the `mut_mat` matrix.
 ```{r count_indel_contexts}
-indel_counts = count_indel_contexts(indel_grl)
+indel_counts <- count_indel_contexts(indel_grl)
 head(indel_counts)
 ```
 
@@ -319,13 +321,13 @@ plot_main_indel_contexts(indel_counts)
 First get the COSMIC DBS contexts. This is done by changing the `REF` and `ALT` columns of the `GRangesList`.
 ```{r get_DBS_contexts}
 head(dbs_grl[[1]])
-dbs_grl = get_dbs_context(dbs_grl)
+dbs_grl <- get_dbs_context(dbs_grl)
 head(dbs_grl[[1]])
 ```
 
 Next count the number of DBSs per type. This again results in a matrix that is similar to the `mut_mat` matrix.
 ```{r count_DBS_contexts}
-dbs_counts = count_dbs_contexts(dbs_grl)
+dbs_counts <- count_dbs_contexts(dbs_grl)
 ```
 
 Finally we can plot the DBS contexts. The facets at the top show the reference bases. The x-axis shows the alternative variants.
@@ -343,7 +345,7 @@ plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
 No COSMIC MBS contexts existed when this vignette was written. Therefore the length of the MBSs is used as its context.
 First we can count the MBSs. This again results in a matrix that is similar to the `mut_mat` matrix.
 ```{r count_MBS_contexts}
-mbs_counts = count_mbs_contexts(mbs_grl)
+mbs_counts <- count_mbs_contexts(mbs_grl)
 ```
 
 Next we can plot the contexts
@@ -356,7 +358,7 @@ plot_mbs_contexts(mbs_counts, same_y = TRUE)
 Sometimes you have very few mutations per sample. In these cases it might be usefull to combine multiple samples.
 This can be done with `pool_mut_mat`. This works on the matrixes of SNVS, Indels, DBSs and MBSs.
 ```{r}
-pooled_mut_mat = pool_mut_mat(mut_mat, grouping = tissue)
+pooled_mut_mat <- pool_mut_mat(mut_mat, grouping = tissue)
 head(pooled_mut_mat)
 ```
 
@@ -393,7 +395,7 @@ mut_mat <- mut_mat + 0.0001
 Use the NMF package to generate an estimate rank plot. This can take a long time:
 ```{r use_nmf}
 library("NMF")
-estimate <- nmf(mut_mat, rank=2:5, method="brunet", nrun=10, seed=123456)
+estimate <- nmf(mut_mat, rank = 2:5, method = "brunet", nrun = 10, seed = 123456)
 ```
 
 And plot it:
@@ -422,7 +424,7 @@ The highest value in the plot is the mathematically optimal number of signatures
 ```{r use_bayesnmf, message=FALSE}
 library("ccfindR")
 sc <- scNMFSet(count = mut_mat)
-estimate_bayes = vb_factorize(sc, ranks = 1:2, nrun = 10, progress.bar = FALSE, verbose = 0)
+estimate_bayes <- vb_factorize(sc, ranks = 1:2, nrun = 10, progress.bar = FALSE, verbose = 0)
 plot(estimate_bayes)
 ```
 
@@ -447,14 +449,15 @@ To do this you first need to read in some already existing signatures. Mutationa
 You can load them like this:
 ```{r read_signatures}
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                        package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 ```
 
 You can now change the names of the signatures extracted by NMF. In this example the name of a signature is changed if it has a cosine similarity of more than 0.85 with an existing COSMIC signature.
 ```{r change_names_NMF_sigs}
-nmf_res = rename_nmf_signatures(nmf_res, signatures, cutoff = 0.85)
+nmf_res <- rename_nmf_signatures(nmf_res, signatures, cutoff = 0.85)
 colnames(nmf_res$signatures)
 ```
 
@@ -470,7 +473,8 @@ plot_96_profile(nmf_res$signatures, condensed = TRUE)
 You can visualize the contribution of the signatures in a barplot:
 ```{r plot_contribution}
 plot_contribution(nmf_res$contribution, nmf_res$signature,
-                         mode = "relative")
+  mode = "relative"
+)
 ```
 
 
@@ -490,22 +494,24 @@ It's also possible to provide your own signature and sample order. This can be a
 ordering, but in this example we use clustering.
 We can cluster the signatures based on their cosine similarity and then retreive the order:
 ```{r cluster signatures}
-hclust_signatures = cluster_signatures(nmf_res$signatures, method = "average")
-signatures_order = colnames(nmf_res$signatures)[hclust_signatures$order]
+hclust_signatures <- cluster_signatures(nmf_res$signatures, method = "average")
+signatures_order <- colnames(nmf_res$signatures)[hclust_signatures$order]
 signatures_order
 ```
 
 We can do the same thing for the samples:
 ```{r cluster samples}
-hclust_samples = cluster_signatures(mut_mat, method = "average")
-samples_order = colnames(mut_mat)[hclust_samples$order]
+hclust_samples <- cluster_signatures(mut_mat, method = "average")
+samples_order <- colnames(mut_mat)[hclust_samples$order]
 samples_order
 ```
 
 Now we can use the signature and sample order in the contribution heatmap:
 ```{r plot_contribution_heatmap_order, fig.wide=TRUE}
-plot_contribution_heatmap(nmf_res$contribution, sig_order = signatures_order, sample_order = samples_order,
-                          cluster_sigs = FALSE, cluster_samples = FALSE)
+plot_contribution_heatmap(nmf_res$contribution,
+  sig_order = signatures_order, sample_order = samples_order,
+  cluster_sigs = FALSE, cluster_samples = FALSE
+)
 ```
 
 A reconstructed mutational profile has been made for each sample by the NMF,
@@ -515,10 +521,11 @@ similar the reconstructed profile will be to the original profile.
 We can compare the reconstructed mutational profile with the original mutational
 profile for a single sample like this:
 ```{r plot_compare_profiles}
-plot_compare_profiles(mut_mat[,1],
-                        nmf_res$reconstructed[,1],
-                        profile_names = c("Original", "Reconstructed"),
-                        condensed = TRUE)
+plot_compare_profiles(mut_mat[, 1],
+  nmf_res$reconstructed[, 1],
+  profile_names = c("Original", "Reconstructed"),
+  condensed = TRUE
+)
 ```
 This is the function for SNVs. For indels you would use `plot_compare_indels`, for DBSs, `plot_compare_dbs` and for MBSs `plot_compare_mbs`.
 
@@ -549,8 +556,9 @@ fit_res <- fit_to_signatures(mut_mat, signatures)
 The `fit_res` object can be visualized similarly to the `nmf_res` object. The functions `plot_contribution`, `plot_contribution_heatmap`, `plot_compare_profiles` and `plot_original_vs_reconstructed` will all work. As an example we show the contribution of signatures as a barplot.
 ```{r plot_contribution_refit}
 plot_contribution(fit_res$contribution,
-                    coord_flip = FALSE,
-                    mode = "absolute")
+  coord_flip = FALSE,
+  mode = "absolute"
+)
 ```
 
 We also show the cosine similarity with the reconstructed profiles, as this gives a good idea of how well the signatures could explain the mutational profiles.
@@ -567,9 +575,10 @@ Another issue with signature refitting is signature missatribution. Mutations wi
 One simple way of dealing with overfitting is to only use signatures with more than x attributed mutations. In this example we only use signatures with more than 10 mutations.
 ```{r remove_sigs_low_contri}
 select <- which(rowSums(fit_res$contribution) > 10)
-plot_contribution(fit_res$contribution[select,],
-                    coord_flip = FALSE,
-                    mode = "absolute")
+plot_contribution(fit_res$contribution[select, ],
+  coord_flip = FALSE,
+  mode = "absolute"
+)
 ```
 
 However, this only decreases the issue slightly. Another way to deal with overfitting and the misattribution of signatures is by selecting a limited number of signatures that will be used for the refitting. When you are analyzing a liver sample you could for example only use signatures that are known to occur in liver. Using prior knowledge like this will reduce overfitting, but can also introduce bias. You won't be able to identify signatures, if you removed them beforehand. Another downside of this method is that you need prior knowledge of which signatures could be present.
@@ -577,7 +586,7 @@ However, this only decreases the issue slightly. Another way to deal with overfi
 Merging similar signatures is another method that can reduce overfitting and the misattribution of signatures. This works by merging signatures whose cosine similarity is higher than a certain cutoff value. These merged signatures can then be used for refitting. The benefit of this method is that you don't need prior knowledge. However, interpreting the results might be more difficult. We can merge signatures like this:
 
 ```{r Merge_signatures}
-merged_signatures = merge_signatures(signatures, cos_sim_cutoff = 0.8)
+merged_signatures <- merge_signatures(signatures, cos_sim_cutoff = 0.8)
 ```
 
 
@@ -586,24 +595,25 @@ A fourth way of dealing with overfitting is by starting with a standard refit an
 
 A downside of this method is that the cutoff you should use is somewhat subjective. Here we use a cutoff of 0.02. Decreasing this number will make the refitting less strict, while increasing it will make the refitting more strict.
 ```{r fit_to_signatures_strict}
-strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.02)
+strict_refit <- fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.02)
 ```
 
 This function returns a list containing a `fit_res` object and a list of figures, showing in what order signatures were removed during the refitting.
 
 Here we show the figure for one sample. The x-axis shows the signature that was removed during that iteration. The red bar indicates that the difference in cosine similarity has become too large. The removal of signatures is stopped and SBS1 is kept for the final refit.
 ```{r strict_refit_decay, fig.wide=TRUE}
-fig_list = strict_refit$sim_decay_fig
+fig_list <- strict_refit$sim_decay_fig
 fig_list[[1]]
 ```
 
 The fit_res can be visualized in the same way as other `fit_res` objects.
 
 ```{r plot_contribution_refit_strict}
-fit_res_strict = strict_refit$fit_res
+fit_res_strict <- strict_refit$fit_res
 plot_contribution(fit_res_strict$contribution,
-                    coord_flip = FALSE,
-                    mode = "absolute")
+  coord_flip = FALSE,
+  mode = "absolute"
+)
 ```
 
 The best refitting method will depend on your data and research question. A single method can be used, but it's also possible to combine several methods.
@@ -615,10 +625,11 @@ The stability of signature refitting can be suboptimal, because of the previousl
 
 This function can be used with the different refitting methods described previously. Here we will use the "regular_10+" method on two samples, as its much faster than strict refitting. This will perform regular refitting, but remove all signatures with less than 10 attributed mutations. 
 ```{r fit_to_signatures_bootstrapped, message=FALSE}
-contri_boots = fit_to_signatures_bootstrapped(mut_mat[,c(3,7)], 
-                                              signatures, 
-                                              n_boots = 100,
-                                              method = "regular_10+")
+contri_boots <- fit_to_signatures_bootstrapped(mut_mat[, c(3, 7)],
+  signatures,
+  n_boots = 100,
+  method = "regular_10+"
+)
 ```
 
 We can visualize the bootstrapped refitting like this. Each dot is one bootstrap iteration.
@@ -635,7 +646,7 @@ We can see that SBS1 is quite stable in the first sample. However, SBS5 is very 
 
 We can also plot the correlation between signatures. A negative correlation between two signatures means that their contributions were high in different bootstrap iterations. We will visualize this correlation for one sample.
 ```{r plot_correlation_signatures}
-fig_list = plot_correlation_bootstrap(contri_boots)
+fig_list <- plot_correlation_bootstrap(contri_boots)
 fig_list[[2]]
 ```
 
@@ -647,12 +658,12 @@ Instead of performing NMF or fitting signatures to a profile, you can also look 
 
 We can calculate the similarity between two mutational profiles / signatures like this:
 ```{r Calculate_cossim_single}
-cos_sim(mut_mat[,1], signatures[,1])
+cos_sim(mut_mat[, 1], signatures[, 1])
 ```
 
 We can also calculate the similarity between multiple mutational profiles / signatures:
 ```{r Calculate_cossim}
-cos_sim_samples_signatures = cos_sim_matrix(mut_mat, signatures)
+cos_sim_samples_signatures <- cos_sim_matrix(mut_mat, signatures)
 cos_sim_samples_signatures[1:3, 1:3]
 ```
 
@@ -663,7 +674,7 @@ plot_cosine_heatmap(cos_sim_samples_signatures, cluster_rows = TRUE, cluster_col
 
 It's also possible to look at the cosine similarities between samples.
 ```{r plot_cosine_heatmap_samples}
-cos_sim_samples = cos_sim_matrix(mut_mat, mut_mat)
+cos_sim_samples <- cos_sim_matrix(mut_mat, mut_mat)
 plot_cosine_heatmap(cos_sim_samples, cluster_rows = TRUE, cluster_cols = TRUE)
 ```
 
@@ -699,7 +710,7 @@ positions outside gene bodies, and positions that overlap with more than one
 gene on different strands.
 
 ```{r mut_strand}
-strand = mut_strand(grl[[1]], genes_hg19)
+strand <- mut_strand(grl[[1]], genes_hg19)
 head(strand, 10)
 ```
 
@@ -709,17 +720,17 @@ located within gene bodies are counted.
 
 ```{r mut_matrix_stranded}
 mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19)
-mut_mat_s[1:5,1:5]
+mut_mat_s[1:5, 1:5]
 ```
 
 We can visualize two samples from this matrix like this:
 ```{r plot_192_spectrum}
-plot_192_profile(mut_mat_s[,1:2])
+plot_192_profile(mut_mat_s[, 1:2])
 ```
 
 We can also count the number of mutations on each strand, per tissue, per mutation type:
 ```{r strand_occurrences}
-strand_counts <- strand_occurrences(mut_mat_s, by=tissue)
+strand_counts <- strand_occurrences(mut_mat_s, by = tissue)
 head(strand_counts)
 ```
 
@@ -747,9 +758,10 @@ grid.arrange(ps1, ps2)
 
 You can change the significance cutoffs for the fdr and p-values. You can use up to three cutoff levels for each, which changes the number of asteriks in the `significant` and `significant_fdr` columns. These asteriks will be used in the plot.
 ```{r strand_bias_test_notstrict}
-strand_bias_notstrict <- strand_bias_test(strand_counts, 
-                                p_cutoffs = c(0.5, 0.1, 0.05), 
-                                fdr_cutoffs = 0.5)
+strand_bias_notstrict <- strand_bias_test(strand_counts,
+  p_cutoffs = c(0.5, 0.1, 0.05),
+  fdr_cutoffs = 0.5
+)
 plot_strand_bias(strand_bias_notstrict, sig_type = "p")
 ```
 
@@ -768,16 +780,21 @@ the transcription strand bias analysis. The only difference is that you need to 
 Here we read in an example bed file provided with the package containing replication direction
 annotation:
 ```{r repli_file}
-repli_file = system.file("extdata/ReplicationDirectionRegions.bed",
-                           package = "MutationalPatterns")
-repli_strand = read.table(repli_file, header = TRUE)
+repli_file <- system.file("extdata/ReplicationDirectionRegions.bed",
+  package = "MutationalPatterns"
+)
+repli_strand <- read.table(repli_file, header = TRUE)
 # Store in GRanges object
-repli_strand_granges = GRanges(seqnames = repli_strand$Chr,
-  ranges = IRanges(start = repli_strand$Start + 1,
-                   end = repli_strand$Stop),
-  strand_info = repli_strand$Class)
+repli_strand_granges <- GRanges(
+  seqnames = repli_strand$Chr,
+  ranges = IRanges(
+    start = repli_strand$Start + 1,
+    end = repli_strand$Stop
+  ),
+  strand_info = repli_strand$Class
+)
 # UCSC seqlevelsstyle
-seqlevelsStyle(repli_strand_granges) = "UCSC"
+seqlevelsStyle(repli_strand_granges) <- "UCSC"
 repli_strand_granges
 ```
 
@@ -793,7 +810,8 @@ you can specify this, before you run `mut_matrix_stranded`:
 
 ```{r specify_levels}
 repli_strand_granges$strand_info <- factor(repli_strand_granges$strand_info,
-                                           levels = c("right", "left"))
+  levels = c("right", "left")
+)
 ```
 
 
@@ -802,10 +820,10 @@ Now that we defined the replication direction, the rest of the analysis is simil
 We can calculate the strand matrix, counts and bias:
 ```{r mut_matrix_stranded_rep}
 mut_mat_s_rep <- mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
-                                     mode = "replication")
-strand_counts_rep <- strand_occurrences(mut_mat_s_rep, by=tissue)
+  mode = "replication"
+)
+strand_counts_rep <- strand_occurrences(mut_mat_s_rep, by = tissue)
 strand_bias_rep <- strand_bias_test(strand_counts_rep)
-
 ```
 
 And then visualize them:
@@ -844,8 +862,10 @@ In this example we make a rainfall plot over the autosomal chromosomes for 1 sam
 chromosomes <- seqnames(get(ref_genome))[1:22]
 
 # Make a rainfall plot
-plot_rainfall(grl[[1]], title = names(grl[1]),
-                chromosomes = chromosomes, cex = 1.5, ylim = 1e+09)
+plot_rainfall(grl[[1]],
+  title = names(grl[1]),
+  chromosomes = chromosomes, cex = 1.5, ylim = 1e+09
+)
 ```
 
 
@@ -888,7 +908,8 @@ found above the command we run:
 #                 CTCF$chromosome_end)))
 
 CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Download the promoter regions and convert them to a GRanges object.
 
@@ -902,7 +923,8 @@ CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
 #                             promoter$chromosome_end)))
 
 promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
-                        package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Download the promoter flanking regions and convert them to a GRanges object.
 
@@ -919,7 +941,8 @@ promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
 #                        flanking$chromosome_end)))
 
 flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 ```
 
 Combine all genomic regions (`GRanges` objects) in a named `GrangesList`:
@@ -954,7 +977,8 @@ Download the example surveyed region data:
 ```{r download_bed_data}
 ## Get the filename with surveyed/callable regions
 surveyed_file <- system.file("extdata/callableloci-sample.bed",
-                             package = "MutationalPatterns")
+  package = "MutationalPatterns"
+)
 
 ## Import the file using rtracklayer and use the UCSC naming standard
 library(rtracklayer)
@@ -993,16 +1017,16 @@ plot_enrichment_depletion(distr_test, sig_type = "p")
 
 We can also look at the mutational patterns of genomic regions. However, keep in mind that regions with very few mutations will lead to less reliable results. First we can split the `GRangesList` containing the mutations based on the defined genomic regions.
 ```{r split_muts_region}
-grl_region = split_muts_region(grl, regions)
+grl_region <- split_muts_region(grl, regions)
 names(grl_region)
 ```
 
 We could now treat these sample/region combinations as completely separate samples. We could for example perform NMF on these, to try to identify signatures that are specific to certain genomic regions.
 
 ```{r extract_signatures_regions, fig.wide=TRUE}
-mut_mat_region = mut_matrix(grl_region, ref_genome)
+mut_mat_region <- mut_matrix(grl_region, ref_genome)
 nmf_res_region <- extract_signatures(mut_mat_region, rank = 2, nrun = 10)
-nmf_res_region = rename_nmf_signatures(nmf_res_region, signatures, cutoff = 0.85)
+nmf_res_region <- rename_nmf_signatures(nmf_res_region, signatures, cutoff = 0.85)
 plot_contribution_heatmap(nmf_res_region$contribution, cluster_samples = TRUE, cluster_sigs = TRUE)
 ```
 
@@ -1012,7 +1036,7 @@ In this case there don't seem to be any region specific signatures.
 
 Instead of treating the sample/region combinations as separate samples, we can also plot the spectra per genomic region using the `plot_spectrum_region` function. The arguments of `plot_spectrum` can also be used with this function. By default the y-axis shows the number of variants divided by the total number of variants in that sample and genomic region. This way the spectra of regions with very few mutations can be more easily compared to regions with many mutations. 
 ```{r plot_spectrum_region, fig.wide=TRUE}
-type_occurrences_region = mut_type_occurrences(grl_region, ref_genome)
+type_occurrences_region <- mut_type_occurrences(grl_region, ref_genome)
 plot_spectrum_region(type_occurrences_region)
 ```
 
@@ -1025,14 +1049,14 @@ plot_spectrum_region(type_occurrences_region, mode = "relative_sample")
 
 In addition to plotting the spectra we can also plot a mutational profile. To do this we first need to make a "long" mutation matrix. In this matrix the different genomic regions are considered as different mutational types, instead of as different samples like before.
 ```{r make_long_profile}
-mut_mat_region = mut_matrix(grl_region, ref_genome)
-mut_mat_long = lengthen_mut_matrix(mut_mat_region)
-mut_mat_long[1:5,1:5]
+mut_mat_region <- mut_matrix(grl_region, ref_genome)
+mut_mat_long <- lengthen_mut_matrix(mut_mat_region)
+mut_mat_long[1:5, 1:5]
 ```
 
 We can now plot this using `plot_long_profile`. The arguments of `plot_96_profile` can also be used with this function. The options for the y-axis are the same as for `plot_spectrum_region`. However, by default no normalization is performed for the number of variants per genomic region, because of the often limited number of mutations per mutation type.
 ```{r plot_long_profile, fig.wide=TRUE}
-plot_long_profile(mut_mat_long[,c(1,4,7)])
+plot_long_profile(mut_mat_long[, c(1, 4, 7)])
 ```
 
 Note: Since the "mut_mat_long" is a mutation matrix, you could perform NMF on it. This would result in signatures, which will contain different mutation types in different genomic regions.
@@ -1067,20 +1091,20 @@ We can calculate whether lesion segregation is present using `calculate_lesion_s
 
 `calculate_lesion_segregation` has three different modes. The first mode is based on how often two suqsequent mutations occur on the same strand. The function assumes that when no lesion segregation is present, there is a 50% chance of two subsequent mutations occurring on the same strand. A two-sided binomial test is used to calculate whether the strand between subsequent mutations is switched more often than that. Multiple testing correction is also performed.
 ```{r calculate_lesion_segregation}
-lesion_segretation = calculate_lesion_segregation(grl, sample_names)
+lesion_segretation <- calculate_lesion_segregation(grl, sample_names)
 head(lesion_segretation)
 ```
 This statistical test can be influenced by events such as kataegis and local strand assymetries like replication-associated strand bias. As a result the p-value can incorrectly suggest that lesion segregation is present. Therefore, it can be usefull to also look at the fraction of strand switches. In samples with lesion segregation this is generally below 0.4.
 
 By default this mode calculates the lesion segregation for all mutations together. However, a mutational process might cause multiple types of base substitutions, which aren't necessarily considered to be on the same strand. Therefore, it might be usefull to calculate the lesion segregation per mutation type and then sum up the results later. In this case the reference genome also needs to be set.
 ```{r calculate_lesion_segregation_split}
-lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names, split_by_type = TRUE, ref_genome = ref_genome)
+lesion_segretation_by_type <- calculate_lesion_segregation(grl, sample_names, split_by_type = TRUE, ref_genome = ref_genome)
 ```
  
  
 The second mode of `calculate_lesion_segregation` uses the Walf-Wolfowitz test, which was used by @Aitken868679. This test checks whether the Watson and Crick strands are randomly distributed. It's results should generally be similar to the first mode.
 ```{r calculate_lesion_segregation_walf}
-lesion_segretation_walf = calculate_lesion_segregation(grl, sample_names, test = "walf-wolfowitz")
+lesion_segretation_walf <- calculate_lesion_segregation(grl, sample_names, test = "walf-wolfowitz")
 head(lesion_segretation_walf)
 ```
 This statistical test can also be influenced by events such as kataegis and local strand assymetries like replication-associated strand bias. 
@@ -1089,11 +1113,12 @@ The third mode of `calculate_lesion_segregation` can calculate the rl20 value an
 A rl20 value of 6 means that at least 20% of mutations are in a strand specific run of 6 or more consecutive mutations. The genomic span is the part of the genome covered by these runs. 
 If the rl20 is high and a decent part of the genome is covered by the strand specific runs, then this provides strong evidence of lesion segregation. A high rl20, combined with a low genomic span (<5%) is indicative of local clustering events like kataegis [@Aitken868679]. A downside of this method is that it doesn't generate a p-value.
 ```{r calculate_lesion_segregation_rl20}
-lesion_segretation_rl20 = calculate_lesion_segregation(grl,
-                                           sample_names,
-                                           test = "rl20",
-                                           ref_genome = ref_genome,
-                                           chromosomes = chromosomes)
+lesion_segretation_rl20 <- calculate_lesion_segregation(grl,
+  sample_names,
+  test = "rl20",
+  ref_genome = ref_genome,
+  chromosomes = chromosomes
+)
 head(lesion_segretation_rl20)
 ```
 
@@ -1105,7 +1130,7 @@ The plots made with this package are all made using `r CRANpkg("ggplot2")` [@Wic
 
 ```{r plot_spectrum_xaxis}
 p <- plot_spectrum(type_occurrences)
-p_axis = p +
+p_axis <- p +
   theme(axis.text.y = element_text(size = 14, angle = 90))
 ```
 
@@ -1116,7 +1141,7 @@ p_theme <- p +
 ```
 
 ```{r combine_plot_spectrum2, eval=TRUE, fig.wide = TRUE, message=FALSE}
-grid.arrange(p, p_axis, p_theme, ncol=3, widths=c(3,3,3))
+grid.arrange(p, p_axis, p_theme, ncol = 3, widths = c(3, 3, 3))
 ```
 
 More information on `r CRANpkg("ggplot2")` is available [here](https://ggplot2.tidyverse.org/). A list of themes is available [here](https://ggplot2.tidyverse.org/reference/ggtheme.html).
@@ -1127,4 +1152,3 @@ sessionInfo()
 ```
 
 # References
-
