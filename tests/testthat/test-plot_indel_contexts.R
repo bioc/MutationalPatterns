@@ -1,4 +1,4 @@
-context("test-indel_plot_contexts")
+context("test-plot_indel_contexts")
 
 ## Get indel counts
 indel_counts <- readRDS(system.file("states/blood_indel_counts.rds",

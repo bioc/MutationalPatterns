@@ -1,4 +1,4 @@
-context("test-mbs_count_contexts")
+context("test-count_mbs_contexts")
 
 ## Get a GRangesList object with mbs contexts.
 grl_mbs <- readRDS(system.file("states/blood_grl_mbs.rds",

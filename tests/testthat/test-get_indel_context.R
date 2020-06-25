@@ -1,4 +1,4 @@
-context("test-indel_get_context")
+context("test-get_indel_context")
 
 ## Get a GRangesList object with only indels.
 indel_grl <- readRDS(system.file("states/blood_grl_indel.rds",

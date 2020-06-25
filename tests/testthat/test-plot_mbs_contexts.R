@@ -1,4 +1,4 @@
-context("test-mbs_plot_contexts")
+context("test-plot_mbs_contexts")
 
 ## Get mbs counts
 mbs_counts <- readRDS(system.file("states/blood_mbs_counts.rds",

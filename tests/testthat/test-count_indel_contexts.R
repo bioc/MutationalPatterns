@@ -1,4 +1,4 @@
-context("test-indel_count_contexts")
+context("test-count_indel_contexts")
 
 ## Get a GRangesList object with indel contexts.
 grl_indel_context <- readRDS(system.file("states/blood_grl_indel_context.rds",

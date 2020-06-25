@@ -1,4 +1,4 @@
-context("test-indel_plot_main_contexts")
+context("test-plot_main_indel_contexts")
 
 
 ## Get indel counts
