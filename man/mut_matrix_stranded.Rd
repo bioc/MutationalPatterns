@@ -2,7 +2,7 @@
 % Please edit documentation in R/mut_matrix_stranded.R
 \name{mut_matrix_stranded}
 \alias{mut_matrix_stranded}
-\title{Make mutation count matrix of 96 trinucleotides with 
+\title{Make mutation count matrix of 96 trinucleotides with
 strand information}
 \usage{
 mut_matrix_stranded(
@@ -19,7 +19,7 @@ mut_matrix_stranded(
 \item{ref_genome}{BSGenome reference genome object}
 
 \item{ranges}{GRanges object with the genomic ranges of:
-1. (transcription mode) the gene bodies with strand (+/-) information, or 
+1. (transcription mode) the gene bodies with strand (+/-) information, or
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
@@ -37,10 +37,11 @@ these can be transcription or replication strand
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Load the corresponding reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Transcription strand analysis:
@@ -51,31 +52,37 @@ library(ref_genome, character.only = TRUE)
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
-mut_mat_s = mut_matrix_stranded(grl, ref_genome, genes_hg19, 
-                                mode = "transcription")
+mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
+  mode = "transcription"
+)
 
 ## Replication strand analysis:
 ## Read example bed file with replication direction annotation
-repli_file = system.file("extdata/ReplicationDirectionRegions.bed", 
-                          package = "MutationalPatterns")
-repli_strand = read.table(repli_file, header = TRUE)
-repli_strand_granges = GRanges(seqnames = repli_strand$Chr, 
-                               ranges = IRanges(start = repli_strand$Start + 1, 
-                               end = repli_strand$Stop), 
-                               strand_info = repli_strand$Class)
+repli_file <- system.file("extdata/ReplicationDirectionRegions.bed",
+  package = "MutationalPatterns"
+)
+repli_strand <- read.table(repli_file, header = TRUE)
+repli_strand_granges <- GRanges(
+  seqnames = repli_strand$Chr,
+  ranges = IRanges(
+    start = repli_strand$Start + 1,
+    end = repli_strand$Stop
+  ),
+  strand_info = repli_strand$Class
+)
 ## UCSC seqlevelsstyle
-seqlevelsStyle(repli_strand_granges) = "UCSC"
-# The levels determine the order in which the features 
+seqlevelsStyle(repli_strand_granges) <- "UCSC"
+# The levels determine the order in which the features
 # will be countend and plotted in the downstream analyses
 # You can specify your preferred order of the levels:
-repli_strand_granges$strand_info = factor(
-  repli_strand_granges$strand_info, 
+repli_strand_granges$strand_info <- factor(
+  repli_strand_granges$strand_info,
   levels = c("left", "right")
-  )
+)
 
-mut_mat_s_rep = mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
-                                mode = "replication")
-
+mut_mat_s_rep <- mut_matrix_stranded(grl, ref_genome, repli_strand_granges,
+  mode = "replication"
+)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

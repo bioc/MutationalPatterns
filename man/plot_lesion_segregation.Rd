@@ -25,16 +25,16 @@ This way the presence of any lesion segregation is visualized.
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 ## Select a single GRanges object to plot.
-gr = grl[[1]]
+gr <- grl[[1]]
 
 ## Plot lesion segregation
 plot_lesion_segregation(gr, sample_name = "Colon1")
 
 ## Plot lesion segregation per chromosome
 plot_lesion_segregation(gr, per_chrom = TRUE, sample_name = "Colon1")
-
 }
 \seealso{
 \code{\link{calculate_lesion_segregation}}

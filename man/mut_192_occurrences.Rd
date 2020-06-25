@@ -2,13 +2,7 @@
 % Please edit documentation in R/mut_192_occurrences.R
 \name{mut_192_occurrences}
 \alias{mut_192_occurrences}
-\title{Count 192 trinucleotide mutation occurrences
- 
- @details 
- This function is called by mut_matrix_stranded. 
- The 192 trinucleotide context is the 96 trinucleotide context combined with the strands.
- This function calculates the 192 trinucleotide context for all variants.
- and then splits these per GRanges (samples). It then calculates how often each 192 trinucleotide context occurs.}
+\title{Count 192 trinucleotide mutation occurrences}
 \usage{
 mut_192_occurrences(type_context, strand, gr_sizes)
 }
@@ -16,7 +10,7 @@ mut_192_occurrences(type_context, strand, gr_sizes)
 \item{type_context}{result from type_context function}
 
 \item{strand}{factor with strand information for each
-position, for example "U" for untranscribed, "T" for transcribed strand, 
+position, for example "U" for untranscribed, "T" for transcribed strand,
 and "-" for unknown}
 
 \item{gr_sizes}{A vector indicating the number of variants per GRanges}
@@ -26,10 +20,8 @@ Mutation matrix with 192 mutation occurrences and 96 trinucleotides
 for two strands
 }
 \description{
-Count 192 trinucleotide mutation occurrences
- 
- @details 
- This function is called by mut_matrix_stranded. 
+@details
+ This function is called by mut_matrix_stranded.
  The 192 trinucleotide context is the 96 trinucleotide context combined with the strands.
  This function calculates the 192 trinucleotide context for all variants.
  and then splits these per GRanges (samples). It then calculates how often each 192 trinucleotide context occurs.

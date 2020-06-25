@@ -60,15 +60,19 @@ reference genome passed in the 'genome' parameter.
 ## The example data set consists of three colon samples, three intestine
 ## samples and three liver samples.  So, to map each file to its appropriate
 ## sample name, we create a vector containing the sample names:
-sample_names <- c ( "colon1", "colon2", "colon3",
-                    "intestine1", "intestine2", "intestine3",
-                    "liver1", "liver2", "liver3" )
+sample_names <- c(
+  "colon1", "colon2", "colon3",
+  "intestine1", "intestine2", "intestine3",
+  "liver1", "liver2", "liver3"
+)
 
 ## We assemble a list of files we want to load.  These files match the
 ## sample names defined above.
-vcf_files <- list.files(system.file("extdata", 
-                                    package="MutationalPatterns"),
-                                    pattern = "sample.vcf", full.names = TRUE)
+vcf_files <- list.files(system.file("extdata",
+  package = "MutationalPatterns"
+),
+pattern = "sample.vcf", full.names = TRUE
+)
 
 ## Get a reference genome BSgenome object.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
@@ -84,14 +88,13 @@ vcfs <- read_vcfs_as_granges(vcf_files, sample_names, ref_genome, type = "all")
 
 ## Loading only indels can be done like this.
 
-## Select data containing indels. 
-vcf_fnames = list.files(system.file("extdata", package="MutationalPatterns"),
-pattern = "blood.*vcf", full.names = TRUE)
-sample_names = c("AC", "ACC55", "BCH")
+## Select data containing indels.
+vcf_fnames <- list.files(system.file("extdata", package = "MutationalPatterns"),
+  pattern = "blood.*vcf", full.names = TRUE
+)
+sample_names <- c("AC", "ACC55", "BCH")
 
-## Read data and select only the indels. 
+## Read data and select only the indels.
 ## Other mutation types can be read in the same way.
 read_vcfs_as_granges(vcf_fnames, sample_names, ref_genome, type = "indel")
-
-
 }

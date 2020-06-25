@@ -25,14 +25,14 @@ The type of variant can be chosen with type.
 ## Get a GRanges list object.
 ## See 'read_vcfs_as_granges' for more info how to do this.
 grl <- readRDS(system.file("states/blood_grl.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Get a specific mutation type.
-snv_grl = get_mut_type(grl, "snv")
-indel_grl = get_mut_type(grl, "indel")
-dbs_grl = get_mut_type(grl, "dbs")
-mbs_grl = get_mut_type(grl, "mbs")
-
+snv_grl <- get_mut_type(grl, "snv")
+indel_grl <- get_mut_type(grl, "indel")
+dbs_grl <- get_mut_type(grl, "dbs")
+mbs_grl <- get_mut_type(grl, "mbs")
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}

@@ -23,16 +23,16 @@ Make 96 trinucleotide mutation count matrix
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Load the corresponding reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Construct a mutation matrix from the loaded VCFs in comparison to the
 ## ref_genome.
 mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}

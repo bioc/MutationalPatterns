@@ -40,32 +40,36 @@ sum of squares (RSS).
 ## Get the mbs counts
 ## See 'count_mbs_contexts()' for more info on how to do this.
 mbs_counts <- readRDS(system.file("states/blood_mbs_counts.rds",
-                package="MutationalPatterns"))
-                
+  package = "MutationalPatterns"
+))
+
 
 ## You could compare regular mutation profiles with eachother.
-plot_compare_mbs(mbs_counts[,1],
-                 mbs_counts[,2])
+plot_compare_mbs(
+  mbs_counts[, 1],
+  mbs_counts[, 2]
+)
 
 ## Or change the names of the profiles
-plot_compare_mbs(mbs_counts[,1],
-                 mbs_counts[,2],
-                 profile_names = c("Original", "Reconstructed"))
+plot_compare_mbs(mbs_counts[, 1],
+  mbs_counts[, 2],
+  profile_names = c("Original", "Reconstructed")
+)
 
 ## You can also change the y limits.
 ## This can be done separately for the profiles and the different facets.
-plot_compare_mbs(mbs_counts[,1],
-                 mbs_counts[,2],
-                 profile_ymax = 0.9,
-                 diff_ylim = c(-0.8, 0.8))
+plot_compare_mbs(mbs_counts[, 1],
+  mbs_counts[, 2],
+  profile_ymax = 0.9,
+  diff_ylim = c(-0.8, 0.8)
+)
 
 ## You could also compare a reconstructed profile.
 ## However, the example data does not contain enough MBS variants to use NMF.
 ## Existing signatures have also not yet been defined.
-
 }
 \seealso{
-\code{\link{plot_compare_profiles}}, 
+\code{\link{plot_compare_profiles}},
 \code{\link{plot_compare_dbs}},
 \code{\link{plot_compare_indels}}
 

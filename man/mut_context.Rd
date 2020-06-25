@@ -22,14 +22,14 @@ substitutions from the reference genome
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Load the corresponding reference genome.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 mut_context <- mut_context(vcfs[[1]], ref_genome)
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

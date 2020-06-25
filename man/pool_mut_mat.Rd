@@ -22,9 +22,8 @@ The mutation counts of columns (samples) are added up according to the grouping 
 \examples{
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
-grouping = c(rep("colon",3), rep("intestine", 3), rep("liver", 3))
+  package = "MutationalPatterns"
+))
+grouping <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 pool_mut_mat(mut_mat, grouping)
-
-
 }

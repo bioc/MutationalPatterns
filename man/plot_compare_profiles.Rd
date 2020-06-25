@@ -45,38 +45,43 @@ sum of squares (RSS).
 ## See the 'mut_matrix()' example for how we obtained the following
 ## mutation matrix.
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Extracting signatures can be computationally intensive, so
 ## we use pre-computed data generated with the following command:
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
 
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Compare the reconstructed 96-profile of sample 1 with the original profile
 ## The same thing could be done with a reconstructed profile from signature refitting.
-plot_compare_profiles(mut_mat[,1],
-                        nmf_res$reconstructed[,1],
-                        profile_names = c("Original", "Reconstructed"))
-                        
+plot_compare_profiles(mut_mat[, 1],
+  nmf_res$reconstructed[, 1],
+  profile_names = c("Original", "Reconstructed")
+)
+
 ## You could also compare regular mutation profiles with eachother.
-plot_compare_profiles(mut_mat[,1],
-                      mut_mat[,2])
+plot_compare_profiles(
+  mut_mat[, 1],
+  mut_mat[, 2]
+)
 
 
 ## You can also change the y limits.
 ## This can be done separately for the profiles and the different facets.
-plot_compare_profiles(mut_mat[,1],
-                        mut_mat[,2],
-                        profile_ymax = 0.3,
-                        diff_ylim = c(-0.03, 0.03))
-
+plot_compare_profiles(mut_mat[, 1],
+  mut_mat[, 2],
+  profile_ymax = 0.3,
+  diff_ylim = c(-0.03, 0.03)
+)
 }
 \seealso{
 \code{\link{mut_matrix}},
 \code{\link{extract_signatures}},
-\code{\link{plot_compare_indels}}, 
+\code{\link{plot_compare_indels}},
 \code{\link{plot_compare_dbs}},
 \code{\link{plot_compare_mbs}}
 }

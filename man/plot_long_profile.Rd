@@ -40,11 +40,11 @@ as its input.
 ## See the 'lengthen_mut_matrix()' example for how we obtained the
 ## mutation matrix information:
 mut_mat_long <- readRDS(system.file("states/mut_mat_longregions.rds",
-                                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Plot the 96-profile of three samples
-plot_long_profile(mut_mat_long[,c(1,4,7)])
-
+plot_long_profile(mut_mat_long[, c(1, 4, 7)])
 }
 \seealso{
 \code{\link{mut_matrix}}

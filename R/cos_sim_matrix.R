@@ -1,8 +1,8 @@
 #' Compute all pairwise cosine similarities between mutational profiles/signatures
-#' 
-#' Computes all pairwise cosine similarities between the mutational profiles provided in the two mutation count matrices. 
+#'
+#' Computes all pairwise cosine similarities between the mutational profiles provided in the two mutation count matrices.
 #' The cosine similarity is a value between 0 (distinct) and 1 (identical) and indicates how much two vectors are alike.
-#' 
+#'
 #' @param mut_matrix1 96 mutation count matrix (dimensions: 96 mutations X n samples)
 #' @param mut_matrix2 96 mutation count matrix (dimensions: 96 mutations X m samples)
 #' @return Matrix with pairwise cosine similarities (dimensions: n mutational profiles X m mutational profiles)
@@ -12,46 +12,46 @@
 #' # https://cancer.sanger.ac.uk/cosmic/signature
 #' ## We copied the file into our package for your convenience.
 #' filename <- system.file("extdata/snv_signatures_probabilities.txt",
-#'                      package="MutationalPatterns")
+#'   package = "MutationalPatterns"
+#' )
 #' signatures <- read.table(filename, sep = "\t", header = TRUE)
-#' signatures = as.matrix(signatures[,-c(1,2)])
+#' signatures <- as.matrix(signatures[, -c(1, 2)])
 #'
 #' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-#'                    package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
-#
+#' #
 #'
 #' ## Calculate the cosine similarity between each COSMIC signature and each 96 mutational profile
 #' cos_sim_matrix(mut_mat, signatures)
-#' 
 #' @seealso
 #' \code{\link{mut_matrix}},
 #' \code{\link{fit_to_signatures}},
 #' \code{\link{plot_cosine_heatmap}}
-#' 
+#'
 #' @export
 
-cos_sim_matrix = function(mut_matrix1, mut_matrix2)
-{
-  n_samples1 = ncol(mut_matrix1)
-  n_samples2 = ncol(mut_matrix2)
-  res_matrix = matrix(nrow = n_samples1, ncol = n_samples2)
-  
-  for(s in 1:n_samples1)
+cos_sim_matrix <- function(mut_matrix1, mut_matrix2) {
+  n_samples1 <- ncol(mut_matrix1)
+  n_samples2 <- ncol(mut_matrix2)
+  res_matrix <- matrix(nrow = n_samples1, ncol = n_samples2)
+
+  for (s in 1:n_samples1)
   {
-    signal1 = mut_matrix1[,s]
-    cos_sim_vector = c()
-    for(i in 1:n_samples2)
+    signal1 <- mut_matrix1[, s]
+    cos_sim_vector <- c()
+    for (i in 1:n_samples2)
     {
-      signal2 = mut_matrix2[,i]
-      cos_sim_vector[i] = cos_sim(signal1, signal2)
+      signal2 <- mut_matrix2[, i]
+      cos_sim_vector[i] <- cos_sim(signal1, signal2)
     }
-    res_matrix[s,] = cos_sim_vector
+    res_matrix[s, ] <- cos_sim_vector
   }
-  rownames(res_matrix) = colnames(mut_matrix1)
-  colnames(res_matrix) = colnames(mut_matrix2)
-  
+  rownames(res_matrix) <- colnames(mut_matrix1)
+  colnames(res_matrix) <- colnames(mut_matrix2)
+
   return(res_matrix)
 }
 
@@ -68,27 +68,31 @@ cos_sim_matrix = function(mut_matrix1, mut_matrix2)
 #' # https://cancer.sanger.ac.uk/cosmic/signature
 #' ## We copied the file into our package for your convenience.
 #' filename <- system.file("extdata/snv_signatures_probabilities.txt",
-#'                      package="MutationalPatterns")
+#'   package = "MutationalPatterns"
+#' )
 #' signatures <- read.table(filename, sep = "\t", header = TRUE)
-#' signatures = as.matrix(signatures[,-c(1,2)])
+#' signatures <- as.matrix(signatures[, -c(1, 2)])
 #'
 #' ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 #' mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-#'                    package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #'
 #' ## Calculate the cosine similarity between each COSMIC signature and each 96 mutational profile
 #' cos_sim_matrix(mut_mat, signatures)
-#' 
 #' @seealso
 #' \code{\link{cos_sim_matrix}}
 #' \code{\link{mut_matrix}},
 #' \code{\link{fit_to_signatures}},
 #' \code{\link{plot_cosine_heatmap}}
 
-explained_by_signatures = function(mut_matrix, signatures)
-{
-  .Defunct("cos_sim_matrix", package="MutationalPatterns",
-           msg=paste("This function has been renamed to",
-                     "'cos_sim_matrix'."))
+explained_by_signatures <- function(mut_matrix, signatures) {
+  .Defunct("cos_sim_matrix",
+    package = "MutationalPatterns",
+    msg = paste(
+      "This function has been renamed to",
+      "'cos_sim_matrix'."
+    )
+  )
 }

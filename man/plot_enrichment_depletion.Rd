@@ -10,7 +10,7 @@ plot_enrichment_depletion(df, sig_type = c("fdr", "p"))
 \item{df}{Dataframe result from enrichment_depletion_test()}
 
 \item{sig_type}{The type of significance to be used. Possible values:
-* 'fdr' False discovery rate. 
+* 'fdr' False discovery rate.
 A type of multiple testing correction.;
 * 'p' for regular p values.}
 }
@@ -26,15 +26,18 @@ Plot enrichment/depletion of mutations in genomic regions
 ## See the 'genomic_distribution()' example for how we obtained the
 ## following data:
 distr <- readRDS(system.file("states/distr_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
-tissue = c( "colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver" )
+tissue <- c(
+  "colon", "colon", "colon",
+  "intestine", "intestine", "intestine",
+  "liver", "liver", "liver"
+)
 
 ## Perform the enrichment/depletion test.
-distr_test = enrichment_depletion_test(distr, by = tissue)
-distr_test2 = enrichment_depletion_test(distr)
+distr_test <- enrichment_depletion_test(distr, by = tissue)
+distr_test2 <- enrichment_depletion_test(distr)
 
 ## Plot the enrichment/depletion
 plot_enrichment_depletion(distr_test)
@@ -45,11 +48,12 @@ plot_enrichment_depletion(distr_test, sig_type = "p")
 
 ## Use multiple (max 3) significance cutoffs.
 ## This will vary the number of significance stars.
-distr_multistars <- enrichment_depletion_test(distr, by = tissue, 
-                                         p_cutoffs = c(0.05, 0.01, 0.005), 
-                                         fdr_cutoffs = c(0.1, 0.05, 0.01))
+distr_multistars <- enrichment_depletion_test(distr,
+  by = tissue,
+  p_cutoffs = c(0.05, 0.01, 0.005),
+  fdr_cutoffs = c(0.1, 0.05, 0.01)
+)
 plot_enrichment_depletion(distr_multistars)
-
 }
 \seealso{
 \code{\link{enrichment_depletion_test}},

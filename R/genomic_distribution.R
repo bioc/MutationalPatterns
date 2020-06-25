@@ -1,8 +1,8 @@
 #' Find overlaps between mutations and a genomic region.
-#' 
+#'
 #' Function finds the number of mutations that reside in genomic region and
 #' takes surveyed area of genome into account.
-#' 
+#'
 #' @param grl GRangesList or GRanges object.
 #' @param surveyed_list A GRangesList or a list with GRanges of regions of
 #' the genome that have been surveyed (e.g. determined using GATK CallableLoci).
@@ -17,8 +17,9 @@
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
-#' 
+#'   package = "MutationalPatterns"
+#' ))
+#'
 #' ## Use biomaRt to obtain data.
 #' ## We can query the BioMart database, but this may take a long time,
 #' ## so we take some shortcuts by loading the results from our
@@ -32,7 +33,8 @@
 #' #                          dataset="hsapiens_regulatory_feature",
 #' #                          GRCh = 37)
 #' regulatory <- readRDS(system.file("states/regulatory_data.rds",
-#'                                     package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' ## Download the regulatory CTCF binding sites and convert them to
 #' ## a GRanges object.
@@ -40,8 +42,8 @@
 #' #                             'chromosome_start',
 #' #                             'chromosome_end',
 #' #                             'feature_type_name'),
-#' #              filters = "regulatory_feature_type_name", 
-#' #              values = "CTCF Binding Site", 
+#' #              filters = "regulatory_feature_type_name",
+#' #              values = "CTCF Binding Site",
 #' #              mart = regulatory)
 #' #
 #' # CTCF_g <- reduce(GRanges(CTCF$chromosome_name,
@@ -49,35 +51,38 @@
 #' #                 CTCF$chromosome_end)))
 #'
 #' CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
-#'                     package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' ## Download the promoter regions and conver them to a GRanges object.
 #' # promoter = getBM(attributes = c('chromosome_name', 'chromosome_start',
 #' #                                 'chromosome_end', 'feature_type_name'),
-#' #                  filters = "regulatory_feature_type_name", 
-#' #                  values = "Promoter", 
+#' #                  filters = "regulatory_feature_type_name",
+#' #                  values = "Promoter",
 #' #                  mart = regulatory)
 #' # promoter_g = reduce(GRanges(promoter$chromosome_name,
 #' #                     IRanges(promoter$chromosome_start,
 #' #                             promoter$chromosome_end)))
 #'
 #' promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
-#'                         package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' # flanking = getBM(attributes = c('chromosome_name',
 #' #                                 'chromosome_start',
 #' #                                 'chromosome_end',
 #' #                                 'feature_type_name'),
-#' #                  filters = "regulatory_feature_type_name", 
-#' #                  values = "Promoter Flanking Region", 
+#' #                  filters = "regulatory_feature_type_name",
+#' #                  values = "Promoter Flanking Region",
 #' #                  mart = regulatory)
 #' # flanking_g = reduce(GRanges(
 #' #                        flanking$chromosome_name,
 #' #                        IRanges(flanking$chromosome_start,
 #' #                        flanking$chromosome_end)))
-#' 
+#'
 #' flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
-#'                                     package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
 #'
@@ -88,7 +93,8 @@
 #'
 #' ## Get the filename with surveyed/callable regions
 #' surveyed_file <- system.file("extdata/callableloci-sample.bed",
-#'                             package="MutationalPatterns")
+#'   package = "MutationalPatterns"
+#' )
 #'
 #' ## Import the file using rtracklayer and use the UCSC naming standard
 #' library(rtracklayer)
@@ -97,45 +103,45 @@
 #'
 #' ## For this example we use the same surveyed file for each sample.
 #' surveyed_list <- rep(list(surveyed), 9)
-#' 
+#'
 #' ## Calculate the number of observed and expected number of mutations in
 #' ## each genomic regions for each sample.
 #' distr <- genomic_distribution(vcfs, surveyed_list, regions)
-#' 
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}
 #'
 #' @export
 
-genomic_distribution = function(grl, surveyed_list, region_list, vcf_list = NA){
-    
-    #Check arguments
-    if (!is_na(vcf_list)){
-        warning("vcf_list is deprecated, use grl instead. 
+genomic_distribution <- function(grl, surveyed_list, region_list, vcf_list = NA) {
+
+  # Check arguments
+  if (!is_na(vcf_list)) {
+    warning("vcf_list is deprecated, use grl instead. 
               The parameter grl is set equal to the parameter vcf_list.", call. = F)
-        grl <- vcf_list
-    }
-    
-    if (length(grl) != length(surveyed_list)){
-        stop("grl and surveyed_list must have the same length", call. = F)
-    }
+    grl <- vcf_list
+  }
 
-    if (is.null(names(region_list))){
-        stop(paste( "Please set the names of region_list using:",
-                    "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
-                    sep="\n"), call. = F)
-    }
+  if (length(grl) != length(surveyed_list)) {
+    stop("grl and surveyed_list must have the same length", call. = F)
+  }
 
-    #Perform intersect with region over each combi of vcf and region.
-    #Map over the region list. Within this loop map over the vcfs.
-    df = purrr::map(as.list(region_list), function(region) {
-        purrr::map2(as.list(grl), as.list(surveyed_list), intersect_with_region, region) %>% 
-        dplyr::bind_rows(.id = "sample")
-    }) %>% dplyr::bind_rows(.id = "region")
+  if (is.null(names(region_list))) {
+    stop(paste("Please set the names of region_list using:",
+      "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
+      sep = "\n"
+    ), call. = F)
+  }
 
-    # Region as factor
-    # make sure level order is the same as in region_list input (important
-    # for plotting later)
-    df$region = factor(df$region, levels = names(region_list))
-    return(df)
+  # Perform intersect with region over each combi of vcf and region.
+  # Map over the region list. Within this loop map over the vcfs.
+  df <- purrr::map(as.list(region_list), function(region) {
+    purrr::map2(as.list(grl), as.list(surveyed_list), intersect_with_region, region) %>%
+      dplyr::bind_rows(.id = "sample")
+  }) %>% dplyr::bind_rows(.id = "region")
+
+  # Region as factor
+  # make sure level order is the same as in region_list input (important
+  # for plotting later)
+  df$region <- factor(df$region, levels = names(region_list))
+  return(df)
 }

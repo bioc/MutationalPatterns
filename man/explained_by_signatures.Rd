@@ -22,18 +22,19 @@ This function has been renamed to 'cos_sim_matrix'.
 # https://cancer.sanger.ac.uk/cosmic/signature
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                     package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                   package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
 ## Calculate the cosine similarity between each COSMIC signature and each 96 mutational profile
 cos_sim_matrix(mut_mat, signatures)
-
 }
 \seealso{
 \code{\link{cos_sim_matrix}}

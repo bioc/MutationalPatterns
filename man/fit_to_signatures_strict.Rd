@@ -22,9 +22,9 @@ that for each sample shows in what order the signatures were removed and how thi
 \description{
 Find a linear non-negative combination of mutation signatures that
 reconstructs the mutation matrix. First an optimal reconstruction is achieved via `fit_to_signatures`.
-However, this is prone to overfitting. 
+However, this is prone to overfitting.
 To solve this the signature with the lowest contribution is removed and refitting is repeated.
-This is done in an iterative fashion. 
+This is done in an iterative fashion.
 Each time the cosine similarity between the original and reconstructed profile is calculated.
 Iterations are stopped when the difference between two iterations becomes more than `max_delta`.
 The second-last set of signatures is then used for a final refit.
@@ -32,31 +32,32 @@ The second-last set of signatures is then used for a final refit.
 \examples{
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## You can download the signatures from the COSMIC website:
 # https://cancer.sanger.ac.uk/cosmic/signatures
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                        package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## Remove unnecessary columns
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 ## Fit to signatures strict
-strict_refit = fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
+strict_refit <- fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
 
 ## fit_res similar to 'fit_to_signatures()'
-fit_res = strict_refit$fit_res
+fit_res <- strict_refit$fit_res
 
 ## list of ggplots that shows how the cosine similarity was reduced during the iterations
-fig_l = strict_refit$sim_decay_fig
-
+fig_l <- strict_refit$sim_decay_fig
 }
 \seealso{
-\code{\link{mut_matrix}}, 
+\code{\link{mut_matrix}},
 \code{\link{fit_to_signatures}},
 \code{\link{fit_to_signatures_bootstrapped}}
 }

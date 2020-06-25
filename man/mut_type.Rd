@@ -20,10 +20,10 @@ the 6 common base substitution types.
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 mut_type(vcfs[[1]])
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}

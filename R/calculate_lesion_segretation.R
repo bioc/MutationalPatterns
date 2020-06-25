@@ -1,14 +1,14 @@
 #' Calculate the amount of lesion segregation for a GRangesList or GRanges object.
-#' 
+#'
 #' The amount of lesion segregation is calculated per GRanges object.
 #' The results are then combined in a table.
-#' 
+#'
 #' It's possible to calculate the lesion segregation separately per 96 substitution context,
 #' when using the binomial test. The results are then automatically added back up together.
-#' 
+#'
 #' When using the rl20 test, this function first calculates the strand runs per chromosome
-#' and combines them. It then calculates the smallest set of runs, which together encompass 
-#' at least 20% of the mutations. (This set thus contains the largest runs). 
+#' and combines them. It then calculates the smallest set of runs, which together encompass
+#' at least 20% of the mutations. (This set thus contains the largest runs).
 #' The size of the smallest run in this set is the rl20. The genomic span of
 #' the runs in this set is also calculated.
 #'
@@ -18,16 +18,16 @@
 #'              * 'binomial' Binomial test based on the number of strand switches. (Default);
 #'              * 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;
 #'              * 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;
-#' @param split_by_type Boolean describing whether the lesion 
+#' @param split_by_type Boolean describing whether the lesion
 #' segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)
 #' @param ref_genome A string matching the name of a BSgenome library
 #'               corresponding to the reference genome.
-#'               Only needed when split_by_type is TRUE with the binomial test 
+#'               Only needed when split_by_type is TRUE with the binomial test
 #'               or when using the rl20 test.
 #' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
 #'
 #' @return A tibble containing the amount of lesions segregation per sample
-#' @importFrom magrittr %>% 
+#' @importFrom magrittr %>%
 #' @seealso
 #' \code{\link{plot_lesion_segregation}}
 #' @family Lesion_segregation
@@ -37,100 +37,107 @@
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
 #' grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
-#' 
+#'   package = "MutationalPatterns"
+#' ))
+#'
 #' ## Set the sample names
 #' sample_names <- c(
-#'    "colon1", "colon2", "colon3",
-#'    "intestine1", "intestine2", "intestine3",
-#'    "liver1", "liver2", "liver3")
-#'                                  
+#'   "colon1", "colon2", "colon3",
+#'   "intestine1", "intestine2", "intestine3",
+#'   "liver1", "liver2", "liver3"
+#' )
+#'
 #' ## Load the corresponding reference genome.
-#' ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+#' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
-#' 
+#'
 #' ## Calculate lesion segregation
-#' lesion_segretation = calculate_lesion_segregation(grl, sample_names)
-#' 
+#' lesion_segretation <- calculate_lesion_segregation(grl, sample_names)
+#'
 #' ## Calculate lesion segregation per 96 base type
-#' lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names, 
-#' split_by_type = TRUE, ref_genome = ref_genome)
-#' 
+#' lesion_segretation_by_type <- calculate_lesion_segregation(grl, sample_names,
+#'   split_by_type = TRUE, ref_genome = ref_genome
+#' )
+#'
 #' ## Calculate lesion segregation using the walf-wolfowitz test.
-#' lesion_segregation_walf = calculate_lesion_segregation(grl, 
-#'                                                        sample_names, 
-#'                                                        test = "walf-wolfowitz")
-#'                                                        
+#' lesion_segregation_walf <- calculate_lesion_segregation(grl,
+#'   sample_names,
+#'   test = "walf-wolfowitz"
+#' )
+#'
 #' ## Calculate lesion segregation using the rl20.
-#' chromosomes = paste0("chr", c(1:22, "X"))
-#' lesion_segregation_rl20 = calculate_lesion_segregation(grl, 
-#'                                                        sample_names, 
-#'                                                        test = "rl20",
-#'                                                        ref_genome = ref_genome,
-#'                                                        chromosomes = chromosomes)
-#'                                                        
-calculate_lesion_segregation = function(grl, 
-                                        sample_names, 
-                                        test = c("binomial", "walf-wolfowitz", "rl20"),
-                                        split_by_type = FALSE, 
-                                        ref_genome = NA,
-                                        chromosomes = NA){
-    
-    # These variables use non standard evaluation.
-    # To avoid R CMD check complaints we initialize them to NULL.
-    p.value = . = sample_name = NULL
-    
-    #Validate arguments
-    test = match.arg(test)
-    if (test != "binomial" & split_by_type){
-        stop("The 'split_by_type' argument can only be used with the binomial test",
-             call. = F)
+#' chromosomes <- paste0("chr", c(1:22, "X"))
+#' lesion_segregation_rl20 <- calculate_lesion_segregation(grl,
+#'   sample_names,
+#'   test = "rl20",
+#'   ref_genome = ref_genome,
+#'   chromosomes = chromosomes
+#' )
+calculate_lesion_segregation <- function(grl,
+                                         sample_names,
+                                         test = c("binomial", "walf-wolfowitz", "rl20"),
+                                         split_by_type = FALSE,
+                                         ref_genome = NA,
+                                         chromosomes = NA) {
+
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  p.value <- . <- sample_name <- NULL
+
+  # Validate arguments
+  test <- match.arg(test)
+  if (test != "binomial" & split_by_type) {
+    stop("The 'split_by_type' argument can only be used with the binomial test",
+      call. = F
+    )
+  }
+  if (length(grl) != length(sample_names)) {
+    stop("The grl and the sample_names should be equally long.", call. = F)
+  }
+
+  if (is_na(ref_genome)) {
+    if (split_by_type) {
+      stop("The ref_genome needs to be set when split_by_type = TRUE", call. = F)
     }
-    if (length(grl) != length(sample_names)){
-        stop("The grl and the sample_names should be equally long.", call. = F)
+    if (test == "rl20") {
+      stop("The ref_genome needs to be set when test == rl20", call. = F)
     }
-    
-    if (is_na(ref_genome)){
-        if (split_by_type){
-            stop("The ref_genome needs to be set when split_by_type = TRUE", call. = F)
-        }
-        if (test == "rl20"){
-            stop("The ref_genome needs to be set when test == rl20", call. = F)
-        }
-    }
-    
-    if (is_na(chromosomes) & test == "rl20"){
-        stop("The chromosomes need to be set when using test == rl20", call. = F)
-    }
-    
-    #Perform lesion segregation on each GR
-    if (inherits(grl, "CompressedGRangesList")){
-        gr_l = as.list(grl)
-        strand_tb = purrr::map2(gr_l, sample_names, function(gr, sample_name){
-            calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
-            }) %>% 
-            do.call(rbind, .)
-    } else if (inherits(grl, "GRanges")){
-        strand_tb = calculate_lesion_segregation_gr(grl, 
-                                                    sample_names, 
-                                                    test, 
-                                                    split_by_type, 
-                                                    ref_genome, 
-                                                    chromosomes)
-    } else{
-        not_gr_or_grl(grl)
-    }
-    
-    #Multiple testing correction
-    if (test != "rl20"){
-        strand_tb = dplyr::mutate(strand_tb, fdr = p.adjust(p.value, method = "fdr"))
-    }
-    
-    #Add final columns to output
-    strand_tb = strand_tb %>% 
-        dplyr::mutate(sample_name = sample_names) %>% 
-        dplyr::select(sample_name, dplyr::everything())
-    return(strand_tb)
+  }
+
+  if (is_na(chromosomes) & test == "rl20") {
+    stop("The chromosomes need to be set when using test == rl20", call. = F)
+  }
+
+  # Perform lesion segregation on each GR
+  if (inherits(grl, "CompressedGRangesList")) {
+    gr_l <- as.list(grl)
+    strand_tb <- purrr::map2(gr_l, sample_names, function(gr, sample_name) {
+      calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
+    }) %>%
+      do.call(rbind, .)
+  } else if (inherits(grl, "GRanges")) {
+    strand_tb <- calculate_lesion_segregation_gr(
+      grl,
+      sample_names,
+      test,
+      split_by_type,
+      ref_genome,
+      chromosomes
+    )
+  } else {
+    not_gr_or_grl(grl)
+  }
+
+  # Multiple testing correction
+  if (test != "rl20") {
+    strand_tb <- dplyr::mutate(strand_tb, fdr = p.adjust(p.value, method = "fdr"))
+  }
+
+  # Add final columns to output
+  strand_tb <- strand_tb %>%
+    dplyr::mutate(sample_name = sample_names) %>%
+    dplyr::select(sample_name, dplyr::everything())
+  return(strand_tb)
 }
 
 #' Calculate the amount of lesion segregation for a singe GRanges object.
@@ -140,110 +147,127 @@ calculate_lesion_segregation = function(grl,
 #' @param test The statistical test that should be used. Possible values:
 #'              * 'binomial' Binomial test based on the number of strand switches. (Default);
 #'              * 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;
-#' @param split_by_type Boolean describing whether the lesion 
+#' @param split_by_type Boolean describing whether the lesion
 #' segregation should be calculated for all SNVs together or per 96 substitution context.
 #' @param ref_genome A string matching the name of a BSgenome library
 #'               corresponding to the reference genome.
-#'               Only needed when split_by_type is TRUE with the binomial test 
+#'               Only needed when split_by_type is TRUE with the binomial test
 #'               or when using the rl20 test.
 #' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
-#' 
+#'
 #' @return A tibble containing the amount of lesions segregation for a single sample
 #' @noRd
 #'
-calculate_lesion_segregation_gr = function(gr, 
-                                           sample_name = "sample", 
-                                           test = c("binomial", "walf-wolfowitz", "rl20"),
-                                           split_by_type = FALSE, 
-                                           ref_genome = NA,
-                                           chromosomes = NA){
-    
-    
-    # These variables use non standard evaluation.
-    # To avoid R CMD check complaints we initialize them to NULL.
-    genome_span = genome_size = NULL
-    
-    #Check if mutations are present.
-    if (!length(gr)){
-        message(paste0("No mutations present in sample: ", sample_name,
-                      "\n Returning NA"))
+calculate_lesion_segregation_gr <- function(gr,
+                                            sample_name = "sample",
+                                            test = c("binomial", "walf-wolfowitz", "rl20"),
+                                            split_by_type = FALSE,
+                                            ref_genome = NA,
+                                            chromosomes = NA) {
+
+
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  genome_span <- genome_size <- NULL
+
+  # Check if mutations are present.
+  if (!length(gr)) {
+    message(paste0(
+      "No mutations present in sample: ", sample_name,
+      "\n Returning NA"
+    ))
+    return(NA)
+  }
+
+  # Get strand info
+  gr <- get_strandedness_gr(gr)
+  tb <- get_strandedness_tb(gr)
+
+  if (test == "binomial") {
+    # Perform analysis per base substitution type
+    if (split_by_type) {
+
+
+      # Split gr according to the 96 substitution context.
+      cnd <- tryCatch(suppressWarnings({
+        GenomeInfoDb::seqlevelsStyle(gr) <- "UCSC"
+      }),
+      error = function(cnd) cnd
+      )
+      if (inherits(cnd, "error")) {
+        message(paste0(
+          "Could not change seqlevelstyle in sample: ", sample_name, ".",
+          "\n Returning NA"
+        ))
         return(NA)
+      }
+      check_chroms(gr, ref_genome)
+      type_context <- type_context(gr, ref_genome)
+      full_context <- paste0(
+        substr(type_context$context, 1, 1),
+        "[", type_context$types, "]",
+        substr(type_context$context, 3, 3)
+      )
+      tb_l <- split(tb, full_context)
+
+      # Calculate strand switches for each of the 96 substitutions.
+      res_l <- purrr::map(tb_l, calculate_strand_switches)
+      x <- purrr::map(res_l, "x") %>%
+        unlist() %>%
+        sum()
+      n <- purrr::map(res_l, "n") %>%
+        unlist() %>%
+        sum()
+      res <- list("x" = x, "n" = n)
+    } else {
+      # Calculate strand switches
+      res <- calculate_strand_switches(tb)
     }
-    
-    #Get strand info
-    gr = get_strandedness_gr(gr)
-    tb = get_strandedness_tb(gr)
-    
-    if (test == "binomial"){
-        #Perform analysis per base substitution type
-        if (split_by_type){
-            
-            
-            #Split gr according to the 96 substitution context.
-            cnd = tryCatch(suppressWarnings({GenomeInfoDb::seqlevelsStyle(gr) = "UCSC"}),
-                           error = function(cnd) cnd)
-            if (inherits(cnd, "error")){
-                message(paste0("Could not change seqlevelstyle in sample: ", sample_name, ".",
-                              "\n Returning NA"))
-                return(NA)
-            }
-            check_chroms(gr, ref_genome)
-            type_context = type_context(gr, ref_genome)
-            full_context = paste0(substr(type_context$context, 1, 1), 
-                                 "[", type_context$types, "]", 
-                                 substr(type_context$context, 3, 3))
-            tb_l = split(tb, full_context)
-            
-            #Calculate strand switches for each of the 96 substitutions.
-            res_l = purrr::map(tb_l, calculate_strand_switches)
-            x = purrr::map(res_l, "x") %>% 
-                unlist() %>% 
-                sum()
-            n = purrr::map(res_l, "n") %>% 
-                unlist() %>% 
-                sum()
-            res = list("x" = x, "n" = n)
-        } else{
-            #Calculate strand switches
-            res = calculate_strand_switches(tb)
-        }
-        
-        #Check if mutations are present
-        if (res$n == 0){
-            message(paste0("No multiple mutations in one chromosome with context present in sample: ", sample_name,
-                          "\n Returning NA"))
-            return(NA)
-        }
-        
-        #Calculate if the number of strand switches is significantly different from expected.
-        res = binom.test(x = res$x, n = res$n, p = 0.5)
-        
-        #Add all results together in a tibble
-        stat_tb = tibble::tibble(p.value = res$p.value, 
-                                 fraction_strand_switches = res$estimate,
-                                 conf_low = res$conf.int[[1]], 
-                                 conf_high = res$conf.int[[2]], 
-                                 nr_strand_switches = res$statistic, 
-                                 max_possible_switches = res$parameter)
-    } else if (test == "walf-wolfowitz"){
-        #calculate if there is a significant deviation using the walf_wolfowitz_test
-        wolfowitz = walf_wolfowitz_test(tb$strand)
-        stat_tb = tibble::tibble(p.value = wolfowitz$p,
-                                 sd = wolfowitz$sd,
-                                 nr_total_runs = wolfowitz$runs_total)
-    } else if (test == "rl20"){
-        
-        #Calculate rl20 and genomic span
-        res = rl20_gspan(tb)
-        
-        #Add total size of genome to calculate fraction.
-        ref_genome = BSgenome::getBSgenome(ref_genome)
-        stat_tb = res %>% 
-            dplyr::mutate(genome_size = sum(GenomeInfoDb::seqlengths(ref_genome)[chromosomes]),
-                          fraction_span = genome_span/genome_size)
+
+    # Check if mutations are present
+    if (res$n == 0) {
+      message(paste0(
+        "No multiple mutations in one chromosome with context present in sample: ", sample_name,
+        "\n Returning NA"
+      ))
+      return(NA)
     }
-    
-    return(stat_tb)
+
+    # Calculate if the number of strand switches is significantly different from expected.
+    res <- binom.test(x = res$x, n = res$n, p = 0.5)
+
+    # Add all results together in a tibble
+    stat_tb <- tibble::tibble(
+      p.value = res$p.value,
+      fraction_strand_switches = res$estimate,
+      conf_low = res$conf.int[[1]],
+      conf_high = res$conf.int[[2]],
+      nr_strand_switches = res$statistic,
+      max_possible_switches = res$parameter
+    )
+  } else if (test == "walf-wolfowitz") {
+    # calculate if there is a significant deviation using the walf_wolfowitz_test
+    wolfowitz <- walf_wolfowitz_test(tb$strand)
+    stat_tb <- tibble::tibble(
+      p.value = wolfowitz$p,
+      sd = wolfowitz$sd,
+      nr_total_runs = wolfowitz$runs_total
+    )
+  } else if (test == "rl20") {
+
+    # Calculate rl20 and genomic span
+    res <- rl20_gspan(tb)
+
+    # Add total size of genome to calculate fraction.
+    ref_genome <- BSgenome::getBSgenome(ref_genome)
+    stat_tb <- res %>%
+      dplyr::mutate(
+        genome_size = sum(GenomeInfoDb::seqlengths(ref_genome)[chromosomes]),
+        fraction_span = genome_span / genome_size
+      )
+  }
+
+  return(stat_tb)
 }
 
 #' Determine the strands of a GRanges object
@@ -252,16 +276,16 @@ calculate_lesion_segregation_gr = function(gr,
 #'
 #' @return A GRanges object where the strands have been set.
 #' @noRd
-#' 
-get_strandedness_gr = function(gr){
-    check_no_indels(gr)
-    strand(gr) = ifelse(as.vector(get_ref(gr)) %in% c("C", "T"), "+", "-")
-    GenomeInfoDb::seqlevelsStyle(gr) = "NCBI" #This takes less space when plotting
-    
-    if (length(gr)){
-        GenomeInfoDb::seqlevels(gr) = GenomeInfoDb::seqlevelsInUse(gr)
-    }
-    return(gr)
+#'
+get_strandedness_gr <- function(gr) {
+  check_no_indels(gr)
+  strand(gr) <- ifelse(as.vector(get_ref(gr)) %in% c("C", "T"), "+", "-")
+  GenomeInfoDb::seqlevelsStyle(gr) <- "NCBI" # This takes less space when plotting
+
+  if (length(gr)) {
+    GenomeInfoDb::seqlevels(gr) <- GenomeInfoDb::seqlevelsInUse(gr)
+  }
+  return(gr)
 }
 
 #' Convert a GRanges object with strand info to a tibble
@@ -269,16 +293,18 @@ get_strandedness_gr = function(gr){
 #' @param gr A GRanges object where the strands have been set.
 #'
 #' @return A tibble with strand information
-#' @importFrom magrittr %>% 
+#' @importFrom magrittr %>%
 #' @noRd
-#' 
-get_strandedness_tb = function(gr){
-    tb = as.data.frame(gr) %>%
-        tibble::as_tibble() %>% 
-        dplyr::mutate(strand = droplevels(strand),
-                      y = dplyr::recode(strand, "+" = 1, "-" = 0),
-                      start_mb = start/1000000)
-    return(tb)
+#'
+get_strandedness_tb <- function(gr) {
+  tb <- as.data.frame(gr) %>%
+    tibble::as_tibble() %>%
+    dplyr::mutate(
+      strand = droplevels(strand),
+      y = dplyr::recode(strand, "+" = 1, "-" = 0),
+      start_mb = start / 1000000
+    )
+  return(tb)
 }
 
 #' Calculate the total number of variants and strand switches.
@@ -286,42 +312,42 @@ get_strandedness_tb = function(gr){
 #' @param tb A tibble with strand information
 #'
 #' @return A list containing the total number of variants and the number of strand switches
-#' @importFrom magrittr %>%  
+#' @importFrom magrittr %>%
 #' @noRd
-#' 
-calculate_strand_switches = function(tb){
-    # These variables use non standard evaluation.
-    # To avoid R CMD check complaints we initialize them to NULL.
-    . = NULL
-    
-    strands_l = split(tb$strand, tb$seqnames)
-    switches = purrr::map(strands_l, calculate_strand_switch) %>% 
-        do.call("c", .)
-    res = list("x" = sum(switches), "n" = length(switches))
-    return(res)
+#'
+calculate_strand_switches <- function(tb) {
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  . <- NULL
+
+  strands_l <- split(tb$strand, tb$seqnames)
+  switches <- purrr::map(strands_l, calculate_strand_switch) %>%
+    do.call("c", .)
+  res <- list("x" = sum(switches), "n" = length(switches))
+  return(res)
 }
 
 #' Calculate the number of strand switches in a single chromosome.
 #'
 #' @param strand A vector containing the strand of variants
 #'
-#' @return A boolean vector describing for each variant 
+#' @return A boolean vector describing for each variant
 #' if it switched strands with the previous variant.
 #' @noRd
-#' @importFrom magrittr %>%  
-#' 
-calculate_strand_switch = function(strand){
-    switches = strand != dplyr::lead(strand)
-    switches = switches %>% 
-        stats::na.omit() %>% 
-        as.vector()
-    return(switches)
+#' @importFrom magrittr %>%
+#'
+calculate_strand_switch <- function(strand) {
+  switches <- strand != dplyr::lead(strand)
+  switches <- switches %>%
+    stats::na.omit() %>%
+    as.vector()
+  return(switches)
 }
 
 
 #' Perform the walf_wofowitz test for strands.
-#' 
-#' This statistical test, tests whether each element in the sequence is 
+#'
+#' This statistical test, tests whether each element in the sequence is
 #' independently drawn from the same distribution.
 #'
 #' @param strands A vector of strands
@@ -329,47 +355,47 @@ calculate_strand_switch = function(strand){
 #' @return a p value
 #'
 #' @noRd
-#' 
-walf_wolfowitz_test = function(strands){
-    
-    #Remove factor
-    strands = as.character(strands)
-    
-    #Determine sizes
-    n1 = sum(strands == "+")
-    n2 = sum(strands == "-")
-    n = n1 + n2
-    
-    #Determine number of + and - runs
-    runs = rle(strands)
-    r1 = length(runs$lengths[runs$values=="+"])
-    r2 = length(runs$lengths[runs$values=="-"])  
-    
-    #Calculate total number of runs
-    runs_total = r1+r2
-    
-    #Calculate mean
-    mean_val = 2*n1*n2/(n) + 1
-    
-    #Calculate variance and sd
-    variance = (mean_val-1)*(mean_val-2)/(n-1)
-    sd = sqrt(variance)
-    
-    #Calculate p value
-    p <- stats::pnorm((runs_total - mean_val) / sd)
-    
-    #Make two-sided
-    p <- 2*min(p,1-p)
-    
-    return(list("p" = p, "sd" = sd, "runs_total" = runs_total))
+#'
+walf_wolfowitz_test <- function(strands) {
+
+  # Remove factor
+  strands <- as.character(strands)
+
+  # Determine sizes
+  n1 <- sum(strands == "+")
+  n2 <- sum(strands == "-")
+  n <- n1 + n2
+
+  # Determine number of + and - runs
+  runs <- rle(strands)
+  r1 <- length(runs$lengths[runs$values == "+"])
+  r2 <- length(runs$lengths[runs$values == "-"])
+
+  # Calculate total number of runs
+  runs_total <- r1 + r2
+
+  # Calculate mean
+  mean_val <- 2 * n1 * n2 / (n) + 1
+
+  # Calculate variance and sd
+  variance <- (mean_val - 1) * (mean_val - 2) / (n - 1)
+  sd <- sqrt(variance)
+
+  # Calculate p value
+  p <- stats::pnorm((runs_total - mean_val) / sd)
+
+  # Make two-sided
+  p <- 2 * min(p, 1 - p)
+
+  return(list("p" = p, "sd" = sd, "runs_total" = runs_total))
 }
 
 #' Calculate rl20 and genomic span
-#' 
+#'
 #' This function calculates the strand runs per chromosome
 #' and combines them. It then calculates the rl20. This is done by
-#' calculating the smallest set of runs, which together encompass 
-#' at least 20% of the mutations. (This set thus contains the largest runs). 
+#' calculating the smallest set of runs, which together encompass
+#' at least 20% of the mutations. (This set thus contains the largest runs).
 #' The size of the smallest run in this set is the rl20. The genomic span of
 #' the runs in this set is also calculated.
 #'
@@ -378,62 +404,62 @@ walf_wolfowitz_test = function(strands){
 #' @return A list containing the rl20 and the genomic span
 #' @noRd
 #'
-rl20_gspan = function(tb){
-    
-    # These variables use non standard evaluation.
-    # To avoid R CMD check complaints we initialize them to NULL.
-    . = NULL
-    
-    #Number of variants
-    n = nrow(tb)
-    
-    #Remove factor
-    tb = dplyr::mutate(tb, strand = as.character(strand))
-    
-    #Determine runs per chromosome
-    tb_l = split(tb, tb$seqnames)
-    runs_l = purrr::map(tb_l, ~rle(.x$strand))
-    
-    #Combine run lengths
-    run_lengths = purrr::map(runs_l, "lengths") %>% 
-        do.call(c, .) %>% 
-        magrittr::set_names(NULL)
-    
+rl20_gspan <- function(tb) {
 
-    #Sort runs on size
-    order_i = order(run_lengths, decreasing = TRUE)
-    sort_lengths = run_lengths[order_i]
-    
-    #Determine set of runs that together encompass 20% of mutations.
-    not_big_enough_set_size = sum(cumsum(sort_lengths) < 0.2*n) #Just less than 20%
-    set_size = not_big_enough_set_size + 1 #+1 to get over 20%
-    set = sort_lengths[seq_len(set_size)]
-    
-    #Get shortest run from 20% set
-    rl20 = set[set_size]
-    
-    #The next section will determine the genomic span. 
-    #To do this we need to get the position
-    #of variants back from the runs.
-    
-    #Determine original index of the runs in set.
-    order_i_set = order_i[seq_len(set_size)]
-    
-    #Get the mutation indices from the runs
-    cumsum_runs = cumsum(run_lengths)
-    
-    #Determine index of the first mutation of the runs in set.
-    #The index of the last mutation in the previous run is used for this.
-    start_i = cumsum_runs[order_i_set-1] + 1
-    
-    #Determine index of the last mutation of the runs in set.
-    end_i = cumsum_runs[order_i_set]
-    
-    #Use the indices to get the genomic positions and calculate
-    #the genomic span.
-    genomic_spans = tb$end[end_i] - tb$start[start_i]
-    genomic_span = sum(genomic_spans)
-    
-    res = tibble::tibble("rl20" = rl20, "genome_span" = genomic_span)
-    return(res)
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  . <- NULL
+
+  # Number of variants
+  n <- nrow(tb)
+
+  # Remove factor
+  tb <- dplyr::mutate(tb, strand = as.character(strand))
+
+  # Determine runs per chromosome
+  tb_l <- split(tb, tb$seqnames)
+  runs_l <- purrr::map(tb_l, ~ rle(.x$strand))
+
+  # Combine run lengths
+  run_lengths <- purrr::map(runs_l, "lengths") %>%
+    do.call(c, .) %>%
+    magrittr::set_names(NULL)
+
+
+  # Sort runs on size
+  order_i <- order(run_lengths, decreasing = TRUE)
+  sort_lengths <- run_lengths[order_i]
+
+  # Determine set of runs that together encompass 20% of mutations.
+  not_big_enough_set_size <- sum(cumsum(sort_lengths) < 0.2 * n) # Just less than 20%
+  set_size <- not_big_enough_set_size + 1 #+1 to get over 20%
+  set <- sort_lengths[seq_len(set_size)]
+
+  # Get shortest run from 20% set
+  rl20 <- set[set_size]
+
+  # The next section will determine the genomic span.
+  # To do this we need to get the position
+  # of variants back from the runs.
+
+  # Determine original index of the runs in set.
+  order_i_set <- order_i[seq_len(set_size)]
+
+  # Get the mutation indices from the runs
+  cumsum_runs <- cumsum(run_lengths)
+
+  # Determine index of the first mutation of the runs in set.
+  # The index of the last mutation in the previous run is used for this.
+  start_i <- cumsum_runs[order_i_set - 1] + 1
+
+  # Determine index of the last mutation of the runs in set.
+  end_i <- cumsum_runs[order_i_set]
+
+  # Use the indices to get the genomic positions and calculate
+  # the genomic span.
+  genomic_spans <- tb$end[end_i] - tb$start[start_i]
+  genomic_span <- sum(genomic_spans)
+
+  res <- tibble::tibble("rl20" = rl20, "genome_span" = genomic_span)
+  return(res)
 }

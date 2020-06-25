@@ -16,7 +16,7 @@ A list of ggplot2 objects if run per sample.
 Else it returns a single ggplot2 object.
 }
 \description{
-This function plots the correlation between signatures. 
+This function plots the correlation between signatures.
 This can be done per sample or for all samples together.
 It returns a list of the created figures.
 }
@@ -24,16 +24,16 @@ It returns a list of the created figures.
 
 ## Get a dataframe with bootstrapped signature contributions.
 ## See 'fit_to_signatures_bootstrapped()' for how to do this.
-contri_boots = readRDS(system.file("states/bootstrapped_snv_refit.rds",
-package="MutationalPatterns"))
+contri_boots <- readRDS(system.file("states/bootstrapped_snv_refit.rds",
+  package = "MutationalPatterns"
+))
 
 ## Plot the correlations between signatures per sample
-fig_l = plot_correlation_bootstrap(contri_boots)
+fig_l <- plot_correlation_bootstrap(contri_boots)
 
 ## Look at the figure of the first sample.
 fig_l[[1]]
 
 ## You can also look at the correlation for all samples combined
 plot_correlation_bootstrap(contri_boots, per_sample = FALSE)
-
 }

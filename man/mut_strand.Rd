@@ -10,7 +10,7 @@ mut_strand(vcf, ranges, mode = "transcription")
 \item{vcf}{GRanges containing the VCF object}
 
 \item{ranges}{GRanges object with the genomic ranges of:
-1. (transcription mode) the gene bodies with strand (+/-) information, or 
+1. (transcription mode) the gene bodies with strand (+/-) information, or
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
@@ -39,18 +39,18 @@ since the gene definitions report the coding or sense strand, which is
 untranscribed.
 
 No strand information "-" is returned for base substitutions outside gene
-bodies, or base substitutions that overlap with more than one gene body on 
+bodies, or base substitutions that overlap with more than one gene body on
 the same strand.
 
 For replication mode:
 Replication directions of genomic ranges should be defined in GRanges object.
-The GRanges object should have a "strand_info" metadata column, 
-which contains only two different annotations, e.g. "left" and "right", or 
-"leading" and "lagging". The genomic ranges cannot overlap, to allow only one 
+The GRanges object should have a "strand_info" metadata column,
+which contains only two different annotations, e.g. "left" and "right", or
+"leading" and "lagging". The genomic ranges cannot overlap, to allow only one
 annotation per location.
 
 For each base substitution it is determined on which strand it is located.
-No strand information "-" is returned for base substitutions in unannotated 
+No strand information "-" is returned for base substitutions in unannotated
 genomic regions.
 
 With the package we provide an example dataset, see example code.
@@ -60,7 +60,8 @@ With the package we provide an example dataset, see example code.
 ## a known genes dataset.  See the 'read_vcfs_as_granges()' example
 ## for how to load the VCF samples.
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## For transcription strand:
 ## You can obtain the known genes from the UCSC hg19 dataset using
@@ -75,18 +76,22 @@ mut_strand(vcfs[[1]], genes_hg19, mode = "transcription")
 ## For replication strand:
 ## Read example bed file with replication direction annotation
 ## Read replistrand data
-repli_file = system.file("extdata/ReplicationDirectionRegions.bed", 
-                          package = "MutationalPatterns")
-repli_strand = read.table(repli_file, header = TRUE)
-repli_strand_granges = GRanges(seqnames = repli_strand$Chr, 
-                               ranges = IRanges(start = repli_strand$Start + 1, 
-                               end = repli_strand$Stop), 
-                               strand_info = repli_strand$Class)
+repli_file <- system.file("extdata/ReplicationDirectionRegions.bed",
+  package = "MutationalPatterns"
+)
+repli_strand <- read.table(repli_file, header = TRUE)
+repli_strand_granges <- GRanges(
+  seqnames = repli_strand$Chr,
+  ranges = IRanges(
+    start = repli_strand$Start + 1,
+    end = repli_strand$Stop
+  ),
+  strand_info = repli_strand$Class
+)
 ## UCSC seqlevelsstyle
-seqlevelsStyle(repli_strand_granges) = "UCSC"
+seqlevelsStyle(repli_strand_granges) <- "UCSC"
 
 mut_strand(vcfs[[1]], repli_strand_granges, mode = "transcription")
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

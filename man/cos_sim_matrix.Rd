@@ -15,7 +15,7 @@ cos_sim_matrix(mut_matrix1, mut_matrix2)
 Matrix with pairwise cosine similarities (dimensions: n mutational profiles X m mutational profiles)
 }
 \description{
-Computes all pairwise cosine similarities between the mutational profiles provided in the two mutation count matrices. 
+Computes all pairwise cosine similarities between the mutational profiles provided in the two mutation count matrices.
 The cosine similarity is a value between 0 (distinct) and 1 (identical) and indicates how much two vectors are alike.
 }
 \examples{
@@ -23,18 +23,20 @@ The cosine similarity is a value between 0 (distinct) and 1 (identical) and indi
 # https://cancer.sanger.ac.uk/cosmic/signature
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                     package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                   package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
+#
 
 ## Calculate the cosine similarity between each COSMIC signature and each 96 mutational profile
 cos_sim_matrix(mut_mat, signatures)
-
 }
 \seealso{
 \code{\link{mut_matrix}},

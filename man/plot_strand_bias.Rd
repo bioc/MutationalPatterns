@@ -12,7 +12,7 @@ plot_strand_bias(strand_bias, colors = NA, sig_type = c("fdr", "p"))
 \item{colors}{Optional color vector with 6 values for plotting}
 
 \item{sig_type}{The type of significance to be used. Possible values:
-* 'fdr' False discovery rate. 
+* 'fdr' False discovery rate.
 A type of multiple testing correction.;
 * 'p' for regular p values.}
 }
@@ -26,25 +26,29 @@ Plot strand bias per base substitution type per group
 ## See the 'mut_matrix_stranded()' example for how we obtained the
 ## following mutation matrix.
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
-tissue <- c("colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver")
+tissue <- c(
+  "colon", "colon", "colon",
+  "intestine", "intestine", "intestine",
+  "liver", "liver", "liver"
+)
 
 ## Perform the strand bias test.
-strand_counts = strand_occurrences(mut_mat_s, by=tissue)
-strand_bias = strand_bias_test(strand_counts)
+strand_counts <- strand_occurrences(mut_mat_s, by = tissue)
+strand_bias <- strand_bias_test(strand_counts)
 
 ## Plot the strand bias.
 plot_strand_bias(strand_bias)
 
 ## Use multiple (max 3) significance cutoffs.
 ## This will vary the number of significance stars.
-strand_bias_multistars = strand_bias_test(strand_counts,
-                                         p_cutoffs = c(0.05, 0.01, 0.005), 
-                                         fdr_cutoffs = c(0.1, 0.05, 0.01))
+strand_bias_multistars <- strand_bias_test(strand_counts,
+  p_cutoffs = c(0.05, 0.01, 0.005),
+  fdr_cutoffs = c(0.1, 0.05, 0.01)
+)
 plot_strand_bias(strand_bias_multistars)
 }
 \seealso{

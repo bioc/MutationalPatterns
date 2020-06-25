@@ -22,15 +22,18 @@ Variant that are not in any of the provided region are put in a list of 'other'.
 }
 \examples{
 
-## Read in some existing genomic regions. 
+## Read in some existing genomic regions.
 ## See the 'genomic_distribution()' example for how we obtained the
 ## following data:
 CTCF_g <- readRDS(system.file("states/CTCF_g_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 promoter_g <- readRDS(system.file("states/promoter_g_data.rds",
-                        package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Combine the regions into a single GRangesList
 regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
@@ -41,11 +44,10 @@ names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
-                
+  package = "MutationalPatterns"
+))
+
 split_muts_region(grl, regions)
-
-
 }
 \seealso{
 Other genomic_regions: 

@@ -24,7 +24,6 @@ This function performs lower-tail binomial test for depletion and
 upper-tail test for enrichment
 }
 \examples{
-binomial_test (0.5, 1200, 543)
-binomial_test (0.2, 800, 150)
-
+binomial_test(0.5, 1200, 543)
+binomial_test(0.2, 800, 150)
 }

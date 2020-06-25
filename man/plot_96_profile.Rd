@@ -25,26 +25,27 @@ Plot relative contribution of 96 trinucleotides
 ## See the 'mut_matrix()' example for how we obtained the
 ## mutation matrix information:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Plot the 96-profile of three samples
-plot_96_profile(mut_mat[,c(1,4,7)])
+plot_96_profile(mut_mat[, c(1, 4, 7)])
 
 ## Plot a condensed profile
-plot_96_profile(mut_mat[,c(1,4,7)], condensed = TRUE)
+plot_96_profile(mut_mat[, c(1, 4, 7)], condensed = TRUE)
 
 ## It's also possible to plot signatures, for example signatures
 ## generated with NMF
 ## See 'extract_signatures()' on how we obtained these signatures.
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Optionally, provide signature names
 colnames(nmf_res$signatures) <- c("Signature A", "Signature B")
 
 ## Generate the plot
 plot_96_profile(nmf_res$signatures)
-
 }
 \seealso{
 \code{\link{mut_matrix}}

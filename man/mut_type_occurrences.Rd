@@ -24,15 +24,15 @@ Count the occurrences of each base substitution type
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Load a reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Get the type occurrences for all VCF objects.
-type_occurrences = mut_type_occurrences(vcfs, ref_genome)
-
+type_occurrences <- mut_type_occurrences(vcfs, ref_genome)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

@@ -28,21 +28,22 @@ The result can be plotted with plot_long_profile, but could also be used for NMF
 ## See the 'split_muts_region()' and 'mut_matrix()' examples for how we obtained the
 ## mutation matrix information:
 mut_mat_split_region <- readRDS(system.file("states/mut_mat_data.rds",
-                                package="MutationalPatterns"))
-                                
-long_mut_mat = lengthen_mut_matrix(mut_mat_split_region)
+  package = "MutationalPatterns"
+))
+
+long_mut_mat <- lengthen_mut_matrix(mut_mat_split_region)
 
 
 ## This also works on indels:
 ## See the 'split_muts_region()' and 'count_indels_context()' examples for how we
 ## obtained the indel counts:
 indel_counts_split <- readRDS(system.file("states/blood_indels_counts_split_region.rds",
-                                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
 ## Lengthen the matrix
 lengthen_mut_matrix(indel_counts_split)
-
 }
 \seealso{
 Other genomic_regions: 

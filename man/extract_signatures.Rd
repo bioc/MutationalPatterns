@@ -23,7 +23,7 @@ A lower number will be faster, but result in less accurate results.}
              Possible values:
              * 'regular'
              * 'variational_bayes'
-The 'regular' method comes from the NMF package. 
+The 'regular' method comes from the NMF package.
 The 'variational_bayes' method comes from the ccfindR package.
 This method uses bayesian inference, which makes it easier to determine the
 mathmatically optimal number of signatures.}
@@ -38,14 +38,14 @@ those signatures to the spectra of the samples/vcf files.
 \examples{
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## This function is computationally intensive.
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
 
 ## It's also possible to use a variational Bayes method.
 # nmf_res <- extract_signatures(mut_mat, rank = 2, nmf_type = "variational_bayes")
-
 }
 \seealso{
 \code{\link{mut_matrix}}

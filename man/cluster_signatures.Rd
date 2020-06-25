@@ -26,21 +26,22 @@ Hierarchical clustering of signatures based on cosine similarity
 # https://cancer.sanger.ac.uk/cosmic/signature
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                     package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
 ## Hierarchically cluster the cancer signatures based on cosine similarity
-hclust_signatures = cluster_signatures(signatures)
+hclust_signatures <- cluster_signatures(signatures)
 
 ## Plot dendrogram
 plot(hclust_signatures)
-
 }
 \seealso{
 \code{\link{plot_contribution_heatmap}}

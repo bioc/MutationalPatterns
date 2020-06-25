@@ -25,24 +25,26 @@ of mutations and the relative contribution within a group is returned.
 ## See the 'mut_matrix_stranded()' example for how we obtained the
 ## following mutation matrix.
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Load a reference genome.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
-tissue <- c("colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver")
+tissue <- c(
+  "colon", "colon", "colon",
+  "intestine", "intestine", "intestine",
+  "liver", "liver", "liver"
+)
 
-strand_counts = strand_occurrences(mut_mat_s, by=tissue)
+strand_counts <- strand_occurrences(mut_mat_s, by = tissue)
 
 ## Plot the strand in relative mode.
-strand_plot = plot_strand(strand_counts)
+strand_plot <- plot_strand(strand_counts)
 
 ## Or absolute mode.
-strand_plot = plot_strand(strand_counts, mode = "absolute")
-
+strand_plot <- plot_strand(strand_counts, mode = "absolute")
 }
 \seealso{
 \code{\link{mut_matrix_stranded}},

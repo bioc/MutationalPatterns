@@ -27,7 +27,8 @@ enrichment depletion test.
 ## See the 'genomic_distribution()' example for how we obtained the
 ## following data:
 distr <- readRDS(system.file("states/distr_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 
@@ -38,14 +39,18 @@ distr_test <- enrichment_depletion_test(distr, by = tissue)
 distr_single_sample <- enrichment_depletion_test(distr)
 
 ## Use different significance cutoffs for the pvalue and fdr
-distr_strict <- enrichment_depletion_test(distr, by = tissue, 
-                                         p_cutoffs = 0.01, fdr_cutoffs = 0.05)
-                                         
+distr_strict <- enrichment_depletion_test(distr,
+  by = tissue,
+  p_cutoffs = 0.01, fdr_cutoffs = 0.05
+)
+
 ## Use multiple (max 3) significance cutoffs.
 ## This will vary the number of significance stars.
-distr_multistars <- enrichment_depletion_test(distr, by = tissue, 
-                                         p_cutoffs = c(0.05, 0.01, 0.005), 
-                                         fdr_cutoffs = c(0.1, 0.05, 0.01))
+distr_multistars <- enrichment_depletion_test(distr,
+  by = tissue,
+  p_cutoffs = c(0.05, 0.01, 0.005),
+  fdr_cutoffs = c(0.1, 0.05, 0.01)
+)
 }
 \seealso{
 \code{\link{genomic_distribution}},

@@ -27,39 +27,42 @@ constraints problem.
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## You can download the signatures from the COSMIC website:
 # https://cancer.sanger.ac.uk/cosmic/signatures
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                        package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## Remove unnecessary columns
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 
 ## Perform the fitting
 fit_res <- fit_to_signatures(mut_mat, signatures)
 
-## This will also work for indels and dbs. 
+## This will also work for indels and dbs.
 ## An example is given for indels
 
 ## Get The indel counts
 ## See 'count_indel_contexts()' for more info on how to do this.
 indel_counts <- readRDS(system.file("states/blood_indel_counts.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
-#Get indel signatures
+# Get indel signatures
 filename <- system.file("extdata/indel_signatures_probabilities.txt",
-                        package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1)])
+signatures <- as.matrix(signatures[, -c(1)])
 
 fit_to_signatures(indel_counts, signatures)
-
 }
 \seealso{
 \code{\link{mut_matrix}},\code{\link{fit_to_signatures_strict}},\code{\link{fit_to_signatures_bootstrapped}}

@@ -26,8 +26,8 @@ Result from \code{\link{cos_sim_matrix}}}
 
 \item{cluster_cols}{Hierarchically cluster cols based on eucledian distance. Default = FALSE.}
 
-\item{method}{The agglomeration method to be used for hierarchical clustering. This should be one of 
-"ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC) 
+\item{method}{The agglomeration method to be used for hierarchical clustering. This should be one of
+"ward.D", "ward.D2", "single", "complete", "average" (= UPGMA), "mcquitty" (= WPGMA), "median" (= WPGMC)
 or "centroid" (= UPGMC). Default = "complete".}
 
 \item{plot_values}{Plot cosine similarity values in heatmap. Default = FALSE.}
@@ -42,42 +42,45 @@ Plot pairwise cosine similarities in a heatmap.
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 # You can download the signatures from the COSMIC website:
 # https://cancer.sanger.ac.uk/cosmic/signature
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                     package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures = as.matrix(signatures[,-c(1,2)])
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 ## Calculate the cosine similarity between each signature and each 96 mutational profile
-cos_matrix = cos_sim_matrix(mut_mat, signatures)
+cos_matrix <- cos_sim_matrix(mut_mat, signatures)
 
 
-## Plot the cosine similarity between each signature and each sample with hierarchical 
+## Plot the cosine similarity between each signature and each sample with hierarchical
 ## clustering of samples and signatures.
 plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
 
 ## In the above example, clustering is performed on the similarities of the samples with
 ## the signatures. It's also possible to cluster the signatures and samples on their (96) profile.
-hclust_cosmic = cluster_signatures(signatures, method = "average")
-cosmic_order = colnames(signatures)[hclust_cosmic$order]
-hclust_samples = cluster_signatures(mut_mat, method = "average")
-sample_order = colnames(mut_mat)[hclust_samples$order]
+hclust_cosmic <- cluster_signatures(signatures, method = "average")
+cosmic_order <- colnames(signatures)[hclust_cosmic$order]
+hclust_samples <- cluster_signatures(mut_mat, method = "average")
+sample_order <- colnames(mut_mat)[hclust_samples$order]
 ## Plot the cosine heatmap using this given signature order.
-plot_cosine_heatmap(cos_matrix, cluster_rows = FALSE, cluster_cols = FALSE, 
-row_order = sample_order, col_order = cosmic_order)
+plot_cosine_heatmap(cos_matrix,
+  cluster_rows = FALSE, cluster_cols = FALSE,
+  row_order = sample_order, col_order = cosmic_order
+)
 
 ## You can also plot the similarity of samples with eachother
-cos_matrix = cos_sim_matrix(mut_mat, mut_mat)
+cos_matrix <- cos_sim_matrix(mut_mat, mut_mat)
 plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE)
 
 
 ## It's also possible to add the actual values in the heatmap.
 plot_cosine_heatmap(cos_matrix, cluster_rows = TRUE, cluster_cols = TRUE, plot_values = TRUE)
-
 }
 \seealso{
 \code{\link{mut_matrix}},

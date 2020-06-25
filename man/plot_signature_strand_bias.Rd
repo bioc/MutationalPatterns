@@ -19,24 +19,25 @@ Plot strand bias per mutation type for each signature.
 ## See the 'mut_matrix()' example for how we obtained the following
 ## mutation matrix.
 mut_mat_s <- readRDS(system.file("states/mut_mat_s_data.rds",
-                                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Extracting signatures can be computationally intensive, so
 ## we use pre-computed data generated with the following command:
 # nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
 
 nmf_res_strand <- readRDS(system.file("states/nmf_res_strand_data.rds",
-                                        package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Provide column names for the plot.
-colnames(nmf_res_strand$signatures) = c("Signature A", "Signature B")
+colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
 
 ## Creat figure
-plot_signature_strand_bias(nmf_res_strand$signatures) 
+plot_signature_strand_bias(nmf_res_strand$signatures)
 
 ## You can also plot the bias of samples
-plot_signature_strand_bias(mut_mat_s[,c(1,2)])
-
+plot_signature_strand_bias(mut_mat_s[, c(1, 2)])
 }
 \seealso{
 \code{link{extract_signatures}},

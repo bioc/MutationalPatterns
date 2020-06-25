@@ -2,11 +2,7 @@
 % Please edit documentation in R/mut_96_occurrences.R
 \name{mut_96_occurrences}
 \alias{mut_96_occurrences}
-\title{Count 96 trinucleotide mutation occurrences
- 
- @details 
- This function is called by mut_matrix. It calculates the 96 trinucleotide context for all variants
- and then splits these per GRanges (samples). It then calculates how often each 96 trinucleotide context occures.}
+\title{Count 96 trinucleotide mutation occurrences}
 \usage{
 mut_96_occurrences(type_context, gr_sizes)
 }
@@ -19,9 +15,7 @@ mut_96_occurrences(type_context, gr_sizes)
 Mutation matrix with 96 trinucleotide mutation occurrences
 }
 \description{
-Count 96 trinucleotide mutation occurrences
- 
- @details 
+@details
  This function is called by mut_matrix. It calculates the 96 trinucleotide context for all variants
  and then splits these per GRanges (samples). It then calculates how often each 96 trinucleotide context occures.
 }

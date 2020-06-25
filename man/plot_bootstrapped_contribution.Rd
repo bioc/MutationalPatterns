@@ -30,7 +30,8 @@ The graph can be plotted as either a jitter plot or as a boxplot.
 ## Get the bootstrapped signature contributions
 ## See 'count_indel_contexts()' for more info on how to do this.
 contri_boots <- readRDS(system.file("states/bootstrapped_snv_refit.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Plot bootstrapped contribution
 plot_bootstrapped_contribution(contri_boots)
@@ -40,5 +41,4 @@ plot_bootstrapped_contribution(contri_boots, mode = "relative")
 
 ## Plot bootstrapped contribution with a boxplot
 plot_bootstrapped_contribution(contri_boots, plot_type = "boxplot")
-
 }

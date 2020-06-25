@@ -32,28 +32,30 @@ original, the reconstructed profile is considered very good.
 
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
-                    package="MutationalPatterns"))
-                    
+  package = "MutationalPatterns"
+))
+
 ## Extracting signatures can be computationally intensive, so
 ## we use pre-computed data generated with the following command:
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
 
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
-                    package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Create figure
 plot_original_vs_reconstructed(mut_mat, nmf_res$reconstructed)
 
 ## You can also use the results of signature refitting.
 ## Here we load some data as an example
-fit_res = readRDS(system.file("states/snv_refit.rds", 
-                    package="MutationalPatterns"))
+fit_res <- readRDS(system.file("states/snv_refit.rds",
+  package = "MutationalPatterns"
+))
 plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed)
 
 ## You can also change the height of the horizontal line
 plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed, y_intercept = 0.90)
 
 ## It's also possible to change the limits of the y axis
-plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed, ylims = c(0,1))
-
+plot_original_vs_reconstructed(mut_mat, fit_res$reconstructed, ylims = c(0, 1))
 }

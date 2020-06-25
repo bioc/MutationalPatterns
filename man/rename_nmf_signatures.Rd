@@ -21,7 +21,7 @@ A nmf_res whith changed signature names
 \description{
 This function renames signatures identified with NMF based on previously defined signatures.
 If a NMF signature has a cosine similarity with a previously defined signature,
-that is higher than the cutoff, then this NMF signature will get the name 
+that is higher than the cutoff, then this NMF signature will get the name
 of the previously defined signature. If not the NMF signature will receive a letter based name.
 For example: SBSA.
 This only changes the names of signatures, not their actual values.
@@ -35,18 +35,20 @@ which can be usefull for interpretation.
 # nmf_res <- extract_signatures(mut_mat, rank = 2)
 
 nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
-                    package="MutationalPatterns"))
-                    
+  package = "MutationalPatterns"
+))
+
 ## You can download previously defined signatures from the COSMIC website:
 # https://cancer.sanger.ac.uk/cosmic/signatures
 
 ## We copied the file into our package for your convenience.
 filename <- system.file("extdata/snv_signatures_probabilities.txt",
-                        package="MutationalPatterns")
+  package = "MutationalPatterns"
+)
 signatures <- read.table(filename, sep = "\t", header = TRUE)
 
 ## Remove unnecessary columns
-signatures = as.matrix(signatures[,-c(1,2)])                
+signatures <- as.matrix(signatures[, -c(1, 2)])
 
 rename_nmf_signatures(nmf_res, signatures)
 
@@ -55,5 +57,4 @@ rename_nmf_signatures(nmf_res, signatures, cutoff = 0.95)
 
 ## You can also change the base_name of the signatures that end up with a letter name.
 rename_nmf_signatures(nmf_res, signatures, cutoff = 0.95, base_name = "Signature_")
-
 }

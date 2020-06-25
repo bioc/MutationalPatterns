@@ -40,36 +40,41 @@ sum of squares (RSS).
 ## Get the dbs counts
 ## See 'count_dbs_contexts()' for more info on how to do this.
 dbs_counts <- readRDS(system.file("states/blood_dbs_counts.rds",
-                package="MutationalPatterns"))
-                
+  package = "MutationalPatterns"
+))
+
 ## Get dbs refit info.
 ## See 'fit_to_signatures()' for more info on how to do this.
 fit_res <- readRDS(system.file("states/dbs_refit.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Compare the reconstructed profile of sample 1 with the original profile
 ## The same thing could be done with a reconstructed profile from NMF.
-plot_compare_dbs(dbs_counts[,1], fit_res$reconstructed[,1])
+plot_compare_dbs(dbs_counts[, 1], fit_res$reconstructed[, 1])
 
 ## You could also compare regular mutation profiles with eachother.
-plot_compare_dbs(dbs_counts[,1],
-                 dbs_counts[,2])
+plot_compare_dbs(
+  dbs_counts[, 1],
+  dbs_counts[, 2]
+)
 
 ## Or change the names of the profiles
-plot_compare_dbs(dbs_counts[,1],
-                 dbs_counts[,2],
-                 profile_names = c("Original", "Reconstructed"))
+plot_compare_dbs(dbs_counts[, 1],
+  dbs_counts[, 2],
+  profile_names = c("Original", "Reconstructed")
+)
 
 ## You can also change the y limits.
 ## This can be done separately for the profiles and the different facets.
-plot_compare_dbs(dbs_counts[,1],
-                 dbs_counts[,2],
-                 profile_ymax = 0.3,
-                 diff_ylim = c(-0.03, 0.03))
-
+plot_compare_dbs(dbs_counts[, 1],
+  dbs_counts[, 2],
+  profile_ymax = 0.3,
+  diff_ylim = c(-0.03, 0.03)
+)
 }
 \seealso{
-\code{\link{plot_compare_profiles}}, 
+\code{\link{plot_compare_profiles}},
 \code{\link{plot_compare_indels}},
 \code{\link{plot_compare_mbs}}
 

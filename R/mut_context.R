@@ -10,31 +10,32 @@
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' ## Load the corresponding reference genome.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
 #'
 #' mut_context <- mut_context(vcfs[[1]], ref_genome)
-#'
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
 #' @export
 
-mut_context = function(vcf, ref_genome) 
-{
-    #Check that the seqnames of the gr and ref_genome match
-    check_chroms(vcf, ref_genome)
+mut_context <- function(vcf, ref_genome) {
+  # Check that the seqnames of the gr and ref_genome match
+  check_chroms(vcf, ref_genome)
 
-    ranges = GenomicRanges::resize(vcf, 3, fix = "center")
+  ranges <- GenomicRanges::resize(vcf, 3, fix = "center")
 
-    vcf_context = as.character(Biostrings::getSeq(BSgenome::getBSgenome(ref_genome),
-                                        seqnames(vcf),
-                                        start(vcf) - 1,
-                                        end(vcf) + 1))
-    return(vcf_context)
+  vcf_context <- as.character(Biostrings::getSeq(
+    BSgenome::getBSgenome(ref_genome),
+    seqnames(vcf),
+    start(vcf) - 1,
+    end(vcf) + 1
+  ))
+  return(vcf_context)
 }
 
 ##
@@ -53,22 +54,25 @@ mut_context = function(vcf, ref_genome)
 #' ## See the 'read_vcfs_as_granges()' example for how we obtained the
 #' ## following data:
 #' vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-#'                 package="MutationalPatterns"))
+#'   package = "MutationalPatterns"
+#' ))
 #'
 #' ## Load the corresponding reference genome.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
 #'
 #' mut_context <- mut_context(vcfs[[1]], ref_genome)
-#'
 #' @seealso
 #' \code{\link{mut_context}}
 #'
 #' @export
 
-mutation_context <- function(vcf, ref_genome)
-{
-  .Defunct("mut_context", package="MutationalPatterns",
-           msg=paste("This function has been renamed. Use",
-                     "'mut_context' instead."))
+mutation_context <- function(vcf, ref_genome) {
+  .Defunct("mut_context",
+    package = "MutationalPatterns",
+    msg = paste(
+      "This function has been renamed. Use",
+      "'mut_context' instead."
+    )
+  )
 }

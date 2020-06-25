@@ -50,23 +50,25 @@ hotspots.
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 # Specify chromosomes of interest.
-chromosomes = names(genome(vcfs[[1]])[1:22])
+chromosomes <- names(genome(vcfs[[1]])[1:22])
 
 ## Do a rainfall plot for all chromosomes:
 plot_rainfall(vcfs[[1]],
-                title = names(vcfs[1]),
-                chromosomes = chromosomes,
-                cex = 1)
+  title = names(vcfs[1]),
+  chromosomes = chromosomes,
+  cex = 1
+)
 
 ## Or for a single chromosome (chromosome 1):
 plot_rainfall(vcfs[[1]],
-                title = names(vcfs[1]),
-                chromosomes = chromosomes[1],
-                cex = 2)
-
+  title = names(vcfs[1]),
+  chromosomes = chromosomes[1],
+  cex = 2
+)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}

@@ -23,12 +23,12 @@ calculate_lesion_segregation(
 * 'walf-wolfowitz' Statistical test that checks if the strands are randomly distibuted.;
 * 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;}
 
-\item{split_by_type}{Boolean describing whether the lesion 
+\item{split_by_type}{Boolean describing whether the lesion
 segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)}
 
 \item{ref_genome}{A string matching the name of a BSgenome library
 corresponding to the reference genome.
-Only needed when split_by_type is TRUE with the binomial test 
+Only needed when split_by_type is TRUE with the binomial test
 or when using the rl20 test.}
 
 \item{chromosomes}{The chromosomes that are used. Only needed when using the rl20 test.}
@@ -45,8 +45,8 @@ It's possible to calculate the lesion segregation separately per 96 substitution
 when using the binomial test. The results are then automatically added back up together.
 
 When using the rl20 test, this function first calculates the strand runs per chromosome
-and combines them. It then calculates the smallest set of runs, which together encompass 
-at least 20% of the mutations. (This set thus contains the largest runs). 
+and combines them. It then calculates the smallest set of runs, which together encompass
+at least 20% of the mutations. (This set thus contains the largest runs).
 The size of the smallest run in this set is the rl20. The genomic span of
 the runs in this set is also calculated.
 }
@@ -55,38 +55,42 @@ the runs in this set is also calculated.
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 ## Set the sample names
 sample_names <- c(
-   "colon1", "colon2", "colon3",
-   "intestine1", "intestine2", "intestine3",
-   "liver1", "liver2", "liver3")
-                                 
+  "colon1", "colon2", "colon3",
+  "intestine1", "intestine2", "intestine3",
+  "liver1", "liver2", "liver3"
+)
+
 ## Load the corresponding reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Calculate lesion segregation
-lesion_segretation = calculate_lesion_segregation(grl, sample_names)
+lesion_segretation <- calculate_lesion_segregation(grl, sample_names)
 
 ## Calculate lesion segregation per 96 base type
-lesion_segretation_by_type = calculate_lesion_segregation(grl, sample_names, 
-split_by_type = TRUE, ref_genome = ref_genome)
+lesion_segretation_by_type <- calculate_lesion_segregation(grl, sample_names,
+  split_by_type = TRUE, ref_genome = ref_genome
+)
 
 ## Calculate lesion segregation using the walf-wolfowitz test.
-lesion_segregation_walf = calculate_lesion_segregation(grl, 
-                                                       sample_names, 
-                                                       test = "walf-wolfowitz")
-                                                       
+lesion_segregation_walf <- calculate_lesion_segregation(grl,
+  sample_names,
+  test = "walf-wolfowitz"
+)
+
 ## Calculate lesion segregation using the rl20.
-chromosomes = paste0("chr", c(1:22, "X"))
-lesion_segregation_rl20 = calculate_lesion_segregation(grl, 
-                                                       sample_names, 
-                                                       test = "rl20",
-                                                       ref_genome = ref_genome,
-                                                       chromosomes = chromosomes)
-                                                       
+chromosomes <- paste0("chr", c(1:22, "X"))
+lesion_segregation_rl20 <- calculate_lesion_segregation(grl,
+  sample_names,
+  test = "rl20",
+  ref_genome = ref_genome,
+  chromosomes = chromosomes
+)
 }
 \seealso{
 \code{\link{plot_lesion_segregation}}

@@ -26,7 +26,7 @@ divided by the total number of variants in that sample;
 divided by the total number of variants in that sample and genomic region (Default);
 * 'absolut' The absolute number of mutations is shown;}
 
-\item{indv_points}{Whether to plot the individual samples 
+\item{indv_points}{Whether to plot the individual samples
 as points, default = FALSE}
 
 \item{error_bars}{The type of error bars to plot.
@@ -55,16 +55,17 @@ The by, colors and legend argument work the same as in'plot_spectrum()'.
 ## See the 'split_muts_region()' example for how we obtained the
 ## following data:
 grl <- readRDS(system.file("states/grl_split_region.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
- ## Load a reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+## Load a reference genome.
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 
 ## Get the type occurrences for all VCF objects.
-type_occurrences = mut_type_occurrences(grl, ref_genome)
+type_occurrences <- mut_type_occurrences(grl, ref_genome)
 
 ## Plot the relative point mutation spectrum per genomic region
 plot_spectrum_region(type_occurrences)
@@ -84,21 +85,22 @@ plot_spectrum_region(type_occurrences, error_bars = "stdev")
 
 ## Plot the relative point mutation spectrum per sample type and per genomic region
 ## Determine tissue names
-tissue <- c("colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver")
+tissue <- c(
+  "colon", "colon", "colon",
+  "intestine", "intestine", "intestine",
+  "liver", "liver", "liver"
+)
 plot_spectrum_region(type_occurrences, by = tissue)
 
 ## Plot the relative point mutation spectrum per individual sample and per genomic region
 ## Determine sample names
 sample_names <- c(
-"colon1", "colon2", "colon3",
-"intestine1", "intestine2", "intestine3",
-"liver1", "liver2", "liver3")
+  "colon1", "colon2", "colon3",
+  "intestine1", "intestine2", "intestine3",
+  "liver1", "liver2", "liver3"
+)
 
 plot_spectrum_region(type_occurrences, by = sample_names, error_bars = "none")
-
-
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

@@ -22,7 +22,7 @@ sites, default = FALSE}
 
 \item{by}{Optional grouping variable}
 
-\item{indv_points}{Whether to plot the individual samples 
+\item{indv_points}{Whether to plot the individual samples
 as points, default = FALSE}
 
 \item{error_bars}{The type of error bars to plot.
@@ -45,15 +45,16 @@ Plot point mutation spectrum
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
 ## following data:
 vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
-                package="MutationalPatterns"))
+  package = "MutationalPatterns"
+))
 
 
 ## Load a reference genome.
-ref_genome = "BSgenome.Hsapiens.UCSC.hg19"
+ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
 ## Get the type occurrences for all VCF objects.
-type_occurrences = mut_type_occurrences(vcfs, ref_genome)
+type_occurrences <- mut_type_occurrences(vcfs, ref_genome)
 
 ## Plot the point mutation spectrum over all samples
 plot_spectrum(type_occurrences)
@@ -68,9 +69,11 @@ plot_spectrum(type_occurrences, CT = TRUE, indv_points = TRUE)
 plot_spectrum(type_occurrences, error_bars = "stdev")
 
 ## Or plot spectrum per tissue
-tissue <- c("colon", "colon", "colon",
-            "intestine", "intestine", "intestine",
-            "liver", "liver", "liver")
+tissue <- c(
+  "colon", "colon", "colon",
+  "intestine", "intestine", "intestine",
+  "liver", "liver", "liver"
+)
 
 plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 
@@ -78,15 +81,17 @@ plot_spectrum(type_occurrences, by = tissue, CT = TRUE)
 plot_spectrum(type_occurrences, by = names(vcfs), CT = TRUE, error_bars = "none")
 
 ## You can also set custom colors.
-my_colors = c("pink", "orange", "blue", "lightblue",
-                "green", "red", "purple")
+my_colors <- c(
+  "pink", "orange", "blue", "lightblue",
+  "green", "red", "purple"
+)
 
 ## And use them in a plot.
 plot_spectrum(type_occurrences,
-                CT = TRUE,
-                legend = TRUE,
-                colors = my_colors)
-
+  CT = TRUE,
+  legend = TRUE,
+  colors = my_colors
+)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},
