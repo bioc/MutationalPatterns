@@ -11,7 +11,7 @@ grl_dbs = get_mut_type(grl, "dbs")
 saveRDS(grl_dbs, "inst/states/blood_grl_dbs.rds")
 
 #Set context
-grl_dbs_context = set_dbs_context(grl_dbs)
+grl_dbs_context = get_dbs_context(grl_dbs)
 saveRDS(grl_dbs_context, "inst/states/blood_grl_dbs_context.rds")
 
 #Count contexts

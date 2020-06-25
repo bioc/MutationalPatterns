@@ -1,7 +1,7 @@
-#' Set DBS context
+#' Get DBS context
 #' 
-#' Set the DBS COSMIC context on an GRanges/GRangesList object.
-#' It applies the get_indel_context_gr function to each gr in the input,
+#' Get the DBS COSMIC context on an GRanges/GRangesList object.
+#' It applies the get_dbs_context_gr function to each gr in the input,
 #' which works by changing the REF and ALT columns of the GRanges into the COSMIC types.
 #'
 #' @param grl GRanges/GRangesList
@@ -19,19 +19,19 @@
 #'                 package="MutationalPatterns"))
 #'                 
 #' ##Set context dbs
-#' set_dbs_context(dbs_grl)
+#' get_dbs_context(dbs_grl)
 #' 
 #' @importFrom magrittr %>% 
 #' @export
 #' 
-set_dbs_context = function(grl){
+get_dbs_context = function(grl){
     if (inherits(grl, "CompressedGRangesList")){
         gr_l = as.list(grl)
-        grl = purrr::map(gr_l, set_dbs_context_gr) %>% 
+        grl = purrr::map(gr_l, get_dbs_context_gr) %>% 
             GRangesList()
         return(grl)
     } else if (inherits(grl, "GRanges")){
-        gr = set_dbs_context_gr(grl)
+        gr = get_dbs_context_gr(grl)
         return(gr)
     } else{
         not_gr_or_grl(grl)
@@ -39,9 +39,9 @@ set_dbs_context = function(grl){
 }
 
 
-#' Set DBS context on a GRanges
+#' Get DBS context on a GRanges
 #' 
-#' Set the DBS COSMIC context on an GRanges object.
+#' Get the DBS COSMIC context on an GRanges object.
 #' This is done by changing the REF and ALT columns of the GRanges into the COSMIC types.
 #'
 #' @param gr GRanges
@@ -52,7 +52,7 @@ set_dbs_context = function(grl){
 #' 
 #' @importFrom magrittr %>% 
 #' 
-set_dbs_context_gr = function(gr){
+get_dbs_context_gr = function(gr){
     
     #Check that no indels are present.
     check_no_indels(gr)

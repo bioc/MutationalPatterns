@@ -75,8 +75,8 @@ plot_compare_dbs(dbs_counts[,1],
 
 Other DBS: 
 \code{\link{count_dbs_contexts}()},
+\code{\link{get_dbs_context}()},
 \code{\link{plot_dbs_contexts}()},
-\code{\link{plot_main_dbs_contexts}()},
-\code{\link{set_dbs_context}()}
+\code{\link{plot_main_dbs_contexts}()}
 }
 \concept{DBS}

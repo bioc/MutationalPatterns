@@ -5,7 +5,7 @@
 #' This function applies the count_dbs_contexts_gr function to each gr in its input.
 #' It then combines the results in a single tibble and returns this.
 #' 
-#' @param grl GRanges or GRangesList object containing DBS mutations in which the context was added with set_dbs_context.
+#' @param grl GRanges or GRangesList object containing DBS mutations in which the context was added with get_dbs_context.
 #' 
 #' @return A tibble containing the number of DBS per COSMIC context per gr.
 #' 
@@ -19,7 +19,7 @@
 #' count_dbs_contexts(grl_dbs_context)
 #' 
 #' @family DBS
-#' @seealso \code{\link{set_dbs_context}}
+#' @seealso \code{\link{get_dbs_context}}
 #' 
 #' @export
 count_dbs_contexts = function(grl){
@@ -71,7 +71,7 @@ count_dbs_contexts = function(grl){
 #' Counts the number of DBS per COSMIC context from a GRanges object containing DBS mutations.
 #' The function is called by count_dbs_contexts
 #' 
-#' @param gr GRanges object containing DBS mutations in which the context was added with set_dbs_context.
+#' @param gr GRanges object containing DBS mutations in which the context was added with 'get_dbs_context()'.
 #' @param categories A tibble containing all possible dbs context categories
 #' 
 #' @return A single column tibble containing the number of dbs per COSMIC context.
