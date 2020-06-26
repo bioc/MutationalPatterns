@@ -4,7 +4,7 @@
 \alias{plot_mbs_contexts}
 \title{Plot the MBS contexts}
 \usage{
-plot_mbs_contexts(counts, same_y = T)
+plot_mbs_contexts(counts, same_y = TRUE)
 }
 \arguments{
 \item{counts}{A tibble containing the number of MBS per MBS length.}

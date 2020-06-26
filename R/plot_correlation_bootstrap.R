@@ -49,7 +49,7 @@ plot_correlation_bootstrap <- function(contri_boots, per_sample = TRUE) {
       # Get contributions from sample
       sample <- unique_samples[i]
       index <- sample == samples
-      contri_boots_sample <- contri_boots[index, , drop = F]
+      contri_boots_sample <- contri_boots[index, , drop = FALSE]
 
       # Create figure
       fig <- plot_correlation_bootstrap_sample(contri_boots_sample, sample)

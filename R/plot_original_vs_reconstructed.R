@@ -56,7 +56,7 @@ plot_original_vs_reconstructed <- function(mut_matrix, reconstructed, y_intercep
   plot <- ggplot(cos_sim, aes(y = cos_sim, x = factor(sample, levels = sample))) +
     geom_bar(stat = "identity", fill = "skyblue3") +
     geom_hline(aes(yintercept = y_intercept)) +
-    coord_cartesian(ylim = ylims, expand = F) +
+    coord_cartesian(ylim = ylims, expand = FALSE) +
     labs(y = "Cosine similarity\n original VS reconstructed", x = "") +
     theme_classic() +
     theme(

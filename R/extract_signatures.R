@@ -45,14 +45,14 @@ extract_signatures <- function(mut_matrix, rank, nrun = 200, nmf_type = c("regul
 
   # Make sure the rank_range is valid.
   if (!(rank > 0 & rank == round(rank))) {
-    stop("Rank should be a positive integer", call. = F)
+    stop("Rank should be a positive integer", call. = FALSE)
   }
 
   if (ncol(mut_matrix) < max(rank)) {
     stop(paste0(
       "The rank should be smaller than the number of ",
       "samples in the input matrix."
-    ), call. = F)
+    ), call. = FALSE)
   }
 
   if (nmf_type == "regular") {
@@ -67,7 +67,7 @@ extract_signatures <- function(mut_matrix, rank, nrun = 200, nmf_type = c("regul
       stop(paste0(
         "Package 'ccfindR' is needed for variational_bayes to work. ",
         "Please either install it or use the regular NMF."
-      ), call. = F)
+      ), call. = FALSE)
     }
     sc <- ccfindR::scNMFSet(count = mut_matrix)
     res <- ccfindR::vb_factorize(sc, ranks = rank, nrun = nrun, progress.bar = FALSE, verbose = 0)

@@ -60,14 +60,14 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
   # Remove signatures with zero contribution across samples
   fit_res <- fit_to_signatures(mut_matrix, signatures)
   sig_pres <- rowSums(fit_res$contribution) != 0
-  my_signatures_total <- signatures[, sig_pres, drop = F]
+  my_signatures_total <- signatures[, sig_pres, drop = FALSE]
   nsigs <- ncol(my_signatures_total)
 
   # perform signature selection per sample
   all_results <- vector("list", ncol(mut_matrix))
   for (i in seq(1, ncol(mut_matrix))) {
     my_signatures <- my_signatures_total
-    mut_mat_sample <- mut_matrix[, i, drop = F]
+    mut_mat_sample <- mut_matrix[, i, drop = FALSE]
 
     # Fit again
     fit_res <- fit_to_signatures(mut_mat_sample, my_signatures)
@@ -90,7 +90,7 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
       weakest_sig_index <- contri_order[1]
       weakest_sig <- colnames(my_signatures)[weakest_sig_index]
       removed_sigs[[j]] <- weakest_sig
-      signatures_sel <- my_signatures[, -weakest_sig_index, drop = F]
+      signatures_sel <- my_signatures[, -weakest_sig_index, drop = FALSE]
 
 
       # Fit with new signature selection
@@ -212,8 +212,12 @@ plot_sim_decay <- function(sims, removed_sigs, max_delta) {
 
   fig <- ggplot(data = tb, aes(x = Removed_signatures, y = Cosine_similarity, fill = col)) +
     geom_bar(stat = "identity") +
-    scale_fill_manual(limits = c("low_delta", "high_delta"), values = c("grey", "red"), guide = F) +
-    labs(x = "Removed signatures", y = paste0("Cosine similarity (max delta: ", max_delta, ")")) +
-    theme(axis.text.x = element_text(angle = 90, size = 12), text = element_text(size = 12))
+    scale_fill_manual(limits = c("low_delta", "high_delta"), 
+                      values = c("grey", "red"), 
+                      guide = FALSE) +
+    labs(x = "Removed signatures", 
+         y = paste0("Cosine similarity (max delta: ", max_delta, ")")) +
+    theme(axis.text.x = element_text(angle = 90, size = 12), 
+          text = element_text(size = 12))
   return(fig)
 }

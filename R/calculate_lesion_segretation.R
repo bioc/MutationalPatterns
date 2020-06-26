@@ -88,24 +88,24 @@ calculate_lesion_segregation <- function(grl,
   test <- match.arg(test)
   if (test != "binomial" & split_by_type) {
     stop("The 'split_by_type' argument can only be used with the binomial test",
-      call. = F
+      call. = FALSE
     )
   }
   if (length(grl) != length(sample_names)) {
-    stop("The grl and the sample_names should be equally long.", call. = F)
+    stop("The grl and the sample_names should be equally long.", call. = FALSE)
   }
 
   if (is_na(ref_genome)) {
     if (split_by_type) {
-      stop("The ref_genome needs to be set when split_by_type = TRUE", call. = F)
+      stop("The ref_genome needs to be set when split_by_type = TRUE", call. = FALSE)
     }
     if (test == "rl20") {
-      stop("The ref_genome needs to be set when test == rl20", call. = F)
+      stop("The ref_genome needs to be set when test == rl20", call. = FALSE)
     }
   }
 
   if (is_na(chromosomes) & test == "rl20") {
-    stop("The chromosomes need to be set when using test == rl20", call. = F)
+    stop("The chromosomes need to be set when using test == rl20", call. = FALSE)
   }
 
   # Perform lesion segregation on each GR

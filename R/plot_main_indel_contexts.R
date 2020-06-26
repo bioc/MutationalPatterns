@@ -33,7 +33,7 @@
 #' @export
 
 
-plot_main_indel_contexts <- function(counts, same_y = F) {
+plot_main_indel_contexts <- function(counts, same_y = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -43,7 +43,9 @@ plot_main_indel_contexts <- function(counts, same_y = F) {
   counts <- counts %>%
     as.data.frame() %>%
     tibble::rownames_to_column("muttype_total") %>%
-    tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>%
+    tidyr::separate(muttype_total, 
+                    c("muttype", "muttype_sub"), 
+                    sep = "_(?=[:digit:])") %>%
     dplyr::mutate(muttype = factor(muttype, levels = unique(muttype)))
 
   # Summarise per muttype and make data long

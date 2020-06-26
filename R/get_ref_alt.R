@@ -17,7 +17,7 @@ get_ref <- function(gr) {
   } else if ("Ref" %in% gr_cols) {
     ref <- gr$Ref
   } else {
-    stop("Some of your data is missing a REF column.", call. = F)
+    stop("Some of your data is missing a REF column.", call. = FALSE)
     ref <- Biostrings::DNAStringSet()
   }
   return(ref)
@@ -42,7 +42,7 @@ get_alt <- function(gr) {
   } else if ("Alt" %in% gr_cols) {
     alt <- gr$Alt
   } else {
-    stop("Some of your data is missing a ALT column.", call. = F)
+    stop("Some of your data is missing a ALT column.", call. = FALSE)
     alt <- Biostrings::DNAStringSetList()
   }
   return(alt)

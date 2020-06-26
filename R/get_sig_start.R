@@ -16,11 +16,13 @@ get_sig_star <- function(val, cutoffs) {
 
   # Validate cutoff argument
   if (length(cutoffs) > 3) {
-    stop(paste0("The length of the ", cutoffs_name, " argument can't be higher than 3."), call. = F)
+    stop(paste0("The length of the ", cutoffs_name, " argument can't be higher than 3."), 
+         call. = FALSE)
   }
 
-  if (!all.equal(cutoffs, sort(cutoffs, decreasing = T))) {
-    stop(paste0("The ", cutoffs_name, " argument should be in decreasing order."), call. = F)
+  if (!all.equal(cutoffs, sort(cutoffs, decreasing = TRUE))) {
+    stop(paste0("The ", cutoffs_name, " argument should be in decreasing order."), 
+         call. = FALSE)
   }
 
   # Add -Infs to cutoffs if the length is lower than 3.

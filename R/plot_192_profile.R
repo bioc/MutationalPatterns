@@ -53,7 +53,7 @@ plot_192_profile <- function(mut_matrix, colors = NA, ymax = 0.2, condensed = FA
     colors <- COLORS6
   }
   if (length(colors) != 6) {
-    stop("Provide colors vector with length 6", call. = F)
+    stop("Provide colors vector with length 6", call. = FALSE)
   }
 
   # Relative contribution

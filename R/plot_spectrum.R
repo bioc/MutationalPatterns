@@ -96,9 +96,9 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
 
   # Distinction between C>T at CpG or not
   if (CT == FALSE) {
-    type_occurrences <- type_occurrences[, 1:6]
+    type_occurrences <- type_occurrences[, seq_len(6)]
   } else {
-    type_occurrences <- type_occurrences[, c(1:2, 8, 7, 4:6)]
+    type_occurrences <- type_occurrences[, c(1, 2, 8, 7, 4, 5, 6)]
   }
 
   # If grouping variable not provided, set to "all"
@@ -139,7 +139,7 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
 
   # Define colors for plotting
   if (CT == FALSE) {
-    colors <- colors[c(1, 2, 3, 5:7)]
+    colors <- colors[c(1, 2, 3, 5, 6, 7)]
   } # C>T stacked bar (distinction between CpG sites and other)
   else {
     # Adjust positioning of error bars for stacked bars
@@ -188,7 +188,8 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
   # check if standard deviation error bars can be plotted
   if (sum(is.na(tb$stdev)) > 0 & error_bars != "none") {
     warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
-              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", call. = F)
+              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.",
+            call. = FALSE)
   }
   else {
     if (error_bars == "stdev") {

@@ -86,7 +86,7 @@ rename_nmf_signatures <- function(nmf_res, signatures, cutoff = 0.85, base_name 
   if (dupli_sigs) {
     stop("You have multiple NMF signatures that are linked to the same existing signature.\n
                 Please use a lower rank in the NMF or increase the cutoff at which a NMF and \n
-                existing signature are considered identical.", call. = F)
+                existing signature are considered identical.", call. = FALSE)
   }
 
   # Return the nmf_res with the updated signature names.

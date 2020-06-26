@@ -59,7 +59,7 @@ mut_type_occurrences <- function(grl, ref_genome, vcf_list = NA) {
   )
 
   full_table <- NULL
-  for (i in 1:n_samples)
+  for (i in seq_len(n_samples))
   {
     vcf <- grl[[i]]
     types <- mut_type(vcf)
