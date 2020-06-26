@@ -1395,7 +1395,8 @@ head(lesion_segretation_rl20)
 
 The plots made with this package are all made using `r CRANpkg("ggplot2")`
 [@Wickham2016]. This means that all the plots (except for the plots with
-dendograms) are highly customizable. We can for example change the size and text
+dendograms) are highly customizable. You can for example change the size and 
+text
 orientation of the y-axis.
 
 ```{r plot_spectrum_xaxis}
@@ -1404,7 +1405,7 @@ p_axis <- p +
   theme(axis.text.y = element_text(size = 14, angle = 90))
 ```
 
-We can also change the entire theme of the plot.
+You can also change the entire theme of the plot.
 ```{r plot_spectrum_theme}
 p_theme <- p +
   theme_classic()
