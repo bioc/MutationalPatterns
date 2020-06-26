@@ -168,7 +168,11 @@ plot_spectrum_region <- function(type_occurrences,
   # Combine samples based on groups
   tb <- tb_per_sample %>%
     dplyr::group_by(by, feature, type) %>%
-    dplyr::summarise(stdev = sd(freq), freq = mean(freq), amount = sum(amount), total_indv = dplyr::n()) %>%
+    dplyr::summarise(stdev = sd(freq), 
+                     freq = mean(freq), 
+                     amount = sum(amount),
+                     total_indv = dplyr::n(),
+                     .groups = "drop_last") %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       sem = stdev / sqrt(total_indv),
@@ -239,7 +243,7 @@ plot_spectrum_region <- function(type_occurrences,
 
   # Remove legend if required
   if (legend == FALSE) {
-    fig <- fig + theme(legend.position = "none")
+    fig <- fig + guides(fill = FALSE, alpha = FALSE)
   }
 
   return(fig)

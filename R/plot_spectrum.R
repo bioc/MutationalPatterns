@@ -220,7 +220,7 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
 
   # Legend
   if (legend == FALSE) {
-    plot <- plot + theme(legend.position = "none")
+    plot <- plot + guides(fill = FALSE)
   }
 
   return(plot)
