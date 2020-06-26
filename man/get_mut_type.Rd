@@ -12,7 +12,7 @@ get_mut_type(grl, type = c("snv", "indel", "dbs", "mbs"))
 \item{type}{The type of variant that will be returned.}
 }
 \value{
-GRanges/GrangesList of the desired mutation type.
+GRanges/GRangesList of the desired mutation type.
 }
 \description{
 Get the variants of a certain mutation type from a GRanges or GRangesList object.

@@ -1,6 +1,6 @@
 #' Plot the bootstrapped signature contributions
 #'
-#' Plot the signature contributions retreived with 'fit_to_signatures_bootstrapped'.
+#' Plot the signature contributions retrieved with 'fit_to_signatures_bootstrapped'.
 #' The function can plot both the absolute or the relative signature contribution.
 #' The graph can be plotted as either a jitter plot or as a boxplot.
 #'

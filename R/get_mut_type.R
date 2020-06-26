@@ -9,7 +9,7 @@
 #' @param grl GRanges/GRangesList
 #' @param type The type of variant that will be returned.
 #'
-#' @return GRanges/GrangesList of the desired mutation type.
+#' @return GRanges/GRangesList of the desired mutation type.
 #'
 #' @examples
 #' ## Get a GRanges list object.

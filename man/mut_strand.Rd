@@ -33,7 +33,7 @@ For the base substitutions that are within gene bodies, it is determined whether
 the "C" or "T" base is on the same strand as the gene definition. (Since
 by convention we regard base substitutions as C>X or T>X.)
 
-Base substitions on the same strand as the gene definitions are considered
+Base substitutions on the same strand as the gene definitions are considered
 "untranscribed", and on the opposite strand of gene bodies as "transcribed",
 since the gene definitions report the coding or sense strand, which is
 untranscribed.
@@ -50,7 +50,7 @@ which contains only two different annotations, e.g. "left" and "right", or
 annotation per location.
 
 For each base substitution it is determined on which strand it is located.
-No strand information "-" is returned for base substitutions in unannotated
+No strand information "-" is returned for base substitutions in un-annotated
 genomic regions.
 
 With the package we provide an example dataset, see example code.

@@ -88,7 +88,7 @@ BiocManager::install("MutationalPatterns")
 
 
 You also need to load the package.
-This needs to be repeated everytime you restart `R`.
+This needs to be repeated every time you restart `R`.
 ```{r Load package, message=FALSE}
 # library(MutationalPatterns)
 library(devtools)
@@ -342,7 +342,7 @@ First the C and T deletions.
 Then the C and T insertions. Next are the multi base deletions and insertions. 
 Finally the deletions with microhomology are shown.
 The x-axis at the bottom shows the number of repeat units. For mh deletions the 
-microhomoly length is shown.
+microhomology length is shown.
 ```{r, fig.wide=TRUE}
 plot_indel_contexts(indel_counts)
 ```
@@ -417,7 +417,7 @@ Mutational signatures can be extracted *de novo* from your
 mutation count matrix, with non-negative matrix factorization (NMF). 
 It's also possible to identify the exposure of your mutation count matrix to 
 previously defined mutational signatures. 
-This is often reffered to as signature refitting. 
+This is often referred to as signature refitting. 
 NMF is most usefull for large amounts of samples, 
 while signature refitting can also be used on single samples. 
 We will first discuss NMF and then signature refitting. 
@@ -505,7 +505,7 @@ rownames(nmf_res$contribution) <- c("Signature A", "Signature B")
 It's possible that some of the signatures extracted by NMF are very similar to
 signatures that are already known. Therefore, it might be usefull to change the
 names of the NMF signatures to these already known signatures. This often makes
-it easier to interpet your results.
+it easier to interpret your results.
 
 To do this you first need to read in some already existing signatures.
 Mutational signatures can be downloaded from multiple sources. One of them is
@@ -567,7 +567,7 @@ plot_contribution_heatmap(nmf_res$contribution,
 
 It's also possible to provide your own signature and sample order. This can be a
 manual ordering, but in this example we use clustering. We can cluster the
-signatures based on their cosine similarity and then retreive the order:
+signatures based on their cosine similarity and then retrieve the order:
 ```{r cluster signatures}
 hclust_signatures <- cluster_signatures(nmf_res$signatures, method = "average")
 signatures_order <- colnames(nmf_res$signatures)[hclust_signatures$order]
@@ -661,7 +661,7 @@ processes were really active in these samples. This problem, known as
 `fit_to_signatures` finds the optimal combination of signatures to reconstruct a
 profile. It will use a signature, even if it improves the fit very little.
 
-Another issue with signature refitting is signature missatribution. Mutations
+Another issue with signature refitting is signature misattribution. Mutations
 will sometimes be attributed to different signatures in samples with a similar
 mutational profile. This can give the impression that samples are very
 different, when they actually aren't. This is often the result of "flat"
@@ -803,7 +803,7 @@ As a result the refitting process has difficulty distinguishing them.
 ## Similarity between mutational profiles and signatures
 
 Instead of performing NMF or fitting signatures to a profile, you can also look
-at their similarity. This circuments the issues that exist with NMF and
+at their similarity. This circumvents the issues that exist with NMF and
 signature refitting. However, looking at similarities doesn't allow us to
 separate the different signatures that have contributed to a mutational profile.
 When multiple signatures have contributed to a profile, the similarities between
@@ -845,7 +845,7 @@ For the mutations within genes it can be determined whether the mutation is
 on the transcribed or non-transcribed strand, which can be used to evaluate
 the involvement of transcription-coupled repair. To this end, it is determined
 whether the "C" or "T" base (since by convention we regard base substitutions
-as C>X or T>X) are on the same strand as the gene definition. Base substitions
+as C>X or T>X) are on the same strand as the gene definition. Base substitutions
 on the same strand as the gene definitions are considered "untranscribed", and
 on the opposite strand of gene bodies as "transcribed", since the gene
 definitions report the coding or sense strand, which is untranscribed. No

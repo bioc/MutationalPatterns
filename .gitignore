@@ -13,3 +13,4 @@ Introduction_to_MutationalPatterns.toc
 Introduction_to_MutationalPatterns.log
 Introduction_to_MutationalPatterns.bbl
 vignettes/NMF_*
+vignettes/*.html

@@ -17,7 +17,7 @@ plot_contribution(
 \item{contribution}{Signature contribution matrix}
 
 \item{signatures}{Signature matrix.
-Neccessary when plotting NMF results in "absolute" mode.
+Necessary when plotting NMF results in "absolute" mode.
 It's not necessary in relative mode or when visualizing signature refitting results}
 
 \item{index}{optional sample subset parameter}

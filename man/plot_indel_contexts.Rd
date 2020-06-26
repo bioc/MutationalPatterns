@@ -30,7 +30,7 @@ The facets at the top show the indel types. First the C and T deletions
 Then the C and T insertions. Next are the multi base deletions and insertions.
 Finally the deletions with microhomology (mh) are shown.
 The x-axis at the bottom shows the number of repeat units.
-For mh deletions the microhomoly length is shown.
+For mh deletions the microhomology length is shown.
 }
 \examples{
 ## Get The indel counts

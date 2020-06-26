@@ -24,7 +24,7 @@ plot_spectrum_region(
 divided by the total number of variants in that sample;
 * 'relative_sample_feature', the number of variants will be shown
 divided by the total number of variants in that sample and genomic region (Default);
-* 'absolut' The absolute number of mutations is shown;}
+* 'absolute' The absolute number of mutations is shown;}
 
 \item{indv_points}{Whether to plot the individual samples
 as points, default = FALSE}
@@ -49,7 +49,7 @@ As input it takes a 'type_occurrences' matrix that was calculated per genomic re
 To get a 'type_occurrences' matrix per region,
 first use the 'split_muts_region()' function on a GR or GRangesList.
 Then use the 'mut_type_occurrences' as you would normally.
-The by, colors and legend argument work the same as in'plot_spectrum()'.
+The by, colors and legend argument work the same as in plot_spectrum()'.
 }
 \examples{
 ## See the 'split_muts_region()' example for how we obtained the

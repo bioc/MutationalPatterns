@@ -9,7 +9,7 @@
 #' Then the C and T insertions. Next are the multi base deletions and insertions.
 #' Finally the deletions with microhomology (mh) are shown.
 #' The x-axis at the bottom shows the number of repeat units.
-#' For mh deletions the microhomoly length is shown.
+#' For mh deletions the microhomology length is shown.
 #'
 #' @param counts A tibble containing the number of indels per COSMIC context.
 #' @param same_y A boolean describing whether the same y axis should be used for all samples.

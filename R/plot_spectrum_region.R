@@ -6,7 +6,7 @@
 #' To get a 'type_occurrences' matrix per region,
 #' first use the 'split_muts_region()' function on a GR or GRangesList.
 #' Then use the 'mut_type_occurrences' as you would normally.
-#' The by, colors and legend argument work the same as in'plot_spectrum()'.
+#' The by, colors and legend argument work the same as in plot_spectrum()'.
 #'
 #' @param type_occurrences Type occurrences matrix
 #' @param by Optional grouping variable
@@ -15,7 +15,7 @@
 #'              divided by the total number of variants in that sample;
 #'              * 'relative_sample_feature', the number of variants will be shown
 #'              divided by the total number of variants in that sample and genomic region (Default);
-#'              * 'absolut' The absolute number of mutations is shown;
+#'              * 'absolute' The absolute number of mutations is shown;
 #' @param indv_points Whether to plot the individual samples
 #' as points, default = FALSE
 #' @param error_bars The type of error bars to plot.

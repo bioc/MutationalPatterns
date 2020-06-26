@@ -2,7 +2,7 @@
 #'
 #'  @details
 #'  This function is called by mut_matrix. It calculates the 96 trinucleotide context for all variants
-#'  and then splits these per GRanges (samples). It then calculates how often each 96 trinucleotide context occures.
+#'  and then splits these per GRanges (samples). It then calculates how often each 96 trinucleotide context occurs.
 #'
 #'
 #' @param type_context result from type_context function
