@@ -47,13 +47,13 @@ split_muts_region <- function(grl, ranges_grl) {
 
   if (inherits(grl, "CompressedGRangesList")) {
     if (is.null(names(grl))) {
-      stop("Please set sample names (without dots) for the grl with `names(grl) = my_names`", call. = F)
+      stop("Please set sample names (without dots) for the grl with `names(grl) = my_names`", call. = FALSE)
     }
     if (any(stringr::str_detect(names(grl), "\\."))) {
-      stop("The sample names of the grl should not contain dots. Please fix them with `names(grl) = my_names`", call. = F)
+      stop("The sample names of the grl should not contain dots. Please fix them with `names(grl) = my_names`", call. = FALSE)
     }
     if (any(stringr::str_detect(names(ranges_grl), "\\."))) {
-      stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = F)
+      stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = FALSE)
     }
     gr_l <- as.list(grl)
     grl <- purrr::map(gr_l, function(x) split_muts_region_gr(x, ranges_grl)) %>%

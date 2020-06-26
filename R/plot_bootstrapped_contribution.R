@@ -77,7 +77,7 @@ plot_bootstrapped_contribution <- function(contri_boots,
     fig <- ggplot(contri_tb2, aes(x = sig, y = mean, fill = sig)) +
       geom_bar(stat = "identity") +
       geom_errorbar(aes(ymin = lower, ymax = upper), width = 0.2) +
-      scale_fill_discrete(guide = F)
+      scale_fill_discrete(guide = FALSE)
   }
 
   # Add faceting and extra labels to figure.

@@ -30,7 +30,7 @@ type_context <- function(vcf, ref_genome) {
   # Deal with empty GRanges objects.
   if (length(vcf) == 0) {
     warning("Detected empty GRanges object.
-                Returning an empty list for this sample.", call. = F)
+                Returning an empty list for this sample.", call. = FALSE)
     res <- list("types" = NULL, "context" = NULL)
     return(res)
   }

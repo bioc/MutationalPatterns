@@ -97,7 +97,7 @@ mut_strand <- function(vcf, ranges, mode = "transcription") {
         "Chromosome names (seqlevels) of vcf and genes Granges",
         "object do not match. Use the seqlevelsStyle() function",
         "to rename chromosome names."
-      ), call. = F)
+      ), call. = FALSE)
     }
 
     # Determine overlap between vcf positions and genes

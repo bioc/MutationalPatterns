@@ -30,7 +30,7 @@
 #' @seealso \code{\link{count_dbs_contexts}}, \code{\link{plot_main_dbs_contexts}}
 #'
 #' @export
-plot_dbs_contexts <- function(counts, same_y = F) {
+plot_dbs_contexts <- function(counts, same_y = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -82,7 +82,7 @@ plot_dbs_contexts <- function(counts, same_y = F) {
       space = "free_x",
       labeller = labeller(REF = facet_labs_x, sample = facet_labs_y)
     ) +
-    scale_fill_manual(guide = F, values = colors) +
+    scale_fill_manual(guide = FALSE, values = colors) +
     labs(fill = "Mutation type", title = "", y = "Nr of DBSs", x = "") +
     theme_minimal() +
     theme(

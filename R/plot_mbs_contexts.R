@@ -29,7 +29,7 @@
 #' @seealso \code{\link{count_mbs_contexts}}
 #'
 #' @export
-plot_mbs_contexts <- function(counts, same_y = T) {
+plot_mbs_contexts <- function(counts, same_y = TRUE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -68,7 +68,7 @@ plot_mbs_contexts <- function(counts, same_y = T) {
       labeller = labeller(sample = facet_labs_y)
     ) +
     labs(x = "MBS size", y = "Nr. of MBSs") +
-    guides(fill = F) +
+    guides(fill = FALSE) +
     theme_classic() +
     theme(
       legend.background = element_rect(fill = "transparent", colour = NA),

@@ -115,7 +115,7 @@ get_mut_type_gr <- function(gr, type = c("snv", "indel", "dbs", "mbs")) {
 #' @return A list of granges
 #' @importFrom magrittr %>%
 #'
-split_mbs_gr <- function(gr, merge_muts = T) {
+split_mbs_gr <- function(gr, merge_muts = TRUE) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   . <- NULL
@@ -164,7 +164,7 @@ split_mbs_gr <- function(gr, merge_muts = T) {
   full_muts_i <- unlist(full_muts_i_l)
 
   # Merge dbs and mbs if the user wants this.
-  if (mut_l != 1 & merge_muts == T) {
+  if (mut_l != 1 & merge_muts == TRUE) {
     gr_sub <- purrr::map(full_muts_i_l, function(i_v) merge_muts(gr[i_v])) %>%
       do.call(base::c, .)
   } else {
@@ -218,7 +218,7 @@ merge_muts <- function(gr) {
     as.vector() %>%
     stringr::str_c(collapse = "") %>%
     Biostrings::DNAStringSetList()
-  gr_new$QUAL <- mean(gr$QUAL, na.rm = T)
+  gr_new$QUAL <- mean(gr$QUAL, na.rm = TRUE)
 
   # Return the new gr
   names(gr_new) <- ""

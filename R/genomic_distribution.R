@@ -117,19 +117,19 @@ genomic_distribution <- function(grl, surveyed_list, region_list, vcf_list = NA)
   # Check arguments
   if (!is_na(vcf_list)) {
     warning("vcf_list is deprecated, use grl instead. 
-              The parameter grl is set equal to the parameter vcf_list.", call. = F)
+              The parameter grl is set equal to the parameter vcf_list.", call. = FALSE)
     grl <- vcf_list
   }
 
   if (length(grl) != length(surveyed_list)) {
-    stop("grl and surveyed_list must have the same length", call. = F)
+    stop("grl and surveyed_list must have the same length", call. = FALSE)
   }
 
   if (is.null(names(region_list))) {
     stop(paste("Please set the names of region_list using:",
       "    names(region_list) <- c(\"regionA\", \"regionB\", ...)",
       sep = "\n"
-    ), call. = F)
+    ), call. = FALSE)
   }
 
   # Perform intersect with region over each combi of vcf and region.

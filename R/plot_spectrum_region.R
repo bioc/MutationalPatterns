@@ -216,7 +216,8 @@ plot_spectrum_region <- function(type_occurrences,
   # Add errorbars
   if (sum(is.na(tb$stdev)) != 0 & error_bars != "none") {
     warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
-              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", call. = F)
+              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", 
+            call. = FALSE)
   } else {
     if (error_bars == "stdev") {
       fig <- fig + geom_errorbar(aes(

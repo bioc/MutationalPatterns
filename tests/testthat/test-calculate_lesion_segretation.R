@@ -66,7 +66,7 @@ test_that("An error is thrown when the arguments are incorrectly combined", {
   )
   expect_error(
     {
-      calculate_lesion_segregation(grl, sample_names, test = "walf-wolfowitz", split_by_type = T)
+      calculate_lesion_segregation(grl, sample_names, test = "walf-wolfowitz", split_by_type = TRUE)
     },
     "The 'split_by_type' argument can only be used with the binomial test"
   )

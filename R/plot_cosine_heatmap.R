@@ -88,15 +88,15 @@ plot_cosine_heatmap <- function(cos_sim_matrix, col_order = NA, row_order = NA, 
   # If cluster_rows is TRUE perform clustering. Else use supplied row_order or
   # the current column order.
   if (!is_na(row_order) & cluster_rows == TRUE) {
-    stop("row_order can only be provided when cluster_rows is FALSE", call. = F)
+    stop("row_order can only be provided when cluster_rows is FALSE", call. = FALSE)
   } else if (!is_na(row_order)) {
     # check row_order argument
     if (!inherits(row_order, "character")) {
-      stop("row_order must be a character vector", call. = F)
+      stop("row_order must be a character vector", call. = FALSE)
     }
     if (length(row_order) != nrow(cos_sim_matrix)) {
       stop("row_order must have the same length as the number of
-          samples in the explained matrix", call. = F)
+          samples in the explained matrix", call. = FALSE)
     }
   } else if (cluster_rows == TRUE) {
     # cluster samples based on eucledian distance between relative contribution
@@ -122,15 +122,15 @@ plot_cosine_heatmap <- function(cos_sim_matrix, col_order = NA, row_order = NA, 
   # If cluster_cols is TRUE perform clustering. Else use supplied col_order or
   # the current column order.
   if (!is_na(col_order) & cluster_cols == TRUE) {
-    stop("col_order can only be provided when cluster_cols is FALSE", call. = F)
+    stop("col_order can only be provided when cluster_cols is FALSE", call. = FALSE)
   } else if (!is_na(col_order)) {
     # check col_order argument
     if (!inherits(col_order, "character")) {
-      stop("col_order must be a character vector", call. = F)
+      stop("col_order must be a character vector", call. = FALSE)
     }
     if (length(col_order) != ncol(cos_sim_matrix)) {
       stop("col_order must have the same length as the number of 
-          signatures in the explained matrix", call. = F)
+          signatures in the explained matrix", call. = FALSE)
     }
   } else if (cluster_cols == TRUE) {
     # Cluster cols

@@ -42,7 +42,8 @@ check_no_multi_alts_gr <- function(gr) {
     unlist() %>%
     length()
   if (length(gr) != nr_alts) {
-    stop("There should not be any variants with multiple alternative alleles. You can remove these by using the `get_mut_type` function.", call. = F)
+    stop(paste0("There should not be any variants with multiple alternative alleles.\n", 
+         "You can remove these by using the `get_mut_type` function."), call. = FALSE)
   }
   invisible(gr)
 }
@@ -86,7 +87,7 @@ check_no_snvs_gr <- function(gr) {
   nr_snv <- sum(snv_f)
   snv_present <- nr_snv >= 1
   if (snv_present) {
-    stop(stringr::str_c("There seem to be ", nr_snv, " SNVs present in your data. Make sure to remove all SNVs with the `get_mut_type` function."), call. = F)
+    stop(stringr::str_c("There seem to be ", nr_snv, " SNVs present in your data. Make sure to remove all SNVs with the `get_mut_type` function."), call. = FALSE)
   }
   invisible(gr)
 }
@@ -133,7 +134,7 @@ check_no_indels_gr <- function(gr) {
       "There seem to be at least ", nr_indel,
       " Indels present in your data. ",
       "Make sure to remove all Indels with the `get_mut_type` function."
-    ), call. = F)
+    ), call. = FALSE)
   }
   invisible(gr)
 }
@@ -324,7 +325,7 @@ check_chroms <- function(grl, ref_genome) {
       "The ref_genome has the genome name: '", genome_name_ref, "'\n",
       "With `GenomeInfoDb::genome(your input GRanges) = '", genome_name_ref, "'`\n",
       "you can view and change the genome name of your data to that of the ref_genome."
-    ), call. = F)
+    ), call. = FALSE)
   }
 
   # Check if there is any overlap in chromosome names
@@ -332,7 +333,7 @@ check_chroms <- function(grl, ref_genome) {
   if (!length(shared_chroms)) {
     stop("The input GRanges and the ref_genome share no seqnames (chromosome names). 
              Do they use the same seqlevelsStyle? An example of how to fix this is show below.
-             You can change the seqlevelStyle with: `seqlevelsStyle(grl) = 'UCSC'", call. = F)
+             You can change the seqlevelStyle with: `seqlevelsStyle(grl) = 'UCSC'", call. = FALSE)
   }
 
   # Check if there seqlevels in the input granges that are not in the reference.
@@ -347,7 +348,7 @@ check_chroms <- function(grl, ref_genome) {
         `chromosomes = paste0('chr', c(1:22,'X'))`
         You can then remove variants in other chromosomes with: 
         `seqlevels(grl, pruning.mode = 'tidy') = chromosomes`"
-    ), call. = F)
+    ), call. = FALSE)
   }
 
   # Check if there are variants in the input granges that don't overlap with the reference
@@ -364,7 +365,7 @@ check_chroms <- function(grl, ref_genome) {
       "There are ", nr_nomatch, " variants that don't overlap with ",
       "the chromosome lengths of the chosen reference genome.\n",
       "Did you select the correct reference genome?"
-    ), call. = F)
+    ), call. = FALSE)
   }
 
   invisible(grl)

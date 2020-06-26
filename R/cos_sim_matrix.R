@@ -38,11 +38,11 @@ cos_sim_matrix <- function(mut_matrix1, mut_matrix2) {
   n_samples2 <- ncol(mut_matrix2)
   res_matrix <- matrix(nrow = n_samples1, ncol = n_samples2)
 
-  for (s in 1:n_samples1)
+  for (s in seq_len(n_samples1))
   {
     signal1 <- mut_matrix1[, s]
     cos_sim_vector <- c()
-    for (i in 1:n_samples2)
+    for (i in seq_len(n_samples2))
     {
       signal2 <- mut_matrix2[, i]
       cos_sim_vector[i] <- cos_sim(signal1, signal2)

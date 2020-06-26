@@ -11,7 +11,7 @@ add_fake_mnvs <- function(vcf, ref_genome, nr_mnvs = NA) {
 
   mnv_lengths <- sample(seq(3, 10),
     nr_mnvs,
-    replace = T,
+    replace = TRUE,
     prob = c(0.35, 0.25, 0.15, 0.1, 0.05, 0.05, 0.025, 0.025)
   )
   mnvs <- purrr::map(mnv_lengths, create_1_mnv, vcf) %>%
@@ -50,7 +50,7 @@ create_1_mnv <- function(mnv_length, vcf) {
 
   possible_alts <- purrr::map(as.vector(refs), ~ setdiff(c("A", "C", "T", "G"), .x))
   alts <- purrr::map(possible_alts, ~ sample(.x, 1)) %>%
-    DNAStringSetList(use.names = F)
+    DNAStringSetList(use.names = FALSE)
   alt(mnv_variant) <- alts
 
   # Update the names of the new variants
@@ -73,16 +73,16 @@ decrease_vcf_size <- function(vcf_fname) {
   vcf <- readVcf(vcf_fname)
 
   # Remove unnecessary info
-  info(vcf) <- info(vcf)[, 0, drop = F]
-  info(header(vcf)) <- info(header(vcf))[0, , drop = F]
+  info(vcf) <- info(vcf)[, 0, drop = FALSE]
+  info(header(vcf)) <- info(header(vcf))[0, , drop = FALSE]
 
   # Remove unnecessary genotype data
   gt_to_keep <- c("GT", "AD", "DP", "GQ", "PL")
   geno(vcf) <- geno(vcf)[gt_to_keep]
-  geno(header(vcf)) <- geno(header(vcf))[gt_to_keep, , drop = F]
+  geno(header(vcf)) <- geno(header(vcf))[gt_to_keep, , drop = FALSE]
 
   # Remove filter statements from header
-  fixed(header(vcf))[["FILTER"]] <- fixed(header(vcf))[["FILTER"]][0, , drop = F]
+  fixed(header(vcf))[["FILTER"]] <- fixed(header(vcf))[["FILTER"]][0, , drop = FALSE]
 
   # Remove all but one sample
   tmp_name <- "tmp.vcf"
@@ -99,11 +99,11 @@ decrease_vcf_size <- function(vcf_fname) {
 # Determine vcf and donor names
 snv_vcf_fnames <- list.files("~/surfdrive/Shared/Boxtel_General/Data/Mutation_data/SNVs/hg19/Healthy_bone_marrow/",
   pattern = "MQ60.vcf",
-  full.names = T
+  full.names = TRUE
 )
 indel_vcf_fnames <- list.files("~/surfdrive/Shared/Boxtel_General/Data/Mutation_data/INDELs/hg19/Healthy_bone_marrow/",
   pattern = "CALLABLE.vcf",
-  full.names = T
+  full.names = TRUE
 )
 vcf_fnames <- c(snv_vcf_fnames, indel_vcf_fnames)
 sample_names <- vcf_fnames %>%
@@ -138,7 +138,7 @@ purrr::map2(vcf_l, out_vcf_fnames, writeVcf)
 purrr::map(out_vcf_fnames, decrease_vcf_size)
 
 # Create granges object from the vcfs
-vcf_fnames <- list.files("inst/extdata/", pattern = "blood.*.vcf", full.names = T)
+vcf_fnames <- list.files("inst/extdata/", pattern = "blood.*.vcf", full.names = TRUE)
 vcf_l <- purrr::map(vcf_fnames, readVcf, "hg19")
 sample_names <- basename(vcf_fnames) %>%
   str_remove("blood-") %>%

@@ -61,7 +61,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 
   # Set point_sizes
   point_size <- 100 / length(gr)
-  if (per_chrom == T) {
+  if (per_chrom == TRUE) {
     point_size <- point_size * 5
   }
   if (point_size > 2) {
@@ -71,7 +71,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
   }
 
   # Create plots
-  if (per_chrom == F) {
+  if (per_chrom == FALSE) {
     fig <- plot_lesion_segregation_gg(tb, tb_limits, x_axis_breaks, point_size, sample_name)
     return(fig)
   } else {
@@ -101,7 +101,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
 
   # Set x-axis breaks
-  if (per_chrom == T) {
+  if (per_chrom == TRUE) {
     x_axis_break_length <- 10
   } else {
     x_axis_break_length <- 50

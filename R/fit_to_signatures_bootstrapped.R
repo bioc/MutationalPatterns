@@ -124,7 +124,7 @@ fit_to_signatures_bootstrapped <- function(mut_matrix,
     # Add contribution to list
     contri_list[[i]] <- contri_tb
 
-    if (i %% 10 == 0 & verbose == T) {
+    if (i %% 10 == 0 & verbose == TRUE) {
       message(paste0("Performed ", i, " of ", n_boots, " iterations"))
     }
   }
@@ -136,7 +136,7 @@ fit_to_signatures_bootstrapped <- function(mut_matrix,
   # Clean up format
   colnames(contri_boots) <- sig_names_tb$sigs
   contri_boots[is.na(contri_boots)] <- 0
-  contri_boots <- contri_boots[, colSums(contri_boots) != 0, drop = F]
+  contri_boots <- contri_boots[, colSums(contri_boots) != 0, drop = FALSE]
 
   return(contri_boots)
 }
@@ -157,7 +157,7 @@ resample_mut_mat <- function(mut_matrix) {
   mut_mat_resampled <- apply(mut_matrix, 2, function(x) {
     total_muts <- sum(x)
     sample_weights <- x / total_muts
-    feature_rows <- sample(seq_along(x), total_muts, replace = T, prob = sample_weights)
+    feature_rows <- sample(seq_along(x), total_muts, replace = TRUE, prob = sample_weights)
     row_counts <- table(feature_rows)
     index <- as.numeric(names(row_counts))
     x[index] <- as.vector(row_counts)

@@ -4,7 +4,7 @@
 \alias{plot_dbs_contexts}
 \title{Plot the DBS contexts}
 \usage{
-plot_dbs_contexts(counts, same_y = F)
+plot_dbs_contexts(counts, same_y = FALSE)
 }
 \arguments{
 \item{counts}{A tibble containing the number of DBS per COSMIC context.}

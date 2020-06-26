@@ -92,13 +92,13 @@ read_vcfs_as_granges <- function(vcf_files,
 
   # Check sample names
   if (length(vcf_files) != length(sample_names)) {
-    stop("Please provide the same number of sample names as VCF files", call. = F)
+    stop("Please provide the same number of sample names as VCF files", call. = FALSE)
   }
 
   # Get the reference genome
   tryCatch(
     error = function(cnd) {
-      stop("Please provide the name of a BSgenome object.", call. = F)
+      stop("Please provide the name of a BSgenome object.", call. = FALSE)
     },
     {
       genome <- BSgenome::getBSgenome(genome)
@@ -169,12 +169,12 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
     warning(paste0(
       "There were 0 variants (before filtering) found in the vcf file: ", vcf_file,
       "\nYou might want to remove this sample from your analysis."
-    ), call. = F)
+    ), call. = FALSE)
     return(gr)
   }
 
   # Convert to a single chromosome naming standard.
-  if (change_seqnames == T) {
+  if (change_seqnames == TRUE) {
     tryCatch(
       error = function(cnd) {
         message(conditionMessage(cnd))
@@ -183,7 +183,8 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
                      to prevent this error.
                      However, you then have to make sure that the seqnames (chromosome names) are
                      the same between your vcfs and the reference BSgenome object.
-                     (The message of the internal error causing this problem is shown above.)", call. = F)
+                     (The message of the internal error causing this problem is shown above.)", 
+             call. = FALSE)
       },
       {
         GenomeInfoDb::seqlevelsStyle(gr) <- GenomeInfoDb::seqlevelsStyle(genome)[1]
@@ -199,7 +200,7 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
         stop("The vcf could not be filtered for the specific seqlevels group.
                      You can run this function with `group = 'all'`, to prevent this error.
                      (The message of the internal error causing this problem is shown above.)",
-          call. = F
+          call. = FALSE
         )
       },
       {
@@ -217,7 +218,7 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
       "There were ", nr_duplicated, " duplicated variants in vcf file: ",
       vcf_file,
       " They have been filtered out."
-    ), call. = F)
+    ), call. = FALSE)
     gr <- BiocGenerics::unique(gr)
   }
 

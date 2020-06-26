@@ -41,7 +41,7 @@ mut_96_occurrences <- function(type_context, gr_sizes) {
   # Count the mutations per type and per sample
   counts <- tibble::tibble("categories" = full_context, "sample" = sample_vector) %>%
     dplyr::filter(!is.na(categories)) %>%
-    dplyr::group_by(categories, sample, .drop = F) %>%
+    dplyr::group_by(categories, sample, .drop = FALSE) %>%
     dplyr::summarise(count = dplyr::n())
 
   # Transform the data into a mutation matrix

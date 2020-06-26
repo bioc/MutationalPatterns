@@ -31,7 +31,7 @@
 #' @seealso \code{\link{count_dbs_contexts}}, \code{\link{plot_dbs_contexts}}
 #'
 #' @export
-plot_main_dbs_contexts <- function(counts, same_y = F) {
+plot_main_dbs_contexts <- function(counts, same_y = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.

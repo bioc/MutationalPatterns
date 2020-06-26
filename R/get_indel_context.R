@@ -84,7 +84,8 @@ get_indel_context_gr <- function(gr, ref_genome) {
     width()
   mut_size <- alt_sizes - ref_sizes
 
-  # For the main indel categories, determine their sub categories. (Also split the big deletion categorie into repeat and micro homology.)
+  # For the main indel categories, determine their sub categories. 
+  # (Also split the big deletion categorie into repeat and micro homology.)
   gr_1b_dels <- get_1bp_dels(gr, mut_size, ref_genome)
   gr_1b_ins <- get_1bp_ins(gr, mut_size, ref_genome)
   gr_big_dels <- get_big_dels(gr, mut_size, ref_genome)
@@ -136,8 +137,14 @@ get_1bp_dels <- function(gr, mut_size, ref_genome) {
   seq <- get_extended_sequence(gr, 19, ref_genome)
 
   # Check homopolymer length
-  seq_z <- stringr::str_replace_all(as.character(seq), del_bases, rep("Z", length(seq))) # For each mut replace the deleted basetype in the flanking sequence with Zs.
-  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% nchar() + 1 # Remove all bases after the Zs and count how many bases are left. Add one for the deleted base itself.
+  # For each mut replace the deleted basetype in the flanking sequence with Zs.
+  seq_z <- stringr::str_replace_all(as.character(seq), 
+                                    del_bases, 
+                                    rep("Z", length(seq))) 
+  # Remove all bases after the Zs and count how many bases are left. 
+  # Add one for the deleted base itself.
+  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% 
+    nchar() + 1
   del_bases[del_bases == "A"] <- "T"
   del_bases[del_bases == "G"] <- "C"
 
@@ -188,8 +195,14 @@ get_1bp_ins <- function(gr, mut_size, ref_genome) {
   seq <- get_extended_sequence(gr, 20, ref_genome)
 
   # Check homopolymer length
-  seq_z <- stringr::str_replace_all(as.character(seq), ins_bases, rep("Z", length(seq))) # For each mut replace the inserted basetype in the flanking sequence with Zs.
-  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% nchar() # Remove all bases after the Zs and count how many bases are left.
+  # For each mut replace the inserted basetype in the flanking sequence with Zs.
+  seq_z <- stringr::str_replace_all(as.character(seq), 
+                                    ins_bases, 
+                                    rep("Z", length(seq)))
+  
+  # Remove all bases after the Zs and count how many bases are left.
+  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% 
+    nchar()
   ins_bases[ins_bases == "A"] <- "T"
   ins_bases[ins_bases == "G"] <- "C"
 
@@ -245,9 +258,14 @@ get_big_ins <- function(gr, mut_size, ref_genome) {
   seq <- get_extended_sequence(gr, flank_dist, ref_genome)
 
   # Determine nr. repeats.
-  seq_z <- stringr::str_replace_all(as.character(seq), ins_bases, rep("Z", length(seq))) # For each mut replace the deleted basetype in the flanking sequence with Zs.
+  # For each mut replace the deleted basetype in the flanking sequence with Zs.
+  seq_z <- stringr::str_replace_all(as.character(seq), 
+                                    ins_bases, 
+                                    rep("Z", length(seq))) 
+  
+  # Remove all bases after the Zs and count how many bases are left.
   n_repeats <- gsub("[^Z].*", "", as.character(seq_z)) %>%
-    nchar() # Remove all bases after the Zs and count how many bases are left.
+    nchar() 
 
   # Return results
   gr$muttype <- stringr::str_c(mut_size, "bp_insertion")
@@ -258,7 +276,8 @@ get_big_ins <- function(gr, mut_size, ref_genome) {
 #' Get contexts from larger deletions
 #'
 #' @details
-#' Determines the COSMIC context for deletions larger than 1bp in a GRanges object containing Indel mutations.
+#' Determines the COSMIC context for deletions larger than 1bp in a GRanges object 
+#' containing Indel mutations.
 #' This function is called by get_indel_context_gr.
 #' The function determines if there is microhomology for deletions that are not in repeat regions.
 #'
@@ -300,16 +319,23 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
   seq <- get_extended_sequence(gr, flank_dist, ref_genome)
 
   # Determine nr. repeats.
-  seq_z <- stringr::str_replace_all(as.character(seq), del_bases, rep("Z", length(seq))) # For each mut replace the deleted basetype in the flanking sequence with Zs.
+  # For each mut replace the deleted basetype in the flanking sequence with Zs.
+  seq_z <- stringr::str_replace_all(as.character(seq), 
+                                    del_bases, 
+                                    rep("Z", length(seq)))
+  
+  # Remove all bases after the Zs and count how many bases are left. 
+  # Add +1 for the deleted bases itself
   n_repeats <- gsub("[^Z].*", "", as.character(seq_z)) %>%
-    nchar() + 1 # Remove all bases after the Zs and count how many bases are left. Add +1 for the deleted bases itself
+    nchar() + 1 
 
   gr$muttype <- stringr::str_c(abs(mut_size), "bp_deletion")
   gr$muttype_sub <- n_repeats
 
 
   # Determine if there is microhomology for deletions that are not in repeat regions.
-  pos_mh <- gr$muttype_sub == 1 # There is always at least 1 'repeat', because of the deleted bases themselves.
+  # There is always at least 1 'repeat', because of the deleted bases themselves.
+  pos_mh <- gr$muttype_sub == 1
 
   gr_repeat <- gr[!pos_mh]
   gr_mh <- gr[pos_mh]
@@ -324,12 +350,16 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
   seq_s <- strsplit(as.character(seq[pos_mh]), "")
 
 
-  # Also check for microhomology to the left of the deletion. For this take the reverse sequence to the left of the deletion and the reverse deleted bases.
+  # Also check for microhomology to the left of the deletion. 
+  # For this take the reverse sequence to the left of the deletion and the reverse deleted bases.
   rev_del_bases <- IRanges::reverse(del_bases_mh)
   rev_l_del_bases_s <- strsplit(rev_del_bases, "")
 
+  # Flank the granges object, to get a sequence, that can be searched for repeats. 
+  # This can result in a warning message, when the flanked range extends beyond 
+  # the chrom lenght. This message is suppressed.
   withCallingHandlers(
-    { # Flank the granges object, to get a sequence, that can be searched for repeats. This can result in a warning message, when the flanked range extends beyond the chrom lenght. This message is suppressed.
+    { 
       l_flank <- GenomicRanges::flank(gr_mh, biggest_dels)
     },
     warning = function(w) {
@@ -338,9 +368,13 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
       }
     }
   )
+  
+  # Trim the ranges that are extended beyond the actual length of the chromosome. 
+  # Add 1 base, because the first base in the granges obj is not deleted and 
+  # should be used in the flank.
   l_flank <- l_flank %>%
     GenomicRanges::trim() %>%
-    GenomicRanges::shift(1) # Trim the ranges that are extended beyond the actual length of the chromosome. #Add 1 base, because the first base in the granges obj is not deleted and should be used in the flank.
+    GenomicRanges::shift(1) 
   rev_l_seq <- Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), l_flank) %>%
     IRanges::reverse()
   rev_l_seq_s <- strsplit(as.character(rev_l_seq), "")
@@ -348,17 +382,21 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
   # For each mutation determine how many bases show hm
   nr_pos_mh <- length(del_bases_s)
   nr_mh <- vector("list", nr_pos_mh)
-  for (i in 1:nr_pos_mh) {
+  for (i in seq_len(nr_pos_mh)) {
     del_bases_sample <- del_bases_s[[i]]
-    seq_s_sample <- seq_s[[i]][1:length(del_bases_sample)]
+    seq_s_sample <- seq_s[[i]][seq_len(length(del_bases_sample))]
     same <- del_bases_sample == seq_s_sample
-    r_nr_mh_sample <- cumprod(same) %>% sum(na.rm = T) # Determine how many bases are the same before the first difference. na.rm is for when a sequence has been trimmed.
+    
+    # Determine how many bases are the same before the first difference. 
+    # na.rm is for when a sequence has been trimmed.
+    r_nr_mh_sample <- cumprod(same) %>% 
+      sum(na.rm = TRUE) 
 
     l_del_bases_sample <- rev_l_del_bases_s[[i]]
-    l_seq_s_sample <- rev_l_seq_s[[i]][1:length(l_del_bases_sample)]
+    l_seq_s_sample <- rev_l_seq_s[[i]][seq_len(length(l_del_bases_sample))]
     l_same <- l_del_bases_sample == l_seq_s_sample
     l_nr_mh_sample <- cumprod(l_same) %>%
-      sum(na.rm = T)
+      sum(na.rm = TRUE)
 
     nr_mh_sample <- max(r_nr_mh_sample, l_nr_mh_sample)
 
@@ -368,12 +406,13 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
 
   # Update gr when mh is indeed present
   mh_f <- nr_mh > 0
-  gr_mh$muttype[mh_f] <- stringr::str_c(abs(mut_size_mh[mh_f]), "bp_deletion_with_microhomology")
+  gr_mh$muttype[mh_f] <- stringr::str_c(abs(mut_size_mh[mh_f]), 
+                                        "bp_deletion_with_microhomology")
   gr_mh$muttype_sub[mh_f] <- nr_mh[mh_f]
 
   # Combine muts with and without mh
   gr <- c(gr_mh, gr_repeat) %>%
-    sort()
+    BiocGenerics::sort()
   return(gr)
 }
 
@@ -398,9 +437,13 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
 #'
 #'
 get_extended_sequence <- function(gr, flank_dist, ref_genome) {
+  
+  # Flank the granges object, to get a sequence, that can be searched for repeats. 
+  # This can result in a warning message, when the flanked range extends 
+  # beyond the chrom lenght. This message is suppressed.
   withCallingHandlers(
-    { # Flank the granges object, to get a sequence, that can be searched for repeats. This can result in a warning message, when the flanked range extends beyond the chrom lenght. This message is suppressed.
-      gr_extended <- GenomicRanges::flank(gr, flank_dist, start = F)
+    { 
+      gr_extended <- GenomicRanges::flank(gr, flank_dist, start = FALSE)
     },
     warning = function(w) {
       if (grepl("out-of-bound range located on sequence", conditionMessage(w))) {
@@ -408,7 +451,9 @@ get_extended_sequence <- function(gr, flank_dist, ref_genome) {
       }
     }
   )
-  gr_extended <- GenomicRanges::trim(gr_extended) # Trim the ranges that are extended beyond the actual length of the chromosome.
+  
+  # Trim the ranges that are extended beyond the actual length of the chromosome.
+  gr_extended <- GenomicRanges::trim(gr_extended) 
   seq <- Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), gr_extended)
   return(seq)
 }

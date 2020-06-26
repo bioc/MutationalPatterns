@@ -4,7 +4,7 @@
 \alias{plot_indel_contexts}
 \title{Plot the indel contexts}
 \usage{
-plot_indel_contexts(counts, same_y = F, extra_labels = F)
+plot_indel_contexts(counts, same_y = FALSE, extra_labels = FALSE)
 }
 \arguments{
 \item{counts}{A tibble containing the number of indels per COSMIC context.}

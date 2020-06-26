@@ -51,7 +51,7 @@ merge_signatures <- function(signatures, cos_sim_cutoff = 0.8, merge_char = ";",
     grepl(merge_char, .) %>%
     sum()
   if (nr_lowercase > 0) {
-    stop(paste0("Please remove all ", merge_char, " characters from your signature names."), call. = F)
+    stop(paste0("Please remove all ", merge_char, " characters from your signature names."), call. = FALSE)
   }
 
   # Determine max similarity between signatures
@@ -63,10 +63,10 @@ merge_signatures <- function(signatures, cos_sim_cutoff = 0.8, merge_char = ";",
   while (max > cos_sim_cutoff) {
 
     # Find signatures that need to be merged
-    max_index <- order(sim_m, decreasing = T)[1]
-    max_loc <- arrayInd(max_index, dim(sim_m), useNames = T)
-    sigs_left <- signatures[, -max_loc, drop = F]
-    sigs_to_combi <- signatures[, max_loc, drop = F]
+    max_index <- order(sim_m, decreasing = TRUE)[1]
+    max_loc <- arrayInd(max_index, dim(sim_m), useNames = TRUE)
+    sigs_left <- signatures[, -max_loc, drop = FALSE]
+    sigs_to_combi <- signatures[, max_loc, drop = FALSE]
 
     # Signatures that have already been merged and thus exist
     # of multiple signatures are weighted accordingly.

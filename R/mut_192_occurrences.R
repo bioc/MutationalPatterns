@@ -53,9 +53,12 @@ mut_192_occurrences <- function(type_context, strand, gr_sizes) {
   rownames(mut_mat) <- c(names_1, names_2)
 
   # Reorder for backwards compatibility
-  reorder_i <- purrr::map2(seq(1, nrow(mut_mat) / 2), seq(nrow(mut_mat) / 2 + 1, nrow(mut_mat)), c) %>%
+  reorder_i <- purrr::map2(seq(1, nrow(mut_mat) / 2), 
+                           seq(nrow(mut_mat) / 2 + 1, 
+                               nrow(mut_mat)),
+                           c) %>%
     unlist()
-  mut_mat <- mut_mat[reorder_i, , drop = F]
+  mut_mat <- mut_mat[reorder_i, , drop = FALSE]
 
   return(mut_mat)
 }

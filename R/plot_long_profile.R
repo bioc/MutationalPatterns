@@ -46,7 +46,7 @@ plot_long_profile <- function(mut_matrix, mode = c("relative_sample", "relative_
     colors <- COLORS6
   }
   if (length(colors) != 6) {
-    stop("Provide colors vector with length 6", call. = F)
+    stop("Provide colors vector with length 6", call. = FALSE)
   }
 
   if (condensed) {
