@@ -26,8 +26,8 @@
 #' @export
 mut_matrix <- function(grl, ref_genome, vcf_list = NA) {
   if (!is_na(vcf_list)) {
-    warning("vcf_list is deprecated, use grl instead. 
-              The parameter grl is set equal to the parameter vcf_list.", 
+    warning(paste0("vcf_list is deprecated, use grl instead.\n",
+              "The parameter grl is set equal to the parameter vcf_list."), 
             call. = FALSE)
     grl <- vcf_list
   }
