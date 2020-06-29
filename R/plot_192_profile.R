@@ -103,7 +103,7 @@ plot_192_profile <- function(mut_matrix, colors = NA, ymax = 0.2, condensed = FA
           axis.title.y = element_text(size = 12, vjust = 1),
           axis.text.y = element_text(size = 8),
           axis.title.x = element_text(size = 12),
-          axis.text.x = element_text(size = 5, angle = 90, vjust = 0.4),
+          axis.text.x = element_text(size = 5, angle = 90, vjust = 0.5),
           strip.text.x = element_text(size = 9),
           strip.text.y = element_text(size = 9),
           panel.grid.major.x = element_blank(),

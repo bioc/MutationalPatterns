@@ -28,6 +28,7 @@
 #'
 #' ## You can also look at the correlation for all samples combined
 #' plot_correlation_bootstrap(contri_boots, per_sample = FALSE)
+#' 
 plot_correlation_bootstrap <- function(contri_boots, per_sample = TRUE) {
 
   # These variables use non standard evaluation.
@@ -109,7 +110,7 @@ plot_correlation_bootstrap_sample <- function(contri_boots, sample) {
     labs(x = NULL, y = NULL, title = sample) +
     theme_classic() +
     theme(
-      axis.text.x = element_text(angle = 90, hjust = 1),
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
       text = element_text(size = 12),
       panel.border = element_rect(colour = "black", fill = NA, size = 1)
     )

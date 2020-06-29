@@ -61,7 +61,7 @@ plot_original_vs_reconstructed <- function(mut_matrix, reconstructed, y_intercep
     theme_classic() +
     theme(
       text = element_text(size = 12),
-      axis.text.x = element_text(angle = 90)
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
   return(plot)
 }

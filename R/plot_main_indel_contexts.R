@@ -85,7 +85,7 @@ plot_main_indel_contexts <- function(counts, same_y = FALSE) {
     theme_minimal() +
     theme(
       panel.grid.major.x = element_blank(),
-      axis.text.x = element_text(angle = 90)
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
   return(fig)
 }

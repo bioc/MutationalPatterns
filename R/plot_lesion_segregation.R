@@ -158,7 +158,7 @@ plot_lesion_segregation_gg <- function(tb, tb_limits, x_axis_breaks, point_size,
     theme_bw() +
     theme(
       text = element_text(size = 18),
-      axis.text.x = element_text(size = 11, angle = 90),
+      axis.text.x = element_text(size = 11, angle = 90, vjust = 0.5, hjust = 1),
       axis.text.y = element_text(size = 20),
       panel.grid.minor = element_blank()
     )

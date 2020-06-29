@@ -88,7 +88,7 @@ plot_dbs_contexts <- function(counts, same_y = FALSE) {
     theme(
       panel.grid.major.x = element_blank(),
       strip.background = element_rect(fill = "cadetblue"),
-      axis.text.x = element_text(angle = 90)
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
 
   return(fig)

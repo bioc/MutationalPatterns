@@ -86,7 +86,7 @@ plot_bootstrapped_contribution <- function(contri_boots,
     labs(x = "Signature", y = ylab_text) +
     theme_classic() +
     theme(
-      axis.text.x = element_text(angle = 90, size = 10),
+      axis.text.x = element_text(angle = 90, size = 10, hjust = 1, vjust = 0.5),
       text = element_text(size = 12),
       strip.text.y = element_text(size = 8)
     )

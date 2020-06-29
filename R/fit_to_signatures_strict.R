@@ -217,7 +217,7 @@ plot_sim_decay <- function(sims, removed_sigs, max_delta) {
                       guide = FALSE) +
     labs(x = "Removed signatures", 
          y = paste0("Cosine similarity (max delta: ", max_delta, ")")) +
-    theme(axis.text.x = element_text(angle = 90, size = 12), 
+    theme(axis.text.x = element_text(angle = 90, size = 10, hjust = 1, vjust = 0.5), 
           text = element_text(size = 12))
   return(fig)
 }
