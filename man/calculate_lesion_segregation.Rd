@@ -96,8 +96,6 @@ lesion_segregation_rl20 <- calculate_lesion_segregation(grl,
 \code{\link{plot_lesion_segregation}}
 
 Other Lesion_segregation: 
-\code{\link{lesion_get_x_axis_breaks}()},
-\code{\link{plot_lesion_segregation_gg}()},
 \code{\link{plot_lesion_segregation}()}
 }
 \concept{Lesion_segregation}

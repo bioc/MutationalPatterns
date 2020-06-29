@@ -96,7 +96,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 #' @param per_chrom Boolean. Describing whether to create a separate plot per chromosome
 #'
 #' @return Numeric vector of x_axis_breaks
-#' @family Lesion_segregation
+#' @noRd
 #'
 lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
 
@@ -132,7 +132,7 @@ lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
 #' @return ggplot2 object
 #'
 #' @import ggplot2
-#' @family Lesion_segregation
+#' @noRd
 #'
 plot_lesion_segregation_gg <- function(tb, tb_limits, x_axis_breaks, point_size, sample_name) {
 
