@@ -201,30 +201,3 @@ mut_strand <- function(vcf, ranges, mode = "transcription") {
   }
   return(strand2)
 }
-
-##
-## Renamed function
-##
-
-#'
-#' This function has been renamed. Use 'mut_strand' instead.
-#'
-#' @param vcf   A GRanges object
-#' @param genes The genes
-#'
-#' @return Character vector with transcriptional strand information
-#'
-#' @seealso
-#' \code{\link{mut_strand}}
-#'
-#' @export
-
-strand_from_vcf <- function(vcf, genes) {
-  .Defunct("mut_strand",
-    package = "MutationalPatterns",
-    msg = paste(
-      "This function has been renamed. Use",
-      "'mut_strand' instead."
-    )
-  )
-}
