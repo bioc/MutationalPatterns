@@ -6,7 +6,7 @@
 #' This function applies the count_mbs_contexts_gr function to each gr in its input.
 #' It then combines the results in a single tibble and returns this.
 #'
-#' @param grl GRanges or GRangesList object containing mbs variants.
+#' @param vcf_list GRanges or GRangesList object containing mbs variants.
 #'
 #' @return A tibble containing the number of MBS per MBS length per gr.
 #'
@@ -21,7 +21,7 @@
 #' @family MBS
 #'
 #' @export
-count_mbs_contexts <- function(grl) {
+count_mbs_contexts <- function(vcf_list) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -29,16 +29,21 @@ count_mbs_contexts <- function(grl) {
 
   categories <- tibble::tibble("size" = c(3:9, "10+"))
 
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_l <- as.list(grl)
-    counts_l <- purrr::map(gr_l, .count_mbs_contexts_gr, categories)
+  #Turn grl into list if needed.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
+  #Count contexts per sample
+  if (inherits(vcf_list, "list")) {
+    counts_l <- purrr::map(vcf_list, .count_mbs_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)
-    colnames(counts) <- names(grl)
-  } else if (inherits(grl, "GRanges")) {
-    counts <- .count_mbs_contexts_gr(grl, categories)
+    colnames(counts) <- names(vcf_list)
+  } else if (inherits(vcf_list, "GRanges")) {
+    counts <- .count_mbs_contexts_gr(vcf_list, categories)
     colnames(counts) <- "My_sample"
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
   counts <- cbind(categories, counts)
 

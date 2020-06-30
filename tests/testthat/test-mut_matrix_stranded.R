@@ -61,13 +61,3 @@ test_that("replication mode transforms correctly", {
   mut_mat_repli <- mut_matrix_stranded(input, ref_genome, repli_strand_granges, mode = "replication")
   expect_equal(mut_mat_repli, expected_repli)
 })
-
-# Test that a warning is given when using vcf_list
-test_that("A warning is given when using vcf_list", {
-  expect_warning(
-    {
-      mut_matrix_stranded(vcf_list = input, ref_genome = ref_genome, ranges = genes_hg19)
-    },
-    "vcf_list is deprecated"
-  )
-})

@@ -1,9 +1,8 @@
 #' Make mutation count matrix of 96 trinucleotides
 #'
 #' @description Make 96 trinucleotide mutation count matrix
-#' @param grl GRangesList or GRanges object.
+#' @param vcf_list GRangesList or GRanges object.
 #' @param ref_genome BSGenome reference genome object
-#' @param vcf_list Deprecated argument. Replaced with grl
 #' @return 96 mutation count matrix
 #'
 #' @examples
@@ -19,34 +18,28 @@
 #'
 #' ## Construct a mutation matrix from the loaded VCFs in comparison to the
 #' ## ref_genome.
-#' mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
+#' mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}
 #'
 #' @export
-mut_matrix <- function(grl, ref_genome, vcf_list = NA) {
-  if (!.is_na(vcf_list)) {
-    warning(paste0("vcf_list is deprecated, use grl instead.\n",
-              "The parameter grl is set equal to the parameter vcf_list."), 
-            call. = FALSE)
-    grl <- vcf_list
-  }
+mut_matrix <- function(vcf_list, ref_genome) {
 
   # Convert list to grl if necessary
-  if (inherits(grl, "list")) {
-    grl <- GenomicRanges::GRangesList(grl)
+  if (inherits(vcf_list, "list")) {
+    vcf_list <- GenomicRanges::GRangesList(vcf_list)
   }
 
   # Determine nr mutations per sample
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_sizes <- S4Vectors::elementNROWS(grl)
-    gr <- BiocGenerics::unlist(grl)
-  } else if (inherits(grl, "GRanges")) {
-    gr <- grl
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    gr_sizes <- S4Vectors::elementNROWS(vcf_list)
+    gr <- BiocGenerics::unlist(vcf_list)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- vcf_list
     gr_sizes <- length(gr)
     names(gr_sizes) <- "My_sample"
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
   # Determine type and context of all mutations
   type_context <- type_context(gr, ref_genome)

@@ -4,14 +4,12 @@
 \alias{mut_matrix}
 \title{Make mutation count matrix of 96 trinucleotides}
 \usage{
-mut_matrix(grl, ref_genome, vcf_list = NA)
+mut_matrix(vcf_list, ref_genome)
 }
 \arguments{
-\item{grl}{GRangesList or GRanges object.}
+\item{vcf_list}{GRangesList or GRanges object.}
 
 \item{ref_genome}{BSGenome reference genome object}
-
-\item{vcf_list}{Deprecated argument. Replaced with grl}
 }
 \value{
 96 mutation count matrix
@@ -32,7 +30,7 @@ library(ref_genome, character.only = TRUE)
 
 ## Construct a mutation matrix from the loaded VCFs in comparison to the
 ## ref_genome.
-mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
+mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}

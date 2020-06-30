@@ -1,8 +1,7 @@
 #' Count the occurrences of each base substitution type
 #'
-#' @param grl GRangesList or GRanges object.
+#' @param vcf_list GRangesList or GRanges object.
 #' @param ref_genome BSGenome reference genome object
-#' @param vcf_list Deprecated argument. Replaced with grl
 #' @return data.frame with counts of each base substitution type for
 #' each sample in vcf_list
 #'
@@ -25,31 +24,26 @@
 #'
 #' @export
 
-mut_type_occurrences <- function(grl, ref_genome, vcf_list = NA) {
-  if (!.is_na(vcf_list)) {
-    warning("vcf_list is deprecated, use grl instead. 
-              The parameter grl is set equal to the parameter vcf_list.")
-    grl <- vcf_list
-  }
+mut_type_occurrences <- function(vcf_list, ref_genome) {
 
 
   # Convert to grl if necessary
-  if (inherits(grl, "list")) {
-    grl <- GenomicRanges::GRangesList(grl)
-  } else if (inherits(grl, "GRanges")) {
-    grl <- GenomicRanges::GRangesList(grl)
-    names(grl) <- "my_sample"
+  if (inherits(vcf_list, "list")) {
+    vcf_list <- GenomicRanges::GRangesList(vcf_list)
+  } else if (inherits(vcf_list, "GRanges")) {
+    vcf_list <- GenomicRanges::GRangesList(vcf_list)
+    names(vcf_list) <- "my_sample"
   }
 
   # Check that the seqnames of the gr and ref_genome match
-  .check_chroms(grl, ref_genome)
+  .check_chroms(vcf_list, ref_genome)
 
   # Check input
-  if (!inherits(grl, "CompressedGRangesList")) {
-    .not_gr_or_grl(grl)
+  if (!inherits(vcf_list, "CompressedGRangesList")) {
+    .not_gr_or_grl(vcf_list)
   }
 
-  n_samples <- length(grl)
+  n_samples <- length(vcf_list)
   df <- data.frame()
 
   CpG <- c("ACG", "CCG", "TCG", "GCG")
@@ -61,7 +55,7 @@ mut_type_occurrences <- function(grl, ref_genome, vcf_list = NA) {
   full_table <- NULL
   for (i in seq_len(n_samples))
   {
-    vcf <- grl[[i]]
+    vcf <- vcf_list[[i]]
     types <- mut_type(vcf)
 
     CT_context <- 0
@@ -82,7 +76,7 @@ mut_type_occurrences <- function(grl, ref_genome, vcf_list = NA) {
     df <- BiocGenerics::rbind(df, full_table)
   }
 
-  row.names(df) <- names(grl)
+  row.names(df) <- names(vcf_list)
   colnames(df) <- names(full_table)
   return(df)
 }

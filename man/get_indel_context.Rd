@@ -4,10 +4,10 @@
 \alias{get_indel_context}
 \title{Get indel contexts}
 \usage{
-get_indel_context(grl, ref_genome)
+get_indel_context(vcf_list, ref_genome)
 }
 \arguments{
-\item{grl}{GRanges or GRangesList object containing Indel mutations.
+\item{vcf_list}{GRanges or GRangesList object containing Indel mutations.
 The mutations should be called similarly to HaplotypeCaller.}
 
 \item{ref_genome}{BSGenome reference genome object}

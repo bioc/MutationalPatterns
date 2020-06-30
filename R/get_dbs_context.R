@@ -4,7 +4,7 @@
 #' It applies the get_dbs_context_gr function to each gr in the input,
 #' which works by changing the REF and ALT columns of the GRanges into the COSMIC types.
 #'
-#' @param grl GRanges/GRangesList
+#' @param vcf_list GRanges/GRangesList
 #'
 #' @return A version of the GRanges/GRangesList object, with modified REF and ALT columns.
 #'
@@ -24,17 +24,22 @@
 #' @importFrom magrittr %>%
 #' @export
 #'
-get_dbs_context <- function(grl) {
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, .get_dbs_context_gr) %>%
+get_dbs_context <- function(vcf_list) {
+  #Turn grl into list if needed.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
+  #Get dbs context per sample
+  if (inherits(vcf_list, "list")) {
+    grl <- purrr::map(vcf_list, .get_dbs_context_gr) %>%
       GRangesList()
     return(grl)
-  } else if (inherits(grl, "GRanges")) {
-    gr <- .get_dbs_context_gr(grl)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- .get_dbs_context_gr(vcf_list)
     return(gr)
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
 }
 

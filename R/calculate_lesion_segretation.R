@@ -12,7 +12,7 @@
 #' The size of the smallest run in this set is the rl20. The genomic span of
 #' the runs in this set is also calculated.
 #'
-#' @param grl GRangesList or GRanges object
+#' @param vcf_list GRangesList or GRanges object
 #' @param sample_names The name of the sample
 #' @param test The statistical test that should be used. Possible values:
 #'              * 'binomial' Binomial test based on the number of strand switches. (Default);
@@ -73,7 +73,7 @@
 #'   ref_genome = ref_genome,
 #'   chromosomes = chromosomes
 #' )
-calculate_lesion_segregation <- function(grl,
+calculate_lesion_segregation <- function(vcf_list,
                                          sample_names,
                                          test = c("binomial", "walf-wolfowitz", "rl20"),
                                          split_by_type = FALSE,
@@ -91,8 +91,8 @@ calculate_lesion_segregation <- function(grl,
       call. = FALSE
     )
   }
-  if (length(grl) != length(sample_names)) {
-    stop("The grl and the sample_names should be equally long.", call. = FALSE)
+  if (length(vcf_list) != length(sample_names)) {
+    stop("The vcf_list and the sample_names should be equally long.", call. = FALSE)
   }
 
   if (.is_na(ref_genome)) {
@@ -108,16 +108,20 @@ calculate_lesion_segregation <- function(grl,
     stop("The chromosomes need to be set when using test == rl20", call. = FALSE)
   }
 
+  #Turn grl into list.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
   # Perform lesion segregation on each GR
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_l <- as.list(grl)
-    strand_tb <- purrr::map2(gr_l, sample_names, function(gr, sample_name) {
+  if (inherits(vcf_list, "list")){
+    strand_tb <- purrr::map2(vcf_list, sample_names, function(gr, sample_name) {
       .calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
     }) %>%
       do.call(rbind, .)
-  } else if (inherits(grl, "GRanges")) {
+  } else if (inherits(vcf_list, "GRanges")) {
     strand_tb <- .calculate_lesion_segregation_gr(
-      grl,
+      vcf_list,
       sample_names,
       test,
       split_by_type,
@@ -125,7 +129,7 @@ calculate_lesion_segregation <- function(grl,
       chromosomes
     )
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
 
   # Multiple testing correction

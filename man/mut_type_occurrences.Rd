@@ -4,14 +4,12 @@
 \alias{mut_type_occurrences}
 \title{Count the occurrences of each base substitution type}
 \usage{
-mut_type_occurrences(grl, ref_genome, vcf_list = NA)
+mut_type_occurrences(vcf_list, ref_genome)
 }
 \arguments{
-\item{grl}{GRangesList or GRanges object.}
+\item{vcf_list}{GRangesList or GRanges object.}
 
 \item{ref_genome}{BSGenome reference genome object}
-
-\item{vcf_list}{Deprecated argument. Replaced with grl}
 }
 \value{
 data.frame with counts of each base substitution type for

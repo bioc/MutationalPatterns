@@ -62,7 +62,7 @@ test_that("An error is thrown when the arguments are incorrectly combined", {
     {
       calculate_lesion_segregation(grl, sample_names[1])
     },
-    "The grl and the sample_names should be equally long."
+    "The vcf_list and the sample_names should be equally long."
   )
   expect_error(
     {

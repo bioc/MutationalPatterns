@@ -4,13 +4,12 @@
 #' Make a mutation count matrix with 192 features: 96 trinucleotides and 2 strands,
 #' these can be transcription or replication strand
 #'
-#' @param grl GRangesList or GRanges object.
+#' @param vcf_list GRangesList or GRanges object.
 #' @param ref_genome BSGenome reference genome object
 #' @param ranges GRanges object with the genomic ranges of:
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or
 #' 2. (replication mode) the replication strand with 'strand_info' metadata
 #' @param mode "transcription" or "replication", default = "transcription"
-#' @param vcf_list Deprecated argument. Replaced with grl
 #'
 #' @return 192 mutation count matrix (96 X 2 strands)
 #'
@@ -71,31 +70,25 @@
 #'
 #' @export
 
-mut_matrix_stranded <- function(grl, 
+mut_matrix_stranded <- function(vcf_list, 
                                 ref_genome, 
                                 ranges,
-                                mode = "transcription", 
-                                vcf_list = NA) {
-  if (!missing("vcf_list")) {
-    warning(paste0("vcf_list is deprecated, use grl instead.\n",
-              "The parameter grl is set equal to the parameter vcf_list."),
-            call. = FALSE)
-    grl <- vcf_list
-  }
+                                mode = "transcription") {
+
 
   # Convert list to grl if necessary
-  if (inherits(grl, "list")) {
-    grl <- GenomicRanges::GRangesList(grl)
+  if (inherits(vcf_list, "list")) {
+    vcf_list <- GenomicRanges::GRangesList(vcf_list)
   }
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_sizes <- S4Vectors::elementNROWS(grl)
-    gr <- unlist(grl)
-  } else if (inherits(grl, "GRanges")) {
-    gr <- grl
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    gr_sizes <- S4Vectors::elementNROWS(vcf_list)
+    gr <- unlist(vcf_list)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- vcf_list
     gr_sizes <- length(gr)
     names(gr_sizes) <- "My_sample"
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
   strand <- mut_strand(gr, ranges, mode = mode)
   type_context <- type_context(gr, ref_genome)

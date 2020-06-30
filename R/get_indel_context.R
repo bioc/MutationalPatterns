@@ -4,7 +4,7 @@
 #' Determines the COSMIC context from a GRanges or GRangesList object containing Indel mutations.
 #' It applies the get_indel_context_gr function to each gr in the input.
 #'
-#' @param grl GRanges or GRangesList object containing Indel mutations.
+#' @param vcf_list GRanges or GRangesList object containing Indel mutations.
 #' The mutations should be called similarly to HaplotypeCaller.
 #' @param ref_genome BSGenome reference genome object
 #'
@@ -27,26 +27,31 @@
 #' ## Get the indel contexts
 #' get_indel_context(indel_grl, ref_genome)
 #' @family Indels
-#'
+#' @importFrom magrittr %>% 
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}, \code{\link{get_mut_type}}
 #'
 #' @export
 #'
-get_indel_context <- function(grl, ref_genome) {
+get_indel_context <- function(vcf_list, ref_genome) {
   # Check that the seqnames of the gr and ref_genome match
-  .check_chroms(grl, ref_genome)
+  .check_chroms(vcf_list, ref_genome)
 
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_l <- as.list(grl)
-    gr_list <- purrr::map(gr_l, function(x) .get_indel_context_gr(x, ref_genome))
-    grl <- GenomicRanges::GRangesList(gr_list)
+  #Turn grl into list if needed.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
+  #Get indel context per sample
+  if (inherits(vcf_list, "list")) {
+    grl <- purrr::map(vcf_list, function(x) .get_indel_context_gr(x, ref_genome)) %>% 
+      GenomicRanges::GRangesList()
     return(grl)
-  } else if (inherits(grl, "GRanges")) {
-    gr <- .get_indel_context_gr(grl, ref_genome)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- .get_indel_context_gr(vcf_list, ref_genome)
     return(gr)
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
 }
 

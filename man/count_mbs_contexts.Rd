@@ -4,10 +4,10 @@
 \alias{count_mbs_contexts}
 \title{Count MBS variants grouped by length.}
 \usage{
-count_mbs_contexts(grl)
+count_mbs_contexts(vcf_list)
 }
 \arguments{
-\item{grl}{GRanges or GRangesList object containing mbs variants.}
+\item{vcf_list}{GRanges or GRangesList object containing mbs variants.}
 }
 \value{
 A tibble containing the number of MBS per MBS length per gr.

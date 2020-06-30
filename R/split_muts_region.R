@@ -5,7 +5,7 @@
 #' The result is a GRangesList where each element contains the variants of one sample from one region.
 #' Variant that are not in any of the provided region are put in a list of 'other'.
 #'
-#' @param grl GRangesList or GRanges object
+#' @param vcf_list GRangesList or GRanges object
 #' @param ranges_grl GRangesList or GRanges object containing regions of interest
 #'
 #' @return GRangesList
@@ -40,32 +40,44 @@
 #' ))
 #'
 #' split_muts_region(grl, regions)
-split_muts_region <- function(grl, ranges_grl) {
+split_muts_region <- function(vcf_list, ranges_grl) {
+  
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   . <- NULL
 
-  if (inherits(grl, "CompressedGRangesList")) {
-    if (is.null(names(grl))) {
-      stop("Please set sample names (without dots) for the grl with `names(grl) = my_names`", call. = FALSE)
+  #Check arguments
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    
+    if (is.null(names(vcf_list))) {
+      stop("Please set sample names (without dots) for the vcf_list with `names(vcf_list) = my_names`", call. = FALSE)
     }
-    if (any(stringr::str_detect(names(grl), "\\."))) {
-      stop("The sample names of the grl should not contain dots. Please fix them with `names(grl) = my_names`", call. = FALSE)
+    if (any(stringr::str_detect(names(vcf_list), "\\."))) {
+      stop("The sample names of the vcf_list should not contain dots. Please fix them with `names(vcf_list) = my_names`", call. = FALSE)
     }
-    if (any(stringr::str_detect(names(ranges_grl), "\\."))) {
-      stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = FALSE)
-    }
-    gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, function(x) .split_muts_region_gr(x, ranges_grl)) %>%
+  }
+  if (any(stringr::str_detect(names(ranges_grl), "\\."))) {
+    stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = FALSE)
+  }
+    
+    
+  #Turn grl into list.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
+  #Get muttype per sample
+  if (inherits(vcf_list, "list")) {
+    grl <- purrr::map(vcf_list, function(x) .split_muts_region_gr(x, ranges_grl)) %>%
       purrr::map(as.list) %>% # Create a list of lists. Outer layer: samples. Inner layer: regions.
       do.call(c, .) %>%
       GenomicRanges::GRangesList()
     return(grl)
-  } else if (inherits(grl, "GRanges")) {
-    grl <- .split_muts_region_gr(grl, ranges_grl)
+  } else if (inherits(vcf_list, "GRanges")) {
+    grl <- .split_muts_region_gr(vcf_list, ranges_grl)
     return(grl)
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
 }
 

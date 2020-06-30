@@ -6,7 +6,7 @@
 #' They are merged into single variants.
 #' The type of variant can be chosen with type.
 #'
-#' @param grl GRanges/GRangesList
+#' @param vcf_list GRanges/GRangesList
 #' @param type The type of variant that will be returned.
 #'
 #' @return GRanges/GRangesList of the desired mutation type.
@@ -28,19 +28,25 @@
 #'
 #' @importFrom magrittr %>%
 #' @export
-get_mut_type <- function(grl, type = c("snv", "indel", "dbs", "mbs")) {
+get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
   type <- match.arg(type)
 
-  if (inherits(grl, "CompressedGRangesList")) {
-    gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, .get_mut_type_gr, type) %>%
+  
+  #Turn grl into list.
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    vcf_list <- as.list(vcf_list)
+  }
+  
+  #Get muttype per sample
+  if (inherits(vcf_list, "list")) {
+    grl <- purrr::map(vcf_list, .get_mut_type_gr, type) %>%
       GenomicRanges::GRangesList()
     return(grl)
-  } else if (inherits(grl, "GRanges")) {
-    gr <- .get_mut_type_gr(grl, type)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- .get_mut_type_gr(vcf_list, type)
     return(gr)
   } else {
-    .not_gr_or_grl(grl)
+    .not_gr_or_grl(vcf_list)
   }
 }
 

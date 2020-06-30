@@ -5,7 +5,7 @@
 \title{Calculate the amount of lesion segregation for a GRangesList or GRanges object.}
 \usage{
 calculate_lesion_segregation(
-  grl,
+  vcf_list,
   sample_names,
   test = c("binomial", "walf-wolfowitz", "rl20"),
   split_by_type = FALSE,
@@ -14,7 +14,7 @@ calculate_lesion_segregation(
 )
 }
 \arguments{
-\item{grl}{GRangesList or GRanges object}
+\item{vcf_list}{GRangesList or GRanges object}
 
 \item{sample_names}{The name of the sample}
 

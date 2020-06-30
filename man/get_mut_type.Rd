@@ -4,10 +4,10 @@
 \alias{get_mut_type}
 \title{Get variants with mut_type from GRanges}
 \usage{
-get_mut_type(grl, type = c("snv", "indel", "dbs", "mbs"))
+get_mut_type(vcf_list, type = c("snv", "indel", "dbs", "mbs"))
 }
 \arguments{
-\item{grl}{GRanges/GRangesList}
+\item{vcf_list}{GRanges/GRangesList}
 
 \item{type}{The type of variant that will be returned.}
 }

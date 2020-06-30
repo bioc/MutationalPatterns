@@ -3,7 +3,7 @@
 #' The strands of variants in a GRanges object is plotted.
 #' This way the presence of any lesion segregation is visualized.
 #'
-#' @param gr GRanges object
+#' @param vcf GRanges object
 #' @param per_chrom Boolean. Determines whether to create a separate plot per chromosome
 #' @param sample_name Name of the sample
 #'
@@ -27,18 +27,18 @@
 #'
 #' ## Plot lesion segregation per chromosome
 #' plot_lesion_segregation(gr, per_chrom = TRUE, sample_name = "Colon1")
-plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
+plot_lesion_segregation <- function(vcf, per_chrom = FALSE, sample_name = NA) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   max_pos <- start_mb <- notused <- NULL
 
   # Get strandedness
-  gr <- .get_strandedness_gr(gr)
-  tb <- .get_strandedness_tb(gr)
+  vcf <- .get_strandedness_gr(vcf)
+  tb <- .get_strandedness_tb(vcf)
 
   # Ensures that the entire chromosomes are plotted, even when mutations don't span the entire chromosome.
-  tb_limits <- GenomeInfoDb::seqlengths(gr) %>%
+  tb_limits <- GenomeInfoDb::seqlengths(vcf) %>%
     tibble::enframe(name = "seqnames", value = "max_pos") %>%
     dplyr::mutate(
       max_pos_mb = max_pos / 1000000,
@@ -60,7 +60,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
   }
 
   # Set point_sizes
-  point_size <- 100 / length(gr)
+  point_size <- 100 / length(vcf)
   if (per_chrom == TRUE) {
     point_size <- point_size * 5
   }

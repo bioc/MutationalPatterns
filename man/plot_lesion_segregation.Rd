@@ -4,10 +4,10 @@
 \alias{plot_lesion_segregation}
 \title{Plot the strands of variants to show lesion segregation}
 \usage{
-plot_lesion_segregation(gr, per_chrom = FALSE, sample_name = NA)
+plot_lesion_segregation(vcf, per_chrom = FALSE, sample_name = NA)
 }
 \arguments{
-\item{gr}{GRanges object}
+\item{vcf}{GRanges object}
 
 \item{per_chrom}{Boolean. Determines whether to create a separate plot per chromosome}
 

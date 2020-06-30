@@ -4,10 +4,10 @@
 \alias{split_muts_region}
 \title{Split GRangesList or GRanges based on a list of regions.}
 \usage{
-split_muts_region(grl, ranges_grl)
+split_muts_region(vcf_list, ranges_grl)
 }
 \arguments{
-\item{grl}{GRangesList or GRanges object}
+\item{vcf_list}{GRangesList or GRanges object}
 
 \item{ranges_grl}{GRangesList or GRanges object containing regions of interest}
 }

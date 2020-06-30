@@ -4,10 +4,10 @@
 \alias{get_dbs_context}
 \title{Get DBS context}
 \usage{
-get_dbs_context(grl)
+get_dbs_context(vcf_list)
 }
 \arguments{
-\item{grl}{GRanges/GRangesList}
+\item{vcf_list}{GRanges/GRangesList}
 }
 \value{
 A version of the GRanges/GRangesList object, with modified REF and ALT columns.

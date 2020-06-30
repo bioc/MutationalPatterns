@@ -4,10 +4,10 @@
 \alias{count_indel_contexts}
 \title{Count indel contexts}
 \usage{
-count_indel_contexts(grl)
+count_indel_contexts(vcf_list)
 }
 \arguments{
-\item{grl}{GRanges or GRangesList object containing Indel mutations in which the context was added with get_indel_context.}
+\item{vcf_list}{GRanges or GRangesList object containing Indel mutations in which the context was added with get_indel_context.}
 }
 \value{
 A tibble containing the number of indels per COSMIC context per gr.

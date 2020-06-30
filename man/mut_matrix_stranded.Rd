@@ -5,16 +5,10 @@
 \title{Make mutation count matrix of 96 trinucleotides with
 strand information}
 \usage{
-mut_matrix_stranded(
-  grl,
-  ref_genome,
-  ranges,
-  mode = "transcription",
-  vcf_list = NA
-)
+mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
 }
 \arguments{
-\item{grl}{GRangesList or GRanges object.}
+\item{vcf_list}{GRangesList or GRanges object.}
 
 \item{ref_genome}{BSGenome reference genome object}
 
@@ -23,8 +17,6 @@ mut_matrix_stranded(
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
-
-\item{vcf_list}{Deprecated argument. Replaced with grl}
 }
 \value{
 192 mutation count matrix (96 X 2 strands)

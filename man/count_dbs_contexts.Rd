@@ -4,10 +4,10 @@
 \alias{count_dbs_contexts}
 \title{Count DBS contexts}
 \usage{
-count_dbs_contexts(grl)
+count_dbs_contexts(vcf_list)
 }
 \arguments{
-\item{grl}{GRanges or GRangesList object containing DBS mutations in which the context was added with get_dbs_context.}
+\item{vcf_list}{GRanges or GRangesList object containing DBS mutations in which the context was added with get_dbs_context.}
 }
 \value{
 A tibble containing the number of DBS per COSMIC context per gr.
