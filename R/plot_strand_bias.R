@@ -55,7 +55,7 @@ plot_strand_bias <- function(strand_bias, colors = NA, sig_type = c("fdr", "p"))
   sig_plot <- log2_ratio_no1pseudo <- NULL
 
   # if colors parameter not provided, set to default colors
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS6
   }
 

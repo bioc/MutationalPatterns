@@ -56,16 +56,16 @@ split_muts_region <- function(grl, ranges_grl) {
       stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = FALSE)
     }
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, function(x) split_muts_region_gr(x, ranges_grl)) %>%
+    grl <- purrr::map(gr_l, function(x) .split_muts_region_gr(x, ranges_grl)) %>%
       purrr::map(as.list) %>% # Create a list of lists. Outer layer: samples. Inner layer: regions.
       do.call(c, .) %>%
       GenomicRanges::GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    grl <- split_muts_region_gr(grl, ranges_grl)
+    grl <- .split_muts_region_gr(grl, ranges_grl)
     return(grl)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -81,17 +81,17 @@ split_muts_region <- function(grl, ranges_grl) {
 #' @noRd
 #' @return GRangesList
 #'
-split_muts_region_gr <- function(gr, ranges_grl) {
+.split_muts_region_gr <- function(gr, ranges_grl) {
 
   # Get the muts overlapping the ranges_grl
   if (inherits(ranges_grl, "CompressedGRangesList")) {
     ranges_list <- as.list(ranges_grl)
-    gr_sub_l <- purrr::map(ranges_list, ~ get_muts_region(gr, .x))
+    gr_sub_l <- purrr::map(ranges_list, ~ .get_muts_region(gr, .x))
   } else if (inherits(ranges_grl, "GRanges")) {
-    gr_sub <- get_muts_region(gr, ranges_grl)
+    gr_sub <- .get_muts_region(gr, ranges_grl)
     gr_sub_l <- list("In_region" = gr_sub)
   } else {
-    not_gr_or_grl(ranges_grl)
+    .not_gr_or_grl(ranges_grl)
   }
 
   # Get the other muts
@@ -116,7 +116,7 @@ split_muts_region_gr <- function(gr, ranges_grl) {
 #' @noRd
 #' @return GRanges object
 #'
-get_muts_region <- function(gr, ranges) {
+.get_muts_region <- function(gr, ranges) {
   hits <- GenomicRanges::findOverlaps(gr, ranges)
   gr_sub <- gr[S4Vectors::queryHits(hits)]
   return(gr_sub)

@@ -62,7 +62,7 @@ plot_compare_mbs <- function(profile1, profile2,
   count <- size <- value <- muttype_total <- NULL
 
   # Create a comparison of the profiles.
-  comp <- create_profile_comparison(profile1, profile2, profile_names)
+  comp <- .create_profile_comparison(profile1, profile2, profile_names)
 
   # Transform to data frame
   counts <- comp$matrix %>%
@@ -75,7 +75,7 @@ plot_compare_mbs <- function(profile1, profile2,
     )
 
   # Add dummy non_visible data points to force y axis limits per facet
-  df_blank <- create_dummy_limits(counts[, c("size")], profile_names, profile_ymax, diff_ylim)
+  df_blank <- .create_dummy_limits(counts[, c("size")], profile_names, profile_ymax, diff_ylim)
 
   # Create plot
   fig <- ggplot(counts, aes(x = size, y = count, fill = size)) +

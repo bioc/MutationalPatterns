@@ -25,7 +25,7 @@
 
 mut_context <- function(vcf, ref_genome) {
   # Check that the seqnames of the gr and ref_genome match
-  check_chroms(vcf, ref_genome)
+  .check_chroms(vcf, ref_genome)
 
   ranges <- GenomicRanges::resize(vcf, 3, fix = "center")
 

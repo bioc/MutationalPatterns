@@ -98,7 +98,7 @@ enrichment_depletion_test <- function(x, by = c(),
   # Calculate fdr
   df <- dplyr::mutate(df,
     fdr = stats::p.adjust(pval, method = "fdr"),
-    significant_fdr = get_sig_star(fdr, fdr_cutoffs)
+    significant_fdr = .get_sig_star(fdr, fdr_cutoffs)
   )
 
   return(df)

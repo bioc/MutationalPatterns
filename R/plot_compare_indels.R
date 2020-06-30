@@ -67,7 +67,7 @@ plot_compare_indels <- function(profile1, profile2,
 
 
   # Create a comparison of the profiles.
-  comp <- create_profile_comparison(profile1, profile2, profile_names)
+  comp <- .create_profile_comparison(profile1, profile2, profile_names)
 
   # Separate muttype and muttype_sub. Then make data long
   counts <- comp$matrix %>%
@@ -79,7 +79,7 @@ plot_compare_indels <- function(profile1, profile2,
     dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Add dummy non_visible data points to force y axis limits per facet
-  df_blank <- create_dummy_limits(counts[, c("muttype", "muttype_sub")], profile_names, profile_ymax, diff_ylim)
+  df_blank <- .create_dummy_limits(counts[, c("muttype", "muttype_sub")], profile_names, profile_ymax, diff_ylim)
 
   # Set facet names
   facet_labs_x <- c("1: C", "1: T", "1: C", "1: T", 2, 3, 4, "5+", 2, 3, 4, "5+", 2, 3, 4, "5+")

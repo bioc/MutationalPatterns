@@ -53,12 +53,12 @@ plot_correlation_bootstrap <- function(contri_boots, per_sample = TRUE) {
       contri_boots_sample <- contri_boots[index, , drop = FALSE]
 
       # Create figure
-      fig <- plot_correlation_bootstrap_sample(contri_boots_sample, sample)
+      fig <- .plot_correlation_bootstrap_sample(contri_boots_sample, sample)
       figs[[i]] <- fig
     }
   } else {
     # Create figure for all samples combined.
-    figs <- plot_correlation_bootstrap_sample(contri_boots, "all")
+    figs <- .plot_correlation_bootstrap_sample(contri_boots, "all")
   }
   return(figs)
 }
@@ -74,7 +74,7 @@ plot_correlation_bootstrap <- function(contri_boots, per_sample = TRUE) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-plot_correlation_bootstrap_sample <- function(contri_boots, sample) {
+.plot_correlation_bootstrap_sample <- function(contri_boots, sample) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.

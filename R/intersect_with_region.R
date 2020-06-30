@@ -10,7 +10,7 @@
 #' @return A data.frame containing the overlapping mutations for a
 #' genomic region.
 
-intersect_with_region <- function(vcf, surveyed, region) {
+.intersect_with_region <- function(vcf, surveyed, region) {
   # Number of mutations in vcf file
   n_muts <- length(vcf)
 

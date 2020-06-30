@@ -71,7 +71,7 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 
     # Fit again
     fit_res <- fit_to_signatures(mut_mat_sample, my_signatures)
-    sim <- get_cos_sim_ori_vs_rec(mut_mat_sample, fit_res)
+    sim <- .get_cos_sim_ori_vs_rec(mut_mat_sample, fit_res)
 
     # Keep track of the cosine similarity and which signatures are removed.
     sims <- vector("list", nsigs)
@@ -95,7 +95,7 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 
       # Fit with new signature selection
       fit_res <- fit_to_signatures(mut_mat_sample, signatures_sel)
-      sim_new <- get_cos_sim_ori_vs_rec(mut_mat_sample, fit_res)
+      sim_new <- .get_cos_sim_ori_vs_rec(mut_mat_sample, fit_res)
 
       if (is.nan(sim_new) == TRUE) {
         sim_new <- 0
@@ -119,7 +119,7 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
     }
 
     # Plot how the cosine similarities decayed
-    sim_decay_fig <- plot_sim_decay(sims, removed_sigs, max_delta)
+    sim_decay_fig <- .plot_sim_decay(sims, removed_sigs, max_delta)
 
     # Perform final fit on selected signatures
     fit_res <- fit_to_signatures(mut_mat_sample, my_signatures)
@@ -165,7 +165,7 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 #' @return Cosine similarity
 #' @noRd
 #'
-get_cos_sim_ori_vs_rec <- function(mut_matrix, fit_res) {
+.get_cos_sim_ori_vs_rec <- function(mut_matrix, fit_res) {
   cos_sim_all <- cos_sim_matrix(mut_matrix, fit_res$reconstructed)
   cos_sim <- diag(cos_sim_all)
   mean_cos_sim <- mean(cos_sim)
@@ -186,7 +186,7 @@ get_cos_sim_ori_vs_rec <- function(mut_matrix, fit_res) {
 #' @noRd
 #' @return ggplot object
 #'
-plot_sim_decay <- function(sims, removed_sigs, max_delta) {
+.plot_sim_decay <- function(sims, removed_sigs, max_delta) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.

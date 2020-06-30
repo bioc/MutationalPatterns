@@ -106,7 +106,7 @@ read_vcfs_as_granges <- function(vcf_files,
   )
 
   # Read vcfs
-  grl <- purrr::map(vcf_files, read_single_vcf_as_grange, genome, group, change_seqnames) %>%
+  grl <- purrr::map(vcf_files, .read_single_vcf_as_grange, genome, group, change_seqnames) %>%
     GenomicRanges::GRangesList()
 
   # Filter for mutation type
@@ -144,7 +144,7 @@ read_vcfs_as_granges <- function(vcf_files,
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) {
+.read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) {
 
   # Use VariantAnnotation's readVcf, but only store the
   # GRanges information in memory.  This speeds up the
@@ -204,7 +204,7 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
         )
       },
       {
-        gr <- filter_seqlevels(gr, group, genome)
+        gr <- .filter_seqlevels(gr, group, genome)
       }
     )
   }
@@ -242,7 +242,7 @@ read_single_vcf_as_grange <- function(vcf_file, genome, group, change_seqnames) 
 #' @return A GRanges object
 #' @noRd
 #'
-filter_seqlevels <- function(gr, group, genome) {
+.filter_seqlevels <- function(gr, group, genome) {
   groups <- c()
   # These variables are needed to extract the possible seqlevels
   ref_style <- GenomeInfoDb::seqlevelsStyle(genome)

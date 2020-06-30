@@ -77,12 +77,12 @@ plot_compare_profiles <- function(profile1,
   full_context <- context <- NULL
 
   # if colors parameter not provided, set to default colors
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS6
   }
 
   # Create a comparison of the profiles.
-  comp <- create_profile_comparison(profile1, profile2, profile_names)
+  comp <- .create_profile_comparison(profile1, profile2, profile_names)
 
 
   # Get substitution and context. Then make data long for plotting.
@@ -99,8 +99,9 @@ plot_compare_profiles <- function(profile1,
 
 
   # Add dummy non_visible data points to force y axis limits per facet
-  df_blank <- create_dummy_limits(df[, c("substitution", "context")], profile_names, profile_ymax, diff_ylim)
+  df_blank <- .create_dummy_limits(df[, c("substitution", "context")], profile_names, profile_ymax, diff_ylim)
 
+  #Plotting parameters
   if (condensed == TRUE) {
     width <- 1
     spacing <- 0
@@ -109,6 +110,7 @@ plot_compare_profiles <- function(profile1,
     spacing <- 0.5
   }
 
+  #Create plot
   plot <- ggplot(data = df, aes(
     x = context,
     y = value,
@@ -156,7 +158,7 @@ plot_compare_profiles <- function(profile1,
 #' @return matrix with the relative profiles and the difference
 #' @noRd
 #'
-create_profile_comparison <- function(profile1, profile2, profile_names) {
+.create_profile_comparison <- function(profile1, profile2, profile_names) {
   s1_relative <- profile1 / sum(profile1)
   s2_relative <- profile2 / sum(profile2)
   diff <- s1_relative - s2_relative
@@ -199,7 +201,7 @@ create_profile_comparison <- function(profile1, profile2, profile_names) {
 #' @noRd
 #' @importFrom magrittr %>%
 #'
-create_dummy_limits <- function(df, profile_names, profile_ymax, diff_ylim) {
+.create_dummy_limits <- function(df, profile_names, profile_ymax, diff_ylim) {
   df_dummy <- df[c(1, 1, 1, 1), ] %>%
     dplyr::mutate(
       sample = c(profile_names, "Difference", "Difference"),

@@ -64,7 +64,7 @@ plot_rainfall <- function(vcf,
   location <- NULL
 
   # If colors parameter not provided, set to default colors
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS6
   }
 

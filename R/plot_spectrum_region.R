@@ -155,7 +155,7 @@ plot_spectrum_region <- function(type_occurrences,
   tb_per_sample <- dplyr::mutate(tb_per_sample, freq = ifelse(is.nan(freq), 0, freq))
 
   # Add sample groups
-  if (is_na(by)) {
+  if (.is_na(by)) {
     by <- "all"
   }
   tb_by <- tibble::tibble(

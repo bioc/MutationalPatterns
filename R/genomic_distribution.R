@@ -115,7 +115,7 @@
 genomic_distribution <- function(grl, surveyed_list, region_list, vcf_list = NA) {
 
   # Check arguments
-  if (!is_na(vcf_list)) {
+  if (!.is_na(vcf_list)) {
     warning("vcf_list is deprecated, use grl instead. 
               The parameter grl is set equal to the parameter vcf_list.", call. = FALSE)
     grl <- vcf_list
@@ -135,7 +135,7 @@ genomic_distribution <- function(grl, surveyed_list, region_list, vcf_list = NA)
   # Perform intersect with region over each combi of vcf and region.
   # Map over the region list. Within this loop map over the vcfs.
   df <- purrr::map(as.list(region_list), function(region) {
-    purrr::map2(as.list(grl), as.list(surveyed_list), intersect_with_region, region) %>%
+    purrr::map2(as.list(grl), as.list(surveyed_list), .intersect_with_region, region) %>%
       dplyr::bind_rows(.id = "sample")
   }) %>% dplyr::bind_rows(.id = "region")
 

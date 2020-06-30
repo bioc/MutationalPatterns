@@ -34,8 +34,8 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
   max_pos <- start_mb <- notused <- NULL
 
   # Get strandedness
-  gr <- get_strandedness_gr(gr)
-  tb <- get_strandedness_tb(gr)
+  gr <- .get_strandedness_gr(gr)
+  tb <- .get_strandedness_tb(gr)
 
   # Ensures that the entire chromosomes are plotted, even when mutations don't span the entire chromosome.
   tb_limits <- GenomeInfoDb::seqlengths(gr) %>%
@@ -54,7 +54,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 
   # Get x axis breaks
   if (nrow(tb)) {
-    x_axis_breaks <- lesion_get_x_axis_breaks(max(tb$start_mb), per_chrom = per_chrom)
+    x_axis_breaks <- .lesion_get_x_axis_breaks(max(tb$start_mb), per_chrom = per_chrom)
   } else {
     x_axis_breaks <- 50
   }
@@ -72,12 +72,12 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 
   # Create plots
   if (per_chrom == FALSE) {
-    fig <- plot_lesion_segregation_gg(tb, tb_limits, x_axis_breaks, point_size, sample_name)
+    fig <- .plot_lesion_segregation_gg(tb, tb_limits, x_axis_breaks, point_size, sample_name)
     return(fig)
   } else {
     tb_l <- split(tb, tb$seqnames)
     tb_limits_l <- split(tb_limits, tb_limits$seqnames)
-    fig_l <- mapply(plot_lesion_segregation_gg,
+    fig_l <- mapply(.plot_lesion_segregation_gg,
       tb_l, tb_limits_l,
       MoreArgs = list("x_axis_breaks" = x_axis_breaks, "point_size" = point_size, "sample_name" = sample_name),
       SIMPLIFY = FALSE
@@ -98,7 +98,7 @@ plot_lesion_segregation <- function(gr, per_chrom = FALSE, sample_name = NA) {
 #' @return Numeric vector of x_axis_breaks
 #' @noRd
 #'
-lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
+.lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
 
   # Set x-axis breaks
   if (per_chrom == TRUE) {
@@ -134,13 +134,13 @@ lesion_get_x_axis_breaks <- function(max_coord, per_chrom) {
 #' @import ggplot2
 #' @noRd
 #'
-plot_lesion_segregation_gg <- function(tb, tb_limits, x_axis_breaks, point_size, sample_name) {
+.plot_lesion_segregation_gg <- function(tb, tb_limits, x_axis_breaks, point_size, sample_name) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   y <- start_mb <- NULL
 
-  if (is_na(sample_name)) {
+  if (.is_na(sample_name)) {
     my_labs <- labs(y = "Strand", x = "Coordinate (mb)")
   } else {
     my_labs <- labs(y = "Strand", x = "Coordinate (mb)", title = sample_name)

@@ -27,14 +27,14 @@
 get_dbs_context <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, get_dbs_context_gr) %>%
+    grl <- purrr::map(gr_l, .get_dbs_context_gr) %>%
       GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- get_dbs_context_gr(grl)
+    gr <- .get_dbs_context_gr(grl)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -52,16 +52,16 @@ get_dbs_context <- function(grl) {
 #'
 #' @importFrom magrittr %>%
 #'
-get_dbs_context_gr <- function(gr) {
+.get_dbs_context_gr <- function(gr) {
 
   # Check that no indels are present.
-  check_no_indels(gr)
+  .check_no_indels(gr)
 
-  ref <- get_ref(gr)
+  ref <- .get_ref(gr)
   rev_main <- as.vector(ref) %in% c("AA", "GG", "AG", "CA", "GA", "GT")
   ref[rev_main] <- Biostrings::reverseComplement(ref[rev_main])
 
-  alt <- unlist(get_alt(gr))
+  alt <- unlist(.get_alt(gr))
   alt[rev_main] <- Biostrings::reverseComplement(alt[rev_main])
   alt_v <- as.vector(alt) # By making this a character vector the default %in% can be used.
 

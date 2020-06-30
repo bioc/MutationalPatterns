@@ -25,7 +25,7 @@
 #'
 #' @export
 mut_matrix <- function(grl, ref_genome, vcf_list = NA) {
-  if (!is_na(vcf_list)) {
+  if (!.is_na(vcf_list)) {
     warning(paste0("vcf_list is deprecated, use grl instead.\n",
               "The parameter grl is set equal to the parameter vcf_list."), 
             call. = FALSE)
@@ -46,7 +46,7 @@ mut_matrix <- function(grl, ref_genome, vcf_list = NA) {
     gr_sizes <- length(gr)
     names(gr_sizes) <- "My_sample"
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
   # Determine type and context of all mutations
   type_context <- type_context(gr, ref_genome)

@@ -43,7 +43,7 @@
 
 plot_strand <- function(strand_bias_df, mode = c("relative", "absolute"), colors = NA) {
   # if colors parameter not provided, set to default colors
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS6
   }
   mode <- match.arg(mode)

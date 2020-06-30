@@ -96,7 +96,7 @@ fit_to_signatures_bootstrapped <- function(mut_matrix,
   for (i in seq_len(n_boots)) {
 
     # Resample mut_mat
-    mut_mat_resampled <- resample_mut_mat(mut_matrix)
+    mut_mat_resampled <- .resample_mut_mat(mut_matrix)
 
     # Perform refit method
     if (method == "strict") {
@@ -153,7 +153,7 @@ fit_to_signatures_bootstrapped <- function(mut_matrix,
 #'
 #' @noRd
 #'
-resample_mut_mat <- function(mut_matrix) {
+.resample_mut_mat <- function(mut_matrix) {
   mut_mat_resampled <- apply(mut_matrix, 2, function(x) {
     total_muts <- sum(x)
     sample_weights <- x / total_muts

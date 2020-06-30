@@ -95,7 +95,7 @@ calculate_lesion_segregation <- function(grl,
     stop("The grl and the sample_names should be equally long.", call. = FALSE)
   }
 
-  if (is_na(ref_genome)) {
+  if (.is_na(ref_genome)) {
     if (split_by_type) {
       stop("The ref_genome needs to be set when split_by_type = TRUE", call. = FALSE)
     }
@@ -104,7 +104,7 @@ calculate_lesion_segregation <- function(grl,
     }
   }
 
-  if (is_na(chromosomes) & test == "rl20") {
+  if (.is_na(chromosomes) & test == "rl20") {
     stop("The chromosomes need to be set when using test == rl20", call. = FALSE)
   }
 
@@ -112,11 +112,11 @@ calculate_lesion_segregation <- function(grl,
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
     strand_tb <- purrr::map2(gr_l, sample_names, function(gr, sample_name) {
-      calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
+      .calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
     }) %>%
       do.call(rbind, .)
   } else if (inherits(grl, "GRanges")) {
-    strand_tb <- calculate_lesion_segregation_gr(
+    strand_tb <- .calculate_lesion_segregation_gr(
       grl,
       sample_names,
       test,
@@ -125,7 +125,7 @@ calculate_lesion_segregation <- function(grl,
       chromosomes
     )
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 
   # Multiple testing correction
@@ -159,7 +159,7 @@ calculate_lesion_segregation <- function(grl,
 #' @return A tibble containing the amount of lesions segregation for a single sample
 #' @noRd
 #'
-calculate_lesion_segregation_gr <- function(gr,
+.calculate_lesion_segregation_gr <- function(gr,
                                             sample_name = "sample",
                                             test = c("binomial", "walf-wolfowitz", "rl20"),
                                             split_by_type = FALSE,
@@ -181,8 +181,8 @@ calculate_lesion_segregation_gr <- function(gr,
   }
 
   # Get strand info
-  gr <- get_strandedness_gr(gr)
-  tb <- get_strandedness_tb(gr)
+  gr <- .get_strandedness_gr(gr)
+  tb <- .get_strandedness_tb(gr)
 
   if (test == "binomial") {
     # Perform analysis per base substitution type
@@ -202,7 +202,7 @@ calculate_lesion_segregation_gr <- function(gr,
         ))
         return(NA)
       }
-      check_chroms(gr, ref_genome)
+      .check_chroms(gr, ref_genome)
       type_context <- type_context(gr, ref_genome)
       full_context <- paste0(
         substr(type_context$context, 1, 1),
@@ -212,7 +212,7 @@ calculate_lesion_segregation_gr <- function(gr,
       tb_l <- split(tb, full_context)
 
       # Calculate strand switches for each of the 96 substitutions.
-      res_l <- purrr::map(tb_l, calculate_strand_switches)
+      res_l <- purrr::map(tb_l, .calculate_strand_switches)
       x <- purrr::map(res_l, "x") %>%
         unlist() %>%
         sum()
@@ -222,7 +222,7 @@ calculate_lesion_segregation_gr <- function(gr,
       res <- list("x" = x, "n" = n)
     } else {
       # Calculate strand switches
-      res <- calculate_strand_switches(tb)
+      res <- .calculate_strand_switches(tb)
     }
 
     # Check if mutations are present
@@ -248,7 +248,7 @@ calculate_lesion_segregation_gr <- function(gr,
     )
   } else if (test == "walf-wolfowitz") {
     # calculate if there is a significant deviation using the walf_wolfowitz_test
-    wolfowitz <- walf_wolfowitz_test(tb$strand)
+    wolfowitz <- .walf_wolfowitz_test(tb$strand)
     stat_tb <- tibble::tibble(
       p.value = wolfowitz$p,
       sd = wolfowitz$sd,
@@ -257,7 +257,7 @@ calculate_lesion_segregation_gr <- function(gr,
   } else if (test == "rl20") {
 
     # Calculate rl20 and genomic span
-    res <- rl20_gspan(tb)
+    res <- .rl20_gspan(tb)
 
     # Add total size of genome to calculate fraction.
     ref_genome <- BSgenome::getBSgenome(ref_genome)
@@ -278,9 +278,9 @@ calculate_lesion_segregation_gr <- function(gr,
 #' @return A GRanges object where the strands have been set.
 #' @noRd
 #'
-get_strandedness_gr <- function(gr) {
-  check_no_indels(gr)
-  strand(gr) <- ifelse(as.vector(get_ref(gr)) %in% c("C", "T"), "+", "-")
+.get_strandedness_gr <- function(gr) {
+  .check_no_indels(gr)
+  strand(gr) <- ifelse(as.vector(.get_ref(gr)) %in% c("C", "T"), "+", "-")
   GenomeInfoDb::seqlevelsStyle(gr) <- "NCBI" # This takes less space when plotting
 
   if (length(gr)) {
@@ -297,7 +297,7 @@ get_strandedness_gr <- function(gr) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-get_strandedness_tb <- function(gr) {
+.get_strandedness_tb <- function(gr) {
   tb <- as.data.frame(gr) %>%
     tibble::as_tibble() %>%
     dplyr::mutate(
@@ -316,13 +316,13 @@ get_strandedness_tb <- function(gr) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-calculate_strand_switches <- function(tb) {
+.calculate_strand_switches <- function(tb) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   . <- NULL
 
   strands_l <- split(tb$strand, tb$seqnames)
-  switches <- purrr::map(strands_l, calculate_strand_switch) %>%
+  switches <- purrr::map(strands_l, .calculate_strand_switch) %>%
     do.call("c", .)
   res <- list("x" = sum(switches), "n" = length(switches))
   return(res)
@@ -337,7 +337,7 @@ calculate_strand_switches <- function(tb) {
 #' @noRd
 #' @importFrom magrittr %>%
 #'
-calculate_strand_switch <- function(strand) {
+.calculate_strand_switch <- function(strand) {
   switches <- strand != dplyr::lead(strand)
   switches <- switches %>%
     stats::na.omit() %>%
@@ -357,7 +357,7 @@ calculate_strand_switch <- function(strand) {
 #'
 #' @noRd
 #'
-walf_wolfowitz_test <- function(strands) {
+.walf_wolfowitz_test <- function(strands) {
 
   # Remove factor
   strands <- as.character(strands)
@@ -405,7 +405,7 @@ walf_wolfowitz_test <- function(strands) {
 #' @return A list containing the rl20 and the genomic span
 #' @noRd
 #'
-rl20_gspan <- function(tb) {
+.rl20_gspan <- function(tb) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.

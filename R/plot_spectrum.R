@@ -85,7 +85,7 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
   error_bars <- match.arg(error_bars)
 
   # If colors parameter not provided, set to default colors
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS7
   }
 
@@ -102,7 +102,7 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
   }
 
   # If grouping variable not provided, set to "all"
-  if (is_na(by)) {
+  if (.is_na(by)) {
     by <- "all"
   }
 

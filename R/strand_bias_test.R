@@ -73,9 +73,9 @@ strand_bias_test <- function(strand_occurrences, p_cutoffs = 0.05, fdr_cutoffs =
   # Add significance stars and do multiple testing correction.
   df_strand <- df_strand %>%
     dplyr::mutate(
-      significant = get_sig_star(p_poisson, p_cutoffs),
+      significant = .get_sig_star(p_poisson, p_cutoffs),
       fdr = stats::p.adjust(p_poisson, method = "fdr"),
-      significant_fdr = get_sig_star(fdr, fdr_cutoffs)
+      significant_fdr = .get_sig_star(fdr, fdr_cutoffs)
     )
 
   return(df_strand)

@@ -49,7 +49,7 @@ plot_192_profile <- function(mut_matrix, colors = NA, ymax = 0.2, condensed = FA
 
   # Check color vector length
   # Colors for plotting
-  if (is_na(colors)) {
+  if (.is_na(colors)) {
     colors <- COLORS6
   }
   if (length(colors) != 6) {

@@ -54,7 +54,7 @@ lengthen_mut_matrix <- function(mut_matrix) {
   samples <- unique(sample_names)
   mut_mat_l <- purrr::map(samples, 
                           function(sample) mut_matrix[, sample == sample_names, drop = FALSE])
-  mut_matrix <- purrr::map(mut_mat_l, lengthen_mut_matrix_single_sample) %>%
+  mut_matrix <- purrr::map(mut_mat_l, .lengthen_mut_matrix_single_sample) %>%
     do.call(cbind, .)
   return(mut_matrix)
 }
@@ -68,7 +68,7 @@ lengthen_mut_matrix <- function(mut_matrix) {
 #' @noRd
 #' @return mut_matrix single sample
 #'
-lengthen_mut_matrix_single_sample <- function(mut_matrix) {
+.lengthen_mut_matrix_single_sample <- function(mut_matrix) {
   col_names <- colnames(mut_matrix)
   sample <- col_names %>%
     stringr::str_remove("\\..*") %>%

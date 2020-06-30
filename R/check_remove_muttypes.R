@@ -11,15 +11,15 @@
 #' @noRd
 #' @importFrom magrittr %>%
 
-check_no_multi_alts <- function(grl) {
+.check_no_multi_alts <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr <- unlist(grl)
   } else if (inherits(grl, "GRanges")) {
     gr <- grl
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
-  check_no_multi_alts_gr(gr)
+  .check_no_multi_alts_gr(gr)
   invisible(grl)
 }
 
@@ -36,8 +36,8 @@ check_no_multi_alts <- function(grl) {
 #' @noRd
 #' @importFrom magrittr %>%
 
-check_no_multi_alts_gr <- function(gr) {
-  alt <- get_alt(gr)
+.check_no_multi_alts_gr <- function(gr) {
+  alt <- .get_alt(gr)
   nr_alts <- alt %>%
     unlist() %>%
     length()
@@ -59,15 +59,15 @@ check_no_multi_alts_gr <- function(gr) {
 #' @return Invisibly returns its input when it succeeds.
 #'
 
-check_no_snvs <- function(grl) {
+.check_no_snvs <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr <- unlist(grl)
   } else if (inherits(grl, "GRanges")) {
     gr <- grl
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
-  check_no_snvs_gr(gr)
+  .check_no_snvs_gr(gr)
   invisible(grl)
 }
 
@@ -82,8 +82,8 @@ check_no_snvs <- function(grl) {
 #' @return Invisibly returns its input when it succeeds.
 #'
 
-check_no_snvs_gr <- function(gr) {
-  snv_f <- find_snv(gr)
+.check_no_snvs_gr <- function(gr) {
+  snv_f <- .find_snv(gr)
   nr_snv <- sum(snv_f)
   snv_present <- nr_snv >= 1
   if (snv_present) {
@@ -103,15 +103,15 @@ check_no_snvs_gr <- function(gr) {
 #' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #'
-check_no_indels <- function(grl) {
+.check_no_indels <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr <- unlist(grl)
   } else if (inherits(grl, "GRanges")) {
     gr <- grl
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
-  check_no_indels_gr(gr)
+  .check_no_indels_gr(gr)
   invisible(grl)
 }
 
@@ -125,8 +125,8 @@ check_no_indels <- function(grl) {
 #' @noRd
 #' @return Invisibly returns its input when it succeeds.
 #'
-check_no_indels_gr <- function(gr) {
-  snv_f <- find_snv(gr)
+.check_no_indels_gr <- function(gr) {
+  snv_f <- .find_snv(gr)
   nr_indel <- sum(!snv_f)
   snv_present <- nr_indel >= 1
   if (snv_present) {
@@ -148,17 +148,17 @@ check_no_indels_gr <- function(gr) {
 #' @param grl GRanges/GRangesList object
 #' @noRd
 #' @return A filtered version of the input GRanges/GRangesList object.
-remove_multi_alts_variants <- function(grl) {
+.remove_multi_alts_variants <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, remove_multi_alts_variants_gr) %>%
+    grl <- purrr::map(gr_l, .remove_multi_alts_variants_gr) %>%
       GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- remove_multi_alts_variants_gr(grl)
+    gr <- .remove_multi_alts_variants_gr(grl)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -171,8 +171,8 @@ remove_multi_alts_variants <- function(grl) {
 #' @noRd
 #' @return A filtered version of the input GRanges object.
 #'
-remove_multi_alts_variants_gr <- function(gr) {
-  alt <- get_alt(gr)
+.remove_multi_alts_variants_gr <- function(gr) {
+  alt <- .get_alt(gr)
   gr <- gr[IRanges::elementNROWS(alt) == 1]
   return(gr)
 }
@@ -185,17 +185,17 @@ remove_multi_alts_variants_gr <- function(gr) {
 #' @param grl GRanges/GRangesList object
 #' @noRd
 #' @return A filtered version of the input GRanges/GrangesList object.
-remove_snvs <- function(grl) {
+.remove_snvs <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, remove_snvs_gr) %>%
+    grl <- purrr::map(gr_l, .remove_snvs_gr) %>%
       GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- remove_snvs_gr(grl)
+    gr <- .remove_snvs_gr(grl)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -208,8 +208,8 @@ remove_snvs <- function(grl) {
 #' @noRd
 #' @return A filtered version of the input GRanges object.
 #'
-remove_snvs_gr <- function(gr) {
-  snv_f <- find_snv(gr)
+.remove_snvs_gr <- function(gr) {
+  snv_f <- .find_snv(gr)
   gr <- gr[!snv_f]
   return(gr)
 }
@@ -222,17 +222,17 @@ remove_snvs_gr <- function(gr) {
 #' @param grl GRanges/GRangesList object
 #' @noRd
 #' @return A filtered version of the input GRanges/GrangesList object.
-remove_indels <- function(grl) {
+.remove_indels <- function(grl) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, remove_indels_gr) %>%
+    grl <- purrr::map(gr_l, .remove_indels_gr) %>%
       GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- remove_indels_gr(grl)
+    gr <- .remove_indels_gr(grl)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -245,8 +245,8 @@ remove_indels <- function(grl) {
 #' @noRd
 #' @return A filtered version of the input GRanges object.
 #'
-remove_indels_gr <- function(gr) {
-  snv_f <- find_snv(gr)
+.remove_indels_gr <- function(gr) {
+  snv_f <- .find_snv(gr)
   gr <- gr[snv_f]
   return(gr)
 }
@@ -261,9 +261,9 @@ remove_indels_gr <- function(gr) {
 #' @noRd
 #' @return A boolean vector. It's TRUE for SNVs/MNVs and FALSE for Indels
 #'
-find_snv <- function(gr) {
-  check_no_multi_alts(gr)
-  snv_f <- width(get_ref(gr)) == width(unlist(get_alt(gr)))
+.find_snv <- function(gr) {
+  .check_no_multi_alts(gr)
+  snv_f <- width(.get_ref(gr)) == width(unlist(.get_alt(gr)))
   return(snv_f)
 }
 
@@ -277,7 +277,7 @@ find_snv <- function(gr) {
 #' @noRd
 #' @return An error
 #'
-not_gr_or_grl <- function(arg) {
+.not_gr_or_grl <- function(arg) {
   arg_name <- deparse(substitute(arg))
   arg_class <- class(arg)[[1]]
   stop(stringr::str_c(arg_name, " should be a CompressedGRangesList or GRanges object, instead it is a ", arg_class, " object.
@@ -300,13 +300,13 @@ not_gr_or_grl <- function(arg) {
 #'
 #' @return Invisibly returns the input grl
 #'
-check_chroms <- function(grl, ref_genome) {
+.check_chroms <- function(grl, ref_genome) {
   if (inherits(grl, "CompressedGRangesList")) {
     gr <- BiocGenerics::unlist(grl)
   } else if (inherits(grl, "GRanges")) {
     gr <- grl
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 
   # Get seq names
@@ -379,6 +379,6 @@ check_chroms <- function(grl, ref_genome) {
 #' @return Boolean
 #' @noRd
 #'
-is_na <- function(x) {
+.is_na <- function(x) {
   purrr::is_scalar_vector(x) && is.na(x)
 }

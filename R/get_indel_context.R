@@ -35,18 +35,18 @@
 #'
 get_indel_context <- function(grl, ref_genome) {
   # Check that the seqnames of the gr and ref_genome match
-  check_chroms(grl, ref_genome)
+  .check_chroms(grl, ref_genome)
 
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    gr_list <- purrr::map(gr_l, function(x) get_indel_context_gr(x, ref_genome))
+    gr_list <- purrr::map(gr_l, function(x) .get_indel_context_gr(x, ref_genome))
     grl <- GenomicRanges::GRangesList(gr_list)
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- get_indel_context_gr(grl, ref_genome)
+    gr <- .get_indel_context_gr(grl, ref_genome)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -69,27 +69,27 @@ get_indel_context <- function(grl, ref_genome) {
 #'
 #' @importFrom magrittr %>%
 #'
-get_indel_context_gr <- function(gr, ref_genome) {
+.get_indel_context_gr <- function(gr, ref_genome) {
 
   # Check that no snvs are present.
-  check_no_snvs(gr)
+  .check_no_snvs(gr)
 
   # Calculate indel size to determine main category
   ref_sizes <- gr %>%
-    get_ref() %>%
+    .get_ref() %>%
     width()
   alt_sizes <- gr %>%
-    get_alt() %>%
+    .get_alt() %>%
     unlist() %>%
     width()
   mut_size <- alt_sizes - ref_sizes
 
   # For the main indel categories, determine their sub categories. 
   # (Also split the big deletion categorie into repeat and micro homology.)
-  gr_1b_dels <- get_1bp_dels(gr, mut_size, ref_genome)
-  gr_1b_ins <- get_1bp_ins(gr, mut_size, ref_genome)
-  gr_big_dels <- get_big_dels(gr, mut_size, ref_genome)
-  gr_big_ins <- get_big_ins(gr, mut_size, ref_genome)
+  gr_1b_dels <- .get_1bp_dels(gr, mut_size, ref_genome)
+  gr_1b_ins <- .get_1bp_ins(gr, mut_size, ref_genome)
+  gr_big_dels <- .get_big_dels(gr, mut_size, ref_genome)
+  gr_big_ins <- .get_big_ins(gr, mut_size, ref_genome)
 
   gr <- c(gr_1b_dels, gr_1b_ins, gr_big_dels, gr_big_ins) %>%
     BiocGenerics::sort()
@@ -119,7 +119,7 @@ get_indel_context_gr <- function(gr, ref_genome) {
 #' @noRd
 #'
 #'
-get_1bp_dels <- function(gr, mut_size, ref_genome) {
+.get_1bp_dels <- function(gr, mut_size, ref_genome) {
 
   # Select mutations
   gr <- gr[mut_size == -1]
@@ -129,12 +129,12 @@ get_1bp_dels <- function(gr, mut_size, ref_genome) {
 
   # Get the deleted bases
   del_bases <- gr %>%
-    get_ref() %>%
+    .get_ref() %>%
     as.character() %>%
     substring(2)
 
   # Get the extended sequence.
-  seq <- get_extended_sequence(gr, 19, ref_genome)
+  seq <- .get_extended_sequence(gr, 19, ref_genome)
 
   # Check homopolymer length
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
@@ -176,7 +176,7 @@ get_1bp_dels <- function(gr, mut_size, ref_genome) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-get_1bp_ins <- function(gr, mut_size, ref_genome) {
+.get_1bp_ins <- function(gr, mut_size, ref_genome) {
 
   # Select mutations
   gr <- gr[mut_size == 1]
@@ -186,13 +186,13 @@ get_1bp_ins <- function(gr, mut_size, ref_genome) {
 
   # Get inserted bases.
   ins_bases <- gr %>%
-    get_alt() %>%
+    .get_alt() %>%
     unlist() %>%
     as.character() %>%
     substring(2)
 
   # Get extended sequence
-  seq <- get_extended_sequence(gr, 20, ref_genome)
+  seq <- .get_extended_sequence(gr, 20, ref_genome)
 
   # Check homopolymer length
   # For each mut replace the inserted basetype in the flanking sequence with Zs.
@@ -234,7 +234,7 @@ get_1bp_ins <- function(gr, mut_size, ref_genome) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-get_big_ins <- function(gr, mut_size, ref_genome) {
+.get_big_ins <- function(gr, mut_size, ref_genome) {
 
   # Select mutations
   gr <- gr[mut_size > 1]
@@ -245,7 +245,7 @@ get_big_ins <- function(gr, mut_size, ref_genome) {
 
   # Get inserted bases
   ins_bases <- gr %>%
-    get_alt() %>%
+    .get_alt() %>%
     unlist() %>%
     as.character() %>%
     substring(2)
@@ -255,7 +255,7 @@ get_big_ins <- function(gr, mut_size, ref_genome) {
   flank_dist <- biggest_ins * 20
 
   # Get extended sequence
-  seq <- get_extended_sequence(gr, flank_dist, ref_genome)
+  seq <- .get_extended_sequence(gr, flank_dist, ref_genome)
 
   # Determine nr. repeats.
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
@@ -296,7 +296,7 @@ get_big_ins <- function(gr, mut_size, ref_genome) {
 #' @importFrom magrittr %>%
 #' @noRd
 #'
-get_big_dels <- function(gr, mut_size, ref_genome) {
+.get_big_dels <- function(gr, mut_size, ref_genome) {
 
   # Select mutations
   gr <- gr[mut_size < -1]
@@ -307,7 +307,7 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
 
   # Get deleted bases
   del_bases <- gr %>%
-    get_ref() %>%
+    .get_ref() %>%
     as.character() %>%
     substring(2)
   biggest_dels <- del_bases %>%
@@ -316,7 +316,7 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
   flank_dist <- biggest_dels * 20
 
   # Find extended sequence
-  seq <- get_extended_sequence(gr, flank_dist, ref_genome)
+  seq <- .get_extended_sequence(gr, flank_dist, ref_genome)
 
   # Determine nr. repeats.
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
@@ -436,7 +436,7 @@ get_big_dels <- function(gr, mut_size, ref_genome) {
 #' @noRd
 #'
 #'
-get_extended_sequence <- function(gr, flank_dist, ref_genome) {
+.get_extended_sequence <- function(gr, flank_dist, ref_genome) {
   
   # Flank the granges object, to get a sequence, that can be searched for repeats. 
   # This can result in a warning message, when the flanked range extends 

@@ -49,14 +49,14 @@ count_dbs_contexts <- function(grl) {
 
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    counts_l <- purrr::map(gr_l, count_dbs_contexts_gr, categories)
+    counts_l <- purrr::map(gr_l, .count_dbs_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)
     colnames(counts) <- names(grl)
   } else if (inherits(grl, "GRanges")) {
-    counts <- count_dbs_contexts_gr(grl, categories)
+    counts <- .count_dbs_contexts_gr(grl, categories)
     colnames(counts) <- "My_sample"
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
   counts <- cbind(categories, counts)
   counts[is.na(counts)] <- 0
@@ -85,13 +85,13 @@ count_dbs_contexts <- function(grl) {
 #'
 #' @noRd
 #'
-count_dbs_contexts_gr <- function(gr, categories) {
+.count_dbs_contexts_gr <- function(gr, categories) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   REF <- ALT <- NULL
 
-  context <- cbind("REF" = as.vector(get_ref(gr)), "ALT" = as.vector(unlist(get_alt(gr))))
+  context <- cbind("REF" = as.vector(.get_ref(gr)), "ALT" = as.vector(unlist(.get_alt(gr))))
   counts <- context %>%
     tibble::as_tibble() %>%
     dplyr::group_by(REF, ALT) %>%

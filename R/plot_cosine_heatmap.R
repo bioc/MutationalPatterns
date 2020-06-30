@@ -87,9 +87,9 @@ plot_cosine_heatmap <- function(cos_sim_matrix, col_order = NA, row_order = NA, 
 
   # If cluster_rows is TRUE perform clustering. Else use supplied row_order or
   # the current column order.
-  if (!is_na(row_order) & cluster_rows == TRUE) {
+  if (!.is_na(row_order) & cluster_rows == TRUE) {
     stop("row_order can only be provided when cluster_rows is FALSE", call. = FALSE)
-  } else if (!is_na(row_order)) {
+  } else if (!.is_na(row_order)) {
     # check row_order argument
     if (!inherits(row_order, "character")) {
       stop("row_order must be a character vector", call. = FALSE)
@@ -121,9 +121,9 @@ plot_cosine_heatmap <- function(cos_sim_matrix, col_order = NA, row_order = NA, 
 
   # If cluster_cols is TRUE perform clustering. Else use supplied col_order or
   # the current column order.
-  if (!is_na(col_order) & cluster_cols == TRUE) {
+  if (!.is_na(col_order) & cluster_cols == TRUE) {
     stop("col_order can only be provided when cluster_cols is FALSE", call. = FALSE)
-  } else if (!is_na(col_order)) {
+  } else if (!.is_na(col_order)) {
     # check col_order argument
     if (!inherits(col_order, "character")) {
       stop("col_order must be a character vector", call. = FALSE)

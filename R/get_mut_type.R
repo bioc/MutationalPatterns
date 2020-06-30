@@ -33,14 +33,14 @@ get_mut_type <- function(grl, type = c("snv", "indel", "dbs", "mbs")) {
 
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    grl <- purrr::map(gr_l, get_mut_type_gr, type) %>%
+    grl <- purrr::map(gr_l, .get_mut_type_gr, type) %>%
       GenomicRanges::GRangesList()
     return(grl)
   } else if (inherits(grl, "GRanges")) {
-    gr <- get_mut_type_gr(grl, type)
+    gr <- .get_mut_type_gr(grl, type)
     return(gr)
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
 }
 
@@ -60,21 +60,21 @@ get_mut_type <- function(grl, type = c("snv", "indel", "dbs", "mbs")) {
 #'
 #' @return GRanges of the desired mutation type.
 
-get_mut_type_gr <- function(gr, type = c("snv", "indel", "dbs", "mbs")) {
+.get_mut_type_gr <- function(gr, type = c("snv", "indel", "dbs", "mbs")) {
   type <- match.arg(type)
 
   # Filter out bad variants
-  gr <- remove_multi_alts_variants(gr)
+  gr <- .remove_multi_alts_variants(gr)
 
   # Indels
   if (type == "indel") {
-    gr <- remove_snvs(gr)
+    gr <- .remove_snvs(gr)
     return(gr)
   }
 
   # Split SNVs into SNVs/DBS/MNVs
-  gr <- remove_indels(gr)
-  gr_l <- split_mbs_gr(gr)
+  gr <- .remove_indels(gr)
+  gr_l <- .split_mbs_gr(gr)
 
   not_mbs_f <- names(gr_l) %in% c(1, 2) # Determine which elements of the list are MNVs
   if (type == "snv" & "1" %in% names(gr_l)) {
@@ -115,13 +115,13 @@ get_mut_type_gr <- function(gr, type = c("snv", "indel", "dbs", "mbs")) {
 #' @return A list of granges
 #' @importFrom magrittr %>%
 #'
-split_mbs_gr <- function(gr, merge_muts = TRUE) {
+.split_mbs_gr <- function(gr, merge_muts = TRUE) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   . <- NULL
 
   # Validate input
-  check_no_indels(gr)
+  .check_no_indels(gr)
 
   # Return empty grl when initial input is empty
   if (!length(gr)) {
@@ -165,7 +165,7 @@ split_mbs_gr <- function(gr, merge_muts = TRUE) {
 
   # Merge dbs and mbs if the user wants this.
   if (mut_l != 1 & merge_muts == TRUE) {
-    gr_sub <- purrr::map(full_muts_i_l, function(i_v) merge_muts(gr[i_v])) %>%
+    gr_sub <- purrr::map(full_muts_i_l, function(i_v) .merge_muts(gr[i_v])) %>%
       do.call(base::c, .)
   } else {
     gr_sub <- gr[full_muts_i]
@@ -180,7 +180,7 @@ split_mbs_gr <- function(gr, merge_muts = TRUE) {
   if (length(gr) == 0) {
     return(gr_l)
   } else {
-    gr_l_deeper <- split_mbs_gr(gr)
+    gr_l_deeper <- .split_mbs_gr(gr)
     gr_l <- c(gr_l, gr_l_deeper)
   }
   return(gr_l)
@@ -198,22 +198,22 @@ split_mbs_gr <- function(gr, merge_muts = TRUE) {
 #' @noRd
 #'
 #' @return GRanges object with a single variant.
-merge_muts <- function(gr) {
+.merge_muts <- function(gr) {
 
   # Check input gr
-  check_no_indels(gr)
+  .check_no_indels(gr)
 
   # Use position and other values of the first mut.
   gr_new <- gr[1]
 
   # Combine refs, alts and quals
   gr_new$REF <- gr %>%
-    get_ref() %>%
+    .get_ref() %>%
     as.vector() %>%
     stringr::str_c(collapse = "") %>%
     Biostrings::DNAStringSet()
   gr_new$ALT <- gr %>%
-    get_alt() %>%
+    .get_alt() %>%
     unlist() %>%
     as.vector() %>%
     stringr::str_c(collapse = "") %>%

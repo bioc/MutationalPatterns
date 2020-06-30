@@ -85,9 +85,9 @@ plot_contribution_heatmap <- function(contribution, sig_order = NA, sample_order
 
   # If cluster_samples is TRUE perform clustering. Else use supplied sample_order or
   # the current column order.
-  if (!is_na(sample_order) & cluster_samples == TRUE) {
+  if (!.is_na(sample_order) & cluster_samples == TRUE) {
     stop("sample_order can only be provided when cluster_samples is FALSE", call. = FALSE)
-  } else if (!is_na(sample_order)) {
+  } else if (!.is_na(sample_order)) {
     # check sample_order argument
     if (!inherits(sample_order, "character")) {
       stop("sample_order must be a character vector", call. = FALSE)
@@ -119,9 +119,9 @@ plot_contribution_heatmap <- function(contribution, sig_order = NA, sample_order
 
   # If cluster_sigs is TRUE perform clustering. Else use supplied sig_order or
   # the current column order.
-  if (!is_na(sig_order) & cluster_sigs == TRUE) {
+  if (!.is_na(sig_order) & cluster_sigs == TRUE) {
     stop("sig_order can only be provided when cluster_sigs is FALSE", call. = FALSE)
-  } else if (!is_na(sig_order)) {
+  } else if (!.is_na(sig_order)) {
     # check sig_order argument
     if (!inherits(sig_order, "character")) {
       stop("sig_order must be a character vector", call. = FALSE)

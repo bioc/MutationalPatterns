@@ -21,10 +21,10 @@
 mutations_from_vcf <- function(vcf) {
 
   # Check that no indels are present.
-  check_no_indels(vcf)
+  .check_no_indels(vcf)
 
-  ref <- as.character(get_ref(vcf))
-  alt <- as.character(unlist(get_alt(vcf)))
+  ref <- as.character(.get_ref(vcf))
+  alt <- as.character(unlist(.get_alt(vcf)))
 
   muts <- paste(ref, alt, sep = ">")
   return(muts)

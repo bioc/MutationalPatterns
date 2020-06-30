@@ -31,14 +31,14 @@ count_mbs_contexts <- function(grl) {
 
   if (inherits(grl, "CompressedGRangesList")) {
     gr_l <- as.list(grl)
-    counts_l <- purrr::map(gr_l, count_mbs_contexts_gr, categories)
+    counts_l <- purrr::map(gr_l, .count_mbs_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)
     colnames(counts) <- names(grl)
   } else if (inherits(grl, "GRanges")) {
-    counts <- count_mbs_contexts_gr(grl, categories)
+    counts <- .count_mbs_contexts_gr(grl, categories)
     colnames(counts) <- "My_sample"
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
   counts <- cbind(categories, counts)
 
@@ -62,7 +62,7 @@ count_mbs_contexts <- function(grl) {
 #'
 #' @importFrom magrittr %>%
 #' @noRd
-count_mbs_contexts_gr <- function(gr, categories) {
+.count_mbs_contexts_gr <- function(gr, categories) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -70,7 +70,7 @@ count_mbs_contexts_gr <- function(gr, categories) {
 
   # Create count table
   counts_tb <- gr %>% # Determine different sizes
-    get_ref() %>%
+    .get_ref() %>%
     BiocGenerics::width() %>%
     tibble::enframe(value = "size") %>%
     dplyr::select(-name) %>%

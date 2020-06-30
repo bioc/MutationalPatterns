@@ -8,7 +8,7 @@
 #' @return DNAStringSet
 #' @noRd
 #'
-get_ref <- function(gr) {
+.get_ref <- function(gr) {
   gr_cols <- colnames(S4Vectors::mcols(gr))
   if ("REF" %in% gr_cols) {
     ref <- gr$REF
@@ -33,7 +33,7 @@ get_ref <- function(gr) {
 #' @return DNAStringSetList
 #' @noRd
 #'
-get_alt <- function(gr) {
+.get_alt <- function(gr) {
   gr_cols <- colnames(S4Vectors::mcols(gr))
   if ("ALT" %in% gr_cols) {
     alt <- gr$ALT

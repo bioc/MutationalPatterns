@@ -95,7 +95,7 @@ mut_matrix_stranded <- function(grl,
     gr_sizes <- length(gr)
     names(gr_sizes) <- "My_sample"
   } else {
-    not_gr_or_grl(grl)
+    .not_gr_or_grl(grl)
   }
   strand <- mut_strand(gr, ranges, mode = mode)
   type_context <- type_context(gr, ref_genome)

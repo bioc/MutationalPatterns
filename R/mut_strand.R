@@ -123,7 +123,7 @@ mut_strand <- function(vcf, ranges, mode = "transcription") {
 
     # Find reference allele of mutations (and strand of reference genome is
     # reported in vcf file).
-    ref <- get_ref(vcf_overlap)
+    ref <- .get_ref(vcf_overlap)
 
     # Find the strand of C or T (since we regard base substitutions as
     # C>X or T>X) which mutations have ref allele C or T.
@@ -187,7 +187,7 @@ mut_strand <- function(vcf, ranges, mode = "transcription") {
 
     # Combine the strand info from the mutation and the ranges.
     strand_repli <- ranges[overlap$region_id]$strand_info
-    match_f <- BiocGenerics::match(get_ref(vcf)[overlap$vcf_id], c("C", "T"), nomatch = 0L) > 0L
+    match_f <- BiocGenerics::match(.get_ref(vcf)[overlap$vcf_id], c("C", "T"), nomatch = 0L) > 0L
     strand_mut <- ifelse(match_f, "+", "-")
     strand_levels <- levels(ranges$strand_info)
     strand_f <- (strand_mut == "+" & strand_repli == strand_levels[1]) | (strand_mut == "-" & strand_repli == strand_levels[2])

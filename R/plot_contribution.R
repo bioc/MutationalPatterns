@@ -85,7 +85,7 @@ plot_contribution <- function(contribution,
   mode <- match.arg(mode)
 
   # optional subsetting if index parameter is provided
-  if (!is_na(index)) {
+  if (!.is_na(index)) {
     contribution <- contribution[, index]
   }
 
@@ -94,7 +94,7 @@ plot_contribution <- function(contribution,
   Sample <- Contribution <- Signature <- NULL
 
   # When working on NMF results, the contribution needs to be multiplied by the signature colSums.
-  if (mode == "absolute" & !is_na(signatures)) {
+  if (mode == "absolute" & !.is_na(signatures)) {
     # calculate signature contribution in absolute number of signatures
     total_signatures <- colSums(signatures)
     abs_contribution <- contribution * total_signatures
@@ -130,7 +130,7 @@ plot_contribution <- function(contribution,
     )
 
   # Allow custom color palettes.
-  if (!is_na(palette)) {
+  if (!.is_na(palette)) {
     plot <- plot + scale_fill_manual(name = "Signature", values = palette)
   }
 
