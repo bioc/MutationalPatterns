@@ -22,61 +22,59 @@
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
+#' @importFrom magrittr %>% 
+#'
 #' @export
 
 mut_type_occurrences <- function(vcf_list, ref_genome) {
 
-
-  # Convert to grl if necessary
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  count <- `C>A` <- `C>G` <- `C>T` <- `T>A` <- NULL 
+  `T>C` <- `T>G` <- `C>T at CpG` <- `C>T other` <- NULL
+  
+  # Convert list to grl if necessary
   if (inherits(vcf_list, "list")) {
     vcf_list <- GenomicRanges::GRangesList(vcf_list)
-  } else if (inherits(vcf_list, "GRanges")) {
-    vcf_list <- GenomicRanges::GRangesList(vcf_list)
-    names(vcf_list) <- "my_sample"
   }
-
-  # Check that the seqnames of the gr and ref_genome match
-  .check_chroms(vcf_list, ref_genome)
-
-  # Check input
-  if (!inherits(vcf_list, "CompressedGRangesList")) {
+  
+  # Determine nr mutations per sample
+  if (inherits(vcf_list, "CompressedGRangesList")) {
+    gr_sizes <- S4Vectors::elementNROWS(vcf_list)
+    gr <- BiocGenerics::unlist(vcf_list)
+  } else if (inherits(vcf_list, "GRanges")) {
+    gr <- vcf_list
+    gr_sizes <- length(gr)
+    names(gr_sizes) <- "My_sample"
+  } else {
     .not_gr_or_grl(vcf_list)
   }
-
-  n_samples <- length(vcf_list)
-  df <- data.frame()
-
-  CpG <- c("ACG", "CCG", "TCG", "GCG")
-  column_names <- c(
-    "C>A", "C>G", "C>T", "T>A", "T>C", "T>G",
-    "C>T at CpG", "C>T other"
-  )
-
-  full_table <- NULL
-  for (i in seq_len(n_samples))
-  {
-    vcf <- vcf_list[[i]]
-    types <- mut_type(vcf)
-
-    CT_context <- 0
-    CT_at_CpG <- 0
-    CT_at_other <- 0
-
-    CT_muts <- which(types == "C>T")
-    if (length(CT_muts) > 0) {
-      CT_context <- type_context(vcf[CT_muts], ref_genome)[[2]]
-      CT_at_CpG <- sum(!(is.na(BiocGenerics::match(CT_context, CpG))))
-      CT_at_other <- length(CT_muts) - CT_at_CpG
-    }
-
-    # Construct a table and handle missing mutation types.
-    full_table <- table(factor(types, levels = column_names))
-    full_table["C>T at CpG"] <- CT_at_CpG
-    full_table["C>T other"] <- CT_at_other
-    df <- BiocGenerics::rbind(df, full_table)
-  }
-
-  row.names(df) <- names(vcf_list)
-  colnames(df) <- names(full_table)
+  # Determine type and context of all mutations
+  type_context <- type_context(gr, ref_genome)
+  types = type_context$types
+  
+  #Split C>T in C>T other and C>T at CpG
+  C_T_i = types == "C>T"
+  types[C_T_i] = "C>T other"
+  CpG_f <- !is.na(BiocGenerics::match(type_context$context[C_T_i], 
+                                      c("ACG", "CCG", "TCG", "GCG")))
+  types[C_T_i][CpG_f] = "C>T at CpG"
+  types = factor(types, levels = c("C>A", "C>G", "T>A", "T>C", "T>G",
+                    "C>T at CpG", "C>T other"))
+  
+  # Create vector describing the sample of each variant
+  sample_vector <- rep(names(gr_sizes), gr_sizes) %>%
+    factor(levels = names(gr_sizes))
+  
+  #Count per sample then widen into dataframe.
+  df <- tibble::tibble("types" = types, "sample" = sample_vector) %>% 
+    dplyr::group_by(types, sample, .drop = FALSE) %>%
+    dplyr::summarise(count = dplyr::n(), .groups = "drop") %>% 
+    tidyr::pivot_wider(names_from = types, values_from = count) %>% 
+    dplyr::mutate(`C>T` =  `C>T at CpG` + `C>T other`) %>% 
+    dplyr::select(sample, `C>A`, `C>G`, `C>T`, `T>A`, 
+                  `T>C`, `T>G`, `C>T at CpG`, `C>T other`) %>% 
+    tibble::column_to_rownames("sample")
+  
   return(df)
 }
