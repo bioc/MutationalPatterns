@@ -23,7 +23,7 @@ devtools::load_all(DIR)
 ```
 
 A raw version of the new vignette can be found
-[here](../blob/master/vignettes/Introduction_to_MutationalPatterns.Rmd)
+[here](../master/vignettes/Introduction_to_MutationalPatterns.Rmd)
 
 ## Bioconductor version
 
