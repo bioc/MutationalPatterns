@@ -120,12 +120,12 @@ library(ref_genome, character.only = TRUE)
 
 ## Load example data SNVs
 
-We provided two example data sets with this package. The first consists of a
-subset of somatic SNV catalogues of 9 normal human adult stem cells from 3
-different tissues [@Blokzijl2016]. Additionally, we added 3 somatic mutation
-catalogues of healthy human hematopoietic stem cells [@Osorio2018]. These were
-added to demonstrate the new functions for dealing with indels, DBSs and MBSs.
-(The MBS were added in silico for demonstration purposes.)
+We provided two example data sets with this package. One consists of a subset of
+somatic SNV catalogues of 9 normal human adult stem cells from 3 different
+tissues (Blokzijl et al. 2016), and the other contains somatic indels and DBSs
+from 3 healthy human hematopoietic stem cells (Osorio et al. 2018). The MBS data
+you will find in the latter dataset was manually included by us to demonstrate
+some features of this package.
 
 This is how you can locate the VCF files of the example data from the first set.
 
@@ -203,7 +203,7 @@ indel_grl <- read_vcfs_as_granges(blood_vcf_fnames, blood_sample_names,
 
 ### Base substitution types
 
-You can retrieve base substitutions from the VCF GRanges object as "REF>ALT"
+You can retrieve base substitution types from the VCF GRanges object as "REF>ALT"
 using `mutations_from_vcf`:
 
 ```{r mutations_from_vcf}
@@ -307,7 +307,7 @@ grid.arrange(p4, p5, ncol = 2, widths = c(4, 2.3))
 First you should make a 96 trinucleodide mutation count matrix.
 (In contrast to previous versions this also works for single samples.)
 ```{r mut_matrix}
-mut_mat <- mut_matrix(grl = grl, ref_genome = ref_genome)
+mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
 head(mut_mat)
 ```
 
@@ -441,6 +441,7 @@ cophenetic correlation coefficient starts decreasing. Another approach is to
 choose the rank for which the plot of the residual sum of squares (RSS) between
 the input matrix and its estimate shows an inflection point.''
 
+In general, larger datasets allow you to use a higher rank.
 Here we will show NMF for SNVs. Performing NMF on other mutation types works the
 same way.
 
@@ -475,15 +476,18 @@ nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10)
 It's also possible to use variational bayes NMF. This could make it easier to
 determine, the correct rank. To do this you need to install the `r
 Biocpkg("ccfindR")` package. You can then determine the optimal number of
-signatures. This can again take a long time. (Warnings will occur when you use
-ranks that are too high, therefore this example will only use ranks 1 and 2.
-More samples allow you to try higher ranks.) The highest value in the plot is
-the mathematically optimal number of signatures. (A note of warning: The
+signatures, which can again take a long time. Warnings will occur when you use
+ranks that are too high. (In this example we avoid these warnings by
+using `nrun=1`, combined with a set seed. In practice you shouldn't use a rank
+that's too high and you should also use a higher number for nrun.) With a larger
+dataset you could try higher ranks. The highest value in the plot is the
+mathematically optimal number of signatures. (A note of warning: The
 mathematically optimal number doesn't necessarily make biological sense.)
 ```{r use_bayesnmf, message=FALSE}
 library("ccfindR")
 sc <- scNMFSet(count = mut_mat)
-estimate_bayes <- vb_factorize(sc, ranks = 1:2, nrun = 10, 
+set.seed(4)
+estimate_bayes <- vb_factorize(sc, ranks = 1:3, nrun = 1, 
                                progress.bar = FALSE, verbose = 0)
 plot(estimate_bayes)
 ```
