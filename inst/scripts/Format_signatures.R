@@ -53,3 +53,60 @@ write.table(signatures,
             row.names = FALSE,
             quote = FALSE)
 
+
+#Format COSMIC snv signatures
+format_COSMIC_signatures = function(in_fname, extra_sigs, out_fname, muttype){
+    
+    #Read main signature file
+    signatures = read.table(in_fname,
+               sep = ",",
+               stringsAsFactors = FALSE,
+               header = TRUE)
+    
+    if (!.is_na(extra_sigs)){
+        #Read separate signature files
+        sig_fnames = paste0("~/Downloads/sigProfiler_",
+                            muttype, 
+                            "_signatures_", 
+                            extra_sigs, 
+                            ".csv")
+        sigs_to_add_m = purrr::map(sig_fnames, ~read.table(.x, 
+                                                           sep = ",", 
+                                                           stringsAsFactors = FALSE, 
+                                                           header = TRUE)) %>% 
+            purrr::map(function(x) x[, ncol(x), drop = F]) %>% 
+            do.call(cbind, .)
+        
+        #Fix column names
+        colnames(sigs_to_add_m) = str_remove(colnames(sigs_to_add_m), "_GRCh37")
+        
+        #Combine in one single data.frame.
+        signatures = cbind(signatures, sigs_to_add_m)
+    }
+    #Write out
+    out_path = file.path("inst", "extdata", "signatures", out_fname)
+    write.table(signatures, 
+                out_path, 
+                sep = "\t",
+                row.names = FALSE,
+                quote = FALSE)
+    invisible(0)
+}
+format_COSMIC_signatures("~/Downloads/sigProfiler_SBS_signatures_2019_05_22.csv",
+                         paste0("SBS", c(86:90)),
+                         "snv_COSMIC_reference.txt",
+                         "SBS")
+
+format_COSMIC_signatures("~/Downloads/sigProfiler_ID_signatures.csv",
+                         paste0("ID", c(18)),
+                         "indel_COSMIC_reference.txt",
+                         "ID")
+
+format_COSMIC_signatures("~/Downloads/sigProfiler_DBS_signatures.csv",
+                         NA,
+                         "dbs_COSMIC_reference.txt",
+                         NA)
+
+format_COSMIC_signatures("~/Downloads/sigProfiler_TSB_signatures.csv",
+                         NA,
+                         "tsb_snv_COSMIC_reference.txt")

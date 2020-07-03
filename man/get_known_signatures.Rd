@@ -74,7 +74,7 @@ Please cite the associated papers if you use them.
 
 The COSMIC signatures were downloaded from:
 https://cancer.sanger.ac.uk/cosmic/signatures
-We used version 3.
+We used version 3.1.
 Paper:  Alexandrov, L.B. et al., 2020, Nature
 
 The SIGNAL signatures were downloaded from:

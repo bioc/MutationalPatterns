@@ -59,10 +59,10 @@ test_that("Output has correct class", {
 })
 
 test_that("Output has correct dimensions", {
-    expect_equal(dim(output), c(96, 47))
-    expect_equal(dim(output_artifact), c(96, 47))
+    expect_equal(dim(output), c(96, 54))
+    expect_equal(dim(output_artifact), c(96, 72))
     expect_equal(dim(output_dbs), c(78, 11))
-    expect_equal(dim(output_indel), c(83, 17))
+    expect_equal(dim(output_indel), c(83, 18))
     expect_equal(dim(output_tsb), c(192, 65))
     expect_equal(dim(output_signal), c(96, 29))
     expect_equal(dim(output_signal_arti), c(96, 41))
