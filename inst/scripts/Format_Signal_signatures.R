@@ -7,7 +7,8 @@ format_SIGNAL_signatures = function(fname){
     signatures =read.table(fname, 
                            header = TRUE, 
                            sep = "\t", 
-                           stringsAsFactors = FALSE)
+                           stringsAsFactors = FALSE,
+                           dec = ",")
     
     colnames(signatures)[1] = "Type_subtype"
     signatures = signatures %>% 
