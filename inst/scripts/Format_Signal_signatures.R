@@ -1,8 +1,9 @@
 #Script to convert a signature file from SIGNAL into the correct format for MutationalPatterns
 library(dplyr)
 library(stringr)
+library(readr)
 
-format_signatures = function(fname){
+format_SIGNAL_signatures = function(fname){
     signatures =read.table(fname, 
                            header = TRUE, 
                            sep = "\t", 
@@ -25,9 +26,29 @@ format_signatures = function(fname){
     invisible(0)
 }
 
-format_signatures("~/Downloads/snv_SIGNAL_tissuespec.txt")
-format_signatures("~/Downloads/snv_SIGNAL_ref.txt")
-format_signatures("~/Downloads/snv_SIGNAL_exposure.txt")
+format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_tissuespec.txt")
+format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_ref.txt")
+format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_exposure.txt")
 
 #DBS data was not on signature website, but has been extracted from the paper:
-# "A Compendium of Mutational Signatures of Environmental Agents"
+# "A Compendium of Mutational Signatures of Environmental Agents
+
+#Add sparse signatures from the paper:
+# "De Novo Mutational Signature Discovery in Tumor Genomes using SparseSignatures"
+signatures = read_tsv("~/Downloads/snv_SPARSE.txt", 
+                      col_types = cols(.default = "d", sig = "c"), 
+                      locale=locale(decimal_mark = ","))
+signatures = signatures %>% 
+    tidyr::pivot_longer(-sig, names_to = "Type_subtype", values_to = "values") %>% 
+    tidyr::pivot_wider(names_from = sig, values_from = values) %>% 
+    dplyr::mutate(Type = str_replace(Type_subtype, ".*\\[(.*)\\].*", "\\1"),
+                  SubType = str_remove_all(Type_subtype, "\\[|\\]|\\>[A-Z]")) %>% 
+    dplyr::select(-Type_subtype) %>% 
+    dplyr::select(Type, SubType, everything())
+
+write.table(signatures, 
+            "inst/extdata/signatures/snv_SPARSE.txt", 
+            sep = "\t",
+            row.names = FALSE,
+            quote = FALSE)
+
