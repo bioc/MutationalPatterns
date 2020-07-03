@@ -53,12 +53,8 @@ saveRDS(nmf_res, "inst/states/nmf_res_data.rds")
 nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
 saveRDS(nmf_res_strand, "inst/states/nmf_res_strand_data.rds")
 
-# Refit to signatures
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1, 2)])
+# Get signatures
+signatures <- get_known_signatures()
 
 # Normal refit
 fit_res <- fit_to_signatures(mut_mat, signatures)

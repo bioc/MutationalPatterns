@@ -2,11 +2,7 @@ context("test-merge_signatures")
 
 
 # Get signatures
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1, 2)])
+signatures <- get_known_signatures()
 
 ## Merge signatures
 output <- merge_signatures(signatures)

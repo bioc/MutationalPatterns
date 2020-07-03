@@ -19,11 +19,7 @@ dbs_counts <- count_dbs_contexts(grl_dbs_context)
 saveRDS(dbs_counts, "inst/states/blood_dbs_counts.rds")
 
 # Refit to signatures
-filename <- system.file("extdata/dbs_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1)])
+signatures <- get_known_signatures("dbs")
 
 
 fit_res <- fit_to_signatures(dbs_counts, signatures)

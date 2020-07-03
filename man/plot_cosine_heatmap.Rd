@@ -45,14 +45,8 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
-# You can download the signatures from the COSMIC website:
-# https://cancer.sanger.ac.uk/cosmic/signature
-## We copied the file into our package for your convenience.
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1, 2)])
+## Get signatures
+signatures <- get_known_signatures()
 
 ## Calculate the cosine similarity between each signature and each 96 mutational profile
 cos_matrix <- cos_sim_matrix(mut_mat, signatures)

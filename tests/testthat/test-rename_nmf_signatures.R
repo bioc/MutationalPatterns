@@ -7,11 +7,7 @@ nmf_res <- readRDS(system.file("states/nmf_res_data.rds",
 ))
 
 # Load signatures
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1, 2)])
+signatures <- get_known_signatures()
 
 # Run function
 output <- rename_nmf_signatures(nmf_res, signatures)

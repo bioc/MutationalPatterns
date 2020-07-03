@@ -25,15 +25,8 @@
 #' ## You can download the signatures from the COSMIC website:
 #' # https://cancer.sanger.ac.uk/cosmic/signatures
 #'
-#' ## We copied the file into our package for your convenience.
-#' filename <- system.file("extdata/snv_signatures_probabilities.txt",
-#'   package = "MutationalPatterns"
-#' )
-#' signatures <- read.table(filename, sep = "\t", header = TRUE)
-#'
-#' ## Remove unnecessary columns
-#' signatures <- as.matrix(signatures[, -c(1, 2)])
-#'
+#' ## Get signatures
+#' signatures <- get_known_signatures()
 #'
 #' ## Perform the fitting
 #' fit_res <- fit_to_signatures(mut_mat, signatures)
@@ -47,12 +40,8 @@
 #'   package = "MutationalPatterns"
 #' ))
 #'
-#' # Get indel signatures
-#' filename <- system.file("extdata/indel_signatures_probabilities.txt",
-#'   package = "MutationalPatterns"
-#' )
-#' signatures <- read.table(filename, sep = "\t", header = TRUE)
-#' signatures <- as.matrix(signatures[, -c(1)])
+#' ## Get signatures
+#' signatures <- get_known_signatures("indel")
 #'
 #' fit_to_signatures(indel_counts, signatures)
 #' @seealso \code{\link{mut_matrix}},\code{\link{fit_to_signatures_strict}},\code{\link{fit_to_signatures_bootstrapped}}

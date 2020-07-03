@@ -34,14 +34,8 @@ Merging is stopped when the maximum cosine similarity is lower than the limit.
 }
 \examples{
 
-## We copied the file into our package for your convenience.
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-
-## Remove unnecessary columns
-signatures <- as.matrix(signatures[, -c(1, 2)])
+## Get signatures
+signatures <- get_known_signatures()
 
 ## Merge signatures
 merge_signatures(signatures)

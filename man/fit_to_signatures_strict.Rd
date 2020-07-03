@@ -35,17 +35,8 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
-## You can download the signatures from the COSMIC website:
-# https://cancer.sanger.ac.uk/cosmic/signatures
-
-## We copied the file into our package for your convenience.
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-
-## Remove unnecessary columns
-signatures <- as.matrix(signatures[, -c(1, 2)])
+## Get signatures
+signatures <- get_known_signatures()
 
 ## Fit to signatures strict
 strict_refit <- fit_to_signatures_strict(mut_mat, signatures, max_delta = 0.05)
