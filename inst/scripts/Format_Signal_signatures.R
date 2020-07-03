@@ -26,8 +26,8 @@ format_SIGNAL_signatures = function(fname){
     invisible(0)
 }
 
-format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_tissuespec.txt")
-format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_ref.txt")
+format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_tissue.txt")
+format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_reference.txt")
 format_SIGNAL_signatures("~/Downloads/snv_SIGNAL_exposure.txt")
 
 #DBS data was not on signature website, but has been extracted from the paper:
@@ -47,7 +47,7 @@ signatures = signatures %>%
     dplyr::select(Type, SubType, everything())
 
 write.table(signatures, 
-            "inst/extdata/signatures/snv_SPARSE.txt", 
+            "inst/extdata/signatures/snv_SPARSE_reference.txt", 
             sep = "\t",
             row.names = FALSE,
             quote = FALSE)
