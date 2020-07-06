@@ -511,19 +511,12 @@ signatures that are already known. Therefore, it might be usefull to change the
 names of the NMF signatures to these already known signatures. This often makes
 it easier to interpret your results.
 
-To do this you first need to read in some already existing signatures.
-Mutational signatures can be downloaded from multiple sources. One of them is
-the COSMIC [website](https://cancer.sanger.ac.uk/cosmic/signatures). (After
-downloading you have to make sure that the order of the mutation types is the
-same as the MutationalPatterns standard. You can use the `match` function for
-this.) For convenience we have included the SNV, Indel and DBS COSMIC signatures
-in this package. You can load them like this:
+To do this you first need to read in some already existing signatures. Here we
+will use signatures from [COSMIC](https://cancer.sanger.ac.uk/cosmic/signatures)
+(v3.1) [@Alexandrov2020]. We will discuss how to use other signature matrixes
+later on.
 ```{r read_signatures}
-filename <- system.file("extdata/snv_signatures_probabilities.txt",
-  package = "MutationalPatterns"
-)
-signatures <- read.table(filename, sep = "\t", header = TRUE)
-signatures <- as.matrix(signatures[, -c(1, 2)])
+signatures = get_known_signatures()
 ```
 
 You can now change the names of the signatures extracted by NMF. In this example
@@ -839,6 +832,60 @@ It's also possible to look at the cosine similarities between samples.
 cos_sim_samples <- cos_sim_matrix(mut_mat, mut_mat)
 plot_cosine_heatmap(cos_sim_samples, cluster_rows = TRUE, cluster_cols = TRUE)
 ```
+
+
+## Using other signature matrixes
+
+So far we have used the SNV signatures from COSMIC. For your convenience we have
+also included Indel, DBS and transcription strand bias signatures in this
+package. Additionally, we included signatures from SIGNAL [@Kucab2019,
+@Degasperi2020]. These signature matrixes can all be loaded using the
+`get_known_signature` function. If you use any of these signature matrixes,
+please cite the associated paper. (The papers are listed in the functions
+documentation.)
+
+You can choose the mutation type like this:
+```{r load_signatures_indels}
+signatures_indel = get_known_signatures(muttype = "indel")
+signatures_indel[1:5, 1:5]
+```
+
+It's also possible to include possible artifacts:
+```{r}
+signatures_artifacts = get_known_signatures(incl_poss_artifacts = TRUE)
+dim(signatures_artifacts)
+```
+
+You can load the SIGNAL reference signatures like this:
+```{r load_signatures_signal}
+signatures_signal = get_known_signatures(source = "SIGNAL")
+signatures_signal[1:5, 1:5]
+```
+
+SINGAL also contains signatures based on drug exposures:
+```{r load_signatures_exposure}
+signatures_exposure = get_known_signatures(source = "SIGNAL", sig_type = "exposure")
+signatures_exposure[1:5, 1:5]
+```
+
+Finally, signal contains tissue specific signatures:
+```{r load_signatures_tissue}
+signatures_stomach = get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissue_type = "Stomach")
+signatures_stomach[1:5, 1:5]
+```
+
+Using an incorrect `tissue_type` will result in an error, showing all possible tissue types.
+(Not run here, to prevent the error.):
+```{r load_signatures_tissue_error, eval=FALSE}
+get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissue_type = "?")
+```
+
+A complete list of signature matrixes is shown in the documentation.
+
+Instead of using a signature file included in this package you can also download
+your own signature matrixes. If you do this you have to make sure that the order
+of the mutation types is the same as the MutationalPatterns standard. (You can
+use the `match` function for this.)
 
 
 # Strand bias analyses
@@ -1404,7 +1451,7 @@ text
 orientation of the y-axis.
 
 ```{r plot_spectrum_xaxis}
-p <- plot_spectrum(type_occurrences)
+p <- plot_spectrum(type_occurrences, legend = FALSE)
 p_axis <- p +
   theme(axis.text.y = element_text(size = 14, angle = 90))
 ```
