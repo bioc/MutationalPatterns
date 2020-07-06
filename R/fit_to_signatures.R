@@ -22,9 +22,6 @@
 #'   package = "MutationalPatterns"
 #' ))
 #'
-#' ## You can download the signatures from the COSMIC website:
-#' # https://cancer.sanger.ac.uk/cosmic/signatures
-#'
 #' ## Get signatures
 #' signatures <- get_known_signatures()
 #'
