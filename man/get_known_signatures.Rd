@@ -54,12 +54,14 @@ then an error is given.
 \details{
 Possible combinations:
 COSMIC: 
-- all muttypes.  
+- all muttypes.
 - reference
+- Can include possible artifacts for SNVs
 
 SIGNAL:
  - snv. (+ dbs, when using exposure signatures.)
  - all signature types
+ - Can include possible artifacts for reference SNVs
 
 SPARSE:
  - snv
@@ -81,6 +83,7 @@ The SIGNAL signatures were downloaded from:
 https://signal.mutationalsignatures.com/
 They were downloaded on: 03 July 2020.
 Paper: Andrea Degasperi et al., 2020, Nature Cancer
+Exposure paper: Jill E Kucab et al., 2019, Cell
 
 The SPARSE signatures were downloaded from:
 https://www.biorxiv.org/content/10.1101/384834v2
@@ -119,13 +122,15 @@ get_known_signatures(source = "SIGNAL", sig_type = "exposure")
 get_known_signatures("dbs", source = "SIGNAL", sig_type = "exposure")
 
 ## Get all tissue specific signatures from SIGNAL
-## You can use this to determine which tissues there are.
 get_known_signatures(source = "SIGNAL", sig_type = "tissue")
 
 ## Get Bladder specific signatures from SIGNAL
 get_known_signatures(source = "SIGNAL", 
 sig_type = "tissue", 
 tissue_type = "Bladder")
+
+## If you use an incorrect tissue_type an error is given,
+## showing all possible tissue_types.
 
 ## Get sparse signatures
 get_known_signatures(source = "SPARSE")
