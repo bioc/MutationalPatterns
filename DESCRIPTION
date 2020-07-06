@@ -42,9 +42,12 @@ Suggests:
     gridExtra (>= 2.2.1),
     rtracklayer (>= 1.32.2),
     ccfindR (>= 1.6.0),
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 biocViews: Genetics, SomaticMutation
 ZipData: NA
 LazyData: false
 RoxygenNote: 7.1.0
 Encoding: UTF-8
+VignetteBuilder: knitr
