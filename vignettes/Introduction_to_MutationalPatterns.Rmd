@@ -842,7 +842,9 @@ package. Additionally, we included signatures from SIGNAL [@Kucab2019,
 @Degasperi2020]. These signature matrixes can all be loaded using the
 `get_known_signature` function. If you use any of these signature matrixes,
 please cite the associated paper. (The papers are listed in the functions
-documentation.)
+documentation.) A complete list of signature matrixes is shown in the
+documentation.
+
 
 You can choose the mutation type like this:
 ```{r load_signatures_indels}
@@ -862,13 +864,13 @@ signatures_signal = get_known_signatures(source = "SIGNAL")
 signatures_signal[1:5, 1:5]
 ```
 
-SINGAL also contains signatures based on drug exposures:
+SIGNAL also contains signatures based on drug exposures:
 ```{r load_signatures_exposure}
 signatures_exposure = get_known_signatures(source = "SIGNAL", sig_type = "exposure")
 signatures_exposure[1:5, 1:5]
 ```
 
-Finally, signal contains tissue specific signatures:
+Finally, SIGNAL contains tissue specific signatures:
 ```{r load_signatures_tissue}
 signatures_stomach = get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissue_type = "Stomach")
 signatures_stomach[1:5, 1:5]
@@ -880,9 +882,23 @@ Using an incorrect `tissue_type` will result in an error, showing all possible t
 get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissue_type = "?")
 ```
 
-A complete list of signature matrixes is shown in the documentation.
 
-Instead of using a signature file included in this package you can also download
+The contribution of tissue specific signatures can be converted back to SIGNAL
+reference signatures. First fit the mutation matrix to tissue specific
+signatures:
+```{r convert_signatures_to_ref_1}
+fit_res_tissue <- fit_to_signatures(mut_mat, signatures_stomach)
+head(fit_res_tissue)
+```
+
+Then convert the contributions to reference signatures:
+```{r convert_signatures_to_ref_2}
+fit_res_tissue <- convert_sigs_to_ref(fit_res_tissue)
+head(fit_res_tissue)
+```
+
+
+Instead of using a signature matrix included in this package, you can also download
 your own signature matrixes. If you do this you have to make sure that the order
 of the mutation types is the same as the MutationalPatterns standard. (You can
 use the `match` function for this.)
