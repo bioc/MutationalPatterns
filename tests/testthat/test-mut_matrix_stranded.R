@@ -61,3 +61,15 @@ test_that("replication mode transforms correctly", {
   mut_mat_repli <- mut_matrix_stranded(input, ref_genome, repli_strand_granges, mode = "replication")
   expect_equal(mut_mat_repli, expected_repli)
 })
+
+
+# Test longer context
+output_longer <- mut_matrix_stranded(input, ref_genome, ranges = genes_hg19, extension = 2)
+
+test_that("Output has correct class", {
+  expect_true(inherits(output_longer, "matrix"))
+})
+
+test_that("Output has correct dimensions", {
+  expect_equal(dim(output_longer), c(3072, 9))
+})

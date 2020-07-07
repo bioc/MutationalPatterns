@@ -3,6 +3,8 @@
 #' @description Make 96 trinucleotide mutation count matrix
 #' @param vcf_list GRangesList or GRanges object.
 #' @param ref_genome BSGenome reference genome object
+#' @param extension The number of bases, that's extracted upstream and
+#' downstream of the base substitutions. (Default: 1).
 #' @return 96 mutation count matrix
 #'
 #' @examples
@@ -19,11 +21,14 @@
 #' ## Construct a mutation matrix from the loaded VCFs in comparison to the
 #' ## ref_genome.
 #' mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
+#' 
+#' ## Construct a mutation matrix with a larger context.
+#' mut_mat_longer <- mut_matrix(vcf_list = grl, ref_genome = ref_genome, extension = 2)
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}
 #'
 #' @export
-mut_matrix <- function(vcf_list, ref_genome) {
+mut_matrix <- function(vcf_list, ref_genome, extension = 1) {
 
   # Convert list to grl if necessary
   if (inherits(vcf_list, "list")) {
@@ -42,7 +47,7 @@ mut_matrix <- function(vcf_list, ref_genome) {
     .not_gr_or_grl(vcf_list)
   }
   # Determine type and context of all mutations
-  type_context <- type_context(gr, ref_genome)
+  type_context <- type_context(gr, ref_genome, extension)
 
   # Count the type and context to create the mut_mat
   mut_mat <- mut_96_occurrences(type_context, gr_sizes)

@@ -45,8 +45,8 @@ mut_192_occurrences <- function(type_context, strand, gr_sizes) {
   mut_mat_2 <- mut_96_occurrences(type_context_2, gr_sizes_2)
 
   # add names
-  names_1 <- paste(TRIPLETS_96, values[1], sep = "-")
-  names_2 <- paste(TRIPLETS_96, values[2], sep = "-")
+  names_1 <- paste(rownames(mut_mat_1), values[1], sep = "-")
+  names_2 <- paste(rownames(mut_mat_2), values[2], sep = "-")
 
   # combine matrixes
   mut_mat <- rbind(mut_mat_1, mut_mat_2)

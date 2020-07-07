@@ -4,19 +4,23 @@
 \alias{mut_context}
 \title{Retrieve context of base substitutions}
 \usage{
-mut_context(vcf, ref_genome)
+mut_context(vcf, ref_genome, extension = 1)
 }
 \arguments{
 \item{vcf}{A Granges object}
 
 \item{ref_genome}{Reference genome}
+
+\item{extension}{The number of bases, that's extracted upstream and
+downstream of the base substitutions. (Default: 1).}
 }
 \value{
 Character vector with the context of the base substitutions
 }
 \description{
 A function to extract the bases 3' upstream and 5' downstream of the base
-substitutions from the reference genome
+substitutions from the reference genome. The user an choose how many bases
+are extracted.
 }
 \examples{
 ## See the 'read_vcfs_as_granges()' example for how we obtained the
@@ -29,7 +33,11 @@ vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
+## Get the standard context
 mut_context <- mut_context(vcfs[[1]], ref_genome)
+
+## Get larger context
+mut_context_larger = mut_context(vcfs[[1]], ref_genome, extension = 2)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

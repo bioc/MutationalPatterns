@@ -9,11 +9,32 @@ input <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
   package = "MutationalPatterns"
 ))
 
+#Expected output
 expected <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
+#Run function
 output <- mut_matrix(input, ref_genome)
+output_longer <- mut_matrix(vcf_list = input, ref_genome = ref_genome, extension = 2)
+
+
+#Perform tests
+
+test_that("Output has correct class", {
+  expect_true(inherits(output, "matrix"))
+  expect_true(inherits(output_longer, "matrix"))
+})
+
+test_that("Output has correct dimensions", {
+  expect_equal(dim(output), c(96, 9))
+  expect_equal(dim(output_longer), c(1536, 9))
+})
+
+test_that("Number of variants in output is correct", {
+  expect_equal(colSums(output), elementNROWS(input))
+  expect_equal(colSums(output_longer), elementNROWS(input))
+})
 
 test_that("transforms correctly", {
   expect_equal(output, expected)

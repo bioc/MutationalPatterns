@@ -5,6 +5,8 @@
 #'
 #' @param vcf A CollapsedVCF object
 #' @param ref_genome Reference genome
+#' @param extension The number of bases, that's extracted upstream and
+#' downstream of the base substitutions. (Default: 1).
 #' @return Mutation types and context character vectors in a named list
 #'
 #'
@@ -18,15 +20,20 @@
 #' ## Load the corresponding reference genome.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
-#'
+#' 
+#' ## Get type context
 #' type_context <- type_context(vcfs[[1]], ref_genome)
+#' 
+#' ## Get larger type context
+#' type_context_larger <- type_context(vcfs[[1]], ref_genome, extension = 2)
+#' 
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #' \code{\link{mut_context}}
 #'
 #' @export
 
-type_context <- function(vcf, ref_genome) {
+type_context <- function(vcf, ref_genome, extension = 1) {
   # Deal with empty GRanges objects.
   if (length(vcf) == 0) {
     warning("Detected empty GRanges object.
@@ -36,7 +43,7 @@ type_context <- function(vcf, ref_genome) {
   }
 
   # Get the mut context
-  mut_context <- mut_context(vcf, ref_genome)
+  mut_context <- mut_context(vcf, ref_genome, extension)
 
   # Get the mutations
   muts <- mutations_from_vcf(vcf)

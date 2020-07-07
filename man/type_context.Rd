@@ -4,12 +4,15 @@
 \alias{type_context}
 \title{Retrieve context of base substitution types}
 \usage{
-type_context(vcf, ref_genome)
+type_context(vcf, ref_genome, extension = 1)
 }
 \arguments{
 \item{vcf}{A CollapsedVCF object}
 
 \item{ref_genome}{Reference genome}
+
+\item{extension}{The number of bases, that's extracted upstream and
+downstream of the base substitutions. (Default: 1).}
 }
 \value{
 Mutation types and context character vectors in a named list
@@ -29,7 +32,12 @@ vcfs <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 library(ref_genome, character.only = TRUE)
 
+## Get type context
 type_context <- type_context(vcfs[[1]], ref_genome)
+
+## Get larger type context
+type_context_larger <- type_context(vcfs[[1]], ref_genome, extension = 2)
+
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

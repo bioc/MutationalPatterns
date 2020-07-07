@@ -12,14 +12,17 @@ library(ref_genome, character.only = TRUE)
 # Get mutation context
 input <- unlist(vcfs)
 output <- mut_context(input, ref_genome)
+output_long <- mut_context(input, ref_genome, extension = 2)
 
 # Unit tests
 test_that("Output has correct class", {
   expect_true(inherits(output, c("character")))
+  expect_true(inherits(output_long, c("character")))
 })
 
 test_that("Output size is correct", {
   expect_equal(length(output), length(input))
+  expect_equal(length(output_long), length(input))
 })
 
 test_that("The 64 possible contexts are returned", {

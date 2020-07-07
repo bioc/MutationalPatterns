@@ -5,7 +5,13 @@
 \title{Make mutation count matrix of 96 trinucleotides with
 strand information}
 \usage{
-mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
+mut_matrix_stranded(
+  vcf_list,
+  ref_genome,
+  ranges,
+  mode = "transcription",
+  extension = 1
+)
 }
 \arguments{
 \item{vcf_list}{GRangesList or GRanges object.}
@@ -17,6 +23,9 @@ mut_matrix_stranded(vcf_list, ref_genome, ranges, mode = "transcription")
 2. (replication mode) the replication strand with 'strand_info' metadata}
 
 \item{mode}{"transcription" or "replication", default = "transcription"}
+
+\item{extension}{The number of bases, that's extracted upstream and
+downstream of the base substitutions. (Default: 1).}
 }
 \value{
 192 mutation count matrix (96 X 2 strands)
@@ -46,6 +55,11 @@ genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
   mode = "transcription"
+)
+
+## You can also use a longer context
+mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
+  mode = "transcription", extension = 2
 )
 
 ## Replication strand analysis:

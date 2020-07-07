@@ -10,7 +10,9 @@
 #' 1. (transcription mode) the gene bodies with strand (+/-) information, or
 #' 2. (replication mode) the replication strand with 'strand_info' metadata
 #' @param mode "transcription" or "replication", default = "transcription"
-#'
+#' @param extension The number of bases, that's extracted upstream and
+#' downstream of the base substitutions. (Default: 1).
+#' 
 #' @return 192 mutation count matrix (96 X 2 strands)
 #'
 #' @examples
@@ -34,6 +36,11 @@
 #'
 #' mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
 #'   mode = "transcription"
+#' )
+#' 
+#' ## You can also use a longer context
+#' mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
+#'   mode = "transcription", extension = 2
 #' )
 #'
 #' ## Replication strand analysis:
@@ -73,7 +80,8 @@
 mut_matrix_stranded <- function(vcf_list, 
                                 ref_genome, 
                                 ranges,
-                                mode = "transcription") {
+                                mode = "transcription",
+                                extension = 1) {
 
 
   # Convert list to grl if necessary
@@ -91,7 +99,7 @@ mut_matrix_stranded <- function(vcf_list,
     .not_gr_or_grl(vcf_list)
   }
   strand <- mut_strand(gr, ranges, mode = mode)
-  type_context <- type_context(gr, ref_genome)
+  type_context <- type_context(gr, ref_genome, extension)
   mut_mat <- mut_192_occurrences(type_context, strand, gr_sizes)
   return(mut_mat)
 }
