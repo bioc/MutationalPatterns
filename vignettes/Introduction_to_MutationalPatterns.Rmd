@@ -41,6 +41,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r, echo=FALSE}
 options(width = 96)
 library(ggplot2)
+library(BiocStyle)
 ```
 
 # Introduction
@@ -90,7 +91,7 @@ BiocManager::install("MutationalPatterns")
 You also need to load the package.
 This needs to be repeated every time you restart `R`.
 ```{r Load package, message=FALSE}
-# library(MutationalPatterns)
+#library(MutationalPatterns)
 library(devtools)
 load_all("~/surfdrive/Shared/Boxtel_General/Scripts/Git_submission/Freek_MutationalPatterns/MutationalPatterns/")
 ```
@@ -317,6 +318,17 @@ In this example we do this for 2 samples:
 plot_96_profile(mut_mat[, c(1, 7)])
 ```
 
+
+### Larger contexts
+
+It's also possible to look at larger mutational contexts. 
+However, this is only usefull if you have a large number of mutations.
+```{r}
+mut_mat_longcontext <- mut_matrix(grl, ref_genome, extension = 2)
+head(mut_mat_longcontext)
+```
+The `extension` argument also works for the `mut_context` and `type_context` functions.
+
 ## Indels
 
 First you should get the COSMIC indel contexts. This is done with
@@ -470,6 +482,16 @@ changing the nrun parameter to achieve stability and avoid bad local minima):
 ```{r extract_signatures}
 nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10)
 ```
+
+NMF also works on other mutation types like Indels and DBS. You can even combine
+matrixes from different mutation types to, for example, extract combined
+Indel/DBS signatures.
+```{r extract_signatures_snv_indel}
+combi_mat = rbind(indel_counts, dbs_counts)
+nmf_res_combi <- extract_signatures(combi_mat, rank = 2, nrun = 10)
+```
+
+
 
 ### Bayesian NMF
 
