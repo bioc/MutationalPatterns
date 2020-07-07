@@ -496,8 +496,8 @@ nmf_res_combi <- extract_signatures(combi_mat, rank = 2, nrun = 10)
 ### Bayesian NMF
 
 It's also possible to use variational bayes NMF. This could make it easier to
-determine, the correct rank. To do this you need to install the `r
-Biocpkg("ccfindR")` package. You can then determine the optimal number of
+determine, the correct rank. To do this you need to install the 
+`r Biocpkg("ccfindR")` package. You can then determine the optimal number of
 signatures, which can again take a long time. Warnings will occur when you use
 ranks that are too high. (In this example we avoid these warnings by
 using `nrun=1`, combined with a set seed. In practice you shouldn't use a rank
@@ -535,8 +535,8 @@ it easier to interpret your results.
 
 To do this you first need to read in some already existing signatures. Here we
 will use signatures from [COSMIC](https://cancer.sanger.ac.uk/cosmic/signatures)
-(v3.1) [@Alexandrov2020]. We will discuss how to use other signature matrixes
-later on.
+(v3.1) [@Alexandrov2020]. (We will discuss how to use other signature matrixes
+later.)
 ```{r read_signatures}
 signatures = get_known_signatures()
 ```
@@ -898,8 +898,9 @@ signatures_stomach = get_known_signatures(source = "SIGNAL", sig_type = "tissue"
 signatures_stomach[1:5, 1:5]
 ```
 
-Using an incorrect `tissue_type` will result in an error, showing all possible tissue types.
-(Not run here, to prevent the error.):
+Using an incorrect `tissue_type` will result in an error. This is usefull,
+because it shows all possible tissue types. (Not run here, to prevent the
+error.):
 ```{r load_signatures_tissue_error, eval=FALSE}
 get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissue_type = "?")
 ```
@@ -910,13 +911,13 @@ reference signatures. First fit the mutation matrix to tissue specific
 signatures:
 ```{r convert_signatures_to_ref_1}
 fit_res_tissue <- fit_to_signatures(mut_mat, signatures_stomach)
-head(fit_res_tissue)
+fit_res_tissue$contribution[1:5, 1:5]
 ```
 
 Then convert the contributions to reference signatures:
 ```{r convert_signatures_to_ref_2}
 fit_res_tissue <- convert_sigs_to_ref(fit_res_tissue)
-head(fit_res_tissue)
+fit_res_tissue$contribution[1:5, 1:5]
 ```
 
 
@@ -946,7 +947,7 @@ than one gene body on different strands.
 Start by getting gene definitions for your reference genome:
 ```{r get_genes}
 # For example get known genes table from UCSC for hg19 using
-# biocLite("TxDb.Hsapiens.UCSC.hg19.knownGene")
+# BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 genes_hg19
@@ -1101,7 +1102,7 @@ grid.arrange(ps1, ps2)
 ## Signatures with strand bias
 
 Strand bias can be included in signature analyses.
-We can for example perform NMF on a mutation count matrix with strand features:
+You can for example perform NMF on a mutation count matrix with strand features:
 ```{r extract_signatures_bias}
 nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
 colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
