@@ -1,4 +1,4 @@
-context("convert_sigs_to_ref")
+context("test-convert_sigs_to_ref")
 
 #Load mutation matrix
 mut_mat <- readRDS(system.file("states/mut_mat_data.rds",

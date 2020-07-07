@@ -1,4 +1,4 @@
-context("plot_contribution_heatmap")
+context("test-plot_contribution_heatmap")
 
 
 # Read in nmf results
