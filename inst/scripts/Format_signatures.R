@@ -2,6 +2,7 @@
 library(dplyr)
 library(stringr)
 library(readr)
+library(magrittr)
 
 format_SIGNAL_signatures = function(fname){
     signatures =read.table(fname, 
@@ -74,7 +75,7 @@ format_COSMIC_signatures = function(in_fname, extra_sigs, out_fname, muttype){
                                                            sep = ",", 
                                                            stringsAsFactors = FALSE, 
                                                            header = TRUE)) %>% 
-            purrr::map(function(x) x[, ncol(x), drop = F]) %>% 
+            purrr::map(function(x) x[, ncol(x), drop = FALSE]) %>% 
             do.call(cbind, .)
         
         #Fix column names
