@@ -22,6 +22,10 @@ saveRDS(grl, "inst/states/read_vcfs_as_granges_output.rds")
 mut_mat <- mut_matrix(grl, ref_genome)
 saveRDS(mut_mat, "inst/states/mut_mat_data.rds")
 
+mut_mat_extended <- mut_matrix(grl, ref_genome, extension = 2)
+saveRDS(mut_mat_extended, "inst/states/mut_mat_data_extended.rds")
+
+
 # Create  transcription strand matrix
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19)

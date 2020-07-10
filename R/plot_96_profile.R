@@ -36,7 +36,8 @@
 #' ## Generate the plot
 #' plot_96_profile(nmf_res$signatures)
 #' @seealso
-#' \code{\link{mut_matrix}}
+#' \code{\link{mut_matrix}},
+#' \code{\link{plot_profile_heatmap}}
 #'
 #' @export
 
@@ -55,7 +56,7 @@ plot_96_profile <- function(mut_matrix, colors = NA, ymax = 0.2, condensed = FAL
     stop("Provide colors vector with length 6", call. = FALSE)
   }
 
-  # Relative contribution
+  # Make contribution relative
   norm_mut_matrix <- apply(mut_matrix, 2, function(x) x / sum(x))
 
   # Get substitution and context from rownames and make long.

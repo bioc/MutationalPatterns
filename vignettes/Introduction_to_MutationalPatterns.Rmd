@@ -323,11 +323,17 @@ plot_96_profile(mut_mat[, c(1, 7)])
 
 It's also possible to look at larger mutational contexts. 
 However, this is only usefull if you have a large number of mutations.
-```{r}
-mut_mat_longcontext <- mut_matrix(grl, ref_genome, extension = 2)
-head(mut_mat_longcontext)
+```{r mut_mat_extendend_context}
+mut_mat_ext_context <- mut_matrix(grl, ref_genome, extension = 2)
+head(mut_mat_ext_context)
 ```
 The `extension` argument also works for the `mut_context` and `type_context` functions.
+
+You can visualize this matrix with a heatmap.
+```{r plot_profile_heatmap, fig.wide=TRUE}
+plot_profile_heatmap(mut_mat_ext_context, by = tissue)
+```
+
 
 ## Indels
 
@@ -860,8 +866,8 @@ plot_cosine_heatmap(cos_sim_samples, cluster_rows = TRUE, cluster_cols = TRUE)
 
 So far we have used the SNV signatures from COSMIC. For your convenience we have
 also included Indel, DBS and transcription strand bias signatures in this
-package. Additionally, we included signatures from SIGNAL [@Kucab2019,
-@Degasperi2020]. These signature matrixes can all be loaded using the
+package. Additionally, we included signatures from SIGNAL [@Kucab2019, @Degasperi2020].
+These signature matrixes can all be loaded using the
 `get_known_signature` function. If you use any of these signature matrixes,
 please cite the associated paper. (The papers are listed in the functions
 documentation.) A complete list of signature matrixes is shown in the
