@@ -162,7 +162,9 @@ plot_cosine_heatmap <- function(cos_sim_matrix, col_order = NA, row_order = NA, 
     geom_raster() +
     scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Cosine \nsimilarity", limits = c(0, 1.000000001)) +
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = 8),
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank()) +
     labs(x = NULL, y = NULL)
 
   # if plot_values is TRUE, add values to heatmap
