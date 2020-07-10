@@ -17,11 +17,13 @@
 #' mbs_counts <- readRDS(system.file("states/blood_mbs_counts.rds",
 #'   package = "MutationalPatterns"
 #' ))
+#' 
 #' ## Plot contexts
 #' plot_mbs_contexts(mbs_counts)
 #'
 #' ## Use a different y axis for all samples.
 #' plot_mbs_contexts(mbs_counts, same_y = FALSE)
+#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family MBS
@@ -69,17 +71,10 @@ plot_mbs_contexts <- function(counts, same_y = TRUE) {
     ) +
     labs(x = "MBS size", y = "Nr. of MBSs") +
     guides(fill = FALSE) +
-    theme_classic() +
+    theme_bw() +
     theme(
-      legend.background = element_rect(fill = "transparent", colour = NA),
-      legend.key = element_rect(fill = "transparent", colour = NA),
-      axis.text = element_text(
-        size = rel(0.8),
-        colour = "black"
-      ),
-      axis.ticks = element_line(colour = "black", size = 1),
-      axis.line = element_line(size = 1),
-      strip.background = element_blank()
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
     )
   return(fig)
 }

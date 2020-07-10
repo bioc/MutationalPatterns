@@ -16,6 +16,8 @@
 #' @param extra_labels A boolean describing whether extra labels should be added.
 #'     These can clarify the plot, but will shift when different plot widths are used.
 #'     We recommend saving a plot with a width of 12, when using this argument.
+#' @param condensed More condensed plotting format. Default = F.
+#' 
 #' @return A ggplot figure.
 #'
 #' @examples
@@ -33,6 +35,10 @@
 #'
 #' ## Add extra labels to make plot clearer
 #' plot_indel_contexts(indel_counts, extra_labels = TRUE)
+#' 
+#' ## Create a more condensed plot
+#' plot_indel_contexts(indel_counts, condensed = TRUE)
+#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -40,7 +46,7 @@
 #' @seealso \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}
 #'
 #' @export
-plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE) {
+plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, condensed = FALSE) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   count <- muttype <- muttype_sub <- muttype_total <- NULL
@@ -94,18 +100,29 @@ plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE) {
   } else {
     title <- x_lab <- ""
   }
+  
+  # Change plotting parameters based on whether plot should be condensed.
+  if (condensed == TRUE) {
+    width <- 1
+    spacing <- 0
+  } else {
+    width <- 0.6
+    spacing <- 0.5
+  }
 
   # Create figure
-  fig <- ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype)) +
+  fig <- ggplot(counts, aes(x = muttype_sub, y = count, fill = muttype, width = width)) +
     geom_bar(stat = "identity") +
     facet_grid(sample ~ muttype,
       scales = facet_scale, space = "free_x",
       labeller = labeller(muttype = facet_labs_x, sample = facet_labs_y)
     ) +
-    theme_minimal() +
     scale_fill_manual(values = colors) +
-    theme(panel.grid.major.x = element_blank(), strip.background = element_rect(fill = "cadetblue")) +
-    labs(fill = "Mutation type", title = title, y = "Nr of indels", x = x_lab)
+    theme_bw() +
+    labs(fill = "Mutation type", title = title, y = "Nr of indels", x = x_lab) +
+    theme(panel.grid.major.x = element_blank(),
+          panel.grid.minor.y = element_blank(),
+          panel.spacing.x = unit(spacing, "lines"))
 
   return(fig)
 }

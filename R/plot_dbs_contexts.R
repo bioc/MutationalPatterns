@@ -8,7 +8,8 @@
 #'
 #' @param counts A tibble containing the number of DBS per COSMIC context.
 #' @param same_y A boolean describing whether the same y axis should be used for all samples.
-#'
+#' @param condensed More condensed plotting format. Default = F.
+#' 
 #' @return A ggplot figure.
 #'
 #' @examples
@@ -23,6 +24,10 @@
 #'
 #' ## Use the same y axis for all samples.
 #' plot_dbs_contexts(dbs_counts, same_y = TRUE)
+#' 
+#' ## Create a more condensed plot
+#' plot_dbs_contexts(dbs_counts, condensed = TRUE)
+#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family DBS
@@ -30,7 +35,7 @@
 #' @seealso \code{\link{count_dbs_contexts}}, \code{\link{plot_main_dbs_contexts}}
 #'
 #' @export
-plot_dbs_contexts <- function(counts, same_y = FALSE) {
+plot_dbs_contexts <- function(counts, same_y = FALSE, condensed = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -70,12 +75,23 @@ plot_dbs_contexts <- function(counts, same_y = FALSE) {
   facet_labs_x <- stringr::str_c(levels(counts$REF), ">NN")
   names(facet_labs_x) <- levels(counts$REF)
 
-  # Create plot
+  # Change plotting parameters based on whether plot should be condensed.
+  if (condensed == TRUE) {
+    width <- 1
+    spacing <- 0
+  } else {
+    width <- 0.6
+    spacing <- 0.5
+  }
+  
+  # Set colours
   colors <- c(
     "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99",
     "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A"
   )
-  fig <- ggplot(counts, aes(x = ALT, y = count, fill = REF)) +
+  
+  #Create plot
+  fig <- ggplot(counts, aes(x = ALT, y = count, fill = REF, width = width)) +
     geom_bar(stat = "identity") +
     facet_grid(sample ~ REF,
       scales = facet_scale,
@@ -84,10 +100,11 @@ plot_dbs_contexts <- function(counts, same_y = FALSE) {
     ) +
     scale_fill_manual(guide = FALSE, values = colors) +
     labs(fill = "Mutation type", title = "", y = "Nr of DBSs", x = "") +
-    theme_minimal() +
+    theme_bw() +
     theme(
       panel.grid.major.x = element_blank(),
-      strip.background = element_rect(fill = "cadetblue"),
+      panel.grid.minor.y = element_blank(),
+      panel.spacing.x = unit(spacing, "lines"),
       axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
 

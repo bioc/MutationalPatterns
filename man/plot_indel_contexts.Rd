@@ -4,7 +4,12 @@
 \alias{plot_indel_contexts}
 \title{Plot the indel contexts}
 \usage{
-plot_indel_contexts(counts, same_y = FALSE, extra_labels = FALSE)
+plot_indel_contexts(
+  counts,
+  same_y = FALSE,
+  extra_labels = FALSE,
+  condensed = FALSE
+)
 }
 \arguments{
 \item{counts}{A tibble containing the number of indels per COSMIC context.}
@@ -14,6 +19,8 @@ plot_indel_contexts(counts, same_y = FALSE, extra_labels = FALSE)
 \item{extra_labels}{A boolean describing whether extra labels should be added.
 These can clarify the plot, but will shift when different plot widths are used.
 We recommend saving a plot with a width of 12, when using this argument.}
+
+\item{condensed}{More condensed plotting format. Default = F.}
 }
 \value{
 A ggplot figure.
@@ -47,6 +54,10 @@ plot_indel_contexts(indel_counts, same_y = TRUE)
 
 ## Add extra labels to make plot clearer
 plot_indel_contexts(indel_counts, extra_labels = TRUE)
+
+## Create a more condensed plot
+plot_indel_contexts(indel_counts, condensed = TRUE)
+
 }
 \seealso{
 \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}

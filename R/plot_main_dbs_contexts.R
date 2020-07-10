@@ -24,6 +24,7 @@
 #'
 #' ## Use the same y axis for all samples.
 #' plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
+#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family DBS
@@ -75,9 +76,10 @@ plot_main_dbs_contexts <- function(counts, same_y = FALSE) {
     facet_grid(sample ~ ., labeller = labeller(sample = facet_labs_y), scales = facet_scale) +
     labs(x = "", y = "Nr of DBSs") +
     scale_fill_manual(guide = FALSE, values = colors) +
-    theme_minimal() +
+    theme_bw() +
     theme(
       panel.grid.major.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
       axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5)
     )
   return(fig)

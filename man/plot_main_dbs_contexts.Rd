@@ -36,6 +36,7 @@ plot_main_dbs_contexts(dbs_counts)
 
 ## Use the same y axis for all samples.
 plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
+
 }
 \seealso{
 \code{\link{count_dbs_contexts}}, \code{\link{plot_dbs_contexts}}
