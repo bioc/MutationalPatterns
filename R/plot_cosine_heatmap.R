@@ -38,6 +38,9 @@
 #'
 #' ## In the above example, clustering is performed on the similarities of the samples with
 #' ## the signatures. It's also possible to cluster the signatures and samples on their (96) profile.
+#' ## This will generally give better results
+#' ## If you use the same signatures for different analyses, 
+#' ## then their order will also be consistent.
 #' hclust_cosmic <- cluster_signatures(signatures, method = "average")
 #' cosmic_order <- colnames(signatures)[hclust_cosmic$order]
 #' hclust_samples <- cluster_signatures(mut_mat, method = "average")

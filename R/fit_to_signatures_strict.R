@@ -1,5 +1,13 @@
 #' Fit mutational signatures to a mutation matrix with less overfitting
 #'
+#' Refitting signatures with this function suffers less from overfitting.
+#' The strictness of the refitting is dependent on 'max_delta'.
+#' A downside of this method is that it might increase signature misattribution.
+#' Different signatures might be attributed to similar samples.
+#' You can use 'fit_to_signatures_bootstrapped()', to see if this is happening.
+#' Using less signatures for the refitting will decrease this issue. Fitting
+#' less strictly will also decrease this issue.
+#'
 #' Find a linear non-negative combination of mutation signatures that
 #' reconstructs the mutation matrix. First an optimal reconstruction is achieved via `fit_to_signatures`.
 #' However, this is prone to overfitting.
@@ -42,6 +50,7 @@
 #'
 #' ## list of ggplots that shows how the cosine similarity was reduced during the iterations
 #' fig_l <- strict_refit$sim_decay_fig
+#' 
 fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 
   # These variables use non standard evaluation.

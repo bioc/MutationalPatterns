@@ -36,6 +36,7 @@ plot_main_indel_contexts(indel_counts)
 
 ## Use the same y axis for all samples.
 plot_main_indel_contexts(indel_counts, same_y = TRUE)
+
 }
 \seealso{
 \code{\link{count_indel_contexts}}, \code{\link{plot_indel_contexts}}

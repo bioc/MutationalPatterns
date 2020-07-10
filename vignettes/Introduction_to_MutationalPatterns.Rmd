@@ -880,7 +880,11 @@ signatures_indel = get_known_signatures(muttype = "indel")
 signatures_indel[1:5, 1:5]
 ```
 
-It's also possible to include possible artifacts:
+It's also possible to include signatures, that might be artifacts. Including
+these signatures can lead to more overfitting. Therefore we recommend against
+using them for most analyses. However, these signatures can be usefull to see if
+your data contains many sequencing artifacts, if you doubt the quality of your
+data.
 ```{r}
 signatures_artifacts = get_known_signatures(incl_poss_artifacts = TRUE)
 dim(signatures_artifacts)

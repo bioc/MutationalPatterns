@@ -49,7 +49,19 @@ As input it takes a 'type_occurrences' matrix that was calculated per genomic re
 To get a 'type_occurrences' matrix per region,
 first use the 'split_muts_region()' function on a GR or GRangesList.
 Then use the 'mut_type_occurrences' as you would normally.
-The by, colors and legend argument work the same as in plot_spectrum()'.
+The by, colors and legend argument work the same as in 'plot_spectrum()'.
+}
+\details{
+The y-axis can be plotted with three different modes. With
+'relative_sample_feature', the number of variants will be shown divided by
+the total number of variants in that sample and genomic region. This is
+generally the most usefull, because it allows you to compare the spectra off
+different regions. When you use 'relative_sample', the number of variants
+will be shown divided by the total number of variants in that sample. This
+can be usefull when you want to compare the number of mutations between
+regions. Finally, when you use 'absolute', the absolute mutation numbers are
+shown. This can be usefull when you want to compare the mutation load between
+different groups of samples.
 }
 \examples{
 ## See the 'split_muts_region()' example for how we obtained the

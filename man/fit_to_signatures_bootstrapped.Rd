@@ -42,13 +42,19 @@ mutation matrix. You can be more confident in the refitting results, when the di
 contributions are small between bootstrap iterations.
 }
 \details{
-The mutation matrix is resampled `n_boots` times.
+The mutation matrix is resampled 'n_boots' times.
 Resampling is done per column (sample) with replacement.
 The row weights are used as probabilities.
-On each resampled matrix the `fit_to_signatures` or `fit_to_signatures_strict` function
+On each resampled matrix the 'fit_to_signatures()' or 'fit_to_signatures_strict()' function
 is applied.
 In the end a matrix is returned with the contributions for each bootstrap iteration.
 Each row is a single bootstrap iteration from a single sample.
+The method you choose determines how strict the signature refitting is.
+The 'regular' and "regular_10+ methods often suffer from a lot of overfitting,
+however this is less of an issue when you refit on an limited number of signatures.
+The 'strict' method suffers less from overfitting, but can suffer from more
+signature misattribution. The best method will depend on your data and
+research question.
 }
 \examples{
 ## See the 'mut_matrix()' example for how we obtained the mutation matrix:
