@@ -126,19 +126,20 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       total_individuals = sum(value), total_mutations = sum(nmuts)
     ) %>%
     dplyr::mutate(total_individuals = sum(total_individuals), total_mutations = sum(total_mutations)) %>%
-    dplyr::mutate(
+    dplyr::mutate(# Calc 95% CI and sem
       sem = stdev / sqrt(total_individuals),
       error_95 = ifelse(total_individuals > 1, qt(0.975, df = total_individuals - 1) * sem, NA)
-    ) %>% # Calc 95% CI and sem
+    ) %>% 
     dplyr::ungroup() %>%
-    dplyr::mutate(
-      total_mutations = prettyNum(total_mutations, big.mark = ","), # Make pretty and add subtypes
+    dplyr::mutate(# Make pretty and add subtypes
+      total_mutations = prettyNum(total_mutations, big.mark = ","), 
       total_mutations = paste("No. mutations = ", total_mutations),
       error_pos = mean
     )
 
-  # Define colors for plotting
+  #Change some settings based on whether CT should be plotted separately.
   if (CT == FALSE) {
+    # Define colors for plotting
     colors <- colors[c(1, 2, 3, 5, 6, 7)]
   } # C>T stacked bar (distinction between CpG sites and other)
   else {
@@ -171,7 +172,8 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       axis.text.x = element_blank(),
       panel.grid.major.x = element_blank()
     )
-
+  
+  #Add individual points
   if (indv_points == TRUE) {
     # Add total_mutations column, which is necessary for faceting later
     tb_per_sample <- dplyr::left_join(tb_per_sample,
@@ -185,7 +187,7 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       )
   }
 
-  # check if standard deviation error bars can be plotted
+  # Add error bars
   if (sum(is.na(tb$stdev)) > 0 & error_bars != "none") {
     warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
               Use the argument: `error_bars = 'none'`, if you want to avoid this warning.",
@@ -211,14 +213,14 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
   }
 
 
-  # Facetting
+  # Perform facetting
   if (length(by) == 1) {
     plot <- plot + facet_wrap(~total_mutations)
   } else {
     plot <- plot + facet_wrap(by ~ total_mutations)
   }
 
-  # Legend
+  # Remove legend if required
   if (legend == FALSE) {
     plot <- plot + guides(fill = FALSE)
   }

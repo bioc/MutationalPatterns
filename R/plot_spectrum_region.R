@@ -102,6 +102,7 @@ plot_spectrum_region <- function(type_occurrences,
   `C>T at CpG` <- `C>T other` <- type <- amount <- stdev <- tot_muts <- lower <- upper <- freq <- NULL
   total_indv <- sem <- error_95 <- NULL
 
+  #Check arguments
   if (is.null(colors)) {
     colors <- COLORS6
   }
@@ -154,7 +155,7 @@ plot_spectrum_region <- function(type_occurrences,
   }
   tb_per_sample <- dplyr::mutate(tb_per_sample, freq = ifelse(is.nan(freq), 0, freq))
 
-  # Add sample groups
+  # Add sample grouping
   if (.is_na(by)) {
     by <- "all"
   }
@@ -165,7 +166,7 @@ plot_spectrum_region <- function(type_occurrences,
   tb_per_sample <- tb_per_sample %>%
     dplyr::left_join(tb_by, by = "sample")
 
-  # Combine samples based on groups
+  # Combine samples based on sample grouping
   tb <- tb_per_sample %>%
     dplyr::group_by(by, feature, type) %>%
     dplyr::summarise(stdev = sd(freq), 
@@ -208,6 +209,7 @@ plot_spectrum_region <- function(type_occurrences,
     }
   )
 
+  # Add individual points
   if (indv_points == TRUE) {
     # Add total_mutations column, which is necessary for faceting later
     fig <- fig +

@@ -36,7 +36,8 @@ library(ref_genome, character.only = TRUE)
 mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
 
 ## Construct a mutation matrix with a larger context.
-mut_mat_longer <- mut_matrix(vcf_list = grl, ref_genome = ref_genome, extension = 2)
+## This is most usefull when you have many mutations per sample.
+mut_mat_extended <- mut_matrix(vcf_list = grl, ref_genome = ref_genome, extension = 2)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}}
