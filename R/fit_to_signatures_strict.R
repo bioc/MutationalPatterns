@@ -133,10 +133,16 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
   decay_figs <- purrr::map(all_results, "sim_decay_fig")
   fit_res <- purrr::map(all_results, "fit_res")
 
-  # Combine the contribution of all samples and put it in a matrix
+  # Combine the contribution of all samples
   contribution <- purrr::map(fit_res, "contribution") %>%
     purrr::map(function(x) tibble::rownames_to_column(as.data.frame(x))) %>%
     purrr::reduce(dplyr::full_join, by = "rowname")
+  
+  # Fix signature order of contribution
+  correct_order <- colnames(signatures)[colnames(signatures) %in% contribution$rowname]
+  contribution <- contribution[match(correct_order, contribution$rowname),]
+  
+  #Turn contribution into matrix and remove NAs
   rownames(contribution) <- contribution$rowname
   contribution <- contribution %>%
     dplyr::select(-rowname) %>%
