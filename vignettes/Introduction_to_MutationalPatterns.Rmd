@@ -362,7 +362,7 @@ Finally the deletions with microhomology are shown.
 The x-axis at the bottom shows the number of repeat units. For mh deletions the 
 microhomology length is shown.
 ```{r, fig.wide=TRUE}
-plot_indel_contexts(indel_counts)
+plot_indel_contexts(indel_counts, condensed = TRUE)
 ```
 
 You can also choose to only plot the main contexts, 
