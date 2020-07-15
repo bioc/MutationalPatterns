@@ -1381,7 +1381,7 @@ different genomic regions.
 # Lesion segregation
 
 Large Watson versus Crick strand asymmetries can sometimes be observed in
-mutation spectra [@Aitken868679]. This can be the result of many DNA lesions
+mutation spectra [@Aitken2020]. This can be the result of many DNA lesions
 occurring during a single cell cycle. For example, many C>T lesions could occur.
 If these lesions aren't properly repaired before the next genome duplication,
 then the resulting sister chromatids will contain the incorrect "T" nucleotides
@@ -1389,7 +1389,7 @@ only on their parental strand. Incorrect "A" nucleotides will be incorporated on
 the newly synthesized strands. These sister chromatids will segregate into
 different daughter cells, which will have the C>T variants on different strands.
 The majority of mutations will be either on the Watson or the Crick strand. This
-process is known as lesion segregation [@Aitken868679]. 
+process is known as lesion segregation [@Aitken2020]. 
 
 Healthy human cells are 2n. Therefore, a daughter cell could inherit one copy of
 a specific chromosome with mutations on the Watson strand and one copy with
@@ -1456,7 +1456,7 @@ lesion_seg_type <- calculate_lesion_segregation(grl,
  
  
 The second mode of `calculate_lesion_segregation` uses the Walf-Wolfowitz test,
-which was used by @Aitken868679. This test checks whether the Watson and Crick
+which was used by @Aitken2020 This test checks whether the Watson and Crick
 strands are randomly distributed. It's results should generally be similar to
 the first mode.
 ```{r calculate_lesion_segregation_walf}
@@ -1478,7 +1478,7 @@ the part of the genome covered by these runs. If the rl20 is high and a decent
 part of the genome is covered by the strand specific runs, then this provides
 strong evidence of lesion segregation. A high rl20, combined with a low genomic
 span (<5%) is indicative of local clustering events like kataegis
-[@Aitken868679]. A downside of this method is that it doesn't generate a
+[@Aitken2020]. A downside of this method is that it doesn't generate a
 p-value.
 ```{r calculate_lesion_segregation_rl20}
 lesion_segretation_rl20 <- calculate_lesion_segregation(grl,

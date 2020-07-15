@@ -3,11 +3,11 @@
 #' This function calculates lesion segregation for a GRangesList or GRanges object.
 #' Lesion segregation is a large scale Watson versus Crick strand assymetry caused by 
 #' many DNA lesions occurring during a single cell cycle.
-#' It was first described in Aitken et al., 2019, (Biorxiv).
+#' It was first described in Aitken et al., 2020, Nature.
 #' See their paper for a more in-depth discussion of this phenomenon.
 #' This function can perform three different types of test to calculate lesion segregation.
 #' The first method is unique to this package, while the other two were also used by 
-#' Aitken et al., 2019.
+#' Aitken et al., 2020.
 #' The 'binomial' test is based on how often consecutive mutations are on different strands.
 #' The 'walf-wolfowitz' test checks if the strands are randomly distributed. It's not known
 #' which method is superior.
