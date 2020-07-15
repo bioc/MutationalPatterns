@@ -693,39 +693,17 @@ different, when they actually aren't. This is often the result of "flat"
 signatures, which are harder to fit. Signatures that are similar to each other
 can also cause this misattribution issue.
 
-One simple way of dealing with overfitting is to only use signatures with more
-than x attributed mutations. In this example we only use signatures with more
-than 10 mutations.
-```{r remove_sigs_low_contri}
-select <- which(rowSums(fit_res$contribution) > 10)
-plot_contribution(fit_res$contribution[select, ],
-  coord_flip = FALSE,
-  mode = "absolute"
-)
-```
-
-However, this only reduces overfitting slightly. Another way to deal with
-overfitting and the misattribution of signatures is by selecting a limited
-number of signatures that will be used for the refitting. When you are analyzing
-a liver sample you could for example only use signatures that are known to occur
-in liver. Using prior knowledge like this will reduce overfitting, but can also
-introduce bias. You won't be able to identify signatures, if you removed them
-beforehand. Another downside of this method is that you need prior knowledge of
-which signatures could be present.
-
-Merging similar signatures is another method that can reduce overfitting and the
-misattribution of signatures. This works by merging signatures whose cosine
-similarity is higher than a certain cutoff value. These merged signatures can
-then be used for refitting. The benefit of this method is that you don't need
-prior knowledge. However, interpreting the results might be more difficult. We
-can merge signatures like this:
-
-```{r Merge_signatures}
-merged_signatures <- merge_signatures(signatures, cos_sim_cutoff = 0.8)
-```
+One way to deal with overfitting and the misattribution of signatures is by
+selecting a limited number of signatures that will be used for the refitting.
+When you are analyzing a liver sample you could for example only use signatures
+that are known to occur in liver. This method is recommended by @Degasperi2020.
+Using prior knowledge like this will reduce overfitting, but can also introduce
+bias. You won't be able to identify signatures, if you removed them beforehand.
+Another downside of this method is that you need prior knowledge of which
+signatures could be present. We recommend using this method when possible.
 
 
-A fourth way of dealing with overfitting is by starting with a standard refit
+Another way of dealing with overfitting is by starting with a standard refit
 and then removing signatures that have little effect on how well a mutational
 profile can be reconstructed. This works in an iterative fashion. In each
 iteration the signature with the lowest contribution is removed and refitting is
@@ -766,6 +744,20 @@ plot_contribution(fit_res_strict$contribution,
 )
 ```
 
+
+A third method that can reduce overfitting and the misattribution of signatures
+is to merge similar signatures. This works by merging signatures whose cosine
+similarity is higher than a certain cutoff value. These merged signatures can
+then be used for refitting. The benefit of this method is that you don't need
+prior knowledge. For most common use-cases, we don't recommend this method,
+because it is less conventional and can be harder to interpret. However, we
+provide it here to give you the possibility to use it if you need it. You can
+merge signatures like this:
+
+```{r Merge_signatures}
+merged_signatures <- merge_signatures(signatures, cos_sim_cutoff = 0.8)
+```
+
 The best refitting method will depend on your data and research question. A
 single method can be used, but it's also possible to combine several methods.
 
@@ -784,15 +776,13 @@ refit is performed for each iteration, resulting in an estimate of the refitting
 stability. In MutationalPatterns bootstrapping can be done with
 `fit_to_signatures_bootstrapped`.
 
-This function can be used with the different refitting methods described
-previously. Here we will use the "regular_10+" method on two samples, as its
-much faster than strict refitting. This will perform regular refitting, but
-remove all signatures with less than 10 attributed mutations.
+This function can be used with the standard and strict refitting methods
+described previously. Here we will use the "strict" method on two samples.
 ```{r fit_to_signatures_bootstrapped, message=FALSE}
 contri_boots <- fit_to_signatures_bootstrapped(mut_mat[, c(3, 7)],
   signatures,
   n_boots = 100,
-  method = "regular_10+"
+  method = "strict"
 )
 ```
 
@@ -809,9 +799,9 @@ plot_bootstrapped_contribution(contri_boots,
                                plot_type = "boxplot")
 ```
 
-We can see that SBS1 is quite stable in the first sample. However, SBS5 is very
-unstable in the second sample. This instability is likely the result of SBS5
-being very flat.
+We can see that SBS1 is relatively stable in the first sample. However, SBS5 is
+very unstable in the second sample. This instability is likely the result of
+SBS5 being very flat.
 
 You can also plot the correlation between signatures. A negative correlation
 between two signatures means that their contributions were high in different
@@ -1446,7 +1436,8 @@ together. However, a mutational process might cause multiple types of base
 substitutions, which aren't necessarily considered to be on the same strand.
 Therefore, it might be usefull to calculate the number of strand switches per
 mutation type and then sum up the results. In this case the reference genome
-also needs to be set.
+also needs to be set. We recommend using this when you have a sample with
+suspected lesion segregation and multiple common types of base substitutions.
 ```{r calculate_lesion_segregation_split}
 lesion_seg_type <- calculate_lesion_segregation(grl,
                                                 sample_names,
@@ -1479,7 +1470,9 @@ part of the genome is covered by the strand specific runs, then this provides
 strong evidence of lesion segregation. A high rl20, combined with a low genomic
 span (<5%) is indicative of local clustering events like kataegis
 [@Aitken2020]. A downside of this method is that it doesn't generate a
-p-value.
+p-value. In general, we recommend you to use the first or second mode
+of `calculate_lesion_segregation` to get a p-value and the third mode to check
+if you are looking at a genome wide process or a local process like kataegis.
 ```{r calculate_lesion_segregation_rl20}
 lesion_segretation_rl20 <- calculate_lesion_segregation(grl,
   sample_names,
