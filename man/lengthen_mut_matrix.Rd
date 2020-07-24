@@ -47,6 +47,7 @@ lengthen_mut_matrix(indel_counts_split)
 }
 \seealso{
 Other genomic_regions: 
+\code{\link{bin_mutation_density}()},
 \code{\link{plot_long_profile}()},
 \code{\link{plot_spectrum_region}()},
 \code{\link{split_muts_region}()}

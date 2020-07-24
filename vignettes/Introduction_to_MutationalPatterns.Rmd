@@ -1368,6 +1368,21 @@ NB: Since the "mut_mat_long" is a mutation matrix, you could perform NMF on it.
 This would result in signatures, which will contain different mutation types in
 different genomic regions.
 
+### Mutation density
+
+In the examples above we used known features like promoters for the regions.
+It's also possible to define regions based on mutation density. You can divide
+the genome into 3 bins with different mutation density like this:
+```{r bin_mutation_density}
+regions_density <- bin_mutation_density(grl, ref_genome, nrbins = 3)
+names(regions_density) <- c("Low", "Medium", "High")
+```
+
+These regions can then be used in the same way as the previous regions. This can
+be usefull to, for example, compare the spectrum of regions with kataegis with
+that of the rest of the genome.
+
+
 # Lesion segregation
 
 Large Watson versus Crick strand asymmetries can sometimes be observed in
