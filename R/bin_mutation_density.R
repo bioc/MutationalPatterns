@@ -112,7 +112,7 @@ bin_mutation_density = function(vcf_list, ref_genome, nrbins = 3, man_dens_cutof
     
     #Calculate density. Only calculate within chromosome size
     chr_size <- GenomeInfoDb::seqlengths(ref_genome)[chrom]
-    dens <- stats::density(pos, from = 1, to = chr_size)
+    dens <- stats::density(pos, bw = "SJ", from = 1, to = chr_size)
 
     #Determine location of density bins.
     #The positions of the density estimates x are taken as the middle of the bins
