@@ -1381,6 +1381,9 @@ names(regions_density) <- c("Low", "Medium", "High")
 These regions can then be used in the same way as the previous regions. This can
 be usefull to, for example, compare the spectrum of regions with kataegis with
 that of the rest of the genome.
+```{r split_muts_region_density}
+grl_region_dens <- split_muts_region(grl, regions_density, include_other = FALSE)
+```
 
 
 # Lesion segregation

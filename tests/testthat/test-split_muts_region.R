@@ -25,13 +25,14 @@ grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
 output <- split_muts_region(grl, regions)
 output_single_gr <- split_muts_region(grl[[1]], regions)
 output_single_region <- split_muts_region(grl, regions[[1]])
-
+output_noother <- split_muts_region(grl, regions, include_other = FALSE)
 
 
 test_that("Output has correct class", {
   expect_true(inherits(output, "CompressedGRangesList"))
   expect_true(inherits(output_single_gr, "CompressedGRangesList"))
   expect_true(inherits(output_single_region, "CompressedGRangesList"))
+  expect_true(inherits(output_noother, "CompressedGRangesList"))
 })
 
 expected_length <- function(grl, regions) {
@@ -43,6 +44,7 @@ test_that("Output GRangesList has correct length", {
   expect_equal(length(output), expected_length(grl, regions))
   expect_equal(length(output_single_gr), expected_length(grl[1], regions))
   expect_equal(length(output_single_region), expected_length(grl, regions[1]))
+  expect_equal(length(output_noother), length(regions)*length(grl))
 })
 
 expected <- readRDS(system.file("states/grl_split_region.rds",

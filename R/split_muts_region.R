@@ -7,7 +7,9 @@
 #'
 #' @param vcf_list GRangesList or GRanges object
 #' @param ranges_grl GRangesList or GRanges object containing regions of interest
-#'
+#' @param include_other Boolean. Whether or not to include a "Other" region
+#' containing mutations that aren't in any other region.
+#' 
 #' @return GRangesList
 #' @export
 #' @family genomic_regions
@@ -39,8 +41,14 @@
 #'   package = "MutationalPatterns"
 #' ))
 #'
+#' ## Split muts based on the supplied regions
 #' split_muts_region(grl, regions)
-split_muts_region <- function(vcf_list, ranges_grl) {
+#' 
+#' ## Don't include muts outside of the supplied regions
+#' split_muts_region(grl, regions, include_other = FALSE)
+#' 
+#' 
+split_muts_region <- function(vcf_list, ranges_grl, include_other = TRUE) {
   
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -68,13 +76,13 @@ split_muts_region <- function(vcf_list, ranges_grl) {
   
   #Get muttype per sample
   if (inherits(vcf_list, "list")) {
-    grl <- purrr::map(vcf_list, function(x) .split_muts_region_gr(x, ranges_grl)) %>%
+    grl <- purrr::map(vcf_list, function(x) .split_muts_region_gr(x, ranges_grl, include_other)) %>%
       purrr::map(as.list) %>% # Create a list of lists. Outer layer: samples. Inner layer: regions.
       do.call(c, .) %>%
       GenomicRanges::GRangesList()
     return(grl)
   } else if (inherits(vcf_list, "GRanges")) {
-    grl <- .split_muts_region_gr(vcf_list, ranges_grl)
+    grl <- .split_muts_region_gr(vcf_list, ranges_grl, include_other)
     return(grl)
   } else {
     .not_gr_or_grl(vcf_list)
@@ -90,10 +98,12 @@ split_muts_region <- function(vcf_list, ranges_grl) {
 #'
 #' @param gr GRanges object containing variants
 #' @param ranges_grl GRangesList or GRanges object containing regions of interest
+#' @param include_other Boolean. Whether or not to include a "Other" region
+#' containing mutations that aren't in any other region.
 #' @noRd
 #' @return GRangesList
 #'
-.split_muts_region_gr <- function(gr, ranges_grl) {
+.split_muts_region_gr <- function(gr, ranges_grl, include_other) {
 
   # Get the muts overlapping the ranges_grl
   if (inherits(ranges_grl, "CompressedGRangesList")) {
@@ -106,12 +116,15 @@ split_muts_region <- function(vcf_list, ranges_grl) {
     .not_gr_or_grl(ranges_grl)
   }
 
-  # Get the other muts
-  hits <- GenomicRanges::findOverlaps(gr, ranges_grl)
-  gr_other <- gr[-S4Vectors::queryHits(hits)]
-
+  
+  if (include_other){
+    # Get the other muts
+    hits <- GenomicRanges::findOverlaps(gr, ranges_grl)
+    gr_other <- gr[-S4Vectors::queryHits(hits)]
+    gr_sub_l[["Other"]] <- gr_other
+  }
+  
   # Combine data
-  gr_sub_l[["Other"]] <- gr_other
   grl <- GenomicRanges::GRangesList(gr_sub_l)
   return(grl)
 }

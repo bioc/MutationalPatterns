@@ -4,12 +4,15 @@
 \alias{split_muts_region}
 \title{Split GRangesList or GRanges based on a list of regions.}
 \usage{
-split_muts_region(vcf_list, ranges_grl)
+split_muts_region(vcf_list, ranges_grl, include_other = TRUE)
 }
 \arguments{
 \item{vcf_list}{GRangesList or GRanges object}
 
 \item{ranges_grl}{GRangesList or GRanges object containing regions of interest}
+
+\item{include_other}{Boolean. Whether or not to include a "Other" region
+containing mutations that aren't in any other region.}
 }
 \value{
 GRangesList
@@ -47,7 +50,13 @@ grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
   package = "MutationalPatterns"
 ))
 
+## Split muts based on the supplied regions
 split_muts_region(grl, regions)
+
+## Don't include muts outside of the supplied regions
+split_muts_region(grl, regions, include_other = FALSE)
+
+
 }
 \seealso{
 Other genomic_regions: 
