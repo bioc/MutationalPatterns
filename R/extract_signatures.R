@@ -30,6 +30,7 @@
 #' # nmf_res <- extract_signatures(mut_mat, rank = 2)
 #'
 #' ## It's also possible to use a variational Bayes method.
+#' ## It requires the ccfindR package to work.
 #' # nmf_res <- extract_signatures(mut_mat, rank = 2, nmf_type = "variational_bayes")
 #' @seealso
 #' \code{\link{mut_matrix}}
