@@ -27,6 +27,6 @@ test_that("Output has correct class",{
 test_that("Output has correct dimensions", {
     expect_equal(length(output), 3)
     expect_equal(length(output_man), 2)
-    expect_equal(as.vector(S4Vectors::elementNROWS(output)), c(28, 9, 2))
-    expect_equal(as.vector(S4Vectors::elementNROWS(output_man)), c(24, 3))
+    expect_equal(as.vector(S4Vectors::elementNROWS(output)), c(30, 11, 2))
+    expect_equal(as.vector(S4Vectors::elementNROWS(output_man)), c(25, 4))
 })
