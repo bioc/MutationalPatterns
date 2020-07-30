@@ -851,6 +851,51 @@ cos_sim_samples <- cos_sim_matrix(mut_mat, mut_mat)
 plot_cosine_heatmap(cos_sim_samples, cluster_rows = TRUE, cluster_cols = TRUE)
 ```
 
+## Signature potential damage analysis
+
+Some signatures are more likely than others to have functional effects, by causing "stop gain" or "mismatch" mutations.
+With MutationalPatterns it's possible to analyze how likely it is for a signature to either cause "stop gain", "mismatch"
+or "synonymous" mutations for a set of genes of interest.
+
+First you need to load a transcription annotation database.
+```{r get_transcription_annotation_ojbect}
+# For example get known genes table from UCSC for hg19 using
+# BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
+library("TxDb.Hsapiens.UCSC.hg19.knownGene")
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+```
+
+Next, you need to choose a set of genes and create a vector of Entrez gene ids.
+In this example we used a small set to keep the runtime low, but in practice you
+can use a larger list of genes, that you are interested in. (The genes used in
+this example are: P53, KRAS, NRAS, BRAF, BRCA2, CDKN2A, ARID1A, PTEN and TERT.)
+A useful list of cancer genes can be found here: https://cancer.sanger.ac.uk/cosmic/census.
+```{r Choose_gene_ids}
+gene_ids <- c(7157, 3845, 4893, 673, 675, 1029, 8289, 5728, 7015)
+```
+
+Now the ratio of "stop gain", "mismatch" and "synonymous" mutations can be
+determined per genomic context. The total number of possible mutations per
+context is also given.
+```{r context_potential_damage_analysis}
+contexts <- rownames(mut_mat)
+context_mismatches <- context_potential_damage_analysis(contexts, txdb, ref_genome, gene_ids)
+head(context_mismatches)
+```
+
+The ratios per context can then be used to get the ratios per signature.
+Normalized ratios are also given. These were calculated by dividing the ratios
+in each signature, by the ratios of a completely "flat" signature. A normalized
+ratio of 2 for "stop gain" mutations, means that a signature is twice as likely
+to cause "stop gain" mutations, compared to a completely random "flat"
+signature. The total number of possible mutations per context is multiplied with
+the signature contribution per context and summed over all contexts. It thus
+gives a measure of the amount of mutations that a signature could cause.
+```{r}
+sig_damage <- signature_potential_damage_analysis(signatures, contexts, context_mismatches)
+head(sig_damage)
+```
+
 
 ## Using other signature matrixes
 
@@ -875,7 +920,7 @@ these signatures can lead to more overfitting. Therefore we recommend against
 using them for most analyses. However, these signatures can be usefull to see if
 your data contains many sequencing artifacts, if you doubt the quality of your
 data.
-```{r}
+```{r load_signatures_artifacts}
 signatures_artifacts = get_known_signatures(incl_poss_artifacts = TRUE)
 dim(signatures_artifacts)
 ```
@@ -946,9 +991,6 @@ than one gene body on different strands.
 
 Start by getting gene definitions for your reference genome:
 ```{r get_genes}
-# For example get known genes table from UCSC for hg19 using
-# BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
-library("TxDb.Hsapiens.UCSC.hg19.knownGene")
 genes_hg19 <- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
 genes_hg19
 ```
