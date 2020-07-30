@@ -31,7 +31,7 @@ get_known_signatures(
 * 'exposure';
 * 'tissue';}
 
-\item{incl_poss_artifacts}{Whether to include possible 
+\item{incl_poss_artifacts}{Whether to include possible
 artifacts. (default: TRUE)}
 
 \item{tissue_type}{The specific tissue to select signatures from.
@@ -53,7 +53,7 @@ then an error is given.
 }
 \details{
 Possible combinations:
-COSMIC: 
+COSMIC:
 - all muttypes.
 - reference
 - Can include possible artifacts for SNVs
@@ -66,7 +66,7 @@ SIGNAL:
 SPARSE:
  - snv
  - reference
- 
+
  Artifacts can be included when using reference signatures for
  SNVs with COSMIC and SIGNAL
 
@@ -95,7 +95,7 @@ Paper: Daniele Ramazzotti et al., 2019, Bioarchive
 ## Get reference snv signature from COSMIC
 get_known_signatures()
 
-## Get reference snv signature from COSMIC, 
+## Get reference snv signature from COSMIC,
 ## including potential artifacts.
 get_known_signatures(incl_poss_artifacts = TRUE)
 
@@ -125,15 +125,15 @@ get_known_signatures("dbs", source = "SIGNAL", sig_type = "exposure")
 get_known_signatures(source = "SIGNAL", sig_type = "tissue")
 
 ## Get Bladder specific signatures from SIGNAL
-get_known_signatures(source = "SIGNAL", 
-sig_type = "tissue", 
-tissue_type = "Bladder")
+get_known_signatures(
+  source = "SIGNAL",
+  sig_type = "tissue",
+  tissue_type = "Bladder"
+)
 
 ## If you use an incorrect tissue_type an error is given,
 ## showing all possible tissue_types.
 
 ## Get sparse signatures
 get_known_signatures(source = "SPARSE")
-
-
 }

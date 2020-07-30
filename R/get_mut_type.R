@@ -31,13 +31,13 @@
 get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
   type <- match.arg(type)
 
-  
-  #Turn grl into list.
+
+  # Turn grl into list.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Get muttype per sample
+
+  # Get muttype per sample
   if (inherits(vcf_list, "list")) {
     grl <- purrr::map(vcf_list, .get_mut_type_gr, type) %>%
       GenomicRanges::GRangesList()

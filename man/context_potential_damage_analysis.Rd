@@ -36,8 +36,8 @@ N gives the total number of possible mutations per context.
 \details{
 The function works by first selecting the longest transcript per gene.
 The coding sequence (cds) of this transcript is then assembled. Next, the function
-loops over the reference contexts. For each context (and it's reverse complement), 
-all possible mutation locations are determined. 
+loops over the reference contexts. For each context (and it's reverse complement),
+all possible mutation locations are determined.
 It's also determined whether these locations are the first, second
 or third base of the cds codon (mut loc). Each unique combination of codon and
 mut loc is then counted. For each combination the reference amino acid and the
@@ -60,7 +60,7 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
-contexts = rownames(mut_mat)
+contexts <- rownames(mut_mat)
 
 ## Load the corresponding reference genome.
 ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
@@ -71,14 +71,14 @@ library(ref_genome, character.only = TRUE)
 ## Bioconductor:
 # BiocManager::install("TxDb.Hsapiens.UCSC.hg19.knownGene")
 library("TxDb.Hsapiens.UCSC.hg19.knownGene")
-txdb = TxDb.Hsapiens.UCSC.hg19.knownGene
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 
 ## Here we will use the Entrez Gene IDs from several cancer
 ## genes. In practice you might want to use larger gene lists,
 ## but here we only use a few to keep the run-time low.
 ## In this example we are using:
 ## TP53, KRAS, NRAS, BRAF, BRCA2, CDKN2A, ARID1A, PTEN and TERT
-gene_ids = c(7157, 3845, 4893, 673, 675, 1029, 8289, 5728, 7015)
+gene_ids <- c(7157, 3845, 4893, 673, 675, 1029, 8289, 5728, 7015)
 
 ## Run the function
 context_potential_damage_analysis(contexts, txdb, ref_genome, gene_ids)
@@ -87,5 +87,4 @@ context_potential_damage_analysis(contexts, txdb, ref_genome, gene_ids)
 ## This can be usefull when it's running slowly,
 ## which can happen when you are using many gene_ids.
 context_potential_damage_analysis(contexts, txdb, ref_genome, gene_ids, verbose = TRUE)
-
 }

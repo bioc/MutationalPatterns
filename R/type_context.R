@@ -20,13 +20,12 @@
 #' ## Load the corresponding reference genome.
 #' ref_genome <- "BSgenome.Hsapiens.UCSC.hg19"
 #' library(ref_genome, character.only = TRUE)
-#' 
+#'
 #' ## Get type context
 #' type_context <- type_context(vcfs[[1]], ref_genome)
-#' 
+#'
 #' ## Get larger type context
 #' type_context_larger <- type_context(vcfs[[1]], ref_genome, extension = 2)
-#' 
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #' \code{\link{mut_context}}

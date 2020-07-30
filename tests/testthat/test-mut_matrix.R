@@ -9,17 +9,17 @@ input <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",
   package = "MutationalPatterns"
 ))
 
-#Expected output
+# Expected output
 expected <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
-#Run function
+# Run function
 output <- mut_matrix(input, ref_genome)
 output_longer <- mut_matrix(vcf_list = input, ref_genome = ref_genome, extension = 2)
 
 
-#Perform tests
+# Perform tests
 
 test_that("Output has correct class", {
   expect_true(inherits(output, "matrix"))

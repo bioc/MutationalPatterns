@@ -9,7 +9,7 @@
 #' @param ranges_grl GRangesList or GRanges object containing regions of interest
 #' @param include_other Boolean. Whether or not to include a "Other" region
 #' containing mutations that aren't in any other region.
-#' 
+#'
 #' @return GRangesList
 #' @export
 #' @family genomic_regions
@@ -43,20 +43,17 @@
 #'
 #' ## Split muts based on the supplied regions
 #' split_muts_region(grl, regions)
-#' 
+#'
 #' ## Don't include muts outside of the supplied regions
 #' split_muts_region(grl, regions, include_other = FALSE)
-#' 
-#' 
 split_muts_region <- function(vcf_list, ranges_grl, include_other = TRUE) {
-  
+
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   . <- NULL
 
-  #Check arguments
+  # Check arguments
   if (inherits(vcf_list, "CompressedGRangesList")) {
-    
     if (is.null(names(vcf_list))) {
       stop("Please set sample names (without dots) for the vcf_list with `names(vcf_list) = my_names`", call. = FALSE)
     }
@@ -67,14 +64,14 @@ split_muts_region <- function(vcf_list, ranges_grl, include_other = TRUE) {
   if (any(stringr::str_detect(names(ranges_grl), "\\."))) {
     stop("The names of the ranges_grl should not contain dots. Please fix them with `names(ranges_grl) = my_names`", call. = FALSE)
   }
-    
-    
-  #Turn grl into list.
+
+
+  # Turn grl into list.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Get muttype per sample
+
+  # Get muttype per sample
   if (inherits(vcf_list, "list")) {
     grl <- purrr::map(vcf_list, function(x) .split_muts_region_gr(x, ranges_grl, include_other)) %>%
       purrr::map(as.list) %>% # Create a list of lists. Outer layer: samples. Inner layer: regions.
@@ -116,14 +113,14 @@ split_muts_region <- function(vcf_list, ranges_grl, include_other = TRUE) {
     .not_gr_or_grl(ranges_grl)
   }
 
-  
-  if (include_other){
+
+  if (include_other) {
     # Get the other muts
     hits <- GenomicRanges::findOverlaps(gr, ranges_grl)
     gr_other <- gr[-S4Vectors::queryHits(hits)]
     gr_sub_l[["Other"]] <- gr_other
   }
-  
+
   # Combine data
   grl <- GenomicRanges::GRangesList(gr_sub_l)
   return(grl)

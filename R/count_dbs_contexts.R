@@ -28,7 +28,7 @@ count_dbs_contexts <- function(vcf_list) {
   # To avoid R CMD check complaints we initialize them to NULL.
   REF <- ALT <- NULL
 
-  #Set possible ref and alt combis.
+  # Set possible ref and alt combis.
   categories <- tibble::tibble(
     "REF" = c(
       rep("AC", 9), rep("AT", 6), rep("CC", 9), rep("CG", 6),
@@ -48,12 +48,12 @@ count_dbs_contexts <- function(vcf_list) {
     )
   )
 
-  #Turn grl into list if needed.
+  # Turn grl into list if needed.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Count contexts per sample
+
+  # Count contexts per sample
   if (inherits(vcf_list, "list")) {
     counts_l <- purrr::map(vcf_list, .count_dbs_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)

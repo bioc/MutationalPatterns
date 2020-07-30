@@ -40,7 +40,6 @@ plot_dbs_contexts(dbs_counts, same_y = TRUE)
 
 ## Create a more condensed plot
 plot_dbs_contexts(dbs_counts, condensed = TRUE)
-
 }
 \seealso{
 \code{\link{count_dbs_contexts}}, \code{\link{plot_main_dbs_contexts}}

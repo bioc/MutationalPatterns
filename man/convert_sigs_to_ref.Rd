@@ -33,6 +33,5 @@ signatures <- get_known_signatures(source = "SIGNAL", sig_type = "tissue", tissu
 fit_res <- fit_to_signatures(mut_mat, signatures)
 
 ## Convert the tissue specific signatures exposures to reference
-fit_res = convert_sigs_to_ref(fit_res)
-
+fit_res <- convert_sigs_to_ref(fit_res)
 }

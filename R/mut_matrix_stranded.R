@@ -12,7 +12,7 @@
 #' @param mode "transcription" or "replication", default = "transcription"
 #' @param extension The number of bases, that's extracted upstream and
 #' downstream of the base substitutions. (Default: 1).
-#' 
+#'
 #' @return 192 mutation count matrix (96 X 2 strands)
 #'
 #' @examples
@@ -36,7 +36,7 @@
 #' mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
 #'   mode = "transcription"
 #' )
-#' 
+#'
 #' ## You can also use a longer context
 #' mut_mat_s <- mut_matrix_stranded(grl, ref_genome, genes_hg19,
 #'   mode = "transcription", extension = 2
@@ -76,8 +76,8 @@
 #'
 #' @export
 
-mut_matrix_stranded <- function(vcf_list, 
-                                ref_genome, 
+mut_matrix_stranded <- function(vcf_list,
+                                ref_genome,
                                 ranges,
                                 mode = "transcription",
                                 extension = 1) {

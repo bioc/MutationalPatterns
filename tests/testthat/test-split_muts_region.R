@@ -44,7 +44,7 @@ test_that("Output GRangesList has correct length", {
   expect_equal(length(output), expected_length(grl, regions))
   expect_equal(length(output_single_gr), expected_length(grl[1], regions))
   expect_equal(length(output_single_region), expected_length(grl, regions[1]))
-  expect_equal(length(output_noother), length(regions)*length(grl))
+  expect_equal(length(output_noother), length(regions) * length(grl))
 })
 
 expected <- readRDS(system.file("states/grl_split_region.rds",

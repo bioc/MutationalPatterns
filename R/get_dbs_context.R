@@ -25,12 +25,12 @@
 #' @export
 #'
 get_dbs_context <- function(vcf_list) {
-  #Turn grl into list if needed.
+  # Turn grl into list if needed.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Get dbs context per sample
+
+  # Get dbs context per sample
   if (inherits(vcf_list, "list")) {
     grl <- purrr::map(vcf_list, .get_dbs_context_gr) %>%
       GRangesList()

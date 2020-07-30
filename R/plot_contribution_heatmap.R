@@ -165,9 +165,11 @@ plot_contribution_heatmap <- function(contribution, sig_order = NA, sample_order
     geom_raster() +
     scale_fill_distiller(palette = "YlGnBu", direction = 1, name = "Relative \ncontribution", limits = c(0, 1)) +
     theme_bw() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
-          panel.grid.major = element_blank(), 
-          panel.grid.minor = element_blank()) +
+    theme(
+      axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+      panel.grid.major = element_blank(),
+      panel.grid.minor = element_blank()
+    ) +
     labs(x = NULL, y = NULL)
   # if plot_values is TRUE, add values to heatmap
   if (plot_values) {

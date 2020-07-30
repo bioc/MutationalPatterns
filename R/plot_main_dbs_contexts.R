@@ -24,7 +24,6 @@
 #'
 #' ## Use the same y axis for all samples.
 #' plot_main_dbs_contexts(dbs_counts, same_y = TRUE)
-#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family DBS

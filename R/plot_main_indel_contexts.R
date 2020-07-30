@@ -24,7 +24,6 @@
 #'
 #' ## Use the same y axis for all samples.
 #' plot_main_indel_contexts(indel_counts, same_y = TRUE)
-#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -44,9 +43,10 @@ plot_main_indel_contexts <- function(counts, same_y = FALSE) {
   counts <- counts %>%
     as.data.frame() %>%
     tibble::rownames_to_column("muttype_total") %>%
-    tidyr::separate(muttype_total, 
-                    c("muttype", "muttype_sub"), 
-                    sep = "_(?=[:digit:])") %>%
+    tidyr::separate(muttype_total,
+      c("muttype", "muttype_sub"),
+      sep = "_(?=[:digit:])"
+    ) %>%
     dplyr::mutate(muttype = factor(muttype, levels = unique(muttype)))
 
   # Summarise per muttype and make data long

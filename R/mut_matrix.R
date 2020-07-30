@@ -21,7 +21,7 @@
 #' ## Construct a mutation matrix from the loaded VCFs in comparison to the
 #' ## ref_genome.
 #' mut_mat <- mut_matrix(vcf_list = grl, ref_genome = ref_genome)
-#' 
+#'
 #' ## Construct a mutation matrix with a larger context.
 #' ## This is most usefull when you have many mutations per sample.
 #' mut_mat_extended <- mut_matrix(vcf_list = grl, ref_genome = ref_genome, extension = 2)

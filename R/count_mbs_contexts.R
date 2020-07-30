@@ -29,12 +29,12 @@ count_mbs_contexts <- function(vcf_list) {
 
   categories <- tibble::tibble("size" = c(3:9, "10+"))
 
-  #Turn grl into list if needed.
+  # Turn grl into list if needed.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Count contexts per sample
+
+  # Count contexts per sample
   if (inherits(vcf_list, "list")) {
     counts_l <- purrr::map(vcf_list, .count_mbs_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)

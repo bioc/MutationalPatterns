@@ -16,38 +16,38 @@ mut_96_occurrences <- function(type_context, gr_sizes) {
   # To avoid R CMD check complaints we initialize them to NULL.
   categories <- count <- NULL
 
-  #Determine nr of bases
+  # Determine nr of bases
   nr_bases <- nchar(type_context$context[[1]])
-  middle_base <- ceiling(nr_bases/2)
-  
-  
-  #Determine all possible contexts
+  middle_base <- ceiling(nr_bases / 2)
+
+
+  # Determine all possible contexts
   bases_left <- c("A", "C", "G", "T")
   bases_right <- c("A", "C", "G", "T")
   base_subs <- c("[C>A]", "[C>G]", "[C>T]", "[T>A]", "[T>C]", "[T>G]")
 
-  #Loop over each base substitution
+  # Loop over each base substitution
   full_context_poss <- vector("list", length(base_subs))
-  for (i in seq_along(base_subs)){
+  for (i in seq_along(base_subs)) {
     sub <- base_subs[[i]]
     sub_context <- sub
-    #Repeatedly add bases left and right
-    for (j in seq_len(middle_base-1)){
+    # Repeatedly add bases left and right
+    for (j in seq_len(middle_base - 1)) {
       combi_tb <- tidyr::crossing(bases_left, sub_context, bases_right)
       sub_context <- paste0(combi_tb$bases_left, combi_tb$sub_context, bases_right)
     }
     full_context_poss[[i]] <- sub_context
   }
   full_context_poss <- do.call(c, full_context_poss)
-  
-  
+
+
   # Determine 96 context for all variants
   full_context <- stringr::str_c(
-    substr(type_context$context, 1, middle_base-1),
+    substr(type_context$context, 1, middle_base - 1),
     "[",
     type_context$types,
     "]",
-    substr(type_context$context, middle_base+1, nr_bases)
+    substr(type_context$context, middle_base + 1, nr_bases)
   ) %>%
     factor(levels = full_context_poss)
 

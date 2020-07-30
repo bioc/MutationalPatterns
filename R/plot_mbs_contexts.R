@@ -17,13 +17,12 @@
 #' mbs_counts <- readRDS(system.file("states/blood_mbs_counts.rds",
 #'   package = "MutationalPatterns"
 #' ))
-#' 
+#'
 #' ## Plot contexts
 #' plot_mbs_contexts(mbs_counts)
 #'
 #' ## Use a different y axis for all samples.
 #' plot_mbs_contexts(mbs_counts, same_y = FALSE)
-#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family MBS

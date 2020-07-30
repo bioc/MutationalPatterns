@@ -22,8 +22,8 @@ per signature.
 The ratio of possible 'stop gain', 'mismatches' and 'synonymous mutations' is
 counted per signature. Normalized ratios are also given. These were calculated
 by dividing the ratios in each signature, by the ratios of a completely "flat"
-signature. A normalized ratio of 2 for "stop gain" mutations, means that a 
-signature is twice as likely to cause "stop gain" mutations, compared to a 
+signature. A normalized ratio of 2 for "stop gain" mutations, means that a
+signature is twice as likely to cause "stop gain" mutations, compared to a
 completely random "flat" signature. N is the number of possible mutations per
 context, multiplied by the signature contribution per context, summed over all
 contexts.
@@ -37,7 +37,7 @@ ratios.
 \examples{
 
 ## Get the signatures
-signatures = get_known_signatures()
+signatures <- get_known_signatures()
 
 ## See the 'mut_matrix()' example for how we obtained the
 ## mutation matrix information:
@@ -45,7 +45,7 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
   package = "MutationalPatterns"
 ))
 
-contexts = rownames(mut_mat)
+contexts <- rownames(mut_mat)
 
 ## See the 'context_potential_damage_analysis()' example for how we obtained the
 ## context_mismatches:
@@ -55,5 +55,4 @@ context_mismatches <- readRDS(system.file("states/context_mismatches.rds",
 
 ## Determine the potential damage per signature
 signature_potential_damage_analysis(signatures, contexts, context_mismatches)
-
 }

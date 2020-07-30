@@ -183,8 +183,9 @@ read_vcfs_as_granges <- function(vcf_files,
                      to prevent this error.
                      However, you then have to make sure that the seqnames (chromosome names) are
                      the same between your vcfs and the reference BSgenome object.
-                     (The message of the internal error causing this problem is shown above.)", 
-             call. = FALSE)
+                     (The message of the internal error causing this problem is shown above.)",
+          call. = FALSE
+        )
       },
       {
         GenomeInfoDb::seqlevelsStyle(gr) <- GenomeInfoDb::seqlevelsStyle(genome)[1]

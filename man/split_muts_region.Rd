@@ -55,8 +55,6 @@ split_muts_region(grl, regions)
 
 ## Don't include muts outside of the supplied regions
 split_muts_region(grl, regions, include_other = FALSE)
-
-
 }
 \seealso{
 Other genomic_regions: 

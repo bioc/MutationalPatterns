@@ -126,18 +126,18 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       total_individuals = sum(value), total_mutations = sum(nmuts)
     ) %>%
     dplyr::mutate(total_individuals = sum(total_individuals), total_mutations = sum(total_mutations)) %>%
-    dplyr::mutate(# Calc 95% CI and sem
+    dplyr::mutate( # Calc 95% CI and sem
       sem = stdev / sqrt(total_individuals),
       error_95 = ifelse(total_individuals > 1, qt(0.975, df = total_individuals - 1) * sem, NA)
-    ) %>% 
+    ) %>%
     dplyr::ungroup() %>%
-    dplyr::mutate(# Make pretty and add subtypes
-      total_mutations = prettyNum(total_mutations, big.mark = ","), 
+    dplyr::mutate( # Make pretty and add subtypes
+      total_mutations = prettyNum(total_mutations, big.mark = ","),
       total_mutations = paste("No. mutations = ", total_mutations),
       error_pos = mean
     )
 
-  #Change some settings based on whether CT should be plotted separately.
+  # Change some settings based on whether CT should be plotted separately.
   if (CT == FALSE) {
     # Define colors for plotting
     colors <- colors[c(1, 2, 3, 5, 6, 7)]
@@ -172,8 +172,8 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       axis.text.x = element_blank(),
       panel.grid.major.x = element_blank()
     )
-  
-  #Add individual points
+
+  # Add individual points
   if (indv_points == TRUE) {
     # Add total_mutations column, which is necessary for faceting later
     tb_per_sample <- dplyr::left_join(tb_per_sample,
@@ -191,7 +191,8 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
   if (sum(is.na(tb$stdev)) > 0 & error_bars != "none") {
     warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
               Use the argument: `error_bars = 'none'`, if you want to avoid this warning.",
-            call. = FALSE)
+      call. = FALSE
+    )
   }
   else {
     if (error_bars == "stdev") {

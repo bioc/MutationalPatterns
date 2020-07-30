@@ -51,12 +51,12 @@
 #'
 #' @export
 
-plot_rainfall <- function(vcf, 
-                          chromosomes, 
-                          title = "", 
-                          colors = NA, 
+plot_rainfall <- function(vcf,
+                          chromosomes,
+                          title = "",
+                          colors = NA,
                           cex = 2.5,
-                          cex_text = 3, 
+                          cex_text = 3,
                           ylim = 1e+08) {
 
   # These variables use non standard evaluation.

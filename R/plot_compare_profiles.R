@@ -101,7 +101,7 @@ plot_compare_profiles <- function(profile1,
   # Add dummy non_visible data points to force y axis limits per facet
   df_blank <- .create_dummy_limits(df[, c("substitution", "context")], profile_names, profile_ymax, diff_ylim)
 
-  #Plotting parameters
+  # Plotting parameters
   if (condensed == TRUE) {
     width <- 1
     spacing <- 0
@@ -110,7 +110,7 @@ plot_compare_profiles <- function(profile1,
     spacing <- 0.5
   }
 
-  #Create plot
+  # Create plot
   plot <- ggplot(data = df, aes(
     x = context,
     y = value,

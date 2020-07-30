@@ -35,7 +35,6 @@ plot_mbs_contexts(mbs_counts)
 
 ## Use a different y axis for all samples.
 plot_mbs_contexts(mbs_counts, same_y = FALSE)
-
 }
 \seealso{
 \code{\link{count_mbs_contexts}}

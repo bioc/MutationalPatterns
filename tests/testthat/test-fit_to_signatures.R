@@ -8,15 +8,15 @@ mut_mat <- readRDS(system.file("states/mut_mat_data.rds",
 # Get signatures
 signatures <- get_known_signatures()
 
-#Run function
+# Run function
 output <- fit_to_signatures(mut_mat, signatures)
 
-#Get expected
+# Get expected
 expected <- readRDS(system.file("states/snv_refit.rds",
   package = "MutationalPatterns"
 ))
 
-#Run tests
+# Run tests
 test_that("Output has correct class", {
   expect_true(inherits(output, "list"))
   expect_true(inherits(output$contribution, "matrix"))
@@ -33,12 +33,12 @@ indel_counts <- readRDS(system.file("states/blood_indel_counts.rds", package = "
 # Get indel signatures
 signatures <- get_known_signatures("indel")
 
-#Get expected
+# Get expected
 expected <- readRDS(system.file("states/indel_refit.rds",
   package = "MutationalPatterns"
 ))
 
-#Run tests
+# Run tests
 test_that("Refitting indels gives expected output.", {
   output <- fit_to_signatures(indel_counts, signatures)
   expect_equal(output, expected)

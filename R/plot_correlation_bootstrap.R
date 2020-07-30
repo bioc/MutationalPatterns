@@ -28,7 +28,6 @@
 #'
 #' ## You can also look at the correlation for all samples combined
 #' plot_correlation_bootstrap(contri_boots, per_sample = FALSE)
-#' 
 plot_correlation_bootstrap <- function(contri_boots, per_sample = TRUE) {
 
   # These variables use non standard evaluation.

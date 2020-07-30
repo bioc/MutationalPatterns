@@ -50,7 +50,6 @@
 #'
 #' ## list of ggplots that shows how the cosine similarity was reduced during the iterations
 #' fig_l <- strict_refit$sim_decay_fig
-#' 
 fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 
   # These variables use non standard evaluation.
@@ -137,12 +136,12 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
   contribution <- purrr::map(fit_res, "contribution") %>%
     purrr::map(function(x) tibble::rownames_to_column(as.data.frame(x))) %>%
     purrr::reduce(dplyr::full_join, by = "rowname")
-  
+
   # Fix signature order of contribution
   correct_order <- colnames(signatures)[colnames(signatures) %in% contribution$rowname]
-  contribution <- contribution[match(correct_order, contribution$rowname),]
-  
-  #Turn contribution into matrix and remove NAs
+  contribution <- contribution[match(correct_order, contribution$rowname), ]
+
+  # Turn contribution into matrix and remove NAs
   rownames(contribution) <- contribution$rowname
   contribution <- contribution %>%
     dplyr::select(-rowname) %>%
@@ -218,12 +217,18 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
 
   fig <- ggplot(data = tb, aes(x = Removed_signatures, y = Cosine_similarity, fill = col)) +
     geom_bar(stat = "identity") +
-    scale_fill_manual(limits = c("low_delta", "high_delta"), 
-                      values = c("grey", "red"), 
-                      guide = FALSE) +
-    labs(x = "Removed signatures", 
-         y = paste0("Cosine similarity (max delta: ", max_delta, ")")) +
-    theme(axis.text.x = element_text(angle = 90, size = 10, hjust = 1, vjust = 0.5), 
-          text = element_text(size = 12))
+    scale_fill_manual(
+      limits = c("low_delta", "high_delta"),
+      values = c("grey", "red"),
+      guide = FALSE
+    ) +
+    labs(
+      x = "Removed signatures",
+      y = paste0("Cosine similarity (max delta: ", max_delta, ")")
+    ) +
+    theme(
+      axis.text.x = element_text(angle = 90, size = 10, hjust = 1, vjust = 0.5),
+      text = element_text(size = 12)
+    )
   return(fig)
 }

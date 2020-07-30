@@ -27,7 +27,7 @@
 #' ## Get the indel contexts
 #' get_indel_context(indel_grl, ref_genome)
 #' @family Indels
-#' @importFrom magrittr %>% 
+#' @importFrom magrittr %>%
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}}, \code{\link{get_mut_type}}
 #'
@@ -37,14 +37,14 @@ get_indel_context <- function(vcf_list, ref_genome) {
   # Check that the seqnames of the gr and ref_genome match
   .check_chroms(vcf_list, ref_genome)
 
-  #Turn grl into list if needed.
+  # Turn grl into list if needed.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Get indel context per sample
+
+  # Get indel context per sample
   if (inherits(vcf_list, "list")) {
-    grl <- purrr::map(vcf_list, function(x) .get_indel_context_gr(x, ref_genome)) %>% 
+    grl <- purrr::map(vcf_list, function(x) .get_indel_context_gr(x, ref_genome)) %>%
       GenomicRanges::GRangesList()
     return(grl)
   } else if (inherits(vcf_list, "GRanges")) {
@@ -89,7 +89,7 @@ get_indel_context <- function(vcf_list, ref_genome) {
     width()
   mut_size <- alt_sizes - ref_sizes
 
-  # For the main indel categories, determine their sub categories. 
+  # For the main indel categories, determine their sub categories.
   # (Also split the big deletion categorie into repeat and micro homology.)
   gr_1b_dels <- .get_1bp_dels(gr, mut_size, ref_genome)
   gr_1b_ins <- .get_1bp_ins(gr, mut_size, ref_genome)
@@ -143,12 +143,14 @@ get_indel_context <- function(vcf_list, ref_genome) {
 
   # Check homopolymer length
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
-  seq_z <- stringr::str_replace_all(as.character(seq), 
-                                    del_bases, 
-                                    rep("Z", length(seq))) 
-  # Remove all bases after the Zs and count how many bases are left. 
+  seq_z <- stringr::str_replace_all(
+    as.character(seq),
+    del_bases,
+    rep("Z", length(seq))
+  )
+  # Remove all bases after the Zs and count how many bases are left.
   # Add one for the deleted base itself.
-  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% 
+  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>%
     nchar() + 1
   del_bases[del_bases == "A"] <- "T"
   del_bases[del_bases == "G"] <- "C"
@@ -201,12 +203,14 @@ get_indel_context <- function(vcf_list, ref_genome) {
 
   # Check homopolymer length
   # For each mut replace the inserted basetype in the flanking sequence with Zs.
-  seq_z <- stringr::str_replace_all(as.character(seq), 
-                                    ins_bases, 
-                                    rep("Z", length(seq)))
-  
+  seq_z <- stringr::str_replace_all(
+    as.character(seq),
+    ins_bases,
+    rep("Z", length(seq))
+  )
+
   # Remove all bases after the Zs and count how many bases are left.
-  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>% 
+  homopolymer_length <- gsub("[^Z].*", "", as.character(seq_z)) %>%
     nchar()
   ins_bases[ins_bases == "A"] <- "T"
   ins_bases[ins_bases == "G"] <- "C"
@@ -264,13 +268,15 @@ get_indel_context <- function(vcf_list, ref_genome) {
 
   # Determine nr. repeats.
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
-  seq_z <- stringr::str_replace_all(as.character(seq), 
-                                    ins_bases, 
-                                    rep("Z", length(seq))) 
-  
+  seq_z <- stringr::str_replace_all(
+    as.character(seq),
+    ins_bases,
+    rep("Z", length(seq))
+  )
+
   # Remove all bases after the Zs and count how many bases are left.
   n_repeats <- gsub("[^Z].*", "", as.character(seq_z)) %>%
-    nchar() 
+    nchar()
 
   # Return results
   gr$muttype <- stringr::str_c(mut_size, "bp_insertion")
@@ -281,7 +287,7 @@ get_indel_context <- function(vcf_list, ref_genome) {
 #' Get contexts from larger deletions
 #'
 #' @details
-#' Determines the COSMIC context for deletions larger than 1bp in a GRanges object 
+#' Determines the COSMIC context for deletions larger than 1bp in a GRanges object
 #' containing Indel mutations.
 #' This function is called by get_indel_context_gr.
 #' The function determines if there is microhomology for deletions that are not in repeat regions.
@@ -325,14 +331,16 @@ get_indel_context <- function(vcf_list, ref_genome) {
 
   # Determine nr. repeats.
   # For each mut replace the deleted basetype in the flanking sequence with Zs.
-  seq_z <- stringr::str_replace_all(as.character(seq), 
-                                    del_bases, 
-                                    rep("Z", length(seq)))
-  
-  # Remove all bases after the Zs and count how many bases are left. 
+  seq_z <- stringr::str_replace_all(
+    as.character(seq),
+    del_bases,
+    rep("Z", length(seq))
+  )
+
+  # Remove all bases after the Zs and count how many bases are left.
   # Add +1 for the deleted bases itself
   n_repeats <- gsub("[^Z].*", "", as.character(seq_z)) %>%
-    nchar() + 1 
+    nchar() + 1
 
   gr$muttype <- stringr::str_c(abs(mut_size), "bp_deletion")
   gr$muttype_sub <- n_repeats
@@ -355,16 +363,16 @@ get_indel_context <- function(vcf_list, ref_genome) {
   seq_s <- strsplit(as.character(seq[pos_mh]), "")
 
 
-  # Also check for microhomology to the left of the deletion. 
+  # Also check for microhomology to the left of the deletion.
   # For this take the reverse sequence to the left of the deletion and the reverse deleted bases.
   rev_del_bases <- IRanges::reverse(del_bases_mh)
   rev_l_del_bases_s <- strsplit(rev_del_bases, "")
 
-  # Flank the granges object, to get a sequence, that can be searched for repeats. 
-  # This can result in a warning message, when the flanked range extends beyond 
+  # Flank the granges object, to get a sequence, that can be searched for repeats.
+  # This can result in a warning message, when the flanked range extends beyond
   # the chrom lenght. This message is suppressed.
   withCallingHandlers(
-    { 
+    {
       l_flank <- GenomicRanges::flank(gr_mh, biggest_dels)
     },
     warning = function(w) {
@@ -373,13 +381,13 @@ get_indel_context <- function(vcf_list, ref_genome) {
       }
     }
   )
-  
-  # Trim the ranges that are extended beyond the actual length of the chromosome. 
-  # Add 1 base, because the first base in the granges obj is not deleted and 
+
+  # Trim the ranges that are extended beyond the actual length of the chromosome.
+  # Add 1 base, because the first base in the granges obj is not deleted and
   # should be used in the flank.
   l_flank <- l_flank %>%
     GenomicRanges::trim() %>%
-    GenomicRanges::shift(1) 
+    GenomicRanges::shift(1)
   rev_l_seq <- Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), l_flank) %>%
     IRanges::reverse()
   rev_l_seq_s <- strsplit(as.character(rev_l_seq), "")
@@ -391,11 +399,11 @@ get_indel_context <- function(vcf_list, ref_genome) {
     del_bases_sample <- del_bases_s[[i]]
     seq_s_sample <- seq_s[[i]][seq_len(length(del_bases_sample))]
     same <- del_bases_sample == seq_s_sample
-    
-    # Determine how many bases are the same before the first difference. 
+
+    # Determine how many bases are the same before the first difference.
     # na.rm is for when a sequence has been trimmed.
-    r_nr_mh_sample <- cumprod(same) %>% 
-      sum(na.rm = TRUE) 
+    r_nr_mh_sample <- cumprod(same) %>%
+      sum(na.rm = TRUE)
 
     l_del_bases_sample <- rev_l_del_bases_s[[i]]
     l_seq_s_sample <- rev_l_seq_s[[i]][seq_len(length(l_del_bases_sample))]
@@ -411,8 +419,10 @@ get_indel_context <- function(vcf_list, ref_genome) {
 
   # Update gr when mh is indeed present
   mh_f <- nr_mh > 0
-  gr_mh$muttype[mh_f] <- stringr::str_c(abs(mut_size_mh[mh_f]), 
-                                        "bp_deletion_with_microhomology")
+  gr_mh$muttype[mh_f] <- stringr::str_c(
+    abs(mut_size_mh[mh_f]),
+    "bp_deletion_with_microhomology"
+  )
   gr_mh$muttype_sub[mh_f] <- nr_mh[mh_f]
 
   # Combine muts with and without mh
@@ -442,12 +452,12 @@ get_indel_context <- function(vcf_list, ref_genome) {
 #'
 #'
 .get_extended_sequence <- function(gr, flank_dist, ref_genome) {
-  
-  # Flank the granges object, to get a sequence, that can be searched for repeats. 
-  # This can result in a warning message, when the flanked range extends 
+
+  # Flank the granges object, to get a sequence, that can be searched for repeats.
+  # This can result in a warning message, when the flanked range extends
   # beyond the chrom lenght. This message is suppressed.
   withCallingHandlers(
-    { 
+    {
       gr_extended <- GenomicRanges::flank(gr, flank_dist, start = FALSE)
     },
     warning = function(w) {
@@ -456,9 +466,9 @@ get_indel_context <- function(vcf_list, ref_genome) {
       }
     }
   )
-  
+
   # Trim the ranges that are extended beyond the actual length of the chromosome.
-  gr_extended <- GenomicRanges::trim(gr_extended) 
+  gr_extended <- GenomicRanges::trim(gr_extended)
   seq <- Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), gr_extended)
   return(seq)
 }

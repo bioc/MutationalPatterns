@@ -47,12 +47,12 @@ count_indel_contexts <- function(vcf_list) {
     )
   )
 
-  #Turn grl into list if needed.
+  # Turn grl into list if needed.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
-  #Count contexts per sample
+
+  # Count contexts per sample
   if (inherits(vcf_list, "list")) {
     counts_l <- purrr::map(vcf_list, .count_indel_contexts_gr, categories)
     counts <- do.call(cbind, counts_l)
@@ -110,7 +110,7 @@ count_indel_contexts <- function(vcf_list) {
   }
 
 
-  # Classify the number of repeat units/ homopolymer length / microhomology length 
+  # Classify the number of repeat units/ homopolymer length / microhomology length
   # to either 5+ or 6+ depending on whether the indel is a ins or del.
   id_context <- dplyr::tibble("muttype" = gr$muttype, "muttype_sub" = gr$muttype_sub) %>%
     dplyr::mutate(
@@ -132,19 +132,22 @@ count_indel_contexts <- function(vcf_list) {
     width()
   mut_size <- abs(alt_sizes - ref_sizes)
   mut_size_f <- mut_size >= 5
-  id_context$muttype <- ifelse(mut_size_f, 
-                               gsub("[0-9]+bp", 
-                                    "5+bp", 
-                                    id_context$muttype, 
-                                    perl = TRUE), 
-                               id_context$muttype)
+  id_context$muttype <- ifelse(mut_size_f,
+    gsub("[0-9]+bp",
+      "5+bp",
+      id_context$muttype,
+      perl = TRUE
+    ),
+    id_context$muttype
+  )
 
   id_context_count <- id_context %>%
     dplyr::group_by(muttype, muttype_sub) %>%
     dplyr::summarise(count = dplyr::n())
-  id_context_count_full <- dplyr::left_join(categories, 
-                                            id_context_count,
-                                            by = c("muttype", "muttype_sub")) %>%
+  id_context_count_full <- dplyr::left_join(categories,
+    id_context_count,
+    by = c("muttype", "muttype_sub")
+  ) %>%
     dplyr::select(-muttype, -muttype_sub)
   # colnames(id_context_count_full)[3] = name
   return(id_context_count_full)

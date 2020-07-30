@@ -42,8 +42,10 @@
     unlist() %>%
     length()
   if (length(gr) != nr_alts) {
-    stop(paste0("There should not be any variants with multiple alternative alleles.\n", 
-         "You can remove these by using the `get_mut_type` function."), call. = FALSE)
+    stop(paste0(
+      "There should not be any variants with multiple alternative alleles.\n",
+      "You can remove these by using the `get_mut_type` function."
+    ), call. = FALSE)
   }
   invisible(gr)
 }

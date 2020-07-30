@@ -36,5 +36,4 @@ fig_l[[1]]
 
 ## You can also look at the correlation for all samples combined
 plot_correlation_bootstrap(contri_boots, per_sample = FALSE)
-
 }

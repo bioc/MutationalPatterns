@@ -37,7 +37,7 @@ library(ref_genome, character.only = TRUE)
 mut_context <- mut_context(vcfs[[1]], ref_genome)
 
 ## Get larger context
-mut_context_larger = mut_context(vcfs[[1]], ref_genome, extension = 2)
+mut_context_larger <- mut_context(vcfs[[1]], ref_genome, extension = 2)
 }
 \seealso{
 \code{\link{read_vcfs_as_granges}},

@@ -49,8 +49,6 @@ names(dens_grl) <- c("Low", "Medium", "High")
 ## advanced users. It can be usefull if you want to find highly mutated regions, with
 ## a consistent cutoff between analyses.
 dens_grl_man <- bin_mutation_density(grl, ref_genome, man_dens_cutoffs = c(0, 2e-08, 1))
-
-
 }
 \seealso{
 Other genomic_regions: 

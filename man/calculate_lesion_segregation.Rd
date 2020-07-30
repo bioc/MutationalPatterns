@@ -38,12 +38,12 @@ A tibble containing the amount of lesions segregation per sample
 }
 \description{
 This function calculates lesion segregation for a GRangesList or GRanges object.
-Lesion segregation is a large scale Watson versus Crick strand assymetry caused by 
+Lesion segregation is a large scale Watson versus Crick strand assymetry caused by
 many DNA lesions occurring during a single cell cycle.
 It was first described in Aitken et al., 2020, Nature.
 See their paper for a more in-depth discussion of this phenomenon.
 This function can perform three different types of test to calculate lesion segregation.
-The first method is unique to this package, while the other two were also used by 
+The first method is unique to this package, while the other two were also used by
 Aitken et al., 2020.
 The 'binomial' test is based on how often consecutive mutations are on different strands.
 The 'walf-wolfowitz' test checks if the strands are randomly distributed. It's not known
@@ -57,8 +57,8 @@ The results are then combined in a table.
 
 It's possible to calculate the lesion segregation separately per 96 substitution context,
 when using the binomial test. The results are then automatically added back up together.
-This can increase sensitivity when a mutational process causes multiple types of base substitutions, 
-which aren’t considered to be on the same strand. 
+This can increase sensitivity when a mutational process causes multiple types of base substitutions,
+which aren’t considered to be on the same strand.
 
 When using the rl20 test, this function first calculates the strand runs per chromosome
 and combines them. It then calculates the smallest set of runs, which together encompass

@@ -57,7 +57,6 @@ plot_indel_contexts(indel_counts, extra_labels = TRUE)
 
 ## Create a more condensed plot
 plot_indel_contexts(indel_counts, condensed = TRUE)
-
 }
 \seealso{
 \code{\link{count_indel_contexts}}, \code{\link{plot_main_indel_contexts}}

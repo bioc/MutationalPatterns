@@ -1,12 +1,12 @@
 #' Calculate the amount of lesion segregation for a GRangesList or GRanges object.
 #'
 #' This function calculates lesion segregation for a GRangesList or GRanges object.
-#' Lesion segregation is a large scale Watson versus Crick strand assymetry caused by 
+#' Lesion segregation is a large scale Watson versus Crick strand assymetry caused by
 #' many DNA lesions occurring during a single cell cycle.
 #' It was first described in Aitken et al., 2020, Nature.
 #' See their paper for a more in-depth discussion of this phenomenon.
 #' This function can perform three different types of test to calculate lesion segregation.
-#' The first method is unique to this package, while the other two were also used by 
+#' The first method is unique to this package, while the other two were also used by
 #' Aitken et al., 2020.
 #' The 'binomial' test is based on how often consecutive mutations are on different strands.
 #' The 'walf-wolfowitz' test checks if the strands are randomly distributed. It's not known
@@ -16,11 +16,11 @@
 #'
 #' The amount of lesion segregation is calculated per GRanges object.
 #' The results are then combined in a table.
-#' 
+#'
 #' It's possible to calculate the lesion segregation separately per 96 substitution context,
 #' when using the binomial test. The results are then automatically added back up together.
-#' This can increase sensitivity when a mutational process causes multiple types of base substitutions, 
-#' which aren’t considered to be on the same strand. 
+#' This can increase sensitivity when a mutational process causes multiple types of base substitutions,
+#' which aren’t considered to be on the same strand.
 #'
 #' When using the rl20 test, this function first calculates the strand runs per chromosome
 #' and combines them. It then calculates the smallest set of runs, which together encompass
@@ -124,13 +124,13 @@ calculate_lesion_segregation <- function(vcf_list,
     stop("The chromosomes need to be set when using test == rl20", call. = FALSE)
   }
 
-  #Turn grl into list.
+  # Turn grl into list.
   if (inherits(vcf_list, "CompressedGRangesList")) {
     vcf_list <- as.list(vcf_list)
   }
-  
+
   # Perform lesion segregation on each GR
-  if (inherits(vcf_list, "list")){
+  if (inherits(vcf_list, "list")) {
     strand_tb <- purrr::map2(vcf_list, sample_names, function(gr, sample_name) {
       .calculate_lesion_segregation_gr(gr, sample_name, test, split_by_type, ref_genome, chromosomes)
     }) %>%
@@ -166,7 +166,7 @@ calculate_lesion_segregation <- function(vcf_list,
 #' @param sample_name The name of the sample
 #' @param test The statistical test that should be used. Possible values:
 #'              * 'binomial' Binomial test based on the number of strand switches. (Default);
-#'              * 'walf-wolfowitz' Statistical test that checks if the strands are randomly 
+#'              * 'walf-wolfowitz' Statistical test that checks if the strands are randomly
 #'              distributed.;
 #' @param split_by_type Boolean describing whether the lesion
 #' segregation should be calculated for all SNVs together or per 96 substitution context.
@@ -180,11 +180,11 @@ calculate_lesion_segregation <- function(vcf_list,
 #' @noRd
 #'
 .calculate_lesion_segregation_gr <- function(gr,
-                                            sample_name = "sample",
-                                            test = c("binomial", "walf-wolfowitz", "rl20"),
-                                            split_by_type = FALSE,
-                                            ref_genome = NA,
-                                            chromosomes = NA) {
+                                             sample_name = "sample",
+                                             test = c("binomial", "walf-wolfowitz", "rl20"),
+                                             split_by_type = FALSE,
+                                             ref_genome = NA,
+                                             chromosomes = NA) {
 
 
   # These variables use non standard evaluation.

@@ -114,7 +114,7 @@ plot_spectrum_region <- function(type_occurrences,
   `C>T at CpG` <- `C>T other` <- type <- amount <- stdev <- tot_muts <- lower <- upper <- freq <- NULL
   total_indv <- sem <- error_95 <- NULL
 
-  #Check arguments
+  # Check arguments
   if (is.null(colors)) {
     colors <- COLORS6
   }
@@ -181,11 +181,13 @@ plot_spectrum_region <- function(type_occurrences,
   # Combine samples based on sample grouping
   tb <- tb_per_sample %>%
     dplyr::group_by(by, feature, type) %>%
-    dplyr::summarise(stdev = sd(freq), 
-                     freq = mean(freq), 
-                     amount = sum(amount),
-                     total_indv = dplyr::n(),
-                     .groups = "drop_last") %>%
+    dplyr::summarise(
+      stdev = sd(freq),
+      freq = mean(freq),
+      amount = sum(amount),
+      total_indv = dplyr::n(),
+      .groups = "drop_last"
+    ) %>%
     dplyr::ungroup() %>%
     dplyr::mutate(
       sem = stdev / sqrt(total_indv),
@@ -234,8 +236,9 @@ plot_spectrum_region <- function(type_occurrences,
   # Add errorbars
   if (sum(is.na(tb$stdev)) != 0 & error_bars != "none") {
     warning("No error bars can be plotted, because there is only one sample per mutation spectrum.
-              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.", 
-            call. = FALSE)
+              Use the argument: `error_bars = 'none'`, if you want to avoid this warning.",
+      call. = FALSE
+    )
   } else {
     if (error_bars == "stdev") {
       fig <- fig + geom_errorbar(aes(

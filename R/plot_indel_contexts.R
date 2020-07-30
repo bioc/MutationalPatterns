@@ -17,7 +17,7 @@
 #'     These can clarify the plot, but will shift when different plot widths are used.
 #'     We recommend saving a plot with a width of 12, when using this argument.
 #' @param condensed More condensed plotting format. Default = F.
-#' 
+#'
 #' @return A ggplot figure.
 #'
 #' @examples
@@ -35,10 +35,9 @@
 #'
 #' ## Add extra labels to make plot clearer
 #' plot_indel_contexts(indel_counts, extra_labels = TRUE)
-#' 
+#'
 #' ## Create a more condensed plot
 #' plot_indel_contexts(indel_counts, condensed = TRUE)
-#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family Indels
@@ -100,7 +99,7 @@ plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, co
   } else {
     title <- x_lab <- ""
   }
-  
+
   # Change plotting parameters based on whether plot should be condensed.
   if (condensed == TRUE) {
     width <- 1
@@ -120,9 +119,11 @@ plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, co
     scale_fill_manual(values = colors) +
     theme_bw() +
     labs(fill = "Mutation type", title = title, y = "Nr of indels", x = x_lab) +
-    theme(panel.grid.major.x = element_blank(),
-          panel.grid.minor.y = element_blank(),
-          panel.spacing.x = unit(spacing, "lines"))
+    theme(
+      panel.grid.major.x = element_blank(),
+      panel.grid.minor.y = element_blank(),
+      panel.spacing.x = unit(spacing, "lines")
+    )
 
   return(fig)
 }

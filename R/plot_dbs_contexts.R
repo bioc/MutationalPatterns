@@ -9,7 +9,7 @@
 #' @param counts A tibble containing the number of DBS per COSMIC context.
 #' @param same_y A boolean describing whether the same y axis should be used for all samples.
 #' @param condensed More condensed plotting format. Default = F.
-#' 
+#'
 #' @return A ggplot figure.
 #'
 #' @examples
@@ -24,10 +24,9 @@
 #'
 #' ## Use the same y axis for all samples.
 #' plot_dbs_contexts(dbs_counts, same_y = TRUE)
-#' 
+#'
 #' ## Create a more condensed plot
 #' plot_dbs_contexts(dbs_counts, condensed = TRUE)
-#' 
 #' @import ggplot2
 #' @importFrom magrittr %>%
 #' @family DBS
@@ -83,14 +82,14 @@ plot_dbs_contexts <- function(counts, same_y = FALSE, condensed = FALSE) {
     width <- 0.6
     spacing <- 0.5
   }
-  
+
   # Set colours
   colors <- c(
     "#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99",
     "#E31A1C", "#FDBF6F", "#FF7F00", "#CAB2D6", "#6A3D9A"
   )
-  
-  #Create plot
+
+  # Create plot
   fig <- ggplot(counts, aes(x = ALT, y = count, fill = REF, width = width)) +
     geom_bar(stat = "identity") +
     facet_grid(sample ~ REF,

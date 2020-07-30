@@ -51,11 +51,10 @@ tissue <- c(
 plot_profile_heatmap(mut_mat_extended, by = tissue)
 
 ## Or plot the heatmap per sample.
-plot_profile_heatmap(mut_mat_extended, 
-  by = colnames(mut_mat_extended), 
-  max = 0.05)
-
-
+plot_profile_heatmap(mut_mat_extended,
+  by = colnames(mut_mat_extended),
+  max = 0.05
+)
 }
 \seealso{
 \code{\link{mut_matrix}},

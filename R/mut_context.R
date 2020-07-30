@@ -3,7 +3,7 @@
 #' A function to extract the bases 3' upstream and 5' downstream of the base
 #' substitutions from the reference genome. The user an choose how many bases
 #' are extracted.
-#' 
+#'
 #' @param vcf A Granges object
 #' @param ref_genome Reference genome
 #' @param extension The number of bases, that's extracted upstream and
@@ -23,9 +23,9 @@
 #'
 #' ## Get the standard context
 #' mut_context <- mut_context(vcfs[[1]], ref_genome)
-#' 
+#'
 #' ## Get larger context
-#' mut_context_larger = mut_context(vcfs[[1]], ref_genome, extension = 2)
+#' mut_context_larger <- mut_context(vcfs[[1]], ref_genome, extension = 2)
 #' @seealso
 #' \code{\link{read_vcfs_as_granges}},
 #'
@@ -35,7 +35,7 @@ mut_context <- function(vcf, ref_genome, extension = 1) {
   # Check that the seqnames of the gr and ref_genome match
   .check_chroms(vcf, ref_genome)
 
-  #Get context of mutation.
+  # Get context of mutation.
   vcf_context <- as.character(Biostrings::getSeq(
     BSgenome::getBSgenome(ref_genome),
     seqnames(vcf),

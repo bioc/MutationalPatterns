@@ -55,7 +55,6 @@ fit_res <- strict_refit$fit_res
 
 ## list of ggplots that shows how the cosine similarity was reduced during the iterations
 fig_l <- strict_refit$sim_decay_fig
-
 }
 \seealso{
 \code{\link{mut_matrix}},
