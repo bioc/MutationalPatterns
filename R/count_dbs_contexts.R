@@ -102,6 +102,14 @@ count_dbs_contexts <- function(vcf_list) {
     tibble::as_tibble() %>%
     dplyr::group_by(REF, ALT) %>%
     dplyr::summarise(count = dplyr::n())
+  
+  if (sum(!counts$REF %in% categories$REF) > 0 | sum(!counts$ALT %in% categories$ALT)){
+    stop(paste0("There are some REF or ALT bases, that do not belong to ", 
+                "any of the categories. \n",
+                "Did you forget to use 'get_dbs_context()'?"), call. = FALSE)
+  }
+  
+  
   counts_full <- dplyr::left_join(categories, counts, by = c("REF", "ALT")) %>%
     dplyr::select(-REF, -ALT)
   return(counts_full)
