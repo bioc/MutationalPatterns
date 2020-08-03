@@ -86,7 +86,7 @@ plot_contribution <- function(contribution,
 
   # optional subsetting if index parameter is provided
   if (!.is_na(index)) {
-    contribution <- contribution[, index]
+    contribution <- contribution[, index, drop = FALSE]
   }
 
   # These variables use non standard evaluation.
@@ -118,6 +118,8 @@ plot_contribution <- function(contribution,
     bar_geom <- geom_bar(position = "fill", stat = "identity", colour = "black")
     y_lab <- "Relative contribution"
   }
+  
+  #Create plot
   plot <- ggplot(tb, aes(x = Sample, y = Contribution, fill = Signature)) +
     bar_geom +
     labs(x = "", y = y_lab) +
