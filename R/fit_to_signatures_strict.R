@@ -137,9 +137,11 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
     purrr::map(function(x) tibble::rownames_to_column(as.data.frame(x))) %>%
     purrr::reduce(dplyr::full_join, by = "rowname")
 
-  # Fix signature order of contribution
-  correct_order <- colnames(signatures)[colnames(signatures) %in% contribution$rowname]
-  contribution <- contribution[match(correct_order, contribution$rowname), ]
+  # Fix signature order of contribution and add absent sigs to
+  # keep the legend colors consistent for plotting.
+  sig_ref <- tibble::tibble("rowname" = colnames(signatures))
+  contribution <- dplyr::left_join(sig_ref, contribution, by ="rowname") %>% 
+    as.data.frame()
 
   # Turn contribution into matrix and remove NAs
   rownames(contribution) <- contribution$rowname
