@@ -37,10 +37,12 @@ tissue <- c(
 
 ## Perform the enrichment/depletion test.
 distr_test <- enrichment_depletion_test(distr, by = tissue)
-distr_test2 <- enrichment_depletion_test(distr)
 
 ## Plot the enrichment/depletion
 plot_enrichment_depletion(distr_test)
+
+#Perform and plot the enrichmet depletion test for all samples pooled
+distr_test2 <- enrichment_depletion_test(distr)
 plot_enrichment_depletion(distr_test2)
 
 ## Plot with p values instead of fdr

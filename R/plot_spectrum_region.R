@@ -180,6 +180,7 @@ plot_spectrum_region <- function(type_occurrences,
 
   # Combine samples based on sample grouping
   tb <- tb_per_sample %>%
+    dplyr::mutate(by = factor(by, levels = unique(by))) %>% 
     dplyr::group_by(by, feature, type) %>%
     dplyr::summarise(
       stdev = sd(freq),

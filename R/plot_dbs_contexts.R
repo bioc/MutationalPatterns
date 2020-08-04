@@ -38,7 +38,7 @@ plot_dbs_contexts <- function(counts, same_y = FALSE, condensed = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  count <- REF <- ALT <- muttype_total <- NULL
+  count <- REF <- ALT <- muttype_total <- sample <- NULL
 
   # Transform to data frame
   counts <- counts %>%
@@ -55,7 +55,9 @@ plot_dbs_contexts <- function(counts, same_y = FALSE, condensed = FALSE) {
 
 
   # Transform data to long format.
-  counts <- tidyr::gather(counts, key = "sample", value = "count", -REF, -ALT)
+  counts <- counts %>% 
+    tidyr::gather(key = "sample", value = "count", -REF, -ALT) %>% 
+    dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Count nr of mutations
   nr_muts <- counts %>%

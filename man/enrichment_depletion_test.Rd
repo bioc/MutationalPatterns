@@ -4,7 +4,7 @@
 \alias{enrichment_depletion_test}
 \title{Test for enrichment or depletion of mutations in genomic regions}
 \usage{
-enrichment_depletion_test(x, by = c(), p_cutoffs = 0.05, fdr_cutoffs = 0.1)
+enrichment_depletion_test(x, by = NA, p_cutoffs = 0.05, fdr_cutoffs = 0.1)
 }
 \arguments{
 \item{x}{data.frame result from genomic_distribution()}
@@ -35,7 +35,7 @@ tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 ## Perform the enrichment/depletion test by tissue type.
 distr_test <- enrichment_depletion_test(distr, by = tissue)
 
-## Or without specifying the 'by' parameter.
+## Or without specifying the 'by' parameter, to pool all samples.
 distr_single_sample <- enrichment_depletion_test(distr)
 
 ## Use different significance cutoffs for the pvalue and fdr

@@ -48,7 +48,7 @@
 plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, condensed = FALSE) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  count <- muttype <- muttype_sub <- muttype_total <- NULL
+  count <- muttype <- muttype_sub <- muttype_total <- sample <- NULL
 
   # Separate muttype and muttype_sub. Then make data long
   counts <- counts %>%
@@ -56,7 +56,8 @@ plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, co
     tibble::rownames_to_column("muttype_total") %>%
     tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>%
     dplyr::mutate(muttype = factor(muttype, levels = unique(muttype))) %>%
-    tidyr::gather(key = "sample", value = "count", -muttype, -muttype_sub)
+    tidyr::gather(key = "sample", value = "count", -muttype, -muttype_sub) %>% 
+    dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Count nr mutations. (This is used for the facets)
   nr_muts <- counts %>%

@@ -88,7 +88,8 @@ plot_profile_heatmap <- function(mut_matrix, by = NA, max = 0.02) {
   # Make data relative
   tb <- tb %>%
     dplyr::group_by(sample) %>%
-    dplyr::mutate(rel_nrmuts = nrmuts / sum(nrmuts))
+    dplyr::mutate(rel_nrmuts = nrmuts / sum(nrmuts)) %>% 
+    dplyr::ungroup()
 
   # Add sample grouping
   if (.is_na(by)) {
@@ -103,6 +104,7 @@ plot_profile_heatmap <- function(mut_matrix, by = NA, max = 0.02) {
 
   # Combine samples based on grouping
   tb <- tb %>%
+    dplyr::mutate(by = factor(by, levels = unique(by))) %>% 
     dplyr::group_by(by, l_context, muttype, r_context) %>%
     dplyr::summarise(
       nrmuts = sum(nrmuts),

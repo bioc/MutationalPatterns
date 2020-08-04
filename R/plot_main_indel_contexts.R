@@ -54,7 +54,8 @@ plot_main_indel_contexts <- function(counts, same_y = FALSE) {
     dplyr::select(-muttype_sub) %>%
     dplyr::group_by(muttype) %>%
     dplyr::summarise_all(list(~ sum(.))) %>%
-    tidyr::gather(key = "sample", value = "count", -.data$muttype)
+    tidyr::gather(key = "sample", value = "count", -.data$muttype) %>% 
+    dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Count nr mutations. (This is used for the facets)
   nr_muts <- counts_main %>%

@@ -118,8 +118,10 @@ plot_spectrum <- function(type_occurrences, CT = FALSE, by = NA, indv_points = F
       sub_type = stringr::str_remove(variable, " .*"),
       variable = factor(variable, levels = unique(variable))
     )
+  
   # Summarise per group and mutation type
   tb <- tb_per_sample %>%
+    dplyr::mutate(by = factor(by, levels = unique(by))) %>% 
     dplyr::group_by(by, variable) %>%
     dplyr::summarise(
       sub_type = sub_type[[1]], mean = mean(value), stdev = stats::sd(value),

@@ -69,7 +69,8 @@ plot_192_profile <- function(mut_matrix, colors = NA, ymax = 0.2, condensed = FA
       context = stringr::str_replace(full_context, "\\[.*\\]", "\\.")
     ) %>%
     dplyr::select(-full_context) %>%
-    tidyr::pivot_longer(c(-substitution, -context, -strand), names_to = "sample", values_to = "freq")
+    tidyr::pivot_longer(c(-substitution, -context, -strand), names_to = "sample", values_to = "freq") %>% 
+    dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Change plotting parameters based on whether plot should be condensed.
   if (condensed == TRUE) {

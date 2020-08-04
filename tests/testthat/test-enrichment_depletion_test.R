@@ -11,7 +11,7 @@ tissue <- c(rep("colon", 3), rep("intestine", 3), rep("liver", 3))
 output <- enrichment_depletion_test(distr, by = tissue)
 
 ## Or without specifying the 'by' parameter.
-output_singlesample <- enrichment_depletion_test(distr)
+output_pooled <- enrichment_depletion_test(distr)
 
 ## Use different cutoffs for p and fdr
 output_strictcutoff <- enrichment_depletion_test(distr,
@@ -27,14 +27,14 @@ output_multistars <- enrichment_depletion_test(distr,
 )
 test_that("Output has correct class", {
   expect_true(inherits(output, c("data.frame")))
-  expect_true(inherits(output_singlesample, c("data.frame")))
+  expect_true(inherits(output_pooled, c("data.frame")))
   expect_true(inherits(output_strictcutoff, c("data.frame")))
   expect_true(inherits(output_multistars, c("data.frame")))
 })
 
 test_that("Output has correct size", {
   expect_equal(dim(output), c(15, 13))
-  expect_equal(dim(output_singlesample), c(45, 13))
+  expect_equal(dim(output_pooled), c(5, 13))
   expect_equal(dim(output_strictcutoff), c(15, 13))
   expect_equal(dim(output_multistars), c(15, 13))
 })
@@ -42,8 +42,8 @@ test_that("Output has correct size", {
 test_that("Number significant is correct", {
   expect_equal(sum(output$significant == "*"), 15)
   expect_equal(sum(output$significant_fdr == "*"), 15)
-  expect_equal(sum(output_singlesample$significant == "*"), 30)
-  expect_equal(sum(output_singlesample$significant_fdr == "*"), 33)
+  expect_equal(sum(output_pooled$significant == "*"), 5)
+  expect_equal(sum(output_pooled$significant_fdr == "*"), 5)
   expect_equal(sum(output_strictcutoff$significant == "*"), 9)
   expect_equal(sum(output_strictcutoff$significant_fdr == "*"), 9)
   expect_equal(sum(output_multistars$significant == "***"), 8)

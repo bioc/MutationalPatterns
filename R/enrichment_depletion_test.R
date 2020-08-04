@@ -23,7 +23,7 @@
 #' ## Perform the enrichment/depletion test by tissue type.
 #' distr_test <- enrichment_depletion_test(distr, by = tissue)
 #'
-#' ## Or without specifying the 'by' parameter.
+#' ## Or without specifying the 'by' parameter, to pool all samples.
 #' distr_single_sample <- enrichment_depletion_test(distr)
 #'
 #' ## Use different significance cutoffs for the pvalue and fdr
@@ -45,55 +45,61 @@
 #'
 #' @export
 
-enrichment_depletion_test <- function(x, by = c(),
+enrichment_depletion_test <- function(x, by = NA,
                                       p_cutoffs = 0.05,
                                       fdr_cutoffs = 0.1) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  pval <- fdr <- NULL
-
-  # Handle the 'by' parameter when necessary by aggregating x
-  if (length(by) > 0) {
-    x$by <- by
-    # Sum the columns while aggregating rows based on unique values
-    # in 'by' and 'region'.
-    res2 <- stats::aggregate(cbind(
-      n_muts,
-      surveyed_length,
-      surveyed_region_length,
-      observed
-    ) ~ by + region,
-    data = x, sum
-    )
-  } else {
-    res2 <- x
-    # In this case, the 'by' variable is 'sample' variable.
-    res2$by <- res2$sample
-    # Select output columns
-    res2 <- res2[, c(9, 1, 3, 4, 6, 8)]
+  pval <- fdr <- sample <- prob <- expected <- region <- n_muts <- NULL
+  surveyed_length <- surveyed_region_length <- observed <- NULL
+  
+  # If grouping variable not provided, set to "all"
+  if (.is_na(by)) {
+    by <- "all"
   }
-
+  
+  # Add grouping info
+  tb_by <- tibble::tibble(
+    "sample" = unique(x$sample),
+    "by" = by
+  )
+  tb_per_sample <- x %>%
+    dplyr::left_join(tb_by, by = "sample")
+  
+  # Summarize based on the grouping.
+  tb <- tb_per_sample %>% 
+    dplyr::select(-prob, -expected) %>% 
+    dplyr::mutate(region = factor(region, levels = unique(region)),
+                                  by = factor(by, levels = unique(by))) %>% 
+    dplyr::group_by(region, by) %>% 
+    dplyr::summarise(n_muts = sum(n_muts), 
+                     surveyed_length = sum(surveyed_length), 
+                     surveyed_region_length = sum(surveyed_region_length),
+                     observed = sum(observed)) %>% 
+    dplyr::ungroup()
+  
+  
   # Calculate probability and expected number of mutations
-  res2$prob <- res2$n_muts / res2$surveyed_length
-  res2$expected <- res2$prob * res2$surveyed_region_length
+  tb$prob <- tb$n_muts / tb$surveyed_length
+  tb$expected <- tb$prob * tb$surveyed_region_length
 
   # Perform enrichment/depletion test for each row
-  nr_muts <- nrow(res2)
-  res3 <- vector("list", nr_muts)
+  nr_muts <- nrow(tb)
+  tb2 <- vector("list", nr_muts)
   for (i in seq_len(nr_muts)) {
-    x <- res2[i, ]
-    res3[[i]] <- binomial_test(
+    x <- tb[i, ]
+    tb2[[i]] <- binomial_test(
       x$prob,
       x$surveyed_region_length,
       x$observed,
       p_cutoffs
     )
   }
-  res3 <- do.call(rbind, res3)
+  tb2 <- do.call(rbind, tb2)
 
   # Combine results into one data frame
-  df <- cbind(res2, res3)
+  df <- cbind(tb, tb2)
 
   # Calculate fdr
   df <- dplyr::mutate(df,

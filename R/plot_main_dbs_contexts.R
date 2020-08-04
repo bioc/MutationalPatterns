@@ -35,7 +35,7 @@ plot_main_dbs_contexts <- function(counts, same_y = FALSE) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  count <- REF <- ALT <- muttype_total <- NULL
+  count <- REF <- ALT <- muttype_total <- sample <- NULL
 
   # Transform to data frame
   counts <- counts %>%
@@ -49,7 +49,8 @@ plot_main_dbs_contexts <- function(counts, same_y = FALSE) {
     dplyr::select(-ALT) %>%
     dplyr::group_by(REF) %>%
     dplyr::summarise_all(list(~ sum(.))) %>%
-    tidyr::gather(key = "sample", value = "count", -REF)
+    tidyr::gather(key = "sample", value = "count", -REF) %>% 
+    dplyr::mutate(sample = factor(sample, levels = unique(sample)))
 
   # Count nr muts per sample for facet
   nr_muts <- counts_main %>%

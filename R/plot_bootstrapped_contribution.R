@@ -55,6 +55,7 @@ plot_bootstrapped_contribution <- function(contri_boots,
     tidyr::gather(key = "sig", value = "contri", -exp) %>%
     dplyr::mutate(
       sample = gsub("_[^_]+$", "", exp),
+      sample = factor(sample, levels = unique(sample)),
       sig = factor(sig, levels = unique(sig))
     )
 

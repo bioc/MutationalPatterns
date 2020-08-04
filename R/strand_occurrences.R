@@ -51,6 +51,11 @@ strand_occurrences <- function(mut_mat_s, by = NA) {
     tidyr::separate(type_strand, into = c("type", "strand"), sep = "-") %>%
     dplyr::mutate(type = stringr::str_replace(type, ".*\\[(.*)\\].*", "\\1"))
 
+  # If grouping variable not provided, set to "all"
+  if (.is_na(by)) {
+    by <- "all"
+  }
+  
   # Add grouping info
   tb_by <- tibble::tibble(
     "sample" = unique(tb_per_sample$sample),
@@ -61,14 +66,14 @@ strand_occurrences <- function(mut_mat_s, by = NA) {
 
   # Summarise per group
   tb <- tb_per_sample %>%
+    dplyr::mutate(by = factor(by, levels = unique(by))) %>% 
     dplyr::group_by(by, type, strand) %>% # Summarise the number of mutations per group
     dplyr::summarise(no_mutations = sum(no_mutations)) %>%
     dplyr::ungroup() %>%
     dplyr::group_by(by) %>% # Calculate relative per group. NOT per sample.
     dplyr::mutate(relative_contribution = no_mutations / sum(no_mutations)) %>%
     dplyr::ungroup() %>%
-    dplyr::rename(group = by) %>%
-    dplyr::mutate(group = factor(group, levels = unique(group))) # Turn group into factor
+    dplyr::rename(group = by)
 
   return(tb)
 }
