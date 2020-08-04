@@ -119,10 +119,17 @@ plot_contribution <- function(contribution,
     y_lab <- "Relative contribution"
   }
   
+  # Determine what signatures are present for the legend.
+  present_sigs <- tb %>% 
+    dplyr::filter(Contribution != 0) %>% 
+    dplyr::pull(Signature) %>% 
+    unique()
+  
   #Create plot
   plot <- ggplot(tb, aes(x = Sample, y = Contribution, fill = Signature)) +
     bar_geom +
     labs(x = "", y = y_lab) +
+    scale_fill_discrete(breaks = present_sigs) +
     theme_bw() +
     theme(
       panel.grid.minor.x = element_blank(),
