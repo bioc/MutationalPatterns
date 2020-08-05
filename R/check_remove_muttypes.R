@@ -319,7 +319,7 @@
   # Check if the gr and reference have the same genome name.
   genome_name_gr <- unique(GenomeInfoDb::genome(gr))
   genome_name_ref <- unique(GenomeInfoDb::genome(ref))
-  if (genome_name_gr != genome_name_ref) {
+  if (is.na(genome_name_gr) | genome_name_gr != genome_name_ref) {
     stop(paste0(
       "The input GRanges (your vcf data) and the ref_genome do not have the same genome name.\n",
       "This problem is known to occur when you use an outside function to read in vcfs.\n",
@@ -334,7 +334,7 @@
   shared_chroms <- intersect(gr_seqnames, ref_seqnames)
   if (!length(shared_chroms)) {
     stop("The input GRanges and the ref_genome share no seqnames (chromosome names). 
-             Do they use the same seqlevelsStyle? An example of how to fix this is show below.
+             Do they use the same seqlevelsStyle? An example of how to fix this is show below:
              You can change the seqlevelStyle with: `seqlevelsStyle(grl) = 'UCSC'", call. = FALSE)
   }
 
