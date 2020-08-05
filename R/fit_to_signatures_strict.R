@@ -55,6 +55,11 @@ fit_to_signatures_strict <- function(mut_matrix, signatures, max_delta = 0.05) {
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   rowname <- . <- NULL
+  
+  #Set colnames if absent, to prevent duplicate names later.
+  if (is.null(colnames(mut_matrix))){
+    colnames(mut_matrix) <- seq_len(ncol(mut_matrix))
+  }
 
   # Remove signatures with zero contribution across samples
   fit_res <- fit_to_signatures(mut_matrix, signatures)
