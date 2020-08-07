@@ -15,6 +15,9 @@
 #' The 'variational_bayes' method comes from the ccfindR package.
 #' This method uses bayesian inference, which makes it easier to determine the
 #' mathmatically optimal number of signatures.
+#' @param single_core Boolean. If TRUE, it forces the NMF algorithm to
+#' use only a single core. This can sometimes prevent issues.
+#' Doesn't apply to variational-bayes NMF
 #'
 #' @return Named list of mutation matrix, signatures and signature contribution
 #'
@@ -37,7 +40,7 @@
 #'
 #' @export
 
-extract_signatures <- function(mut_matrix, rank, nrun = 200, nmf_type = c("regular", "variational_bayes")) {
+extract_signatures <- function(mut_matrix, rank, nrun = 200, nmf_type = c("regular", "variational_bayes"), single_core = FALSE) {
   # Match argument
   nmf_type <- match.arg(nmf_type)
 
@@ -58,8 +61,11 @@ extract_signatures <- function(mut_matrix, rank, nrun = 200, nmf_type = c("regul
 
   if (nmf_type == "regular") {
     # Calculate NMF
-    res <- NMF::nmf(mut_matrix, rank = rank, method = "brunet", nrun = nrun, seed = 123456)
-
+    if (single_core){
+      res <- NMF::nmf(mut_matrix, rank = rank, method = "brunet", nrun = nrun, seed = 123456, .opt = "v-p")
+    } else{
+      res <- NMF::nmf(mut_matrix, rank = rank, method = "brunet", nrun = nrun, seed = 123456)
+    }
     # Find signatures and contribution of signatures
     signatures <- NMF::basis(res)
     contribution <- NMF::coef(res)
