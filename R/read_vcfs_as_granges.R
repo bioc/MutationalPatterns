@@ -150,10 +150,9 @@ read_vcfs_as_granges <- function(vcf_files,
   # GRanges information in memory.  This speeds up the
   # loading significantly.
   # Muffle the warning about duplicate keys.
-  genome_name <- GenomeInfoDb::genome(genome)[[1]]
   withCallingHandlers(
     {
-      gr <- GenomicRanges::granges(VariantAnnotation::readVcf(vcf_file, genome_name))
+      gr <- GenomicRanges::granges(VariantAnnotation::readVcf(vcf_file))
     },
     warning = function(w) {
       if (grepl("duplicate keys in header will be forced to unique rownames", conditionMessage(w))) {
@@ -192,6 +191,10 @@ read_vcfs_as_granges <- function(vcf_files,
       }
     )
   }
+  
+  # Change the genome name of the granges
+  genome_name <- GenomeInfoDb::genome(genome)[[1]]
+  GenomeInfoDb::genome(gr) <- genome_name
 
   # Filter for variants with the correct seqlevels
   if (group != "all") {
