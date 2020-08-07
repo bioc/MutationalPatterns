@@ -39,6 +39,6 @@ binomial_test <- function(p, n, x, p_cutoffs = 0.05) {
   # Add significance asteriks
   significant <- .get_sig_star(pval, p_cutoffs)
 
-  res <- data.frame(effect, pval, significant)
+  res <- data.frame("effect" = factor(effect), pval, significant)
   return(res)
 }
