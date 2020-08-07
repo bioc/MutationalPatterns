@@ -45,7 +45,7 @@ plot_main_indel_contexts <- function(counts, same_y = FALSE) {
     tibble::rownames_to_column("muttype_total") %>%
     tidyr::separate(muttype_total,
       c("muttype", "muttype_sub"),
-      sep = "_(?=[:digit:])"
+      sep = "_(?=[0-9])"
     ) %>%
     dplyr::mutate(muttype = factor(muttype, levels = unique(muttype)))
 

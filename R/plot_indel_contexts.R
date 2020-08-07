@@ -54,7 +54,7 @@ plot_indel_contexts <- function(counts, same_y = FALSE, extra_labels = FALSE, co
   counts <- counts %>%
     as.data.frame() %>%
     tibble::rownames_to_column("muttype_total") %>%
-    tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[:digit:])") %>%
+    tidyr::separate(muttype_total, c("muttype", "muttype_sub"), sep = "_(?=[0-9])") %>%
     dplyr::mutate(muttype = factor(muttype, levels = unique(muttype))) %>%
     tidyr::gather(key = "sample", value = "count", -muttype, -muttype_sub) %>% 
     dplyr::mutate(sample = factor(sample, levels = unique(sample)))
