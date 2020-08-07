@@ -54,7 +54,9 @@ test_that("Wrong genome name gives error", {
 
 # Test that the wrong seqlevelstyle gives an error.
 input_wrongseqstyle <- input
+genome(input_wrongseqstyle) = NA
 seqlevelsStyle(input_wrongseqstyle) <- "NCBI"
+genome(input_wrongseqstyle) = "hg19"
 test_that("Wrong seqlevelsStyle gives error", {
   expect_error(
     {

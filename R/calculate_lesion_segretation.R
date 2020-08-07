@@ -301,7 +301,6 @@ calculate_lesion_segregation <- function(vcf_list,
 .get_strandedness_gr <- function(gr) {
   .check_no_indels(gr)
   strand(gr) <- ifelse(as.vector(.get_ref(gr)) %in% c("C", "T"), "+", "-")
-  GenomeInfoDb::seqlevelsStyle(gr) <- "NCBI" # This takes less space when plotting
 
   if (length(gr)) {
     GenomeInfoDb::seqlevels(gr) <- GenomeInfoDb::seqlevelsInUse(gr)

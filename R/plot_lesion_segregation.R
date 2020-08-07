@@ -35,6 +35,11 @@ plot_lesion_segregation <- function(vcf, per_chrom = FALSE, sample_name = NA) {
 
   # Get strandedness
   vcf <- .get_strandedness_gr(vcf)
+  
+  #Genome is set to NULL to ensure seqlevels can be changed.
+  GenomeInfoDb::genome(vcf) <- NA
+  GenomeInfoDb::seqlevelsStyle(vcf) <- "NCBI" # This takes less space when plotting
+  
   tb <- .get_strandedness_tb(vcf)
 
   # Ensures that the entire chromosomes are plotted, even when mutations don't span the entire chromosome.
