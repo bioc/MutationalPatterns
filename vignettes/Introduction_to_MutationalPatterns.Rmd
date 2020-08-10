@@ -91,9 +91,7 @@ BiocManager::install("MutationalPatterns")
 You also need to load the package.
 This needs to be repeated every time you restart `R`.
 ```{r Load package, message=FALSE}
-#library(MutationalPatterns)
-library(devtools)
-load_all("~/surfdrive/Shared/Boxtel_General/Scripts/Git_submission/Freek_MutationalPatterns/MutationalPatterns/")
+library(MutationalPatterns)
 ```
 
 # Data
@@ -473,7 +471,7 @@ This can take a long time:
 ```{r use_nmf}
 library("NMF")
 estimate <- nmf(mut_mat, rank = 2:5, method = "brunet", 
-                nrun = 10, seed = 123456)
+                nrun = 10, seed = 123456, .opt = "v-p")
 ```
 
 And plot it:
@@ -486,7 +484,7 @@ Extract mutational signatures from the mutation count matrix with
 of 2 is used. (For larger datasets it is wise to perform more iterations by
 changing the nrun parameter to achieve stability and avoid bad local minima):
 ```{r extract_signatures}
-nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10)
+nmf_res <- extract_signatures(mut_mat, rank = 2, nrun = 10, single_core = TRUE)
 ```
 
 NMF also works on other mutation types like Indels and DBS. You can even combine
@@ -494,7 +492,7 @@ matrixes from different mutation types to, for example, extract combined
 Indel/DBS signatures.
 ```{r extract_signatures_snv_indel}
 combi_mat = rbind(indel_counts, dbs_counts)
-nmf_res_combi <- extract_signatures(combi_mat, rank = 2, nrun = 10)
+nmf_res_combi <- extract_signatures(combi_mat, rank = 2, nrun = 10, single_core = TRUE)
 ```
 
 
@@ -1146,7 +1144,7 @@ grid.arrange(ps1, ps2)
 Strand bias can be included in signature analyses.
 You can for example perform NMF on a mutation count matrix with strand features:
 ```{r extract_signatures_bias}
-nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2)
+nmf_res_strand <- extract_signatures(mut_mat_s, rank = 2, single_core = TRUE)
 colnames(nmf_res_strand$signatures) <- c("Signature A", "Signature B")
 ```
 
@@ -1352,7 +1350,7 @@ signatures that are specific to certain genomic regions.
 
 ```{r extract_signatures_regions, fig.wide=TRUE}
 mut_mat_region <- mut_matrix(grl_region, ref_genome)
-nmf_res_region <- extract_signatures(mut_mat_region, rank = 2, nrun = 10)
+nmf_res_region <- extract_signatures(mut_mat_region, rank = 2, nrun = 10, single_core = TRUE)
 nmf_res_region <- rename_nmf_signatures(nmf_res_region, 
                                         signatures, 
                                         cutoff = 0.85)
