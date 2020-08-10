@@ -40,9 +40,9 @@ count_indel_contexts <- function(vcf_list) {
       rep("4bp_deletion_with_microhomology", 3), rep("5+bp_deletion_with_microhomology", 5)
     ),
     "muttype_sub" = c(
-      rep(c(1:5, "6+"), 2),
+      rep(c(seq_len(5), "6+"), 2),
       rep(c(0:4, "5+"), 2),
-      rep(c(1:5, "6+"), 4),
+      rep(c(seq_len(5), "6+"), 4),
       rep(c(0:4, "5+"), 4), 1, 1, 2, 1, 2, 3, 1, 2, 3, 4, "5+"
     )
   )
