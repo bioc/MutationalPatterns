@@ -41,7 +41,10 @@
 #' ## advanced users. It can be usefull if you want to find highly mutated regions, with
 #' ## a consistent cutoff between analyses.
 #' dens_grl_man <- bin_mutation_density(grl, ref_genome, man_dens_cutoffs = c(0, 2e-08, 1))
-bin_mutation_density <- function(vcf_list, ref_genome, nrbins = 3, man_dens_cutoffs = NA) {
+bin_mutation_density <- function(vcf_list, 
+                                 ref_genome, 
+                                 nrbins = 3,
+                                 man_dens_cutoffs = NA) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -69,7 +72,11 @@ bin_mutation_density <- function(vcf_list, ref_genome, nrbins = 3, man_dens_cuto
 
   # Determine density per chromosome
   chroms <- GenomeInfoDb::seqlevelsInUse(gr)
-  dens_gr <- purrr::map(chroms, .get_mutation_density_chrom, ref_genome, gr, chroms) %>%
+  dens_gr <- purrr::map(chroms, 
+                        .get_mutation_density_chrom, 
+                        ref_genome, 
+                        gr, 
+                        chroms) %>%
     do.call(c, .)
 
   # Set density break type
@@ -106,7 +113,8 @@ bin_mutation_density <- function(vcf_list, ref_genome, nrbins = 3, man_dens_cuto
   gr <- gr[GenomeInfoDb::seqnames(gr) == chrom]
 
   # Determine position
-  pos <- BiocGenerics::start(gr) + (BiocGenerics::end(gr) - BiocGenerics::start(gr)) / 2
+  half_width <- (BiocGenerics::end(gr) - BiocGenerics::start(gr)) / 2
+  pos <- BiocGenerics::start(gr) + half_width
 
   # Calculate density. Only calculate within chromosome size
   chr_size <- GenomeInfoDb::seqlengths(ref_genome)[chrom]
@@ -123,7 +131,8 @@ bin_mutation_density <- function(vcf_list, ref_genome, nrbins = 3, man_dens_cuto
   end[length(end)] <- chr_size
 
   # Transform to GRanges
-  dens_gr <- GenomicRanges::GRanges(seqnames = chrom, ranges = IRanges::IRanges(start, end))
+  dens_gr <- GenomicRanges::GRanges(seqnames = chrom, 
+                                    ranges = IRanges::IRanges(start, end))
   dens_gr$dens <- dens$y
   GenomeInfoDb::seqlevels(dens_gr) <- chroms
 
