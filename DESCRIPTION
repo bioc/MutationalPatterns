@@ -16,8 +16,8 @@ Description: Mutational processes leave characteristic footprints in genomic DNA
     mutational signatures on a single sample level. MutationalPatterns integrates
     with common R genomic analysis workflows and allows easy association with
     (publicly available) annotation data.
-Version: 1.6.2
-Date: 2018-10-18
+Version: 2.99.0
+Date: 2020-08-10
 Authors@R: c(
     person("Freek", "Manders", email = "F.M.Manders@prinsesmaximacentrum.nl", role = c("aut"), 
     comment = c(ORCID = "0000-0001-6197-347X")),
@@ -31,7 +31,7 @@ Authors@R: c(
     comment = c(ORCID = "0000-0003-1285-2836")),
     person("Edwin", "Cuppen", role = "aut",
     comment = c(ORCID = "0000-0002-0400-9542")))
-License: MIT + file LICENSE
+icense: MIT + file LICENSE
 URL: https://doi.org/10.1186/s13073-018-0539-0
 Imports:
     stats,
