@@ -17,12 +17,17 @@
 #' 'synonymous mutations' is determined. This is then normalized per
 #' mutation context.
 #' For example, mutations with the ACA context could be located in the third
-#' position of a codon like TAC. This might happen 200 times in the supplied genes.
-#' This TAC codon could then be mutated in either a TAA, TAG or a TAT. The first two
-#' of these options would induce a stop codon, while the third one would be synonymous.
-#' By summing up all codons the number of stop_gains', 'mismatches' and
-#' 'synonymous mutations' is determined per mutation context.
-#'
+#' position of a codon like TAC. This might happen 200 times in the supplied
+#' genes. This TAC codon could then be mutated in either a TAA, TAG or a TAT.
+#' The first two of these options would induce a stop codon, while the third one
+#' would be synonymous. By summing up all codons the number of stop_gains',
+#' 'mismatches' and 'synonymous mutations' is determined per mutation context.
+#' For mismatches the blosum62 score is also calculated. This is a score based
+#' on the BLOSUM62 matrix, that describes how similar two amino acids are. This
+#' score is normalized over the total amount of possible mismatches. A lower
+#' score means that the amino acids in the mismatches are more dissimilar. More
+#' dissimilar amino acids are more likely to have a detrimental effect.
+#' 
 #' @param contexts Vector of mutational contexts to use for the analysis.
 #' @param txdb Transcription annotation database
 #' @param ref_genome BSGenome reference genome object
@@ -114,11 +119,21 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
       l_context = l_context[[1]],
       r_context = r_context[[1]],
       .groups = "drop_last"
-    )
+    ) %>% 
+    dplyr::mutate(mut_pos = stringr::str_length(l_context) + 1,
+                  rev_mut_pos = stringr::str_length(r_context) + 1)
 
+  # Read in PAM matrix
+  blosum62 <- readRDS(system.file(file.path("states", "blosum62.rds"), 
+                               package = "MutationalPatterns"))
 
   # Perform damage analysis per context.
-  mismatches <- purrr::map(seq_len(nrow(contexts_tb)), .single_context_damage_analysis, contexts_tb, seqs, verbose) %>%
+  mismatches <- purrr::map(seq_len(nrow(contexts_tb)), 
+                           .single_context_damage_analysis, 
+                           contexts_tb, 
+                           seqs, 
+                           verbose,
+                           blosum62) %>%
     dplyr::bind_rows()
 
   return(mismatches)
@@ -197,11 +212,11 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #' for one mutation context.
 #' @noRd
 #'
-.single_context_damage_analysis <- function(i, contexts_tb, seqs, verbose) {
+.single_context_damage_analysis <- function(i, contexts_tb, seqs, verbose, blosum62) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  alt_base <- context <- n <- NULL
+  alt_base <- context <- n <- ratio <- NULL
 
   # Get data from this context
   contexts_tb <- contexts_tb[i, ]
@@ -210,11 +225,18 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
   alt_bases <- contexts_tb$alt_bases[[1]]
   l_context <- contexts_tb$l_context
   r_context <- contexts_tb$r_context
-
+  mut_pos <- contexts_tb$mut_pos
+  rev_mut_pos <- contexts_tb$rev_mut_pos
+  
   # Count muttypes for forward context
-  muttype_counts <- .single_context_damage_analysis_strand(ori_bases, ref_base, alt_bases, seqs) %>%
+  muttype_counts <- .single_context_damage_analysis_strand(ori_bases, 
+                                                           ref_base, 
+                                                           alt_bases, 
+                                                           seqs, 
+                                                           mut_pos,
+                                                           blosum62) %>%
     dplyr::mutate(context = paste0(l_context, "[", ref_base, ">", alt_base, "]", r_context)) %>%
-    dplyr::select(type, context, n)
+    dplyr::select(type, context, n, blosum62)
 
   # Get reverse context
   rev_ori_bases <- ori_bases %>%
@@ -231,16 +253,26 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
     as.character()
 
   # Count muttypes for reverse context
-  muttype_counts_rev <- .single_context_damage_analysis_strand(rev_ori_bases, rev_ref_base, rev_alt_bases, seqs)
+  muttype_counts_rev <- .single_context_damage_analysis_strand(rev_ori_bases, 
+                                                               rev_ref_base, 
+                                                               rev_alt_bases, 
+                                                               seqs,
+                                                               rev_mut_pos,
+                                                               blosum62)
 
   # Combine forward and reverse context
   muttype_counts$n <- muttype_counts$n + muttype_counts_rev$n
-
+  muttype_counts$blosum62 <- muttype_counts$blosum62 + muttype_counts_rev$blosum62
+  
   # Normalize
   norm_muttype_counts <- muttype_counts %>%
     dplyr::group_by(context) %>%
     dplyr::mutate(ratio = n / sum(n)) %>%
-    dplyr::ungroup()
+    dplyr::ungroup() %>% 
+    dplyr::mutate(blosum62 = ifelse(type == "Missense", 
+                                    blosum62 / n,
+                                    NA)) %>% 
+    dplyr::select(type, context, n, ratio, blosum62)
 
   if (verbose) {
     message(paste0("Finished with the ", ori_bases, " context."))
@@ -260,7 +292,12 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #' for one mutation context on one strand.
 #' @noRd
 #'
-.single_context_damage_analysis_strand <- function(ori_bases, ref_base, alt_bases, seqs) {
+.single_context_damage_analysis_strand <- function(ori_bases, 
+                                                   ref_base, 
+                                                   alt_bases, 
+                                                   seqs, 
+                                                   mut_pos, 
+                                                   blosum62) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -268,7 +305,7 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 
   # Determine reference codons and mutation location
   ori_bases_biostring <- Biostrings::DNAString(ori_bases)
-  ref_mut_loc_l <- purrr::map(as.list(seqs), .get_ref_codons, ori_bases_biostring)
+  ref_mut_loc_l <- purrr::map(as.list(seqs), .get_ref_codons, ori_bases_biostring, mut_pos)
 
   # Get ref codons from list
   ref_codons_l <- purrr::map(ref_mut_loc_l, "ref_codons")
@@ -289,7 +326,7 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
     dplyr::ungroup()
 
   # Calculate the occuring mismatch for each combi of codon and mut base location.
-  muttype_counts <- purrr::map(alt_bases, .calculate_mismatches, counts) %>%
+  muttype_counts <- purrr::map(alt_bases, .calculate_mismatches, counts, blosum62) %>%
     dplyr::bind_rows() %>%
     dplyr::mutate(ori_bases = ori_bases, ref_base = ref_base)
 
@@ -305,13 +342,13 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #' the position of the possible mutation in the codon.
 #' @noRd
 #'
-.get_ref_codons <- function(seq, ori_bases) {
+.get_ref_codons <- function(seq, ori_bases, mut_pos) {
 
   # Determine locations of context in dna
   locs <- Biostrings::matchPattern(ori_bases, seq)
 
   # Determine locations of mut in dna
-  locs_mutbase <- end(locs) - (end(locs) - start(locs)) / 2
+  locs_mutbase <- start(locs) + mut_pos - 1
 
   # Get the reference codons
   exon_codons <- Biostrings::codons(seq)
@@ -338,11 +375,11 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #' for one mutation context on one strand for one alternative base.
 #' @noRd
 #'
-.calculate_mismatches <- function(alt_base, counts) {
+.calculate_mismatches <- function(alt_base, counts, blosum62) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  n <- NULL
+  n <- ref_aa <- mut_aa <- NULL
 
   ref_codons_sum <- Biostrings::DNAStringSet(counts$dna)
   mut_loc_in_codon_sum <- counts$loc
@@ -368,14 +405,23 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
       mut_aa != ref_aa ~ "Missense",
       mut_aa == ref_aa ~ "Synonymous"
     ))
+  
+  # Add the BLOSUM scores
+  blosum_index <- counts %>% 
+    dplyr::select(ref_aa, mut_aa) %>% 
+    as.matrix()
+  
+  counts$blosum62 <- blosum62[blosum_index] * counts$n
 
   # Count the number of stop_gain, missense and synonymous.
+  # Also sum up the PAM scores.
   counts <- counts %>%
     dplyr::mutate(type = factor(type, levels = c("Stop_gain", "Missense", "Synonymous"))) %>%
     dplyr::group_by(type, .drop = FALSE) %>%
-    dplyr::summarise(n = sum(n), .groups = "drop_last") %>%
+    dplyr::summarise(n = sum(n), blosum62 = sum(blosum62), .groups = "drop_last") %>%
     dplyr::mutate(alt_base = alt_base)
-
+  
+  
   return(counts)
 }
 
