@@ -1,32 +1,38 @@
 #' Potential damage analysis for the supplied mutational contexts
 #'
-#' The ratio of possible 'stop gain', 'mismatches' and 'synonymous mutations' is
-#' counted per mutational context. This is done for the supplied ENTREZ gene ids.
-#' This way it can be determined how damaging a mutational context could be.
-#' N gives the total number of possible mutations per context.
+#' The ratio of possible 'stop gain', 'mismatches', 'synonymous mutations' and
+#' 'splice site mutations' is counted per mutational context. This is done for
+#' the supplied ENTREZ gene ids. This way it can be determined how damaging a
+#' mutational context could be. N gives the total number of possible mutations
+#' per context.
 #'
-#' The function works by first selecting the longest transcript per gene.
-#' The coding sequence (cds) of this transcript is then assembled. Next, the function
-#' loops over the reference contexts. For each context (and it's reverse complement),
-#' all possible mutation locations are determined.
-#' It's also determined whether these locations are the first, second
-#' or third base of the cds codon (mut loc). Each unique combination of codon and
-#' mut loc is then counted. For each combination the reference amino acid and the
-#' possible alternative amino acids are determined. By comparing the reference and
-#' alternative amino acids, the number of 'stop_gains', 'mismatches' and
-#' 'synonymous mutations' is determined. This is then normalized per
-#' mutation context.
+#' The function works by first selecting the longest transcript per gene. The
+#' coding sequence (cds) of this transcript is then assembled. Next, the
+#' function loops over the reference contexts. For each context (and it's
+#' reverse complement), all possible mutation locations are determined. Splice
+#' site mutations are removed at this stage. It's also determined whether these
+#' locations are the first, second or third base of the cds codon (mut loc).
+#' Each unique combination of codon and mut loc is then counted. For each
+#' combination the reference amino acid and the possible alternative amino acids
+#' are determined. By comparing the reference and alternative amino acids, the
+#' number of 'stop_gains', 'mismatches' and 'synonymous mutations' is
+#' determined. This is then normalized per mutation context.
 #' For example, mutations with the ACA context could be located in the third
 #' position of a codon like TAC. This might happen 200 times in the supplied
 #' genes. This TAC codon could then be mutated in either a TAA, TAG or a TAT.
 #' The first two of these options would induce a stop codon, while the third one
 #' would be synonymous. By summing up all codons the number of stop_gains',
 #' 'mismatches' and 'synonymous mutations' is determined per mutation context.
+#' 
 #' For mismatches the blosum62 score is also calculated. This is a score based
 #' on the BLOSUM62 matrix, that describes how similar two amino acids are. This
 #' score is normalized over the total amount of possible mismatches. A lower
 #' score means that the amino acids in the mismatches are more dissimilar. More
-#' dissimilar amino acids are more likely to have a detrimental effect.
+#' dissimilar amino acids are more likely to have a detrimental effect. 
+#' 
+#' To identify splice sites, sequences around the splice locations are used
+#' instead of the cds. The 2 bases 5' and 2 bases 3' of a splice site are
+#' considered to be splice site mutation locations.
 #' 
 #' @param contexts Vector of mutational contexts to use for the analysis.
 #' @param txdb Transcription annotation database
@@ -34,8 +40,8 @@
 #' @param gene_ids Entrez gene ids
 #' @param verbose Boolean. Determines whether progress is printed. (Default: FALSE)
 #'
-#' @return A tibble with the ratio of 'stop gain', 'mismatch' and 'synonymous' mutations
-#' per mutation context.
+#' @return A tibble with the ratio of 'stop gain', 'mismatch', 'synonymous' and 
+#' 'splice site' mutations per mutation context.
 #' @export
 #'
 #' @examples
@@ -73,8 +79,13 @@
 #' ## This can be usefull when it's running slowly,
 #' ## which can happen when you are using many gene_ids.
 #' context_potential_damage_analysis(contexts, txdb, ref_genome, gene_ids, verbose = TRUE)
+#' 
 context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_ids, verbose = FALSE) {
 
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  context <- n <- ratio <- NULL
+  
   # Check dependencies are installed.
   if (!requireNamespace("GenomicFeatures", quietly = TRUE)) {
     stop(paste0(
@@ -89,9 +100,15 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
     ), call. = FALSE)
   }
 
+  # Get reference genome
+  ref_genome <- BSgenome::getBSgenome(ref_genome)
+  
   # Get DNA of exons. This is strand specific, so I don't need to worry about this.
-  seqs <- .get_cds_sequences(txdb, ref_genome, gene_ids)
-
+  cds_tx <- .get_cds_ranges(txdb, gene_ids)
+  seqs <- .get_cds_sequences(cds_tx, ref_genome)
+  
+  splice_genelocs <- .get_splice_genelocs(cds_tx)
+  
   if (verbose) {
     message("Finished getting the coding sequences.")
   }
@@ -133,9 +150,22 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
                            contexts_tb, 
                            seqs, 
                            verbose,
-                           blosum62) %>%
-    dplyr::bind_rows()
+                           blosum62,
+                           splice_genelocs) %>%
+    dplyr::bind_rows() %>% 
+    dplyr::mutate(context = factor(context, levels = unique(context)))
 
+  # Perform damage analysis for splice sites
+  splice_muts_tb <- .potential_splice_site_damage(contexts_tb, cds_tx, ref_genome)
+
+  #Combine mismatches tibble with splice site tibble
+  mismatches <- rbind(mismatches, splice_muts_tb) %>%
+    dplyr::arrange(context) %>% 
+    dplyr::group_by(context) %>%
+    dplyr::mutate(ratio = n / sum(n)) %>%
+    dplyr::ungroup() %>% 
+    dplyr::select(type, context, n, ratio, blosum62)
+  
   return(mismatches)
 }
 
@@ -144,32 +174,54 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #'
 #' Per gene the longest transcript is used.
 #'
-##' @param txdb Transcription annotation database
+#' @param cds_tx GRangesList object containing the cds ranges of genes
 #' @param ref_genome BSGenome reference genome object
-#' @param gene_ids Entrez gene ids
 #'
 #' @return DNAStringSet containing the cds sequences
 #' @noRd
 #'
-.get_cds_sequences <- function(txdb, ref_genome, gene_ids) {
+.get_cds_sequences <- function(cds_tx, ref_genome) {
+  
+  # Get sequences (per cds per transcript.)
+  seqs <- Biostrings::getSeq(ref_genome, cds_tx)
 
+  # Merge cds sequences per transcript
+  seqs <- purrr::map(as.list(seqs), function(seq) do.call(c, as.list(seq))) %>%
+    Biostrings::DNAStringSet()
+
+  return(seqs)
+}
+
+#' Get cds ranges for supplied genes
+#'
+#' Per gene the longest transcript is used.
+#'
+#' @param txdb Transcription annotation database
+#' @param gene_ids Entrez gene ids
+#'
+#' @return GRangesList containing the cds ranges of genes
+#' @noRd
+#'
+.get_cds_ranges = function(txdb, gene_ids){
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
   GENEID <- tx_size <- TXNAME <- NULL
-
+  
   # Get cds per transcript
   cds_tx <- GenomicFeatures::cdsBy(txdb, by = "tx", use.names = TRUE)
-
+  
   # Get sizes of transcripts
   tx_sizes <- cds_tx %>%
     BiocGenerics::width() %>%
     sum() %>%
     tibble::enframe(name = "TXNAME", value = "tx_size")
-
+  
   # Get gene names belonging to transcripts
   withCallingHandlers(
     { # Supress the returned 1:many mapping message
-      gene2txname <- AnnotationDbi::select(txdb, AnnotationDbi::keys(txdb, "GENEID"), columns = c("GENEID", "TXNAME"), keytype = "GENEID")
+      gene2txname <- AnnotationDbi::select(txdb, AnnotationDbi::keys(txdb, "GENEID"), 
+                                           columns = c("GENEID", "TXNAME"), 
+                                           keytype = "GENEID")
     },
     message = function(m) {
       if (grepl(" returned 1:many mapping between keys and columns", conditionMessage(m))) {
@@ -180,25 +232,49 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
   gene2txname <- gene2txname %>%
     dplyr::filter(GENEID %in% gene_ids) %>%
     dplyr::inner_join(tx_sizes, by = "TXNAME")
-
+  
   # Keep longest transcript per gene
   txname_keep <- gene2txname %>%
     dplyr::group_by(GENEID) %>%
     dplyr::arrange(dplyr::desc(tx_size), .by_group = TRUE) %>%
     dplyr::summarise(TXNAME = TXNAME[[1]], .groups = "drop_last") %>%
     dplyr::pull(TXNAME)
-
-
   cds_tx <- cds_tx[names(cds_tx) %in% txname_keep]
+  
+  return(cds_tx)
+}
 
-  # Get sequences (per cds per transcript.)
-  seqs <- Biostrings::getSeq(BSgenome::getBSgenome(ref_genome), cds_tx)
 
-  # Merge cds sequences per transcript
-  seqs <- purrr::map(as.list(seqs), function(seq) do.call(c, as.list(seq))) %>%
-    Biostrings::DNAStringSet()
+#' Get the splice site locations within genes
+#' 
+#' This returns the position of the splice site locations,
+#' within the cds of the gene.
+#'
+#' @param cds_tx GRangesList object containing the cds ranges of genes
+#'
+#' @return List containing the splice site locs in genes
+#' @noRd
+#'
+.get_splice_genelocs = function(cds_tx){
+  exon_ends <- cumsum(width(cds_tx))
+  splice_start <- as.list(exon_ends - 1)
+  splice_end <- as.list(exon_ends + 2)
+  splice_locs_genes <- purrr::map2(splice_start, splice_end, .get_splice_single_genelocs)
+  return(splice_locs_genes)
+}
 
-  return(seqs)
+#' Get the splice site locations within one gene
+#'
+#' @param starts Start position of splice site
+#' @param ends End position of splice site
+#'
+#' @return Vector containing the splice site locs in one gene
+#' @noRd
+#'
+.get_splice_single_genelocs = function(starts, ends){
+  splice_locs_l <- purrr::map2(starts, ends, ~seq(.x, .y))
+  splice_locs <- unlist(splice_locs_l)
+  return(splice_locs)
 }
 
 #' Get the potential damage per mutational context
@@ -207,16 +283,18 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #' @param contexts_tb A tibble containing the mutational contexts
 #' @param seqs DNAStringSet containing the cds sequences
 #' @param verbose Boolean. Determines whether progress is printed. (Default: FALSE)
+#' @param blosum62 Blosum62 matrix
+#' @param splice_genelocs List containing the splice site locs in genes
 #'
 #' @return A tibble with the ratio of 'stop gain', 'mismatch' and 'synonymous' mutations
 #' for one mutation context.
 #' @noRd
 #'
-.single_context_damage_analysis <- function(i, contexts_tb, seqs, verbose, blosum62) {
+.single_context_damage_analysis <- function(i, contexts_tb, seqs, verbose, blosum62, splice_genelocs) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
-  alt_base <- context <- n <- ratio <- NULL
+  alt_base <- context <- n <- NULL
 
   # Get data from this context
   contexts_tb <- contexts_tb[i, ]
@@ -234,7 +312,8 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
                                                            alt_bases, 
                                                            seqs, 
                                                            mut_pos,
-                                                           blosum62) %>%
+                                                           blosum62,
+                                                           splice_genelocs) %>%
     dplyr::mutate(context = paste0(l_context, "[", ref_base, ">", alt_base, "]", r_context)) %>%
     dplyr::select(type, context, n, blosum62)
 
@@ -258,7 +337,8 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
                                                                rev_alt_bases, 
                                                                seqs,
                                                                rev_mut_pos,
-                                                               blosum62)
+                                                               blosum62,
+                                                               splice_genelocs)
 
   # Combine forward and reverse context
   muttype_counts$n <- muttype_counts$n + muttype_counts_rev$n
@@ -266,13 +346,10 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
   
   # Normalize
   norm_muttype_counts <- muttype_counts %>%
-    dplyr::group_by(context) %>%
-    dplyr::mutate(ratio = n / sum(n)) %>%
-    dplyr::ungroup() %>% 
     dplyr::mutate(blosum62 = ifelse(type == "Missense", 
                                     blosum62 / n,
                                     NA)) %>% 
-    dplyr::select(type, context, n, ratio, blosum62)
+    dplyr::select(type, context, n, blosum62)
 
   if (verbose) {
     message(paste0("Finished with the ", ori_bases, " context."))
@@ -285,8 +362,11 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 #'
 #' @param ori_bases Mutational context
 #' @param ref_base Reference base
-#' @param alt_bases Vector of possible alternative bases.
+#' @param alt_bases Vector of possible alternative bases
 #' @param seqs DNAStringSet containing the cds sequences
+#' @param mut_pos Mutation position within context
+#' @param blosum62 Blosum62 matrix
+#' @param splice_genelocs List containing the splice site locs in genes
 #'
 #' @return A tibble with the number of 'stop gain', 'mismatch' and 'synonymous' mutations
 #' for one mutation context on one strand.
@@ -297,7 +377,8 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
                                                    alt_bases, 
                                                    seqs, 
                                                    mut_pos, 
-                                                   blosum62) {
+                                                   blosum62,
+                                                   splice_genelocs) {
 
   # These variables use non standard evaluation.
   # To avoid R CMD check complaints we initialize them to NULL.
@@ -305,7 +386,7 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 
   # Determine reference codons and mutation location
   ori_bases_biostring <- Biostrings::DNAString(ori_bases)
-  ref_mut_loc_l <- purrr::map(as.list(seqs), .get_ref_codons, ori_bases_biostring, mut_pos)
+  ref_mut_loc_l <- purrr::map2(as.list(seqs), splice_genelocs, .get_ref_codons, ori_bases_biostring, mut_pos)
 
   # Get ref codons from list
   ref_codons_l <- purrr::map(ref_mut_loc_l, "ref_codons")
@@ -334,22 +415,30 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
 }
 
 #' Get reference codons for one gene
+#' 
+#' The reference codons are determined for one context
+#' and one gene. Splice site mutations are removed.
 #'
 #' @param seq DNAString containing the cds for one gene
+#' @param splice_single_genelocs vector containing the splice site locs in genes
 #' @param ori_bases Mutational context
+#' @param mut_pos Mutation position within context
 #'
 #' @return List. Containing reference codons and
 #' the position of the possible mutation in the codon.
 #' @noRd
 #'
-.get_ref_codons <- function(seq, ori_bases, mut_pos) {
+.get_ref_codons <- function(seq, splice_single_genelocs, ori_bases, mut_pos) {
 
   # Determine locations of context in dna
   locs <- Biostrings::matchPattern(ori_bases, seq)
 
   # Determine locations of mut in dna
   locs_mutbase <- start(locs) + mut_pos - 1
-
+  
+  # Remove splice site mutations
+  locs_mutbase <- locs_mutbase[!locs_mutbase %in% splice_single_genelocs]
+  
   # Get the reference codons
   exon_codons <- Biostrings::codons(seq)
   codon_nr <- ceiling(locs_mutbase / 3)
@@ -425,7 +514,6 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
   return(counts)
 }
 
-
 #' Mutate codons with an alternative base
 #'
 #' @param ref_codon A reference codon
@@ -439,3 +527,159 @@ context_potential_damage_analysis <- function(contexts, txdb, ref_genome, gene_i
   ref_codon[mut_loc_in_codon] <- alt_base
   return(ref_codon)
 }
+
+#' Determine potential splice site damage
+#' 
+#' @param contexts_tb A tibble containing the mutational contexts
+#' @param cds_tx GRangesList object containing the cds ranges of genes
+#' @param ref_genome BSGenome reference genome object
+#'
+#' @return tibble containing splice site damage
+#' @noRd
+#'
+.potential_splice_site_damage = function(contexts_tb, cds_tx, ref_genome){
+  
+  # These variables use non standard evaluation.
+  # To avoid R CMD check complaints we initialize them to NULL.
+  alt_bases <- l_context <- r_context <- ref_base <- NULL
+  context <- n <- blosum62 <- NULL
+  
+  # Get splice site sequences
+  context_l <- max(c(stringr::str_length(contexts_tb$l_context), 
+                     stringr::str_length(contexts_tb$r_context)))
+  splice_seqs <- .get_splice_site_sequences(cds_tx, ref_genome, context_l)
+  
+  
+  # Determine nr matched splices per context
+  nr_matched_splices <- .find_potential_splice_site_muts(contexts_tb, splice_seqs)
+  
+  # Separate alternative bases
+  splice_muts_tb <- contexts_tb %>%
+    dplyr::mutate(n = nr_matched_splices) %>% 
+    tidyr::unnest(alt_bases) %>% 
+    dplyr::mutate(context = paste0(l_context, "[", ref_base, ">", alt_bases, "]", r_context),
+                  type = "splice_site",
+                  blosum62 = NA) %>% 
+    dplyr::select(type, context, n, blosum62)
+  
+  return(splice_muts_tb)
+}
+
+#' Finds potential splice site muts based on contexts and splice site sequences
+#' 
+#'
+#' @param contexts_tb A tibble containing the mutational contexts
+#' @param splice_seqs DNAStringSet of splice site sequences
+#'
+#' @return Vector with the number of potential splice mutations per context
+#' @noRd
+#'
+.find_potential_splice_site_muts = function(contexts_tb, splice_seqs){
+  
+  # Get unique splice site sequences
+  splice_seqs_table <- BiocGenerics::table(splice_seqs)
+  splice_seqs <- Biostrings::DNAStringSet(names(splice_seqs_table))
+  nr_splice_seqs = as.vector(splice_seqs_table)
+  
+  #Forward context
+  ori_bases <- Biostrings::DNAStringSet(contexts_tb$ori_bases)
+  nr_matched_splices <- .find_potential_splice_site_muts_strand(ori_bases, 
+                                                                splice_seqs, 
+                                                                nr_splice_seqs)
+  #Reverse context
+  rev_ori_bases <- Biostrings::reverseComplement(ori_bases)
+  nr_matched_splices_rev <- .find_potential_splice_site_muts_strand(rev_ori_bases, 
+                                                                    splice_seqs, 
+                                                                    nr_splice_seqs)
+  #Combine both contexts
+  nr_matched_splices <- nr_matched_splices + nr_matched_splices_rev
+  return(nr_matched_splices)
+}
+
+#' Finds potential splice site muts based on forward/reverse context and splice site sequences
+#'
+#' @param ori_bases Mutational context
+#' @param splice_seqs DNAStringSet of splice site sequences
+#' @param nr_splice_seqs Vector with the number of potential splice mutations per context
+#'
+#' @return Vector with the number of potential splice mutations per context for one strand
+#' @noRd
+#'
+.find_potential_splice_site_muts_strand = function(ori_bases, splice_seqs, nr_splice_seqs){
+  nr_matched_splices <- purrr::map(as.list(ori_bases), Biostrings::vmatchPattern, splice_seqs) %>% 
+    purrr::map(S4Vectors::elementNROWS) %>%
+    purrr::map(function(x) x > 0) %>% 
+    purrr::map_dbl(function(x) sum(x * nr_splice_seqs))
+  return(nr_matched_splices)
+}
+
+#' Get splice site sequences for supplied genes
+#' 
+#' The 4 bases around the splice site plus the length of
+#' the context is taken. This way potential mutations in 
+#' the 4 bases can be found.
+#'
+#' @param cds_tx GRangesList object containing the cds ranges of genes
+#' @param ref_genome BSGenome reference genome object
+#' @param context_l Mutation context length
+#'
+#' @return DNAStringSet containing the splice site sequences
+#' @noRd
+#'
+.get_splice_site_sequences = function(cds_tx, ref_genome, context_l) {
+  
+  # Get cds GRanges
+ splice_grl = .get_splice_site_ranges(cds_tx, context_l)
+  
+  # Get sequences (per cds per transcript.)
+  seqs <- Biostrings::getSeq(ref_genome, splice_grl) %>% 
+    unlist()
+  
+  return(seqs)
+}
+
+#' Get splice site ranges for supplied genes.
+#'
+#' @param cds_tx GRangesList object containing the cds ranges of genes
+#' @param context_l Mutation context length
+#'
+#' @return GRangesList containing the splice site ranges of genes
+#' @noRd
+#'
+.get_splice_site_ranges = function(cds_tx, context_l){
+  splice_grl <- purrr::map(as.list(cds_tx), 
+                           .get_splice_site_ranges_gr,
+                           context_l) %>% 
+    GenomicRanges::GRangesList()
+  return(splice_grl)
+}
+
+#' Get splice site ranges for one gene.
+#'
+#' @param cds_gr GRanges containing the cds ranges of one gene
+#' @param context_l Mutation context length
+#'
+#' @return GRanges containing the splice site ranges of one gene
+#' @noRd
+#'
+.get_splice_site_ranges_gr = function(cds_gr, context_l){
+  
+  # Create separate GRanges for start and end of splice sites.
+  start_splice <- end_splice <- cds_gr
+  
+  # Set coordinates to the 4 bases around the splice site plus context
+  BiocGenerics::end(start_splice) <- BiocGenerics::start(start_splice) + 1 + context_l
+  BiocGenerics::start(start_splice) <- BiocGenerics::start(start_splice) - 2 - context_l
+  BiocGenerics::start(end_splice) <- BiocGenerics::end(end_splice) - 1 - context_l
+  BiocGenerics::end(end_splice) <- BiocGenerics::end(end_splice) + 2 + context_l
+  
+  # Remove start and end of gene, because there is no splicing there.
+  start_splice <- start_splice[-1]
+  end_splice <- end_splice[-length(end_splice)]
+  
+  #Combine start and end splice sites.
+  splices_gr = c(start_splice, end_splice)
+  
+  return(splices_gr)
+}
+
