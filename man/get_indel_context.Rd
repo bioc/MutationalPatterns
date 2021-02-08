@@ -10,7 +10,7 @@ get_indel_context(vcf_list, ref_genome)
 \item{vcf_list}{GRanges or GRangesList object containing Indel mutations.
 The mutations should be called similarly to HaplotypeCaller.}
 
-\item{ref_genome}{BSGenome reference genome object}
+\item{ref_genome}{BSgenome reference genome object}
 }
 \value{
 A modified version of the input grl. In each gr two columns have been added.
@@ -23,6 +23,7 @@ Get indel contexts
 \details{
 Determines the COSMIC context from a GRanges or GRangesList object containing Indel mutations.
 It applies the get_indel_context_gr function to each gr in the input.
+It searches for repeat units both to the left and right of the indel.
 }
 \examples{
 

@@ -8,7 +8,12 @@
 #'
 #' @param vcf_list GRanges/GRangesList
 #' @param type The type of variant that will be returned.
-#'
+#' @param predefined_dbs_mbs Boolean. Whether dbs and mbs variants have been
+#'    predefined in your vcf. This function by default assumes that dbs and mbs
+#'    variants are present in the vcf as snvs, which are positioned next to each
+#'    other. If your dbs/mbs variants are called separately you should set this
+#'    argument to TRUE. (default = FALSE)
+
 #' @return GRanges/GRangesList of the desired mutation type.
 #'
 #' @examples
@@ -28,9 +33,16 @@
 #'
 #' @importFrom magrittr %>%
 #' @export
-get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
+get_mut_type <- function(vcf_list, 
+                         type = c("snv", "indel", "dbs", "mbs"), 
+                         predefined_dbs_mbs = FALSE) {
   type <- match.arg(type)
 
+  if (predefined_dbs_mbs == FALSE & type != "indel"){
+    message(paste0("Any neighbouring SNVs will be merged into DBS/MBS variants.\n",
+                   "Set the 'predefined_dbs_mbs' to 'TRUE' if you don't want this."))
+  }
+  
 
   # Turn grl into list.
   if (inherits(vcf_list, "CompressedGRangesList")) {
@@ -39,11 +51,11 @@ get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
 
   # Get muttype per sample
   if (inherits(vcf_list, "list")) {
-    grl <- purrr::map(vcf_list, .get_mut_type_gr, type) %>%
+    grl <- purrr::map(vcf_list, .get_mut_type_gr, type, predefined_dbs_mbs) %>%
       GenomicRanges::GRangesList()
     return(grl)
   } else if (inherits(vcf_list, "GRanges")) {
-    gr <- .get_mut_type_gr(vcf_list, type)
+    gr <- .get_mut_type_gr(vcf_list, type, predefined_dbs_mbs)
     return(gr)
   } else {
     .not_gr_or_grl(vcf_list)
@@ -61,12 +73,19 @@ get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
 #'
 #' @param gr GRanges
 #' @param type The type of variant that will be returned.
-#'
+#' @param predefined_dbs_mbs Boolean. Whether DBS and MBS variants have been
+#'    predefined in your vcf. This function by default assumes that DBS and MBS
+#'    variants are present in the vcf as SNVs, which are positioned next to each
+#'    other. If your DBS/MBS variants are called separately you should set this
+#'    argument to TRUE. (default = FALSE)
+
 #' @noRd
 #'
 #' @return GRanges of the desired mutation type.
-
-.get_mut_type_gr <- function(gr, type = c("snv", "indel", "dbs", "mbs")) {
+#' 
+.get_mut_type_gr <- function(gr, 
+                             type = c("snv", "indel", "dbs", "mbs"), 
+                             predefined_dbs_mbs) {
   type <- match.arg(type)
 
   # Filter out bad variants
@@ -74,26 +93,41 @@ get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
 
   # Indels
   if (type == "indel") {
-    gr <- .remove_snvs(gr)
+    gr <- .remove_substitutions(gr)
     return(gr)
   }
 
-  # Split SNVs into SNVs/DBS/MNVs
+  # Substitutions
   gr <- .remove_indels(gr)
-  gr_l <- .split_mbs_gr(gr)
-
-  not_mbs_f <- names(gr_l) %in% c(1, 2) # Determine which elements of the list are MNVs
-  if (type == "snv" & "1" %in% names(gr_l)) {
-    gr <- gr_l$`1`
-  } else if (type == "dbs" & "2" %in% names(gr_l)) {
-    gr <- gr_l$`2`
-  } else if (type == "mbs" & sum(!not_mbs_f) != 0) {
-    gr_l <- gr_l[!not_mbs_f]
-    gr <- unlist(GenomicRanges::GRangesList(gr_l))
-  } else { # Return empty gr when no variants are present.
-    gr <- gr[0]
+  
+  if (predefined_dbs_mbs == TRUE) {
+    if (type == "snv"){
+      gr <- gr[width(.get_ref(gr)) == 1]
+    } else if (type == "dbs"){
+      gr <- gr[width(.get_ref(gr)) == 2]
+    } else if (type == "mbs"){
+      gr <- gr[width(.get_ref(gr)) >= 3]
+    }
+    return(gr)
   }
-  return(gr)
+  
+  if (predefined_dbs_mbs == FALSE) {
+    # Merge neighbouring SNVs into DBS and MBS variants. Then select the desired type. 
+    gr_l <- .split_mbs_gr(gr)
+  
+    not_mbs_f <- names(gr_l) %in% c(1, 2) # Determine which elements of the list are MNVs
+    if (type == "snv" & "1" %in% names(gr_l)) {
+      gr <- gr_l$`1`
+    } else if (type == "dbs" & "2" %in% names(gr_l)) {
+      gr <- gr_l$`2`
+    } else if (type == "mbs" & sum(!not_mbs_f) != 0) {
+      gr_l <- gr_l[!not_mbs_f]
+      gr <- unlist(GenomicRanges::GRangesList(gr_l))
+    } else { # Return empty gr when no variants are present.
+      gr <- gr[0]
+    }
+    return(gr)
+    }
 }
 
 #' Split SNV/MNV into SNV, DBS and MNVs of different sizes
@@ -153,13 +187,13 @@ get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
   sequential <- c(0, sequential)
 
   # Sequence is a numeric vector. A n means that a mutations is the Nth sequential base in a mutations.
-  # Example: 0100123. Here the second mutation is sequential to the first. So the first two muts are a dbs.
+  # Example: 0100123. Here the second mutation is sequential to the first. So the first two muts are a DBS.
   # Next is a sbs. Then there is another 0 and then 3 sequential muts. This means that together they form a 4 base substitution.
   seq_rle <- rle(sequential)
   sequence <- sequence(seq_rle$lengths)
   sequence[sequential == 0] <- 0
 
-  # Find the maximum number of sequential mutations. (This is one less than the final mut size. So 1 for a dbs.)
+  # Find the maximum number of sequential mutations. (This is one less than the final mut size. So 1 for a DBS.)
   max_seq_l <- max(sequence)
   mut_l <- max_seq_l + 1
 
@@ -169,7 +203,7 @@ get_mut_type <- function(vcf_list, type = c("snv", "indel", "dbs", "mbs")) {
   full_muts_i_l <- purrr::map2(start_i_muts, end_i_muts, seq)
   full_muts_i <- unlist(full_muts_i_l)
 
-  # Merge dbs and mbs if the user wants this.
+  # Merge DBS and MBS if the user wants this.
   if (mut_l != 1 & merge_muts == TRUE) {
     gr_sub <- purrr::map(full_muts_i_l, function(i_v) .merge_muts(gr[i_v])) %>%
       do.call(base::c, .)

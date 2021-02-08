@@ -1,3 +1,34 @@
+MutationalPatterns v3.1.4
+
+Changes:
+* Plot lesion segregation now has background strips.
+* Plot_rainfall can now remove more chromosome prefixes from the labels. 
+chromosome(_), group(_) and chrom can now be removed in addition to chr. All are case insensitive.
+* Improved the description in the vignette of choosing the cut-off for strict refitting.
+* Fixed spelling mistakes.
+
+MutationalPatterns v3.1.3
+
+Changes:
+Plot_lesion_segregation has been improved. It can now plot multiple samples at the same time.
+Users can also specify which chromosomes they want to plot. The plot now also contains colour and
+the ratio of the mutations on the chromosomal strands is 
+visualised by a horizontal line per chromosome.
+
+MutationalPatterns v3.1.2
+
+Changes:
+* The plot_correlation_bootstrap output now shows less dominant colours for the
+absent signatures.
+* The rename_nmf_signatures function now adds the "-like" suffix to renamed signatures,
+by default.
+* The plot_river function now shows the number of mutations per sample.
+* The read_vcfs_as_granges function now has a "predefined_dbs_mbs" argument, for when
+dbs and mbs variants are already defined in the vcfs. This prevents merging of snvs.
+* The get_indel_context function now looks for repeats both to the left and to the right of the
+indel. Previously it only looked to the right of the indel.
+
+
 MutationalPatterns v2.99.7 (Release date: 2020-10-28)
 
 Changes:
