@@ -4,6 +4,7 @@
 #' and combines them in a GRangesList.  In addition to loading the files, this
 #' function applies the same seqlevel style to the GRanges objects as the
 #' reference genome passed in the 'genome' parameter.
+#' By default only reads in snv variants.
 #'
 #' @param vcf_files Character vector of VCF file names
 #' @param sample_names Character vector of sample names
@@ -20,7 +21,7 @@
 #'                seqlevels from the VCF file.
 #' @param type The mutation type that will be loaded. All other variants will be filtered out.
 #'              Possible values:
-#'              * 'snv'
+#'              * 'snv' (default)
 #'              * 'indel'
 #'              * 'dbs'
 #'              * 'mbs'
@@ -180,7 +181,7 @@ read_vcfs_as_granges <- function(vcf_files,
       error = function(cnd) {
         message(conditionMessage(cnd))
         stop("The seqlevelStyle of the vcf could not be changed to that of the reference.
-                     You can run this function with `change_seqnames = F` and `group = 'all'`, 
+                     You can run this function with `change_seqnames = F` and `group = 'none'`, 
                      to prevent this error.
                      However, you then have to make sure that the seqnames (chromosome names) are
                      the same between your vcfs and the reference BSgenome object.
@@ -204,7 +205,7 @@ read_vcfs_as_granges <- function(vcf_files,
       error = function(cnd) {
         message(conditionMessage(cnd))
         stop("The vcf could not be filtered for the specific seqlevels group.
-                     You can run this function with `group = 'all'`, to prevent this error.
+                     You can run this function with `group = 'none'`, to prevent this error.
                      (The message of the internal error causing this problem is shown above.)",
           call. = FALSE
         )

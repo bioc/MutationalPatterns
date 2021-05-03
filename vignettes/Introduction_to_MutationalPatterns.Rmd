@@ -559,8 +559,8 @@ names of the NMF signatures to these already known signatures. This often makes
 it easier to interpret your results.
 
 To do this you first need to read in some already existing signatures. Here we
-will use signatures from [COSMIC](https://cancer.sanger.ac.uk/cosmic/signatures)
-(v3.1) [@Alexandrov2020]. (We will discuss how to use other signature matrixes
+will use signatures from [COSMIC](https://cancer.sanger.ac.uk/signatures)
+(v3.2) [@Alexandrov2020]. (We will discuss how to use other signature matrixes
 later.)
 ```{r read_signatures}
 signatures = get_known_signatures()
@@ -673,13 +673,13 @@ signature analyses of small cohorts or individual samples, but also to relate
 own findings to known signatures and published findings. The
 `fit_to_signatures` function finds the optimal linear combination of mutational
 signatures that most closely reconstructs the mutation matrix by solving a
-non-negative least-squares constraints problem.
+non-negative least-squares constraints problem. It can work with a SNV, indel,
+DBS or other type of count matrix.
 
 Fit mutation matrix to the COSMIC mutational signatures:
 ```{r fit_to_signatures}
 fit_res <- fit_to_signatures(mut_mat, signatures)
 ```
-
 
 The `fit_res` object can be visualized similarly to the `nmf_res` object. The
 functions `plot_contribution`, `plot_contribution_heatmap`,
@@ -769,6 +769,28 @@ plot_contribution(fit_res_strict$contribution,
 )
 ```
 
+By default `fit_to_signatures_strict` uses the "backwards" selection approach
+described above. However, it is also possible to use a "best subset" approach.
+The benefit of this method is that it can be more accurate than the "backwards"
+approach. However, it becomes computationally infeasible when using many
+signatures. Therefore it should only be used on small signature sets (max 10-15
+signatures), like tissue specific signatures. 
+The "best subset" approach works similarly to the "backwards" approach. This
+approach again starts with a standard refit. The refitting is then repeated for
+each combination of n-1 signatures, where n is the total number of signatures.
+In other words, if you started with 10 signatures, the refitting is repeated 10
+times, with a different signature being removed each time. The combination of
+signatures that has the best cosine similarity between the original and
+reconstructed profile is chosen. This is done in an iterative fashion for n-2,
+n-3, ect. You stop removing signatures when the difference between two
+iterations becomes bigger than a certain cutoff, just like with the backwards
+method.
+
+We randomly selected a few signatures for this example, to keep the runtime low.
+In practice, signatures should be selected based on prior knowledge.
+```{r fit_to_signatures_strict_best_subset}
+best_subset_refit <- fit_to_signatures_strict(mut_mat, signatures[,1:5], max_delta = 0.002, method = "best_subset")
+```
 
 A third method that can reduce overfitting and the misattribution of signatures
 is to merge similar signatures. This works by merging signatures whose cosine
@@ -803,10 +825,11 @@ stability. In MutationalPatterns bootstrapping can be done with
 
 This function can be used with the standard and strict refitting methods
 described previously. Here we will use the "strict" method on two samples.
+(We only use 50 bootstraps here to reduce the run time and figure size.)
 ```{r fit_to_signatures_bootstrapped, message=FALSE}
 contri_boots <- fit_to_signatures_bootstrapped(mut_mat[, c(3, 7)],
   signatures,
-  n_boots = 100,
+  n_boots = 50,
   method = "strict"
 )
 ```
@@ -961,6 +984,13 @@ data.
 signatures_artifacts = get_known_signatures(incl_poss_artifacts = TRUE)
 dim(signatures_artifacts)
 ```
+
+For the COSMIC signatures it is possible to use a version that is normalized to GRCh38 instead of GRCh37.
+```{r load_signatures_grch38}
+signatures_GRCh38 = get_known_signatures(genome = "GRCh38")
+dim(signatures_GRCh38)
+```
+
 
 You can load the SIGNAL reference signatures like this:
 ```{r load_signatures_signal}
