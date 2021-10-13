@@ -8,8 +8,7 @@
 #'
 #' @param vcf_files Character vector of VCF file names
 #' @param sample_names Character vector of sample names
-#' @param genome A string matching the name of a BSgenome library
-#'               corresponding to the reference genome of your VCFs
+#' @param genome BSgenome reference genome object
 #' @param group Selector for a seqlevel group.  All seqlevels outside
 #'              of this group will be removed.  Possible values:
 #'              * 'all' for all chromosomes;
@@ -89,7 +88,7 @@ read_vcfs_as_granges <- function(vcf_files,
                                  change_seqnames = TRUE,
                                  predefined_dbs_mbs = FALSE) {
 
-  # Match argument
+  # Match arguments
   type <- match.arg(type)
   group <- match.arg(group)
 

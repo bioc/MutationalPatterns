@@ -36,8 +36,7 @@
 #'              * 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;
 #' @param split_by_type Boolean describing whether the lesion
 #' segregation should be calculated for all SNVs together or per 96 substitution context. (Default: FALSE)
-#' @param ref_genome A string matching the name of a BSgenome library
-#'               corresponding to the reference genome.
+#' @param ref_genome BSgenome reference genome object.
 #'               Only needed when split_by_type is TRUE with the binomial test
 #'               or when using the rl20 test.
 #' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
@@ -169,8 +168,7 @@ calculate_lesion_segregation <- function(vcf_list,
 #'              * 'rl20' Calculates rl20 value and the genomic span of the associated runs set.;
 #' @param split_by_type Boolean describing whether the lesion
 #' segregation should be calculated for all SNVs together or per 96 substitution context.
-#' @param ref_genome A string matching the name of a BSgenome library
-#'               corresponding to the reference genome.
+#' @param ref_genome BSgenome reference genome object.
 #'               Only needed when split_by_type is TRUE with the binomial test
 #'               or when using the rl20 test.
 #' @param chromosomes The chromosomes that are used. Only needed when using the rl20 test.
@@ -469,8 +467,15 @@ calculate_lesion_segregation <- function(vcf_list,
 
   # Determine index of the first mutation of the runs in set.
   # The index of the last mutation in the previous run is used for this.
-  start_i <- cumsum_runs[order_i_set - 1] + 1
-
+  # If the first run is in the rl20, then it has to be set separately.
+  first_run_i <- which(order_i_set == 1)
+  if (length(first_run_i)){
+    order_i_set[first_run_i] <- 2
+    start_i <- cumsum_runs[order_i_set - 1] + 1
+    start_i[first_run_i] <- 1
+  } else{
+    start_i <- cumsum_runs[order_i_set - 1] + 1
+  }
   # Determine index of the last mutation of the runs in set.
   end_i <- cumsum_runs[order_i_set]
 
