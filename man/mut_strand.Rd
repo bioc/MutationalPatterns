@@ -89,6 +89,7 @@ repli_strand_granges <- GRanges(
   strand_info = repli_strand$Class
 )
 ## UCSC seqlevelsstyle
+library(GenomeInfoDb)
 seqlevelsStyle(repli_strand_granges) <- "UCSC"
 
 mut_strand(vcfs[[1]], repli_strand_granges, mode = "transcription")

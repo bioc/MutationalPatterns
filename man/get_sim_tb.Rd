@@ -26,6 +26,6 @@ An S4 method for the get_sim_tb generic
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{region_cossim}: Get the sim_tb from a region_cossim object.
-}}
+\item \code{get_sim_tb(region_cossim)}: Get the sim_tb from a region_cossim object.
 
+}}

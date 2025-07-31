@@ -71,7 +71,7 @@ bin_mutation_density <- function(vcf_list,
   gr <- BiocGenerics::sort(gr)
 
   # Determine density per chromosome
-  chroms <- GenomeInfoDb::seqlevelsInUse(gr)
+  chroms <- Seqinfo::seqlevelsInUse(gr)
   dens_gr <- purrr::map(chroms, 
                         .get_mutation_density_chrom, 
                         ref_genome, 
@@ -110,14 +110,14 @@ bin_mutation_density <- function(vcf_list,
 .get_mutation_density_chrom <- function(chrom, ref_genome, gr, chroms) {
 
   # Select muts in chrom
-  gr <- gr[GenomeInfoDb::seqnames(gr) == chrom]
+  gr <- gr[Seqinfo::seqnames(gr) == chrom]
 
   # Determine position
   half_width <- (BiocGenerics::end(gr) - BiocGenerics::start(gr)) / 2
   pos <- BiocGenerics::start(gr) + half_width
 
   # Calculate density. Only calculate within chromosome size
-  chr_size <- GenomeInfoDb::seqlengths(ref_genome)[chrom]
+  chr_size <- Seqinfo::seqlengths(ref_genome)[chrom]
   dens <- stats::density(pos, bw = "SJ", from = 1, to = chr_size)
 
   # Determine location of density bins.
@@ -134,7 +134,7 @@ bin_mutation_density <- function(vcf_list,
   dens_gr <- GenomicRanges::GRanges(seqnames = chrom, 
                                     ranges = IRanges::IRanges(start, end))
   dens_gr$dens <- dens$y
-  GenomeInfoDb::seqlevels(dens_gr) <- chroms
+  Seqinfo::seqlevels(dens_gr) <- chroms
 
   return(dens_gr)
 }

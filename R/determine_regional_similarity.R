@@ -150,7 +150,7 @@ determine_regional_similarity <- function(vcf,
     }
     
     # Preprocess the gr
-    GenomeInfoDb::seqlevels(vcf, pruning.mode = "coarse") <- chromosomes
+    Seqinfo::seqlevels(vcf, pruning.mode = "coarse") <- chromosomes
     vcf <- BiocGenerics::sort(vcf)
     
     if (verbose){
@@ -158,10 +158,10 @@ determine_regional_similarity <- function(vcf,
     }
     
     # get chromosome lengths of reference genome
-    chr_lengths <- GenomeInfoDb::seqlengths(vcf)
+    chr_lengths <- Seqinfo::seqlengths(vcf)
     
     # Check for missing chromosome lengths
-    if (sum(is.na(GenomeInfoDb::seqlengths(vcf))) > 1) {
+    if (sum(is.na(Seqinfo::seqlengths(vcf))) > 1) {
         stop(paste(
             "Chromosome lengths missing from vcf object.\n",
             "Likely cause: contig lengths missing from the header of your vcf file(s).\n",
@@ -173,7 +173,7 @@ determine_regional_similarity <- function(vcf,
     
     # Split the vcf per chromosome and remove unused chromosome levels
     grl <- split(vcf, seqnames(vcf), drop = TRUE)
-    GenomeInfoDb::seqlevels(grl) <- GenomeInfoDb::seqlevelsInUse(grl)
+    Seqinfo::seqlevels(grl) <- Seqinfo::seqlevelsInUse(grl)
     muts_per_chr <- S4Vectors::elementNROWS(grl)
     
     # Determine the global nucleotide context if requested.
@@ -314,7 +314,7 @@ determine_regional_similarity <- function(vcf,
     cossim <- . <- window_context_sim <- NULL
     
     # Determine chromosome
-    chr <- GenomeInfoDb::seqlevelsInUse(gr)
+    chr <- Seqinfo::seqlevelsInUse(gr)
    
     # Get base positions
     pos <- start(gr)

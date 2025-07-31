@@ -35,7 +35,7 @@ get_known_signatures(
 * 'tissue';}
 
 \item{incl_poss_artifacts}{Whether to include possible
-artifacts. (default: TRUE)}
+artifacts. (default: FALSE)}
 
 \item{tissue_type}{The specific tissue to select signatures from.
 Can only be used when looking at tissue specific signatures.

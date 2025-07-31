@@ -21,7 +21,7 @@ flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
 # Combine regions and set seqlevelstyle
 regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
 names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
-seqlevelsStyle(regions) <- "UCSC"
+GenomeInfoDb::seqlevelsStyle(regions) <- "UCSC"
 
 # Get the callable regions
 surveyed_file <- system.file("extdata/callableloci-sample.bed",
@@ -30,7 +30,7 @@ surveyed_file <- system.file("extdata/callableloci-sample.bed",
 
 library(rtracklayer)
 surveyed <- rtracklayer::import(surveyed_file)
-seqlevelsStyle(surveyed) <- "UCSC"
+GenomeInfoDb::seqlevelsStyle(surveyed) <- "UCSC"
 
 # Use the same callable loci for all samples.
 surveyed_list <- rep(list(surveyed), 9)

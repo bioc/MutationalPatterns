@@ -14,7 +14,7 @@ flanking_g <- readRDS(system.file("states/promoter_flanking_g_data.rds",
 # Combine the regions into a single GRangesList
 regions <- GRangesList(promoter_g, flanking_g, CTCF_g)
 names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
-seqlevelsStyle(regions) <- "UCSC"
+GenomeInfoDb::seqlevelsStyle(regions) <- "UCSC"
 
 # Read in some variants.
 grl <- readRDS(system.file("states/read_vcfs_as_granges_output.rds",

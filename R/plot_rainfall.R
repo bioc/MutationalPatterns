@@ -133,9 +133,9 @@ plot_rainfall <- function(vcf,
   }
   
   # get chromosome lengths of reference genome
-  chr_length <- GenomeInfoDb::seqlengths(vcf)
+  chr_length <- Seqinfo::seqlengths(vcf)
   # Check for missing seqlengths
-  if (sum(is.na(GenomeInfoDb::seqlengths(vcf))) > 1) {
+  if (sum(is.na(Seqinfo::seqlengths(vcf))) > 1) {
     stop(paste(
       "Chromosome lengths missing from vcf object.\n",
       "Likely cause: contig lengths missing from the header of your vcf file(s).\n",
@@ -168,7 +168,7 @@ plot_rainfall <- function(vcf,
   tb_l <- purrr::map(chromosomes, function(chr) {
 
     # Subset variants to chromosome
-    chr_subset <- vcf[GenomeInfoDb::seqnames(vcf) == chr]
+    chr_subset <- vcf[Seqinfo::seqnames(vcf) == chr]
 
     # If there are not enough variants, then an empty tibble is returned.
     n <- length(chr_subset)

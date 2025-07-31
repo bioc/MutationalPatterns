@@ -177,7 +177,7 @@ get_mut_type <- function(vcf_list,
   gr <- BiocGenerics::sort(gr)
 
   # Identify location of each mut and its subsequent mut.
-  chroms <- GenomeInfoDb::seqnames(gr) %>%
+  chroms <- Seqinfo::seqnames(gr) %>%
     as.vector()
   first_chrom <- chroms[-length(chroms)]
   second_chrom <- chroms[-1]

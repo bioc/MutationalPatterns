@@ -280,7 +280,7 @@ calculate_lesion_segregation <- function(vcf_list,
     ref_genome <- BSgenome::getBSgenome(ref_genome)
     stat_tb <- res %>%
       dplyr::mutate(
-        genome_size = sum(GenomeInfoDb::seqlengths(ref_genome)[chromosomes]),
+        genome_size = sum(Seqinfo::seqlengths(ref_genome)[chromosomes]),
         fraction_span = genome_span / genome_size
       )
   }
@@ -300,7 +300,7 @@ calculate_lesion_segregation <- function(vcf_list,
   strand(gr) <- ifelse(as.vector(.get_ref(gr)) %in% c("C", "T"), "+", "-")
 
   if (length(gr)) {
-    GenomeInfoDb::seqlevels(gr) <- GenomeInfoDb::seqlevelsInUse(gr)
+    Seqinfo::seqlevels(gr) <- Seqinfo::seqlevelsInUse(gr)
   }
   return(gr)
 }

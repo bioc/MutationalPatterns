@@ -88,6 +88,7 @@
 #' names(regions) <- c("Promoter", "Promoter flanking", "CTCF")
 #'
 #' # Use a naming standard consistently.
+#' library(GenomeInfoDb)
 #' seqlevelsStyle(regions) <- "UCSC"
 #'
 #' ## Get the filename with surveyed/callable regions

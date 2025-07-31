@@ -2,7 +2,15 @@
 % Please edit documentation in R/lengthen_mut_matrix.R
 \name{lengthen_mut_matrix}
 \alias{lengthen_mut_matrix}
-\title{Lengthen mutation matrix}
+\title{A mutation_matrix calculated on a GRangesList or GR object modified by 'split_muts_region()',
+will contain a column per combination of sample and genomic region. In essence different regions
+are treated as different samples. This function will transform the matrix, so that these regions
+are instead treated as different mutation types. For example, instead of 'C[C>T]G', you might have
+the feature 'C[C>T]G Promoter'. The number of rows in the matrix will thus be
+multiplied by the number of regions.
+After using 'split_muts_region()', use 'mut_matrix()' to get a mut_matrix that can be used
+for this function.
+The result can be plotted with plot_profile_region, but could also be used for NMF, refitting ect.}
 \usage{
 lengthen_mut_matrix(mut_matrix)
 }

@@ -208,8 +208,8 @@ read_vcfs_as_granges <- function(vcf_files,
   }
   
   # Change the genome name of the granges
-  genome_name <- GenomeInfoDb::genome(genome)[[1]]
-  GenomeInfoDb::genome(gr) <- genome_name
+  genome_name <- Seqinfo::genome(genome)[[1]]
+  Seqinfo::genome(gr) <- genome_name
 
   # Filter for variants with the correct seqlevels
   if (group != "none") {
@@ -267,7 +267,7 @@ read_vcfs_as_granges <- function(vcf_files,
   groups <- c()
   # These variables are needed to extract the possible seqlevels
   ref_style <- GenomeInfoDb::seqlevelsStyle(genome)
-  ref_organism <- GenomeInfoDb::organism(genome)
+  ref_organism <- BiocGenerics::organism(genome)
 
   if (group == "auto+sex") {
     groups <- c(
@@ -312,7 +312,7 @@ read_vcfs_as_granges <- function(vcf_files,
   # available in the reference genome.  Therefore, we only take the
   # chromosomes that are actually available in the VCF file,
   # belonging to the filter group.
-  groups <- BiocGenerics::intersect(groups, GenomeInfoDb::seqlevels(gr))
+  groups <- BiocGenerics::intersect(groups, Seqinfo::seqlevels(gr))
 
   # We use 'pruning.mode = "tidy"' to minimize the deleterious effect
   # on variants, yet, remove all variants that aren't in the filter

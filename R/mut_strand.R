@@ -77,6 +77,7 @@
 #'   strand_info = repli_strand$Class
 #' )
 #' ## UCSC seqlevelsstyle
+#' library(GenomeInfoDb)
 #' seqlevelsStyle(repli_strand_granges) <- "UCSC"
 #'
 #' mut_strand(vcfs[[1]], repli_strand_granges, mode = "transcription")
@@ -92,7 +93,7 @@ mut_strand <- function(vcf, ranges, mode = "transcription") {
     genes <- GenomicRanges::reduce(ranges)
 
     # Check consistency of chromosome names.
-    if (!(all(GenomeInfoDb::seqlevels(vcf) %in% GenomeInfoDb::seqlevels(genes)))) {
+    if (!(all(Seqinfo::seqlevels(vcf) %in% Seqinfo::seqlevels(genes)))) {
       stop(paste(
         "Chromosome names (seqlevels) of vcf and genes Granges",
         "object do not match. Use the seqlevelsStyle() function",

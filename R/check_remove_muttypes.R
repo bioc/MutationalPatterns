@@ -342,15 +342,15 @@
   ref_seqnames <- seqnames(ref)
 
   # Check if the gr and reference have the same genome name.
-  genome_name_gr <- unique(GenomeInfoDb::genome(gr))
-  genome_name_ref <- unique(GenomeInfoDb::genome(ref))
+  genome_name_gr <- unique(Seqinfo::genome(gr))
+  genome_name_ref <- unique(Seqinfo::genome(ref))
   if (is.na(genome_name_gr) | genome_name_gr != genome_name_ref) {
     stop(paste0(
       "The input GRanges (your vcf data) and the ref_genome do not have the same genome name.\n",
       "This problem is known to occur when you use an outside function to read in vcfs.\n",
       "The input GRanges has the genome name: '", genome_name_gr, "'\n",
       "The ref_genome has the genome name: '", genome_name_ref, "'\n",
-      "With `GenomeInfoDb::genome(your input GRanges) = '", genome_name_ref, "'`\n",
+      "With `Seqinfo::genome(your input GRanges) = '", genome_name_ref, "'`\n",
       "you can view and change the genome name of your data to that of the ref_genome."
     ), call. = FALSE)
   }
@@ -379,7 +379,7 @@
   }
 
   # Check if there are variants in the input granges that don't overlap with the reference
-  ref_gr <- GenomicRanges::GRanges(as.vector(seqnames(ref)), IRanges::IRanges(start = 1, end = GenomeInfoDb::seqlengths(ref)))
+  ref_gr <- GenomicRanges::GRanges(as.vector(seqnames(ref)), IRanges::IRanges(start = 1, end = Seqinfo::seqlengths(ref)))
   hits <- GenomicRanges::findOverlaps(gr, ref_gr)
   if (length(hits)) {
     gr_nomatch <- gr[-S4Vectors::queryHits(hits)]

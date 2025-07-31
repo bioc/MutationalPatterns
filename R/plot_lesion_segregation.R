@@ -74,7 +74,7 @@ plot_lesion_segregation <- function(vcf,
     vcf_list <- GenomicRanges::GRangesList(vcf_list)
   }
   # Genome is set to NULL to ensure seqlevels can be changed.
-  GenomeInfoDb::genome(vcf_list) <- NA
+  Seqinfo::genome(vcf_list) <- NA
   GenomeInfoDb::seqlevelsStyle(vcf_list) <- "NCBI" # This takes less space when plotting
   
   
@@ -139,7 +139,7 @@ plot_lesion_segregation <- function(vcf,
   } else{
     chromosomes <- GenomeInfoDb::seqlevelsInUse(vcf_list)
     if (!length(chromosomes)){
-      chromosomes <- GenomeInfoDb::seqlevels(vcf_list)
+      chromosomes <- Seqinfo::seqlevels(vcf_list)
     }
     tb$seqnames <- factor(tb$seqnames, levels = chromosomes)
   }
@@ -148,7 +148,7 @@ plot_lesion_segregation <- function(vcf,
   # even when mutations don't span the entire chromosome.
   chroms <- levels(tb$seqnames)
   nr_chroms <- length(chroms)
-  chrom_lengths <- GenomeInfoDb::seqlengths(vcf_list)[chroms]
+  chrom_lengths <- Seqinfo::seqlengths(vcf_list)[chroms]
   
   chr_starts <- tibble::tibble("start_mb" = rep(1, nr_chroms),
                               "seqnames" = chroms)

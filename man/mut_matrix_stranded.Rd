@@ -76,6 +76,7 @@ repli_strand_granges <- GRanges(
   strand_info = repli_strand$Class
 )
 ## UCSC seqlevelsstyle
+library(GenomeInfoDb)
 seqlevelsStyle(repli_strand_granges) <- "UCSC"
 # The levels determine the order in which the features
 # will be countend and plotted in the downstream analyses
