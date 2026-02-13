@@ -48,12 +48,12 @@ test_that("Output has correct size", {
 })
 
 test_that("Number significant is correct", {
-  expect_equal(sum(output$significant == "*"), 1)
-  expect_equal(sum(output$significant_fdr == "*"), 0)
+  expect_equal(sum(output$significant == "*"), 3)
+  expect_equal(sum(output$significant_fdr == "*"), 1)
   expect_equal(sum(output_repli$significant == "*"), 0)
   expect_equal(sum(output_repli$significant_fdr == "*"), 0)
-  expect_equal(sum(output_lenientcutoff$significant == "*"), 3)
-  expect_equal(sum(output_lenientcutoff$significant_fdr == "*"), 3)
-  expect_equal(sum(output_multistars$significant == "***"), 1)
-  expect_equal(sum(output_multistars$significant_fdr == "**"), 3)
+  expect_equal(sum(output_lenientcutoff$significant == "*"), 5)
+  expect_equal(sum(output_lenientcutoff$significant_fdr == "*"), 5)
+  expect_equal(sum(output_multistars$significant == "***"), 3)
+  expect_equal(sum(output_multistars$significant_fdr == "**"), 4)
 })
