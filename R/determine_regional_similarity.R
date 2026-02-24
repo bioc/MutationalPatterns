@@ -177,7 +177,7 @@ determine_regional_similarity <- function(vcf,
     muts_per_chr <- S4Vectors::elementNROWS(grl)
     
     # Determine the global nucleotide context if requested.
-    if (oligo_correction == T){
+    if (oligo_correction == TRUE){
         all_seq <- BSgenome::getSeq(ref_genome, chromosomes)
         global_oligo_context <- .get_oligo_contexts(all_seq, chromosomes, extension) %>% 
             rowSums() %>%
